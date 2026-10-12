@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:flowable="http://flowable.org/bpmn" targetNamespace="https://dfw/game">
+  <process id="genericGameRuntime" name="通用游戏运行时" isExecutable="true">
+    <startEvent id="start"/>
+    <sequenceFlow id="s1" sourceRef="start" targetRef="advance"/>
+    <serviceTask id="advance" name="结算至等待点" flowable:delegateExpression="${gameAdvance}"/>
+    <sequenceFlow id="s2" sourceRef="advance" targetRef="state"/>
+    <exclusiveGateway id="state" default="wait"/>
+    <sequenceFlow id="finished" sourceRef="state" targetRef="end">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${gameOver}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="wait" sourceRef="state" targetRef="decision"/>
+    <userTask id="decision" name="等待游戏输入" flowable:assignee="${actorId}">
+      <extensionElements><flowable:taskListener event="create" delegateExpression="${gameBindDecision}"/></extensionElements>
+    </userTask>
+    <sequenceFlow id="s3" sourceRef="decision" targetRef="input"/>
+    <serviceTask id="input" name="处理游戏输入" flowable:delegateExpression="${gameAcceptInput}"/>
+    <sequenceFlow id="s4" sourceRef="input" targetRef="advance"/>
+    <endEvent id="end"/>
+  </process>
+</definitions>

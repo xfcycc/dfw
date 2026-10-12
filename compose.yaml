@@ -1,0 +1,39 @@
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: dfw
+      MYSQL_USER: ${DB_USERNAME:-dfw}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?请设置 MYSQL_ROOT_PASSWORD}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_bin"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--host=127.0.0.1", "--silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  game:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      APP_ORIGIN: ${APP_ORIGIN:-https://game.example.com}
+      DB_URL: ${DB_URL:-jdbc:mysql://mysql:3306/dfw?characterEncoding=UTF-8&connectionTimeZone=UTC&allowPublicKeyRetrieval=true&sslMode=DISABLED}
+      DB_USERNAME: ${DB_USERNAME:-dfw}
+      DB_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+    ports:
+      - "127.0.0.1:3001:3001"
+    init: true
+    stop_grace_period: 15s
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:3001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+volumes:
+  mysql-data:

@@ -1,0 +1,37 @@
+package com.dfw.interfaces.dto;
+
+import java.util.*;
+import lombok.Getter;
+import lombok.Setter;
+
+/** 命令操作参数；由接口校验后交给领域处理。 */
+@Getter
+@Setter
+public class GameAction {
+    /** 操作类型。 */
+    public String type;
+    /** 准备状态。 */
+    public Boolean value;
+    /** 是否使用免租。 */
+    public Boolean useCard;
+    /** 主动道具标识。 */
+    public String cardId;
+    /** 指定点数。 */
+    public Integer point;
+    /** 地产索引。 */
+    public Integer tileId;
+    /** 目标玩家。 */
+    public String playerId;
+    /** 交易接收人。 */
+    public String toId;
+    /** 发起人现金。 */
+    public Long giveCash;
+    /** 接收人现金。 */
+    public Long wantCash;
+    /** 发起人地产。 */
+    public List<Integer> giveTiles;
+    /** 接收人地产。 */
+    public List<Integer> wantTiles;
+    /** 是否接受交易。 */
+    public Boolean accept;
+}

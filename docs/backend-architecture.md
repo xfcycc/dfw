@@ -1,0 +1,60 @@
+# Spring Boot 后端分层说明
+
+运行基线：Spring Boot 4.1.1、Java 21、Maven、Spring JDBC、MySQL Connector/J、Flowable 8.0.0。单进程管理多个房间，每个房间是一份可独立提交的聚合快照。
+
+## 调用关系
+
+```text
+HTTP Controller / WebSocket Handler
+                ↓
+         RoomService 应用编排
+          ↙             ↘
+ GameWorkflow 通用流程 RoomRepository / StatePublisher 端口
+    ↙             ↘                 ↓
+ GameEngine / EffectResolver   Flowable 引擎   MySQL / WebSocket 适配器
+          ↓                       ↓
+ 地图/回合/经济/道具/交易     同库流程与任务表
+```
+
+| 包 | 责任与修改入口 |
+| --- | --- |
+| `interfaces` | HTTP 路由、消息信封、输入类型校验、错误结果及白名单 VO 投影；新增联机消息先改这里 |
+| `application` | 身份、房间锁、快照候选、幂等回执、短事务编排、连接与定时推进；不编写 SQL |
+| `domain` | 无 Spring、HTTP、WebSocket 和数据库依赖的可变房间聚合；规则只改变应用层传入的候选副本 |
+| `infrastructure` | MySQL 参数化 JDBC、JSON 快照、随机令牌、服务端随机源、有效连接与投递适配器 |
+| `config` | 数据源、允许的 Origin、WebSocket 注册和运行参数 |
+
+## 规则修改
+
+- 经济数值：`Rules`；地图种子与地标：`MapService`。
+- 行动者、跳过回合、移动与机会财富落点：`TurnService`。
+- 资产变现、经营与破产清算：`EconomyService`。
+- 新版六种道具窗口、次数、条件和组合：`game-rules/classic-v2.json`；配置加载校验：`GameRulesConfig`、`RuleSet`、`RuleExpression`；阶段推进与出牌：`RuleRuntime`。`ItemService` 提供基础道具效果并保留旧版本路径；报价和交换：`TradeService`。
+- 大厅、开局、再开、移出离线玩家与命令路由：`GameEngine`。
+- 通用流程启动、任务完成和系统推进同步：`application/GameWorkflow`；固定流程：`processes/generic-game-runtime.bpmn20.xml`；无状态回调和受控同步作用域：`infrastructure/flowable/`。
+- 原子效果注册和联动顺序：`EffectResolver`；内部运行时和队列：`GameRuntime`、`GameEffect`。默认新局为 `classic-v2`，阶段和六种道具采用最小 DSL；无运行时旧局及 `classic-v1` 对局保留原 Java 路径。配置契约见 [回合阶段与道具规则配置](game-rules-dsl.md)。
+- 前端 `src/shared/types.ts` 和 Java DTO/VO 同时维护 JSON 契约；`src/shared/rules.ts` 为展示及地图算法对照。任何后端规则变化都要核对展示与冒烟场景。
+
+## 一致性与隐私
+
+同一房间的 HTTP 变更、认证、游戏命令、断线和定时任务使用同一把 `ReentrantLock`。不同房间独立，Hikari 池最大连接数为四，InnoDB 在短事务内按涉及记录协调写入，不在事务内等待网络。
+
+命令在锁内先查历史回执，再检查预期版本。复制原快照后才运行规则；应用层的 `TransactionTemplate` 覆盖 Flowable 推进、房间快照和命令回执，Repository 的事务加入同一外层事务。认证、断线、报价超时和移出离线玩家也同步处理任务关联。成功后替换内存快照并推送。数据库保存失败不更改原快照，流程与业务写入一起回滚。
+
+公开快照通过 `StateViews` 显式白名单生成。内部 Room、Player 不直接发送；私人手牌和双方报价逐连接投递。玩家连接替换后，旧连接不能执行命令，其关闭回调也不能覆盖新连接的在线状态。底层发送使用 `ConcurrentWebSocketSessionDecorator`，发送失败不撤回已提交操作。
+
+断线保存失败时保留原状态，定时任务根据有效连接注册再次尝试持久化离线状态。重启先将内存连接状态设为离线并冻结报价计时；认证成功后继续原操作。旧快照缺少 `jailed` 字段时按监狱位置和待跳过回合兼容恢复。
+
+新局一局一个 Flowable 实例，以 `gameId` 为业务关联。通用任务循环接受原命令，调用领域校验和效果队列，再等待下一操作或结束。任务 assignee 只标记主要等待人，交易发起者取消报价和房主管理仍使用原领域权限。启动批量读取通用任务并校验内部运行时关联，配置版同时核对规则文件版本和摘要，缺失或不匹配时拒绝启动，不静默重建流程。自动阶段、替代骰子结果和暂停效果的游标随房间快照提交，不重做已提交步骤。旧快照 `runtime` 为空时继续原引擎，结束后返回大厅再开局才启用新流程。
+
+## 存储与切换
+
+保持 `rooms(code,state)`、`sessions(token_hash,code,player_id)`、`receipts(code,command_id,actor_id,result)` 的逻辑结构；MySQL schema 位于 `backend/src/main/resources/schema.sql`，启动只创建缺失表，不删除旧数据。所有表使用 InnoDB / utf8mb4；状态与回执保持原 JSON 文本，主键使用 ascii_bin，避免 MySQL 默认比较规则改变命令 ID 语义。
+
+`MysqlRoomRepository` 使用参数化 upsert 保存房间，身份和回执与快照一次事务提交。SQL 只位于 Repository，应用和领域服务不包含数据库语句。启动批量读取所有房间，不逐玩家查询。
+
+SQLite 切换：停止旧游戏服务 → `npm run db:init` 创建空 MySQL 目标 → `npm run db:migrate:sqlite` 原子导入 → 启动 Java 并刷新浏览器。导入工具只读取得 SQLite 一致性备份，批量读取三表，按行数及字节数分批写入，验证数量后提交；目标非空时拒绝覆盖，源文件保留。导入锁只协调同目标库的导入工具，不替代游戏停服。
+
+本地工具加载忽略的 `.env.local`；提交版本的 `application.yml` 使用 `DB_*` 占位符，本地固定连接配置不纳入提交。若工作区覆盖成固定值，该配置会进入本地打包资源；启动独立库时使用显式 `spring.datasource.*` 参数或 `SPRING_DATASOURCE_*` 环境变量，不能只依赖 `DB_*`。Docker Compose 使用 `.env` 和独立 MySQL 服务，数据库文件位于 `mysql-data` 卷。备份应涵盖整个数据库的业务表和 Flowable 表，不能把不同时间的房间快照、命令回执与流程任务混合恢复。`FLOWABLE_SCHEMA_UPDATE` 默认 `true`，允许启动创建缺失引擎表；表结构准备完成后可设为 `false`，不清理已有数据。
+
+仅单实例支持。未来更换数据库可以实现 `RoomRepository`；多实例房间协调需要另外设计，当前不添加分布式锁或消息代理。
