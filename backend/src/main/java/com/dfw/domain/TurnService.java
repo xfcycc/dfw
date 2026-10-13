@@ -2,6 +2,8 @@ package com.dfw.domain;
 
 import java.util.*;
 import com.dfw.domain.rules.RuleCatalog;
+import com.dfw.domain.rules.RuleEffects;
+import com.dfw.domain.rules.RuleExpression;
 import static com.dfw.domain.GameSupport.*;
 
 /** 回合、移动、落点和在线暂停规则。 */
@@ -15,7 +17,7 @@ public class TurnService {
         this.economy = economy; this.random = random; this.effects = effects; this.rules = rules;
         effects.register("MOVE", (room, effect) -> { move(room, player(room, effect.playerId), (int) effect.amount); if (effect.message != null) log(room, effect.message); });
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
-        effects.register("PAY_FEE", (room, effect) -> { if (economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId)) advance(room); });
+        effects.register("PAY_FEE", (room, effect) -> { if (economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId) && room.runtime.globalEvent == null) advance(room); });
     }
     /** 输入玩家和数量，增加私人道具，不记录种类与数量。 */
     public void giveCards(Player player, int count) {
@@ -31,6 +33,7 @@ public class TurnService {
     }
     /** 输入房间，切换下一行动者并重置回合标志。 */
     public void advance(Room room) {
+        StatusService.endTurn(room, current(room));
         if (checkWinner(room)) return;
         do { room.turnIndex = (room.turnIndex + 1) % room.turnOrder.size(); } while (current(room).bankrupt);
         room.turnNumber++; room.phase = "pre_roll"; room.pending = null; room.dice = null;
@@ -55,6 +58,7 @@ public class TurnService {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
             if (steps > 0 && player.position == 0) { player.cash += Rules.START_INCOME; log(room, player.name + " 经过起点，获得 " + Rules.START_INCOME); }
             Tile tile = room.board.get(player.position);
+            if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
             if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
         }
         room.motion = motion;
@@ -65,7 +69,13 @@ public class TurnService {
         switch (tile.type) {
             case "jail" -> { player.skipTurns = 1; player.jailed = true; log(room, player.name + " 进入监狱，下次行动休息"); }
             case "chance", "fortune" -> {
-                if (room.eventDrawn) return; room.eventDrawn = true; int event = random.nextInt(6);
+                if (room.eventDrawn) return; room.eventDrawn = true;
+                var extra = rules.configured(room) && tile.type.equals("chance") ? rules.bound(room).getChanceEvents() : List.<com.dfw.domain.rules.RuleSet.EventRule>of();
+                int event = random.nextInt(6 + extra.size());
+                if (event >= 6) {
+                    var definition = extra.get(event - 6);
+                    effects.submitAll(room, RuleEffects.plan(definition.steps(), new RuleExpression.Context(room, player, new Action()), effects)); return;
+                }
                 if (tile.type.equals("fortune")) {
                     if (event < 4) { int amount = new int[]{300, 500, 800, 1000}[event]; player.cash += amount; log(room, player.name + " 在财富格获得 " + amount); }
                     else { giveCards(player, event == 4 ? 1 : 2); log(room, player.name + " 收到一份私人补给"); }
@@ -106,7 +116,7 @@ public class TurnService {
             actor.skipTurns--; actor.jailed = false; log(room, actor.name + " 休息一回合"); advance(room);
             if (!room.status.equals("playing")) return;
         }
-        Player actor = current(room);
+        Player actor = room.pending != null ? player(room, room.pending.playerId) : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
         Player offline = room.players.stream().filter(p -> !p.online && ((actor != null && p.id.equals(actor.id)) || (room.trade != null && p.id.equals(room.trade.toId)))).findFirst().orElse(null);
         room.pausedReason = offline == null ? null : "等待 " + offline.name + " 重新连接";
         if (room.trade != null) {

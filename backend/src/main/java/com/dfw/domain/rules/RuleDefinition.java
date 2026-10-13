@@ -13,8 +13,22 @@ public class RuleDefinition {
     public String version;
     /** 按顺序推进的回合阶段。 */
     public List<Stage> stages;
+    /** 在原六种机会结果后追加的等权事件，缺失表示沿用旧事件池。 */
+    public List<EventRule> chanceEvents;
     /** 按现有卡牌 kind 标识的定义。 */
     public List<CardRule> cards;
+
+    /** 机会事件定义，不增加前端命令或私人卡牌类型。 */
+    @Getter
+    @Setter
+    public static class EventRule {
+        /** 本版本内唯一事件标识。 */
+        public String id;
+        /** 公开玩法说明，随本局版本投影。 */
+        public String description;
+        /** 自动执行的基础效果组合。 */
+        public List<Step> steps;
+    }
 
     /** 自动阶段或兼容前端的行动窗口。 */
     @Getter

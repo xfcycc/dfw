@@ -4,7 +4,7 @@
 
 ## 本地启动
 
-使用 **Java 21、Maven 3.6.3 或以上、Node.js 24.13.1**（项目包含 `.nvmrc`）。后端为 Spring Boot 4.1.1，Node 仅用于前端开发及联机冒烟。本地 MySQL 默认连接 `127.0.0.1:3306/dfw`，本次提供的连接资料已写入被忽略的 `.env.local`。安装依赖后，在项目根目录启动：
+使用 **Java 21、Maven 3.6.3 或以上、Node.js 24.13.1**（项目包含 `.nvmrc`）。后端为 Spring Boot 4.1.1，直接由 Java 启动；Node 用于 Vite 前端及独立数据库工具。`backend/src/main/resources/application.yml` 使用示例数据库地址、账号 `dfw` 和密码占位值 `change-me`，运行前通过 IDE 或进程环境变量设置实际的 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。先在 IDE 中启动 `backend` 的 `MonopolyApplication`，再在项目根目录启动前端：
 
 ```sh
 npm ci
@@ -18,9 +18,9 @@ npm run dev
 - 首位玩家创建房间，所有玩家准备后由房主开始。昵称选填，满房最多六人，游戏开始后新访客只能观战。
 - 点击首页或关闭页面会断开连接并保留席位；房主可移出离线玩家。刷新或重新输入房间号可恢复当前浏览器的原席位。
 
-后端开发启动会先创建缺失的数据库与表、编译再运行；修改 Java 代码后先停止后端，再重新执行启动命令；不要覆盖正在运行进程使用的 JAR。前端由 Vite 热更新。单独启动已打包后端可执行 `npm start`。
+`npm run dev`（或 `pnpm dev`）只启动 Vite 前端，`npm run dev:web` 也可单独启动前端。后端由 IDE 单独启动，或在另一个终端使用 `npm run dev:server` 编译并直接启动 Java；不要同时启动两个后端。数据库需提前存在，Spring Boot 启动时创建缺失表。修改 Java 代码后先停止后端，再重新执行启动命令；不要覆盖正在运行进程使用的 JAR。前端由 Vite 热更新。启动已打包后端可执行 `npm start`，它等价于 `java -jar backend/target/party-monopoly.jar`；Node 启动包装器和 `dev:all` 已移除。
 
-配置项：`DB_URL`（完整 JDBC 地址）、`DB_USERNAME`、`DB_PASSWORD`、`PORT`（默认 3001）、`APP_ORIGIN`（公开域名）和 `WEB_PATH`（默认 `dist/web`）。`npm start`、开发服务和数据库工具自动加载项目根目录 `.env.local`；直接使用 `java -jar` 时需要自行传入环境变量。`.env.local` 不进入 Git 或 Docker 镜像。提交版本的 `application.yml` 使用 `DB_*` 环境变量占位符。若本地工作区改为固定数据源，隔离启动应使用 `SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD` 或同名 Spring 命令行参数显式覆盖；仅传入 `DB_*` 不会覆盖固定配置。Docker Compose 使用 `.env`，开发代理可通过 `BACKEND_URL` 指定。
+配置项：`DB_URL`（完整 JDBC 地址）、`DB_USERNAME`、`DB_PASSWORD`、`PORT`（默认 3001）、`APP_ORIGIN`（公开域名）和 `WEB_PATH`（默认 `dist/web`）。`npm start`、`npm run dev:server` 和 IDE 启动的 Java 进程读取其环境变量，不自动加载 `.env.local`；独立数据库工具仍加载 `.env.local`。实际连接资料可以保存在被忽略的 `.env.local`，再通过 IDE 的环境变量配置传入；`.env.local` 不进入 Git 或 Docker 镜像。提交版本的 `application.yml` 使用 `DB_*` 环境变量占位符与示例默认值。也可使用 `SPRING_DATASOURCE_URL`、`SPRING_DATASOURCE_USERNAME`、`SPRING_DATASOURCE_PASSWORD` 或同名 Spring 命令行参数覆盖。Docker Compose 使用 `.env`，开发代理可通过 `BACKEND_URL` 指定。
 
 本地数据库维护命令：
 
@@ -35,7 +35,7 @@ npm run db:migrate:sqlite
 
 详细架构与协议见 [架构说明](docs/backend-architecture.md) 和 [联机协议](docs/realtime-protocol.md)。
 
-规则与效果结算架构见 [Flowable 游戏规则与效果结算架构](docs/flowable-game-architecture.md)。当前已接入 Flowable 8.0.0 通用流程与效果结算器，新开对局通过一个通用等待任务处理原有操作，六种道具及主动交易进入效果队列；已有进行中快照没有 `runtime` 时继续使用旧引擎。当前新局使用 `classic-v2` 配置阶段与六种道具，条件 AST、发动窗口、主动次数和效果组合从版本 JSON 加载；进行中的 `classic-v1` 对局保留原路径。前端命令及公开/私人状态协议保持兼容。实际配置方法见 [回合阶段与道具规则配置](docs/game-rules-dsl.md)。全图事件、持续状态、随机分支和补偿仍为后续设计。
+规则与效果结算架构见 [Flowable 游戏规则与效果结算架构](docs/flowable-game-architecture.md)。当前已接入 Flowable 8.0.0 通用流程与效果结算器，新开对局通过一个通用等待任务处理原有操作，六种道具及主动交易进入效果队列；已有进行中快照没有 `runtime` 时继续使用旧引擎。当前新局使用 `classic-v3` 配置阶段、六种道具与追加机会事件，条件 AST、发动窗口、主动次数和效果组合从版本 JSON 加载；进行中的 `classic-v1` 对局保留原路径。前端命令及公开/私人状态协议保持兼容。实际配置方法见 [回合阶段与道具规则配置](docs/game-rules-dsl.md)。已接入全体扣款、三个后续个人回合的陷阱免疫、单地块建筑摧毁和随机补偿；完整随机分支、通用被动系统和多地块聚合仍为后续设计。旧 `classic-v2.json` 保留，进行中对局不切换版本。
 
 Flowable 与房间存储共用 MySQL 数据源和事务管理器；流程推进、快照和回执在同一短事务中提交。默认启动自动创建缺失的 `ACT_*` 引擎表并部署固定 BPMN，不启用异步游戏推进。已完成建表的环境可设置 `FLOWABLE_SCHEMA_UPDATE=false`，启动时仅校验引擎表版本。备份和恢复应包含同一时点的整个数据库，包括 Flowable 表；不要只恢复三个业务表。配置对局固定规则版本和文件摘要；发布新版本时须保留旧文件，以便恢复旧局。本轮主要接口验证使用独立临时库，验证记录见下文。
 
@@ -61,7 +61,7 @@ Flowable 与房间存储共用 MySQL 数据源和事务管理器；流程推进�
 - 交易仅涉及现金与地产，建筑和抵押状态随地产转移。当前行动者在移动前或落点处理完成后发起，双方确认后原子交换；等待期间冻结其他游戏操作，正常连接下 60 秒无回应取消。
 - 无机器人、拍卖、账号注册、岔路或 3D 场景。
 
-后端规则位于 `backend/src/main/java/com/dfw/domain/`，配置阶段和六种道具定义位于 `backend/src/main/resources/game-rules/classic-v2.json`，经济常量集中于 `Rules.java`，地图生成位于 `MapService.java`。前端的 `src/shared/rules.ts` 保留展示常量、棋盘坐标和原地图算法用于跨语言对照。调整规则时同时核对前端展示值；结算以 Java 后端为准。
+后端规则位于 `backend/src/main/java/com/dfw/domain/`，配置阶段、六种道具及追加机会事件定义位于 `backend/src/main/resources/game-rules/classic-v3.json`，旧版 `classic-v2.json` 继续加载，经济常量集中于 `Rules.java`，地图生成位于 `MapService.java`。前端的 `src/shared/rules.ts` 保留展示常量、棋盘坐标和原地图算法用于跨语言对照。调整规则时同时核对前端展示值；结算以 Java 后端为准。
 
 ## 联机、身份和隐私
 
@@ -117,3 +117,5 @@ scripts/         真实 MySQL 联机冒烟、建库、旧文件导入和启动�
 deploy/          HTTPS / WebSocket 反向代理示例
 compose.yaml     单实例服务和持久化卷
 ```
+
+首期全图事件与持续状态已通过后端跳过测试编译、前后端类型检查。2026-10-12 在独立 MySQL 库完成真实 HTTP/WebSocket 对局，覆盖中途偿债、三回合免疫到期、指定/随机建筑摧毁补偿、断线重连、正常重启及进程强制退出恢复；详见 [运行验收记录](docs/game-rules-dsl.md#2026-10-12-运行验收记录)。本轮未发现业务缺陷，未做浏览器页面点选及数据库写入失败演练。

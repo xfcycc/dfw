@@ -18,8 +18,8 @@ import tools.jackson.databind.DeserializationFeature;
 public class GameRulesConfig {
     /** 输入新局版本及版本文件列表，返回不热更新的规则目录。 */
     @Bean
-    public RuleCatalog ruleCatalog(@Value("${game.rules.active-version:classic-v2}") String activeVersion,
-            @Value("${game.rules.resources:classpath:game-rules/classic-v2.json}") String locations) throws IOException, NoSuchAlgorithmException {
+    public RuleCatalog ruleCatalog(@Value("${game.rules.active-version:classic-v3}") String activeVersion,
+            @Value("${game.rules.resources:classpath:game-rules/classic-v*.json}") String locations) throws IOException, NoSuchAlgorithmException {
         JsonMapper mapper = JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build(); Map<String, RuleSet> versions = new LinkedHashMap<>();
         var resolver = new PathMatchingResourcePatternResolver();
         for (String location : locations.split(",")) {

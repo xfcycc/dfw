@@ -5,9 +5,10 @@ spring:
   lifecycle:
     timeout-per-shutdown-phase: 15s
   datasource:
-    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/dfw}
-    username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:}
+    # 以下为示例配置；运行时通过环境变量或 IDE 配置提供实际连接资料。
+    url: ${DB_URL:jdbc:mysql://127.0.0.1:3306/dfw?characterEncoding=UTF-8&connectionTimeZone=UTC}
+    username: ${DB_USERNAME:dfw}
+    password: ${DB_PASSWORD:change-me}
     hikari:
       pool-name: room-snapshots
       maximum-pool-size: 4
@@ -25,5 +26,5 @@ game:
   flowable:
     schema-update: ${FLOWABLE_SCHEMA_UPDATE:true}
   rules:
-    active-version: ${GAME_RULES_ACTIVE_VERSION:classic-v2}
-    resources: ${GAME_RULES_RESOURCES:classpath:game-rules/classic-v2.json}
+    active-version: ${GAME_RULES_ACTIVE_VERSION:classic-v3}
+    resources: ${GAME_RULES_RESOURCES:classpath:game-rules/classic-v*.json}

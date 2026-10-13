@@ -10,10 +10,12 @@ public final class StateViews {
     public static PublicRoomVo publicRoom(Room room) {
         PublicRoomVo value = new PublicRoomVo(); value.code = room.code; value.version = room.version; value.status = room.status; value.hostId = room.hostId; value.gameId = room.gameId;
         value.board = room.board; value.turnOrder = room.turnOrder; value.turnIndex = room.turnIndex; value.turnNumber = room.turnNumber; value.phase = room.phase;
+        value.chanceEventDescriptions = room.chanceEventDescriptions;
         value.pending = room.pending; value.tradePending = room.trade != null; value.pausedReason = room.pausedReason; value.dice = room.dice; value.motion = room.motion; value.winnerId = room.winnerId; value.logs = room.logs;
         for (Player player : room.players) {
             PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.cash = player.cash; p.position = player.position;
-            p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder; value.players.add(p);
+            p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
+            p.trapImmunityTurns = player.statuses.stream().filter(status -> "TRAP_IMMUNITY".equals(status.type)).mapToInt(status -> status.remainingTurns).max().orElse(0); value.players.add(p);
         }
         return value;
     }

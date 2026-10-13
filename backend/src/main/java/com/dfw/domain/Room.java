@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Room {
+    /** 本局版本的公开追加机会玩法，旧快照缺失时为空。 */
+    public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 通用结算运行时；旧快照缺失时继续使用原引擎。 */
     public GameRuntime runtime;
     /** 六位房间号。 */

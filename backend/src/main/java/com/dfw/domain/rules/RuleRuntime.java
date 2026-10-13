@@ -45,7 +45,7 @@ public final class RuleRuntime {
     private void executeCard(Room room, Player actor, Action action, Card card, RuleSet.CardRule rule) {
         var context = new RuleExpression.Context(room, actor, action);
         for (var check : rule.checks()) require(check.condition().matches(context), check.error());
-        List<GameEffect> planned = plan(rule.steps(), context);
+        List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects);
         if (rule.activation().equals("RENT")) planned.getFirst().resumesDecision = true;
         actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true;
         effects.submitAll(room, planned);
@@ -64,7 +64,7 @@ public final class RuleRuntime {
     /** 输入房间，返回连接或系统变更后是否需通过通用流程继续自动阶段。 */
     public boolean needsAdvance(Room room) {
         if (!room.status.equals("playing") || room.pausedReason != null || room.pending != null || room.trade != null) return false;
-        return room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
+        return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
     }
     /** 输入候选房间，逐阶段结算至行动窗口、落点选择、交易等待或终局。 */
     public void advanceUntilWait(Room room) {
@@ -77,7 +77,7 @@ public final class RuleRuntime {
                 case "AUTO_HOOK" -> {
                     if (stage.hook().equals("TURN_START") && turns.skipCurrentTurn(room)) continue;
                     var context = new RuleExpression.Context(room, current(room), new Action());
-                    List<GameEffect> planned = plan(stage.steps(), context); room.runtime.stageIndex++;
+                    List<GameEffect> planned = RuleEffects.plan(stage.steps(), context, effects); room.runtime.stageIndex++;
                     effects.submitAll(room, planned);
                 }
                 case "ACTION_WINDOW" -> {
@@ -115,25 +115,5 @@ public final class RuleRuntime {
         List<RuleSet.Stage> stages = catalog.bound(room).getStages();
         if (room.runtime.stageIndex < 0 || room.runtime.stageIndex >= stages.size()) throw new IllegalStateException("房间阶段游标不可用：" + room.code);
         return stages.get(room.runtime.stageIndex);
-    }
-    /** 输入组合步骤和上下文，解析整数、目标及模板，返回可持久化的具体效果。 */
-    private List<GameEffect> plan(List<RuleSet.Step> steps, RuleExpression.Context context) {
-        List<GameEffect> result = new ArrayList<>();
-        for (var step : steps) {
-            GameEffect effect = effects.effect(step.type(), context.actor());
-            for (var entry : step.params().entrySet()) {
-                Object value = entry.getValue().value(context);
-                switch (entry.getKey()) {
-                    case "amount" -> effect.amount = RuleExpression.integer(value);
-                    case "tileId" -> { long id = RuleExpression.integer(value); require(id >= 0 && id < context.room().board.size(), "请选择有效地产"); effect.tileId = (int) id; }
-                    case "targetId" -> { require(value instanceof String, "请选择有效目标玩家"); effect.targetId = (String) value; }
-                    default -> throw new IllegalStateException("未校验的效果参数");
-                }
-            }
-            if (step.type().equals("MOVE")) require(effect.amount >= -40 && effect.amount <= 40, "规则移动步数不可用");
-            if (step.type().equals("PAY_FEE")) require(effect.amount >= 0, "规则费用不可用");
-            effect.message = step.render(context); result.add(effect);
-        }
-        return result;
     }
 }

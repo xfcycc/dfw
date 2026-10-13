@@ -30,6 +30,8 @@ public class Player {
     public boolean jailed;
     /** 淘汰顺序，未淘汰为空。 */
     public Integer eliminationOrder;
+    /** 持续状态；旧快照缺失时为空。 */
+    public List<PlayerStatus> statuses = new ArrayList<>();
     /** 私人手牌，仅在服务端及本人状态中使用。 */
     public List<Card> hand = new ArrayList<>();
 }

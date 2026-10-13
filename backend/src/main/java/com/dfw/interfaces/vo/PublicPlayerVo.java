@@ -27,6 +27,8 @@ public class PublicPlayerVo {
     public int skipTurns;
     /** 是否服刑。 */
     public boolean jailed;
+    /** 陷阱免疫尚未结束的后续个人回合数，零表示没有免疫。 */
+    public int trapImmunityTurns;
     /** 淘汰顺序，未淘汰为空。 */
     public Integer eliminationOrder;
 }

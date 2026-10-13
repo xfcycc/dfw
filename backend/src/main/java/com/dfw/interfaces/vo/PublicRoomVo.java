@@ -9,6 +9,8 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 本局新增机会结果的公开说明，空列表表示原事件池。 */
+    public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 六位房间号。 */
     public String code;
     /** 已提交状态版本。 */

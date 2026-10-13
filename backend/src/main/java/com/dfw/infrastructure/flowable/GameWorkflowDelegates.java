@@ -46,7 +46,7 @@ public final class GameWorkflowDelegates {
             room.runtime.decisionKey = decisionKey(room);
             execution.setVariable("gameOver", !room.status.equals("playing"));
             execution.setVariable("decisionKey", room.runtime.decisionKey);
-            execution.setVariable("actorId", room.status.equals("playing") ? (room.trade == null ? GameSupport.current(room).id : room.trade.toId) : "");
+            execution.setVariable("actorId", room.status.equals("playing") ? (room.trade != null ? room.trade.toId : room.pending != null ? room.pending.playerId : GameSupport.current(room).id) : "");
         }
     }
     /** 绑定等待任务，不额外查询 Flowable 任务表。 */

@@ -15,6 +15,8 @@ export interface PublicPlayer {
   skipTurns: number;
   jailed: boolean;
   eliminationOrder: number | null;
+  /** 剩余后续个人回合，旧服务端缺省为无免疫。 */
+  trapImmunityTurns?: number;
 }
 /** 棋盘格公开状态。 */
 export interface Tile {
@@ -72,6 +74,8 @@ export interface PublicRoomState {
   motion: Motion | null;
   winnerId: string | null;
   logs: PublicLog[];
+  /** 本局版本追加的机会结果，旧快照可省略。 */
+  chanceEventDescriptions?: string[];
 }
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState { playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean }

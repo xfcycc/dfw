@@ -58,4 +58,4 @@ Docker / Compose 改为 Java 游戏服务加独立 MySQL 8.4 服务，使用 mys
 
 未编写单元测试，未执行前端 build、Docker 镜像构建、Git 提交或公网部署。Docker 配置准备不等于实际镜像运行；自然对局数值平衡、负载和真实手机／电视仍未验收。随机事件不穷举所有结果。
 
-验证用 Java / Vite 服务结束后停止；本地 MySQL 和导入数据保留。后续执行 `npm run dev` 可自动加载 `.env.local`，数据库初始化是创建缺失项，不清空现有对局。
+验证用 Java / Vite 服务结束后停止；本地 MySQL 和导入数据保留。上述记录属于迁移时的启动方式。当前 `npm run dev` 只启动前端，Java 后端通过 IDE 或 `npm run dev:server` 单独启动，数据库连接通过进程环境变量配置；独立数据库工具仍加载 `.env.local`，初始化仅创建缺失项。

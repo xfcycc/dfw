@@ -35,6 +35,10 @@ public class GameRuntime {
     public List<GameEffect> effects = new ArrayList<>();
     /** 当前组合在原 pending 选择处暂停，剩余步骤尚未执行。 */
     public boolean effectsWaiting;
+    /** 暂停中的全图扣款，结束前不切换回合或判断胜负。 */
+    public GlobalEventFrame globalEvent;
+    /** 最近一次灾害的实际结果与随机样本，仅用于内部恢复和诊断。 */
+    public DisasterResult lastDisaster;
     /** 本局已完成的效果数量。 */
     public long settledEffects;
 }

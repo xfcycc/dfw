@@ -7,13 +7,13 @@
     "node": ">=24.13.1 <25"
   },
   "scripts": {
-    "dev": "concurrently -k -n server,web \"npm:dev:server\" \"npm:dev:web\"",
-    "dev:server": "npm run db:init && npm run compile:server && npm start",
+    "dev": "vite --host 0.0.0.0",
+    "dev:server": "npm run compile:server && npm start",
     "dev:web": "vite --host 0.0.0.0",
     "typecheck": "vue-tsc -p tsconfig.web.json --noEmit && tsc -p tsconfig.tools.json --noEmit",
-    "compile:server": "mvn -f backend/pom.xml -DskipTests package",
+    "compile:server": "mvn -f backend/pom.xml -Dmaven.test.skip=true package",
     "build:web": "vite build",
-    "start": "node --env-file-if-exists=.env.local scripts/start-server.mjs",
+    "start": "java -jar backend/target/party-monopoly.jar",
     "smoke": "node --env-file-if-exists=.env.local --import tsx scripts/smoke.ts",
     "db:init": "node --env-file-if-exists=.env.local --import tsx scripts/init-database.ts",
     "db:migrate:sqlite": "node --env-file-if-exists=.env.local --import tsx scripts/migrate-sqlite.ts"
@@ -26,7 +26,6 @@
   "devDependencies": {
     "@types/node": "^24.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
-    "concurrently": "^9.2.1",
     "mysql2": "^3.24.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",

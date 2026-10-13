@@ -4,7 +4,7 @@ import { rentFor, RULES } from '../../shared/rules';
 import { useGameStore } from '../stores/game';
 const game = useGameStore();
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
-const allowed = computed(() => game.canAct && game.isMyTurn && !game.room?.tradePending && game.room?.phase !== 'rent');
+const allowed = computed(() => game.canAct && game.canDecide && !game.room?.tradePending && game.room?.phase !== 'rent');
 </script>
 <template>
   <p class="muted">只有停在自己的地块时才能建房。卖房、抵押和赎回可在自己的回合操作。</p>

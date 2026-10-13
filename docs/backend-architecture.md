@@ -30,9 +30,10 @@ HTTP Controller / WebSocket Handler
 - 行动者、跳过回合、移动与机会财富落点：`TurnService`。
 - 资产变现、经营与破产清算：`EconomyService`。
 - 新版六种道具窗口、次数、条件和组合：`game-rules/classic-v2.json`；配置加载校验：`GameRulesConfig`、`RuleSet`、`RuleExpression`；阶段推进与出牌：`RuleRuntime`。`ItemService` 提供基础道具效果并保留旧版本路径；报价和交换：`TradeService`。
+- 首期全图扣款、目标游标和单地块灾害补偿：`EventService`、`GlobalEventFrame`；三个后续个人回合的陷阱免疫：`StatusService`、`PlayerStatus`。新版本机会扩展来自 `classic-v3.json`，保留 `classic-v2.json` 的原文件摘要。
 - 大厅、开局、再开、移出离线玩家与命令路由：`GameEngine`。
 - 通用流程启动、任务完成和系统推进同步：`application/GameWorkflow`；固定流程：`processes/generic-game-runtime.bpmn20.xml`；无状态回调和受控同步作用域：`infrastructure/flowable/`。
-- 原子效果注册和联动顺序：`EffectResolver`；内部运行时和队列：`GameRuntime`、`GameEffect`。默认新局为 `classic-v2`，阶段和六种道具采用最小 DSL；无运行时旧局及 `classic-v1` 对局保留原 Java 路径。配置契约见 [回合阶段与道具规则配置](game-rules-dsl.md)。
+- 原子效果注册和联动顺序：`EffectResolver`；内部运行时和队列：`GameRuntime`、`GameEffect`。默认新局为 `classic-v3`，阶段和六种道具采用最小 DSL；无运行时旧局及 `classic-v1` 对局保留原 Java 路径。配置契约见 [回合阶段与道具规则配置](game-rules-dsl.md)。
 - 前端 `src/shared/types.ts` 和 Java DTO/VO 同时维护 JSON 契约；`src/shared/rules.ts` 为展示及地图算法对照。任何后端规则变化都要核对展示与冒烟场景。
 
 ## 一致性与隐私
@@ -55,6 +56,6 @@ HTTP Controller / WebSocket Handler
 
 SQLite 切换：停止旧游戏服务 → `npm run db:init` 创建空 MySQL 目标 → `npm run db:migrate:sqlite` 原子导入 → 启动 Java 并刷新浏览器。导入工具只读取得 SQLite 一致性备份，批量读取三表，按行数及字节数分批写入，验证数量后提交；目标非空时拒绝覆盖，源文件保留。导入锁只协调同目标库的导入工具，不替代游戏停服。
 
-本地工具加载忽略的 `.env.local`；提交版本的 `application.yml` 使用 `DB_*` 占位符，本地固定连接配置不纳入提交。若工作区覆盖成固定值，该配置会进入本地打包资源；启动独立库时使用显式 `spring.datasource.*` 参数或 `SPRING_DATASOURCE_*` 环境变量，不能只依赖 `DB_*`。Docker Compose 使用 `.env` 和独立 MySQL 服务，数据库文件位于 `mysql-data` 卷。备份应涵盖整个数据库的业务表和 Flowable 表，不能把不同时间的房间快照、命令回执与流程任务混合恢复。`FLOWABLE_SCHEMA_UPDATE` 默认 `true`，允许启动创建缺失引擎表；表结构准备完成后可设为 `false`，不清理已有数据。
+后端直接使用 Java 启动，已移除 Node 启动包装器。独立数据库工具加载忽略的 `.env.local`，Java/IDE 则通过进程环境变量或 Spring 参数提供配置，不自动加载该文件。提交版本的 `application.yml` 使用 `DB_*` 占位符及示例默认值，实际数据库凭据不纳入提交。运行时设置 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`，也可用显式 `spring.datasource.*` 参数或 `SPRING_DATASOURCE_*` 环境变量覆盖。Docker Compose 使用 `.env` 和独立 MySQL 服务，数据库文件位于 `mysql-data` 卷。备份应涵盖整个数据库的业务表和 Flowable 表，不能把不同时间的房间快照、命令回执与流程任务混合恢复。`FLOWABLE_SCHEMA_UPDATE` 默认 `true`，允许启动创建缺失引擎表；表结构准备完成后可设为 `false`，不清理已有数据。
 
 仅单实例支持。未来更换数据库可以实现 `RoomRepository`；多实例房间协调需要另外设计，当前不添加分布式锁或消息代理。

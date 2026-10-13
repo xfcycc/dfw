@@ -21,6 +21,14 @@ public class GameEffect {
     public long amount;
     /** 可选公开结果说明。 */
     public String message;
+    /** 持续状态定义标识。 */
+    public String statusId;
+    /** 可选地块选择器 RANDOM_BUILT_PROPERTY。 */
+    public String selector;
+    /** 补偿成功概率的整数百分比。 */
+    public int probability;
+    /** 按实际建筑成本损失赔付的整数百分比。 */
+    public int compensationPercent;
     /** 完整报价，仅用于建立或确认交易。 */
     public Trade trade;
     /** 本次效果负责解决正在等待的租金或债务选择。 */

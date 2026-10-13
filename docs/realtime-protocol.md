@@ -31,3 +31,9 @@ HTTP 与 `/ws` 共用端口 3001。开发由 Vite 代理，生产使用 HTTPS / 
 `STALE_VERSION` 拒绝旧版本并同步最新状态。相同命令 ID 重放优先返回已保存回执，操作者须与原回执相同。`FORBIDDEN` 用于观战或被替换连接操作；`INVALID_INPUT` 用于原接口边界的参数错误；`SAVE_FAILED` 不包含数据库细节。
 
 观战的公开玩家没有手牌和手牌数量，公开日志不包含抽卡类型或数量。待确认报价内容仅交易双方收到，公共状态仅有 `tradePending` 标志；交易完成后的资金和地产结果进入公开记录。
+
+## 全图事件的兼容扩展
+
+`classic-v3` 保留原命令、信封、`expectedVersion`、`phase` 与 `pending` 结构。全体扣款等待偿债时，`turnIndex` 仍是原回合玩家，`pending.playerId` 是当前唯一决策人。前端需按后者启用原资产管理操作；服务端也按该身份校验，仅允许既有卖房、抵押、卖地偿债，不开放其他玩家操作。离线暂停与 Flowable 等待人跟随当前偿债人。
+
+公开快照追加可兼容省略的 `chanceEventDescriptions: string[]` 和 `players[].trapImmunityTurns: number`。前者为本局固定版本新增机会玩法说明，后者为剩余后续个人回合数（零表示无状态）。旧快照缺省按空列表和零处理。内部全图帧、队列、随机补偿样本、状态来源和流程标识不进入公开投影。旧客户端命令仍兼容，新局跨玩家偿债需刷新到支持 `pending.playerId` 的前端。

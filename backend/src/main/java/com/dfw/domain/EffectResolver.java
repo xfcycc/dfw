@@ -46,7 +46,7 @@ public class EffectResolver {
             try { handler(effect).accept(room, effect); }
             finally { insertionIndex.remove(); }
             room.runtime.effects.removeFirst(); room.runtime.settledEffects++;
-            // 当前 DSL 组合属于单个回合玩家；清算换人后不继续执行旧玩家的步骤。
+            // 全体扣款在批次完成前不换人；真正换回合后取消原行动者的剩余步骤。
             if (!room.status.equals("playing") || room.turnNumber != turn) { room.runtime.effects.clear(); room.runtime.effectsWaiting = false; return; }
             room.runtime.effectsWaiting = room.pending != null;
             if (room.runtime.effectsWaiting) return;

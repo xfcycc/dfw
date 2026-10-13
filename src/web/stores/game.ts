@@ -36,6 +36,8 @@ export const useGameStore = defineStore('game', () => {
   const me = computed(() => room.value?.players.find(player => player.id === session.value?.playerId));
   const current = computed(() => room.value?.players.find(player => player.id === room.value?.turnOrder[room.value.turnIndex]));
   const isMyTurn = computed(() => !!me.value && current.value?.id === me.value.id && !me.value.bankrupt);
+  const decisionPlayer = computed(() => room.value?.pending ? room.value.players.find(player => player.id === room.value?.pending?.playerId) : current.value);
+  const canDecide = computed(() => !!me.value && decisionPlayer.value?.id === me.value.id && !me.value.bankrupt);
   const isHost = computed(() => !!me.value && room.value?.hostId === me.value.id);
   const canAct = computed(() => connection.value === 'online' && !!room.value && !room.value.pausedReason && !busy.value);
 
@@ -116,5 +118,5 @@ export const useGameStore = defineStore('game', () => {
     try { await navigator.clipboard.writeText(text); notify('已复制，发给朋友一起玩吧'); }
     catch { notify(`请手动复制：${text}`); }
   }
-  return { room, privateData, session, connection, busy, message, fatalError, me, current, isMyTurn, isHost, canAct, enter, connect, disconnect, act, notify, copy };
+  return { room, privateData, session, connection, busy, message, fatalError, me, current, isMyTurn, decisionPlayer, canDecide, isHost, canAct, enter, connect, disconnect, act, notify, copy };
 });
