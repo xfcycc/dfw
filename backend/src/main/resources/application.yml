@@ -26,5 +26,9 @@ game:
   flowable:
     schema-update: ${FLOWABLE_SCHEMA_UPDATE:true}
   rules:
-    active-version: ${GAME_RULES_ACTIVE_VERSION:classic-v3}
-    resources: ${GAME_RULES_RESOURCES:classpath:game-rules/classic-v*.json}
+    economy: ${GAME_RULES_ECONOMY:classpath:game-rules/economy.json}
+    map-regions: ${GAME_RULES_MAP_REGIONS:classpath:game-rules/map-regions.json}
+    chance-events: ${GAME_RULES_CHANCE_EVENTS:classpath:game-rules/chance-events.json}
+    fortune-events: ${GAME_RULES_FORTUNE_EVENTS:classpath:game-rules/fortune-events.json}
+    card-events: ${GAME_RULES_CARD_EVENTS:classpath:game-rules/card-events.json}
+    turn-rules: ${GAME_RULES_TURN_RULES:classpath:game-rules/turn-rules.json}

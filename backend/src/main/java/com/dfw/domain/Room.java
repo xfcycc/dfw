@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Room {
+    /** 开局固定的经济参数；旧对局缺失时沿用一倍基准。 */
+    public EconomyRules economy;
     /** 本局版本的公开追加机会玩法，旧快照缺失时为空。 */
     public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 通用结算运行时；旧快照缺失时继续使用原引擎。 */
@@ -18,6 +20,8 @@ public class Room {
     public long version = 1;
     /** 房间阶段。 */
     public String status = "lobby";
+    /** 房主开局前选择的地图大小，缺省为大地图，再开沿用。 */
+    public String mapSize = "large";
     /** 房主标识。 */
     public String hostId;
     /** 本局标识。 */

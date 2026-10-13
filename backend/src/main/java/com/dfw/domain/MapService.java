@@ -5,36 +5,45 @@ import static com.dfw.domain.GameError.require;
 
 /** 与原 TypeScript 种子算法一致的随机地图生成。 */
 public class MapService {
-    private static final String[][] NAMES = {
-  {"樱花小院", "松果公寓", "向日葵里", "绿荫街", "丁香花园", "枫叶居", "银杏巷", "月季小筑", "香草庭院", "白桦公馆", "云朵社区", "橙花别院"},
-  {"海风码头", "蓝湾公寓", "珊瑚街", "落日海岸", "灯塔小屋", "帆船港", "贝壳广场", "浪花酒店", "沙滩别墅", "海盐小镇", "鲸鱼湾", "星沙码头"},
-  {"星光百货", "音乐广场", "银河大厦", "霓虹街", "摩天中心", "彩虹影城", "金橙商厦", "云端酒店", "水晶大道", "都会公馆", "天际广场", "极光中心"},
-  {"青石小巷", "老街茶馆", "钟楼广场", "红砖公寓", "榕树街", "河畔书屋", "南风客栈", "石桥街", "梧桐院", "春风集市", "百年戏院", "古城公馆"},
-    };
-    /** 输入人数和种子，返回新的闭环地图。 */
-    public List<Tile> generate(int count, String seed) {
+    private final MapRegions regions;
+    /** 输入独立地区配置，地图内每个街区从同一地区池命名。 */
+    public MapService(MapRegions regions) { this.regions = regions; }
+    /** 输入人数、房间大小、种子及本局金额，返回各边五档地价尽量均衡的矩形闭环地图。 */
+    public List<Tile> generate(int count, String size, String seed, EconomyRules economy) {
         require(count >= Rules.MIN_PLAYERS && count <= Rules.MAX_PLAYERS, "地图人数必须为 2～6 人");
         SeededRandom random = new SeededRandom(seed);
-        int length = 16 + count * 4, quarter = length / 4;
+        int length = Rules.mapLength(count, size), horizontal = (length + 3) / 4, vertical = length / 4;
+        int[] corners = {0, horizontal, horizontal + vertical, horizontal * 2 + vertical};
         List<Tile> board = new ArrayList<>();
-        for (int i = 0; i < length; i++) { Tile tile = new Tile(); tile.id = i; tile.district = i / quarter; board.add(tile); }
+        for (int i = 0; i < length; i++) { Tile tile = new Tile(); tile.id = i; tile.district = i < corners[1] ? 0 : i < corners[2] ? 1 : i < corners[3] ? 2 : 3; board.add(tile); }
         String[] types = {"start", "chance", "fortune", "jail"}, names = {"起点", "机会", "财富", "监狱"};
-        for (int i = 0; i < 4; i++) { board.get(i * quarter).type = types[i]; board.get(i * quarter).name = names[i]; }
-        int chanceSide = random.next() < .5 ? 0 : 2, fortuneSide = random.next() < .5 ? 1 : 3;
-        for (int i = 0; i < 2; i++) {
-            Tile tile = board.get((i == 0 ? chanceSide : fortuneSide) * quarter + 2 + (int)(random.next() * (quarter - 3)));
-            tile.type = i == 0 ? "chance" : "fortune"; tile.name = i == 0 ? "机会" : "财富";
-        }
+        for (int i = 0; i < 4; i++) { board.get(corners[i]).type = types[i]; board.get(corners[i]).name = names[i]; }
+        int specialCount = count <= 3 ? 2 : 3;
+        for (int i = 1; i < specialCount; i++) { addSpecial(board, "chance", "机会", random); addSpecial(board, "fortune", "财富", random); }
+        List<MapRegions.Region> groups = new ArrayList<>(regions.regions); shuffle(groups, random);
+        Map<String, Integer> nameOffsets = new HashMap<>(); Map<String, List<String>> namePools = new HashMap<>();
+        for (var group : groups) { List<String> pool = new ArrayList<>(group.names); shuffle(pool, random); namePools.put(group.id, pool); }
         for (int side = 0; side < 4; side++) {
-            List<Tile> properties = new ArrayList<>();
-            for (Tile tile : board) if (tile.district == side && tile.type.equals("property")) properties.add(tile);
-            List<String> landmarks = new ArrayList<>(Arrays.asList(NAMES[side])); shuffle(landmarks, random);
-            List<Integer> prices = new ArrayList<>();
-            for (int i = 0; i < properties.size(); i++) prices.add(Rules.PRICES[i % 3]);
-            shuffle(prices, random);
-            for (int i = 0; i < properties.size(); i++) { properties.get(i).name = landmarks.get(i); properties.get(i).price = prices.get(i); }
+            var group = groups.get(side % groups.size()); List<Tile> properties = new ArrayList<>();
+            for (Tile tile : board) if (tile.district == side) { tile.regionId = group.id; tile.regionName = group.name; if (tile.type.equals("property")) properties.add(tile); }
+            List<Long> priceTiers = new ArrayList<>();
+            for (int i = 0; i < Rules.PRICES.length; i++) priceTiers.add(economy.money("landPrice." + i, Rules.PRICES[i]));
+            shuffle(priceTiers, random);
+            List<Long> prices = new ArrayList<>();
+            for (int i = 0; i < properties.size(); i++) prices.add(priceTiers.get(i % priceTiers.size()));
+            shuffle(prices, random); List<String> pool = namePools.get(group.id);
+            for (int i = 0; i < properties.size(); i++) {
+                int offset = nameOffsets.getOrDefault(group.id, 0); nameOffsets.put(group.id, offset + 1);
+                properties.get(i).name = pool.get(offset % pool.size()) + (offset < pool.size() ? "" : "·" + (offset / pool.size() + 1) + "号地段");
+                properties.get(i).price = prices.get(i);
+            }
         }
         return board;
+    }
+    /** 输入棋盘、特殊格类型及随机源，从剩余地产中取一格，与已有特殊格保留至少一格间隔。 */
+    private void addSpecial(List<Tile> board, String type, String name, SeededRandom random) {
+        List<Tile> available = board.stream().filter(t -> t.type.equals("property") && board.get(Math.floorMod(t.id - 1, board.size())).type.equals("property") && board.get((t.id + 1) % board.size()).type.equals("property")).toList();
+        Tile tile = available.get((int) (random.next() * available.size())); tile.type = type; tile.name = name;
     }
     /** 输入列表和地图随机源，原地洗牌。 */
     private <T> void shuffle(List<T> values, SeededRandom random) {

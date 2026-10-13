@@ -9,15 +9,9 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameRuntime {
-    /** 固定引擎标识，空运行时表示旧引擎。 */
-    public String engineMode = "FLOWABLE_RUNTIME";
-    /** 本局绑定的内置规则版本。 */
-    public String ruleSetVersion = "classic-v1";
-    /** 配置规则文件摘要；classic-v1 没有摘要并保留旧路径。 */
-    public String ruleSetDigest;
     /** 当前阶段所属的回合编号。 */
     public int stageTurnNumber;
-    /** 当前版本阶段序列的执行位置。 */
+    /** 当前配置阶段序列的执行位置。 */
     public int stageIndex;
     /** 行动窗口已接受的退出结果。 */
     public String windowExit;

@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 import lombok.Getter;
 import static com.dfw.domain.rules.RuleExpression.check;
 
-/** 编译后的不可变规则包，以版本和原文件摘要绑定对局。 */
+/** 由四类文件编译的唯一不可变规则集。 */
 @Getter
 public final class RuleSet {
     private static final Set<String> WINDOW_ACTIONS = Set.of("roll", "card", "tradeOffer", "sellBuilding", "mortgage", "redeem", "sellLand", "endTurn");
@@ -15,24 +15,27 @@ public final class RuleSet {
             Map.entry("SETTLE_TILE", Map.of()), Map.entry("PAY_FEE", Map.of("amount", "NUMBER", "targetId", "STRING", "tileId", "NUMBER")),
             Map.entry("PLACE_BARRIER", Map.of("tileId", "NUMBER")), Map.entry("DEMOLISH", Map.of("tileId", "NUMBER")),
             Map.entry("SWAP_POSITION", Map.of("targetId", "STRING")), Map.entry("WAIVE_RENT", Map.of()), Map.entry("LOG", Map.of()),
+            Map.entry("GRANT_MONEY", Map.of("amount", "NUMBER")), Map.entry("DRAW_CARDS", Map.of("amount", "NUMBER")), Map.entry("SKIP_TURN", Map.of("amount", "NUMBER")),
             Map.entry("CHARGE_ALL", Map.of("amount", "NUMBER")), Map.entry("ADD_STATUS", Map.of("statusId", "STRING", "amount", "NUMBER")),
-            Map.entry("DESTROY_BUILDINGS", Map.of("tileId", "NUMBER", "selector", "STRING", "probability", "NUMBER", "compensationPercent", "NUMBER")));
+            Map.entry("DESTROY_BUILDINGS", Map.of("tileId", "NUMBER", "selector", "STRING")));
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([a-zA-Z][a-zA-Z0-9_.]*)}");
-    /** 不可变版本。 */
-    private final String version;
-    /** 原始配置文件 SHA-256。 */
-    private final String digest;
     /** 有序阶段。 */
     private final List<Stage> stages;
-    /** 原机会池后追加的等权事件。 */
+    /** 全部等权机会事件。 */
     private final List<EventRule> chanceEvents;
+    /** 全部等权财富事件。 */
+    private final List<EventRule> fortuneEvents;
+    /** 按配置顺序订阅实际灾害建筑损失的规则。 */
+    private final List<PassiveRule> passiveRules;
     /** 道具定义索引。 */
     private final Map<String, CardRule> cards;
-    /** 输入校验后的规则定义、摘要、阶段与道具，保存不可变集合。 */
-    private RuleSet(String version, String digest, List<Stage> stages, Map<String, CardRule> cards, List<EventRule> chanceEvents) {
-        this.version = version; this.digest = digest; this.stages = List.copyOf(stages); this.cards = Map.copyOf(cards); this.chanceEvents = List.copyOf(chanceEvents);
+    /** 输入校验后的阶段、道具、两类事件及订阅，保存不可变集合。 */
+    private RuleSet(List<Stage> stages, Map<String, CardRule> cards, List<EventRule> chanceEvents, List<EventRule> fortuneEvents, List<PassiveRule> passiveRules) {
+        this.stages = List.copyOf(stages); this.cards = Map.copyOf(cards); this.chanceEvents = List.copyOf(chanceEvents); this.fortuneEvents = List.copyOf(fortuneEvents); this.passiveRules = List.copyOf(passiveRules);
     }
-    /** 编译后的自动机会事件，公开描述与本局版本一致。 */
+    /** 已校验的补偿订阅，参数按事件发生时固定，不依赖执行时产权。 */
+    public record PassiveRule(String id, String trigger, String tag, int probability, int compensationPercent) {}
+    /** 编译后的自动事件，仅显式声明的扩展描述进入公开说明。 */
     public record EventRule(String id, String description, List<Step> steps) {}
     /** 编译后的阶段，不存储运行游标。 */
     public record Stage(String id, String handler, String hook, String phase, Set<String> actions, Set<String> exitOn, List<Step> steps) {}
@@ -41,16 +44,16 @@ public final class RuleSet {
     /** 有错误文案的布尔条件。 */
     public record Check(RuleExpression.Node condition, String error) {}
     /** 已校验参数类型和公开模板的基础效果步骤。 */
-    public record Step(String type, Map<String, RuleExpression.Node> params, String message) {
+    public record Step(String type, Map<String, RuleExpression.Node> params, String message, Long cashBase) {
         /** 输入领域上下文，解析可选公开文案，不访问白名单外的字段。 */
-        public String render(RuleExpression.Context context) {
+        public String render(RuleExpression.Context context, long amount) {
             if (message == null) return null;
-            return PLACEHOLDER.matcher(message).replaceAll(match -> java.util.regex.Matcher.quoteReplacement(String.valueOf(RuleExpression.reference(context, match.group(1)))));
+            return PLACEHOLDER.matcher(message.replace("{effect.amount}", String.valueOf(amount))).replaceAll(match -> java.util.regex.Matcher.quoteReplacement(String.valueOf(RuleExpression.reference(context, match.group(1)))));
         }
     }
-    /** 输入反序列化配置与摘要，静态校验并编译表达式与效果参数。 */
-    public static RuleSet compile(RuleDefinition definition, String digest) {
-        check(definition != null && definition.version != null && definition.version.matches("[a-zA-Z0-9_-]{1,80}"), "规则版本不正确");
+    /** 输入合并后的四类配置，静态校验并编译表达式与效果参数。 */
+    public static RuleSet compile(RuleDefinition definition) {
+        check(definition != null, "规则配置不能为空");
         check(definition.stages != null && !definition.stages.isEmpty() && definition.stages.size() <= 64, "阶段数量不正确");
         check(definition.cards != null && !definition.cards.isEmpty() && definition.cards.size() <= 64, "道具定义数量不正确");
         List<Stage> stages = new ArrayList<>(); Set<String> ids = new HashSet<>();
@@ -103,22 +106,36 @@ public final class RuleSet {
             cards.put(card.id, new CardRule(card.id, card.activation, windows, card.countsAsActive, List.copyOf(checks), steps));
         }
         check(cards.keySet().containsAll(Arrays.asList(Rules.ITEMS)), "规则包缺少既有六种道具");
-        List<EventRule> events = new ArrayList<>(); Set<String> eventIds = new HashSet<>();
-        if (definition.chanceEvents != null) {
-            check(definition.chanceEvents.size() <= 32, "机会事件数量过多");
-            for (var event : definition.chanceEvents) {
-                check(event != null && event.id != null && event.id.matches("[a-zA-Z0-9_-]{1,80}") && eventIds.add(event.id), "机会事件 ID 缺失或重复");
-                check(event.description != null && !event.description.isBlank() && event.description.length() <= 500, "机会事件说明不可用");
-                List<Step> compiled = steps(event.steps); check(!compiled.isEmpty(), "机会事件效果不能为空");
-                check(compiled.stream().allMatch(step -> Set.of("CHARGE_ALL", "ADD_STATUS", "DESTROY_BUILDINGS", "LOG").contains(step.type)), "机会事件只支持首期事件效果");
-                for (var step : event.steps) {
-                    if (step.params != null) step.params.values().forEach(value -> validateAutomaticReferences(value, true));
-                    if (step.message != null) { var matcher = PLACEHOLDER.matcher(step.message); while (matcher.find()) validateAutomaticReference(matcher.group(1), true); }
-                }
-                events.add(new EventRule(event.id, event.description, compiled));
+        Set<String> eventIds = new HashSet<>();
+        List<EventRule> chance = events(definition.chanceEvents, eventIds), fortune = events(definition.fortuneEvents, eventIds);
+        List<PassiveRule> passives = new ArrayList<>(); Set<String> passiveIds = new HashSet<>();
+        if (definition.passiveRules != null) {
+            check(definition.passiveRules.size() <= 32, "被动订阅数量过多");
+            for (var passive : definition.passiveRules) {
+                check(passive != null && passive.id != null && passive.id.matches("[a-zA-Z0-9_-]{1,80}") && passiveIds.add(passive.id), "被动订阅 ID 缺失或重复");
+                check("BUILDINGS_DESTROYED".equals(passive.trigger) && "DISASTER".equals(passive.tag), "未知事实触发或标签");
+                check(passive.probability != null && passive.probability >= 0 && passive.probability <= 100 && passive.compensationPercent != null && passive.compensationPercent >= 0 && passive.compensationPercent <= 100, "补偿百分比须在 0～100 之间");
+                passives.add(new PassiveRule(passive.id, passive.trigger, passive.tag, passive.probability, passive.compensationPercent));
             }
         }
-        return new RuleSet(definition.version, digest, stages, cards, events);
+        return new RuleSet(stages, cards, chance, fortune, passives);
+    }
+    /** 输入事件池和跨池 ID 集合，编译完整等权事件并限定自动上下文，不执行客户端选择。 */
+    private static List<EventRule> events(List<RuleDefinition.EventRule> definitions, Set<String> ids) {
+        check(definitions != null && !definitions.isEmpty() && definitions.size() <= 32, "事件池不能为空或超过 32 项");
+        List<EventRule> events = new ArrayList<>();
+        for (var event : definitions) {
+            check(event != null && event.id != null && event.id.matches("[a-zA-Z0-9_-]{1,80}") && ids.add(event.id), "事件 ID 缺失或重复");
+            check(event.description == null || !event.description.isBlank() && event.description.length() <= 500, "事件说明不可用");
+            List<Step> compiled = steps(event.steps); check(!compiled.isEmpty(), "事件效果不能为空");
+            check(compiled.stream().allMatch(step -> Set.of("CHARGE_ALL", "ADD_STATUS", "DESTROY_BUILDINGS", "GRANT_MONEY", "DRAW_CARDS", "SKIP_TURN", "PAY_FEE", "MOVE", "SETTLE_TILE", "LOG").contains(step.type)), "事件含不适用的效果");
+            for (var step : event.steps) {
+                if (step.params != null) step.params.values().forEach(value -> validateAutomaticReferences(value, true));
+                if (step.message != null) { var matcher = PLACEHOLDER.matcher(step.message); while (matcher.find()) validateAutomaticReference(matcher.group(1), true); }
+            }
+            events.add(new EventRule(event.id, event.description, compiled));
+        }
+        return List.copyOf(events);
     }
     /** 输入阶段序列，确认原协议能到达掷骰、移动、落点和结束窗口。 */
     private static void validateStages(List<Stage> stages) {
@@ -147,23 +164,25 @@ public final class RuleSet {
             check(step != null && "APPLY_EFFECT".equals(step.op) && EFFECT_PARAMS.containsKey(step.type), "未知步骤或效果处理器");
             Map<String, Object> params = step.params == null ? Map.of() : step.params; Map<String, String> allowed = EFFECT_PARAMS.get(step.type);
             check(allowed.keySet().containsAll(params.keySet()), "效果存在未知参数");
-            Set<String> required = switch (step.type) { case "ADD_STATUS" -> Set.of("statusId", "amount"); case "DESTROY_BUILDINGS" -> Set.of("probability", "compensationPercent"); case "CHARGE_ALL", "PAY_FEE", "REPLACE_ROLL", "MOVE" -> Set.of("amount"); case "PLACE_BARRIER", "DEMOLISH" -> Set.of("tileId"); case "SWAP_POSITION" -> Set.of("targetId"); default -> Set.of(); };
+            Set<String> required = switch (step.type) { case "ADD_STATUS" -> Set.of("statusId", "amount"); case "CHARGE_ALL", "GRANT_MONEY", "DRAW_CARDS", "SKIP_TURN", "PAY_FEE", "REPLACE_ROLL", "MOVE" -> Set.of("amount"); case "PLACE_BARRIER", "DEMOLISH" -> Set.of("tileId"); case "SWAP_POSITION" -> Set.of("targetId"); default -> Set.of(); };
             check(params.keySet().containsAll(required), "效果缺少必需参数"); Map<String, RuleExpression.Node> compiled = new LinkedHashMap<>();
             params.forEach((name, value) -> { var node = RuleExpression.compile(value); RuleExpression.expect(node, allowed.get(name)); if (value instanceof Number) RuleExpression.integer(value); compiled.put(name, node); });
             if (step.type.equals("ADD_STATUS")) check("TRAP_IMMUNITY".equals(params.get("statusId")) && params.get("amount") instanceof Number && RuleExpression.integer(params.get("amount")) == 3, "首期状态必须是三个后续个人回合的陷阱免疫");
-            if (step.type.equals("CHARGE_ALL") && params.get("amount") instanceof Number) check(RuleExpression.integer(params.get("amount")) >= 0, "全体费用不能为负");
+            if (Set.of("CHARGE_ALL", "GRANT_MONEY", "PAY_FEE").contains(step.type) && params.get("amount") instanceof Number) check(RuleExpression.integer(params.get("amount")) >= 0, "费用或奖励不能为负");
+            if (Set.of("DRAW_CARDS", "SKIP_TURN").contains(step.type) && params.get("amount") instanceof Number) { long value = RuleExpression.integer(params.get("amount")); check(value >= 0 && value <= 32, "抽卡或休息次数须在 0～32 之间"); }
+            if (step.type.equals("MOVE") && params.get("amount") instanceof Number) { long value = RuleExpression.integer(params.get("amount")); check(value >= -40 && value <= 40, "规则移动步数不可用"); }
+            if (step.type.equals("REPLACE_ROLL") && params.get("amount") instanceof Number) { long value = RuleExpression.integer(params.get("amount")); check(value >= 0 && value <= 6, "规则骰子点数不可用"); }
             if (step.type.equals("DESTROY_BUILDINGS")) {
                 check(params.containsKey("tileId") != params.containsKey("selector"), "灾害必须且只能声明指定地块或随机选择器");
                 if (params.containsKey("selector")) check("RANDOM_BUILT_PROPERTY".equals(params.get("selector")), "未知灾害目标选择器");
-                for (String name : List.of("probability", "compensationPercent")) if (params.get(name) instanceof Number) { long value = RuleExpression.integer(params.get(name)); check(value >= 0 && value <= 100, "补偿百分比须在 0～100 之间"); }
             }
             if (step.type.equals("LOG")) check(step.message != null && !step.message.isBlank(), "LOG 需要消息模板");
             if (step.message != null) {
                 check(step.message.length() <= 500, "效果消息过长"); var matcher = PLACEHOLDER.matcher(step.message);
-                while (matcher.find()) RuleExpression.referenceType(matcher.group(1));
+                while (matcher.find()) { if (matcher.group(1).equals("effect.amount")) check(Set.of("PAY_FEE", "CHARGE_ALL", "GRANT_MONEY").contains(step.type), "金额文案只用于现金效果"); else RuleExpression.referenceType(matcher.group(1)); }
                 check(PLACEHOLDER.matcher(step.message).replaceAll("").indexOf('{') < 0 && PLACEHOLDER.matcher(step.message).replaceAll("").indexOf('}') < 0, "消息模板占位符不正确");
             }
-            steps.add(new Step(step.type, Map.copyOf(compiled), step.message));
+            steps.add(new Step(step.type, Map.copyOf(compiled), step.message, Set.of("PAY_FEE", "CHARGE_ALL", "GRANT_MONEY").contains(step.type) && params.get("amount") instanceof Number ? RuleExpression.integer(params.get("amount")) : null));
         }
         return List.copyOf(steps);
     }
@@ -176,6 +195,7 @@ public final class RuleSet {
     }
     /** 输入白名单路径，限定自动阶段只有行动者和已确定的回合值。 */
     private static void validateAutomaticReference(String ref, boolean diceAvailable) {
+        if (ref.equals("effect.amount")) return;
         check(ref.startsWith("actor.") || ref.startsWith("turn.") && (!ref.equals("turn.dice") || diceAvailable), "自动阶段不能引用未产生的输入：" + ref);
     }
 }

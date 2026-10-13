@@ -9,7 +9,7 @@ public interface RoomRepository {
     /** 令牌摘要对应的身份。 */
     record StoredSession(String tokenHash, String code, String playerId) { }
     /** 已事务提交的命令回执。 */
-    record Receipt(String id, String actorId, CommandResult result) { }
+    record Receipt(String id, String actorId, CommandResult result, String requestDigest) { }
     /** 批量返回全部可恢复房间。 */
     List<Room> loadRooms();
     /** 输入令牌摘要，返回身份或空。 */

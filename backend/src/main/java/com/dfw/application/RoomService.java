@@ -1,7 +1,7 @@
 package com.dfw.application;
 
 import com.dfw.domain.*;
-import com.dfw.domain.rules.RuleCatalog;
+import com.dfw.domain.rules.RuleSet;
 import com.dfw.interfaces.vo.*;
 import com.dfw.infrastructure.JsonCodec;
 import com.dfw.infrastructure.SessionTokens;
@@ -34,14 +34,14 @@ public class RoomService {
     private volatile boolean closing;
     /** 输入持久化与联机端口，批量恢复房间并重置连接状态。 */
     public RoomService(RoomRepository repository, StatePublisher publisher, JsonCodec json, SessionTokens tokens, RandomSource random,
-            GameWorkflow workflow, TransactionTemplate transaction, RuleCatalog rules) {
+            GameWorkflow workflow, TransactionTemplate transaction, RuleSet rules, EconomyRules economyRules, MapRegions regions) {
         this.repository = repository; this.publisher = publisher; this.json = json; this.tokens = tokens; this.random = random;
-        this.workflow = workflow; this.transaction = transaction; engine = new GameEngine(random, rules);
+        this.workflow = workflow; this.transaction = transaction; engine = new GameEngine(random, rules, economyRules, regions);
         List<Room> restored = repository.loadRooms(); workflow.verifyRecovery(restored);
         for (Room room : restored) {
+            engine.refreshRuleDescriptions(room);
             for (Player player : room.players) player.online = false;
-            if (room.trade != null) room.trade.runningSince = null;
-            engine.turns.refresh(room, System.currentTimeMillis()); rooms.put(room.code, room);
+            engine.turns.refresh(room); rooms.put(room.code, room);
         }
     }
     /** 输入房间号和回调，在此房间的独立锁内执行并返回结果。 */
@@ -103,15 +103,20 @@ public class RoomService {
         StoredSession session = authenticated(connectionId);
         return serial(session.code(), () -> {
             if (session.playerId() == null || !publisher.active(connectionId, session)) throw new GameError("观战或已被替换的连接不能操作", "FORBIDDEN");
+            String requestDigest = json.actionDigest(action);
             Receipt receipt = repository.receipt(session.code(), id);
-            if (receipt != null) { if (!receipt.actorId().equals(session.playerId())) throw new GameError("命令身份不匹配", "FORBIDDEN"); return receipt.result(); }
+            if (receipt != null) {
+                if (!receipt.actorId().equals(session.playerId())) throw new GameError("命令身份不匹配", "FORBIDDEN");
+                if (receipt.requestDigest() != null && !receipt.requestDigest().equals(requestDigest)) throw new GameError("命令标识已用于另一项操作，请重新操作", "INVALID_INPUT");
+                return receipt.result();
+            }
             Room original = room(session.code());
             if (expectedVersion != original.version) { publisher.sync(connectionId, original); throw new GameError("局面已更新，请查看后重新操作", "STALE_VERSION"); }
             Room value = json.copy(original, Room.class);
             CommandResult result = transaction.execute(status -> {
                 workflow.apply(value, engine, session.playerId(), action); workflow.refresh(value, engine); value.version++;
                 CommandResult committed = new CommandResult(); committed.ok = true; committed.version = value.version;
-                repository.save(value, null, new Receipt(id, session.playerId(), committed)); return committed;
+                repository.save(value, null, new Receipt(id, session.playerId(), committed, requestDigest)); return committed;
             });
             rooms.put(value.code, value); publisher.broadcast(value); return result;
         });
@@ -129,9 +134,9 @@ public class RoomService {
             });
         } finally { publisher.remove(connectionId); }
     }
-    /** 每秒按连接注册修复断线保存失败的在线标记，再处理实际到期交易。 */
+    /** 每秒按有效连接注册修复断线保存失败的在线标记，保留玩家尚未回应的报价。 */
     @Scheduled(fixedDelay = 1000)
-    public void expireTrades() {
+    public void refreshDisconnectedPlayers() {
         if (closing) return;
         for (Room value : rooms.values()) {
             if (value.players.stream().anyMatch(p -> p.online && !publisher.online(value.code, p.id))) {
@@ -141,15 +146,9 @@ public class RoomService {
                     if (changed) commit(candidate, null); return null;
                 }); } catch (RuntimeException error) { LOG.error("离线状态恢复保存失败，房间 {}", value.code, error); }
             }
-            if (value.trade == null || value.trade.runningSince == null || value.trade.remainingMs > System.currentTimeMillis() - value.trade.runningSince) continue;
-            try { serial(value.code, () -> {
-                Room current = room(value.code);
-                if (current.trade != null && current.trade.runningSince != null && current.trade.remainingMs <= System.currentTimeMillis() - current.trade.runningSince) commit(json.copy(current, Room.class), null);
-                return null;
-            }); } catch (RuntimeException error) { LOG.error("交易超时保存失败，房间 {}", value.code, error); }
         }
     }
-    /** 停止新推进，按房间保存离线状态及冻结报价后关闭连接。 */
+    /** 停止新推进，按房间保存离线状态及待处理报价后关闭连接。 */
     @PreDestroy
     public void shutdown() {
         closing = true;

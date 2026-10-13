@@ -15,6 +15,10 @@ public class PublicPlayerVo {
     public String color;
     /** 可用现金。 */
     public long cash;
+    /** 扣除固定赎回费用后的公开净资产。 */
+    public long netWorth;
+    /** 未破产玩家的净资产名次，同额同名次，清算后为空。 */
+    public Integer assetRank;
     /** 棋盘位置。 */
     public int position;
     /** 大厅准备状态。 */

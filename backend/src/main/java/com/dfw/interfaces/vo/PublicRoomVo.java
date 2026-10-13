@@ -9,6 +9,8 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 本局公开经济参数，旧对局缺省按一倍基准。 */
+    public EconomyRules economy;
     /** 本局新增机会结果的公开说明，空列表表示原事件池。 */
     public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 六位房间号。 */
@@ -17,6 +19,8 @@ public class PublicRoomVo {
     public long version = 1;
     /** 房间阶段。 */
     public String status = "lobby";
+    /** 公开地图大小：small、medium、large，旧房间缺省为 large。 */
+    public String mapSize;
     /** 房主标识。 */
     public String hostId;
     /** 本局标识。 */

@@ -1,0 +1,139 @@
+{
+  "events": [
+    {
+      "id": "chance_income",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "GRANT_MONEY",
+          "params": {
+            "amount": 300
+          },
+          "message": "{actor.name} 在机会格获得 {effect.amount}"
+        }
+      ]
+    },
+    {
+      "id": "chance_fee",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "PAY_FEE",
+          "params": {
+            "tileId": {
+              "ref": "actor.position"
+            },
+            "amount": 300
+          }
+        }
+      ]
+    },
+    {
+      "id": "chance_forward",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "MOVE",
+          "params": {
+            "amount": 3
+          },
+          "message": "{actor.name} 因随机事件前进三格"
+        },
+        {
+          "op": "APPLY_EFFECT",
+          "type": "SETTLE_TILE"
+        }
+      ]
+    },
+    {
+      "id": "chance_backward",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "MOVE",
+          "params": {
+            "amount": -3
+          },
+          "message": "{actor.name} 因随机事件后退三格"
+        },
+        {
+          "op": "APPLY_EFFECT",
+          "type": "SETTLE_TILE"
+        }
+      ]
+    },
+    {
+      "id": "chance_rest",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "SKIP_TURN",
+          "params": {
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "chance_supply",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "DRAW_CARDS",
+          "params": {
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "global_levy",
+      "description": "全体各向银行支付配置金额（基准 300），按座位顺序偿债或清算，全部处理后再判断胜负。",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "CHARGE_ALL",
+          "params": {
+            "amount": 300
+          }
+        }
+      ]
+    },
+    {
+      "id": "trap_immunity",
+      "description": "本人立即获得陷阱免疫，持续三个后续个人回合，休息也计数；重复获得刷新期限，经过路障时路障保留。免疫不影响租金、罚款或灾害。",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "ADD_STATUS",
+          "params": {
+            "statusId": "TRAP_IMMUNITY",
+            "amount": 3
+          }
+        }
+      ]
+    },
+    {
+      "id": "tornado",
+      "description": "随机一块有建筑地产的全部建筑被摧毁，产权保留；业主有 30% 概率获得建筑成本损失的 50% 补偿。无建筑则无损失、无补偿。",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "DESTROY_BUILDINGS",
+          "params": {
+            "selector": "RANDOM_BUILT_PROPERTY"
+          }
+        }
+      ]
+    }
+  ],
+  "passiveRules": [
+    {
+      "id": "government_disaster_compensation",
+      "trigger": "BUILDINGS_DESTROYED",
+      "tag": "DISASTER",
+      "probability": 30,
+      "compensationPercent": 50
+    }
+  ]
+}

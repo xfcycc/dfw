@@ -29,8 +29,12 @@ public class GameEffect {
     public int probability;
     /** 按实际建筑成本损失赔付的整数百分比。 */
     public int compensationPercent;
+    /** 事实触发的子效果所关联的实际损失事件标识。 */
+    public String sourceEventId;
+    /** 实际匹配的补偿订阅标识。 */
+    public String passiveRuleId;
     /** 完整报价，仅用于建立或确认交易。 */
     public Trade trade;
-    /** 本次效果负责解决正在等待的租金或债务选择。 */
+    /** 处理费用等待中的支付、清算或交易，先于暂停的父组合执行。 */
     public boolean resumesDecision;
 }

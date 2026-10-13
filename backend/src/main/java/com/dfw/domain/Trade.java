@@ -22,8 +22,12 @@ public class Trade {
     public List<Integer> giveTiles = new ArrayList<>();
     /** 接收人提供地产。 */
     public List<Integer> wantTiles = new ArrayList<>();
-    /** 剩余等待毫秒数。 */
+    /** 关联的待支付费用，普通交易为空。 */
+    public String debtId;
+    /** 双方约定用发起人地产抵扣的债务金额，不发生对应现金转移。 */
+    public long debtCredit;
+    /** 旧报价计时兼容字段；玩法不计时，固定为零。 */
     public long remainingMs;
-    /** 在线计时起点，暂停时为空。 */
+    /** 旧报价计时兼容字段；不再计时，固定为空。 */
     public Long runningSince;
 }

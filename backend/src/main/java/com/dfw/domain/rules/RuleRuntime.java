@@ -5,14 +5,14 @@ import java.util.*;
 import static com.dfw.domain.GameError.require;
 import static com.dfw.domain.GameSupport.*;
 
-/** 版本化阶段游标和最小道具 DSL 执行，不依赖 Flowable 或网络协议实现。 */
+/** 持久化阶段游标和最小道具 DSL 执行，不依赖 Flowable 或网络协议实现。 */
 public final class RuleRuntime {
-    private final RuleCatalog catalog;
+    private final RuleSet catalog;
     private final EffectResolver effects;
     private final TurnService turns;
     private final RandomSource random;
-    /** 输入规则目录、基础结算及随机源，注册替代骰子和公开消息原语。 */
-    public RuleRuntime(RuleCatalog catalog, EffectResolver effects, TurnService turns, RandomSource random) {
+    /** 输入当前规则集、基础结算及随机源，注册替代骰子和公开消息原语。 */
+    public RuleRuntime(RuleSet catalog, EffectResolver effects, TurnService turns, RandomSource random) {
         this.catalog = catalog; this.effects = effects; this.turns = turns; this.random = random;
         effects.register("REPLACE_ROLL", (room, effect) -> {
             require(effect.amount >= 0 && effect.amount <= 6, "规则骰子点数不可用");
@@ -22,14 +22,14 @@ public final class RuleRuntime {
         });
         effects.register("LOG", (room, effect) -> log(room, effect.message));
     }
-    /** 输入房间和种类，返回该版本是否提供租金防御发动方式。 */
+    /** 输入房间和种类，返回当前配置是否提供租金防御发动方式。 */
     public boolean rentDefense(Room room, String kind) {
-        var rule = catalog.bound(room).getCards().get(kind); return rule != null && rule.activation().equals("RENT");
+        var rule = catalog.getCards().get(kind); return rule != null && rule.activation().equals("RENT");
     }
     /** 输入道具命令，按配置检查窗口、次数和目标，完整解析组合后才消耗手牌。 */
     public void useCard(Room room, Player actor, Action action) {
         Card card = actor.hand.stream().filter(value -> value.id.equals(action.cardId)).findFirst().orElse(null);
-        var rule = card == null ? null : catalog.bound(room).getCards().get(card.kind);
+        var rule = card == null ? null : catalog.getCards().get(card.kind);
         require(rule != null && rule.activation().equals("ACTIVE"), "该道具不可主动使用");
         require(rule.stages().contains(stage(room).id()) && (!rule.countsAsActive() || !room.activeCardUsed), "每回合掷骰前最多主动使用一张道具");
         executeCard(room, actor, action, card, rule);
@@ -37,7 +37,7 @@ public final class RuleRuntime {
     /** 输入收费玩家，以当前租金选择上下文执行配置中的防御卡，不占主动次数。 */
     public void immune(Room room, Player actor) {
         Card card = actor.hand.stream().filter(value -> rentDefense(room, value.kind)).findFirst().orElse(null);
-        require(card != null, "你没有可用的防御道具"); var rule = catalog.bound(room).getCards().get(card.kind);
+        require(card != null, "你没有可用的防御道具"); var rule = catalog.getCards().get(card.kind);
         require(rule.stages().contains("rent_choice") && room.phase.equals("rent"), "当前没有待支付的租金");
         executeCard(room, actor, new Action(), card, rule);
     }
@@ -45,7 +45,7 @@ public final class RuleRuntime {
     private void executeCard(Room room, Player actor, Action action, Card card, RuleSet.CardRule rule) {
         var context = new RuleExpression.Context(room, actor, action);
         for (var check : rule.checks()) require(check.condition().matches(context), check.error());
-        List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects);
+        List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects, rule.id());
         if (rule.activation().equals("RENT")) planned.getFirst().resumesDecision = true;
         actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true;
         effects.submitAll(room, planned);
@@ -70,14 +70,14 @@ public final class RuleRuntime {
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
-            effects.drain(room); turns.refresh(room, System.currentTimeMillis());
+            effects.drain(room); turns.refresh(room);
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
                     if (stage.hook().equals("TURN_START") && turns.skipCurrentTurn(room)) continue;
                     var context = new RuleExpression.Context(room, current(room), new Action());
-                    List<GameEffect> planned = RuleEffects.plan(stage.steps(), context, effects); room.runtime.stageIndex++;
+                    List<GameEffect> planned = RuleEffects.plan(stage.steps(), context, effects, stage.id()); room.runtime.stageIndex++;
                     effects.submitAll(room, planned);
                 }
                 case "ACTION_WINDOW" -> {
@@ -110,9 +110,9 @@ public final class RuleRuntime {
         room.runtime.stageTurnNumber = room.turnNumber; room.runtime.stageIndex = 0;
         room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null;
     }
-    /** 输入房间，返回绑定版本中的当前阶段，错误游标拒绝继续。 */
+    /** 输入房间，返回当前配置中的阶段，错误游标拒绝继续。 */
     private RuleSet.Stage stage(Room room) {
-        List<RuleSet.Stage> stages = catalog.bound(room).getStages();
+        List<RuleSet.Stage> stages = catalog.getStages();
         if (room.runtime.stageIndex < 0 || room.runtime.stageIndex >= stages.size()) throw new IllegalStateException("房间阶段游标不可用：" + room.code);
         return stages.get(room.runtime.stageIndex);
     }

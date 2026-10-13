@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2023", "module": "NodeNext", "moduleResolution": "NodeNext",
-    "strict": true, "skipLibCheck": true, "lib": ["ES2023", "DOM"],
+    "resolveJsonModule": true, "strict": true, "skipLibCheck": true, "lib": ["ES2023", "DOM"],
     "types": ["node"], "noEmit": true
   },
   "include": ["scripts/**/*.ts", "src/shared/**/*.ts"]

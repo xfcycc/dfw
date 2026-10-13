@@ -20,7 +20,7 @@ public final class GameWorkflowDelegates {
         PendingDecision pending = room.pending;
         String choice = pending == null ? "" : pending.type + ":" + pending.playerId + ":" + pending.tileId + ":" + pending.amount + ":" + pending.creditorId;
         return room.turnNumber + ":" + GameSupport.current(room).id + ":" + room.phase + ":" + choice + ":" + (room.trade == null ? "" : room.trade.id)
-                + (room.runtime != null && room.runtime.ruleSetDigest != null ? ":stage:" + room.runtime.stageIndex : "");
+                + (room.runtime != null ? ":stage:" + room.runtime.stageIndex : "");
     }
     /** 通用输入节点，复用领域校验而不依赖任务 assignee 进行授权。 */
     public static final class AcceptInput implements JavaDelegate {

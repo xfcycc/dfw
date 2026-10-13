@@ -1,7 +1,7 @@
 package com.dfw.domain;
 
 import java.util.*;
-import com.dfw.domain.rules.RuleCatalog;
+import com.dfw.domain.rules.RuleSet;
 import com.dfw.domain.rules.RuleEffects;
 import com.dfw.domain.rules.RuleExpression;
 import static com.dfw.domain.GameSupport.*;
@@ -11,17 +11,34 @@ public class TurnService {
     private final EconomyService economy;
     private final RandomSource random;
     private final EffectResolver effects;
-    private final RuleCatalog rules;
+    private final RuleSet rules;
     /** 输入经济规则与独立随机源，构造回合服务。 */
-    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, RuleCatalog rules) {
+    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, RuleSet rules) {
         this.economy = economy; this.random = random; this.effects = effects; this.rules = rules;
+        effects.register("DRAW_CARDS", this::drawCards);
+        effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", (room, effect) -> { move(room, player(room, effect.playerId), (int) effect.amount); if (effect.message != null) log(room, effect.message); });
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
-        effects.register("PAY_FEE", (room, effect) -> { if (economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId) && room.runtime.globalEvent == null) advance(room); });
+        effects.register("PAY_FEE", (room, effect) -> economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId));
+        effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
+        effects.register("DECLARE_BANKRUPTCY", (room, effect) -> {
+            Player payer = player(room, effect.playerId); economy.declareBankruptcy(room, payer);
+            if (room.runtime.globalEvent == null) { if (current(room) == payer) advance(room); else checkWinner(room); }
+        });
     }
     /** 输入玩家和数量，增加私人道具，不记录种类与数量。 */
     public void giveCards(Player player, int count) {
         for (int i = 0; i < count; i++) { Card card = new Card(); card.id = random.id(); card.kind = Rules.ITEMS[random.nextInt(Rules.ITEMS.length)]; player.hand.add(card); }
+    }
+    /** 输入私人补给效果，增加作用玩家手牌，公开日志不包含种类与数量。 */
+    private void drawCards(Room room, GameEffect effect) {
+        Player owner = player(room, effect.playerId); if (owner == null || owner.bankrupt) return;
+        giveCards(owner, Math.toIntExact(effect.amount)); log(room, owner.name + " 收到一份私人补给");
+    }
+    /** 输入休息效果，设置后续跳过次数，保留普通休息与监禁的既有区别。 */
+    private void skipTurn(Room room, GameEffect effect) {
+        Player owner = player(room, effect.playerId); if (owner == null || owner.bankrupt) return;
+        owner.skipTurns = Math.toIntExact(effect.amount); log(room, owner.name + " 下次行动休息");
     }
     /** 输入房间，仅余一人时结束游戏并返回真。 */
     public boolean checkWinner(Room room) {
@@ -39,24 +56,25 @@ public class TurnService {
         room.turnNumber++; room.phase = "pre_roll"; room.pending = null; room.dice = null;
         room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
     }
-    /** 输入费用参数，支付、偿债或破产后推进回合。 */
+    /** 输入费用参数，打开可管理资产和协商抵债的支付选择。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
-        if (room.runtime == null) { if (economy.charge(room, player, amount, creditorId, tileId)) advance(room); return; }
         GameEffect effect = effects.effect("PAY_FEE", player); effect.amount = amount; effect.targetId = creditorId; effect.tileId = tileId;
-        effect.resumesDecision = room.pending != null && (room.phase.equals("debt") || room.phase.equals("rent")); effects.submit(room, effect);
+        effects.submit(room, effect);
     }
-    /** 输入步数和可选移动后说明，按移动、经过判定、落点顺序展开效果。 */
-    public void moveAndSettle(Room room, Player player, int steps, String message) {
-        if (room.runtime == null) { move(room, player, steps); if (message != null) log(room, message); settle(room, player); return; }
-        GameEffect movement = effects.effect("MOVE", player); movement.amount = steps; movement.message = message;
-        effects.submit(room, movement); effects.submit(room, effects.effect("SETTLE_TILE", player));
+    /** 输入当前付款人，将确认支付插在父流程暂停的效果之前。 */
+    public void pay(Room room, Player player) {
+        GameEffect effect = effects.effect("SETTLE_PAYMENT", player); effect.resumesDecision = true; effects.submit(room, effect);
+    }
+    /** 输入当前债务人，将主动清算插入费用等待点，全图批次保持原游标。 */
+    public void declareBankruptcy(Room room, Player player) {
+        GameEffect effect = effects.effect("DECLARE_BANKRUPTCY", player); effect.resumesDecision = true; effects.submit(room, effect);
     }
     /** 输入玩家和有符号步数，逐格处理路障和正向起点收入。 */
     public void move(Room room, Player player, int steps) {
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (steps > 0 && player.position == 0) { player.cash += Rules.START_INCOME; log(room, player.name + " 经过起点，获得 " + Rules.START_INCOME); }
+            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); player.cash += income; log(room, player.name + " 经过起点，获得 " + income); }
             Tile tile = room.board.get(player.position);
             if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
             if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
@@ -70,59 +88,31 @@ public class TurnService {
             case "jail" -> { player.skipTurns = 1; player.jailed = true; log(room, player.name + " 进入监狱，下次行动休息"); }
             case "chance", "fortune" -> {
                 if (room.eventDrawn) return; room.eventDrawn = true;
-                var extra = rules.configured(room) && tile.type.equals("chance") ? rules.bound(room).getChanceEvents() : List.<com.dfw.domain.rules.RuleSet.EventRule>of();
-                int event = random.nextInt(6 + extra.size());
-                if (event >= 6) {
-                    var definition = extra.get(event - 6);
-                    effects.submitAll(room, RuleEffects.plan(definition.steps(), new RuleExpression.Context(room, player, new Action()), effects)); return;
-                }
-                if (tile.type.equals("fortune")) {
-                    if (event < 4) { int amount = new int[]{300, 500, 800, 1000}[event]; player.cash += amount; log(room, player.name + " 在财富格获得 " + amount); }
-                    else { giveCards(player, event == 4 ? 1 : 2); log(room, player.name + " 收到一份私人补给"); }
-                } else switch (event) {
-                    case 0 -> { player.cash += 300; log(room, player.name + " 在机会格获得 300"); }
-                    case 1 -> charge(room, player, 300, null, tile.id);
-                    case 2, 3 -> moveAndSettle(room, player, event == 2 ? 3 : -3, player.name + " 因随机事件" + (event == 2 ? "前进" : "后退") + "三格");
-                    case 4 -> { player.skipTurns = 1; log(room, player.name + " 下次行动休息"); }
-                    default -> { giveCards(player, 1); log(room, player.name + " 收到一份私人补给"); }
-                }
+                var pool = tile.type.equals("chance") ? rules.getChanceEvents() : rules.getFortuneEvents();
+                var event = pool.get(random.nextInt(pool.size()));
+                effects.submitAll(room, RuleEffects.plan(event.steps(), new RuleExpression.Context(room, player, new Action()), effects, event.id()));
             }
             case "property" -> {
                 if (tile.ownerId == null) { room.phase = "buy"; room.pending = pending("buy", player, tile.id, tile.price, null); }
                 else if (tile.ownerId.equals(player.id)) {
-                    if (!tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(tile), null); }
+                    if (!tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }
                 } else if (!tile.mortgaged) {
-                    if (hasRentDefense(room, player)) { room.phase = "rent"; room.pending = pending("rent", player, tile.id, Rules.rent(tile), tile.ownerId); }
-                    else charge(room, player, Rules.rent(tile), tile.ownerId, tile.id);
+                    charge(room, player, Rules.rent(room, tile), tile.ownerId, tile.id);
                 }
             }
             default -> { }
         }
     }
-    /** 输入房间和玩家，按绑定版本确定手牌是否存在租金防御能力。 */
-    private boolean hasRentDefense(Room room, Player player) {
-        if (!rules.configured(room)) return player.hand.stream().anyMatch(card -> card.kind.equals("immunity"));
-        var cards = rules.bound(room).getCards();
-        return player.hand.stream().anyMatch(card -> cards.containsKey(card.kind) && cards.get(card.kind).activation().equals("RENT"));
-    }
-    /** 输入房间和时间，计算房主、断线暂停、服刑跳过和交易计时。 */
-    public void refresh(Room room, long now) {
+    /** 输入房间，更新房主和断线暂停，清除旧报价计时数据但保留待处理报价。 */
+    public void refresh(Room room) {
         Player host = player(room, room.hostId);
         if (host == null || !host.online) room.players.stream().filter(p -> p.online).findFirst().ifPresent(p -> room.hostId = p.id);
         if (!room.status.equals("playing")) { room.pausedReason = null; return; }
-        for (int i = 0; !rules.configured(room) && i < room.players.size() * 2; i++) {
-            Player actor = current(room);
-            if (actor == null || !actor.online || !room.phase.equals("pre_roll") || actor.skipTurns == 0 || room.trade != null) break;
-            actor.skipTurns--; actor.jailed = false; log(room, actor.name + " 休息一回合"); advance(room);
-            if (!room.status.equals("playing")) return;
-        }
         Player actor = room.pending != null ? player(room, room.pending.playerId) : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
         Player offline = room.players.stream().filter(p -> !p.online && ((actor != null && p.id.equals(actor.id)) || (room.trade != null && p.id.equals(room.trade.toId)))).findFirst().orElse(null);
         room.pausedReason = offline == null ? null : "等待 " + offline.name + " 重新连接";
         if (room.trade != null) {
-            if (room.trade.runningSince != null) room.trade.remainingMs = Math.max(0, room.trade.remainingMs - (now - room.trade.runningSince));
-            room.trade.runningSince = room.pausedReason == null ? now : null;
-            if (room.trade.remainingMs <= 0) { room.trade = null; log(room, "交易等待超时，报价已取消"); refresh(room, now); }
+            room.trade.remainingMs = 0; room.trade.runningSince = null;
         }
     }
     /** 输入配置对局，在 TURN_START 按原规则跳过在线玩家的一次休息回合。 */

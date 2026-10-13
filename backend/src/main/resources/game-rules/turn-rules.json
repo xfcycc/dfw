@@ -1,0 +1,78 @@
+{
+  "stages": [
+    {
+      "id": "turn_start",
+      "handler": "AUTO_HOOK",
+      "hook": "TURN_START",
+      "steps": []
+    },
+    {
+      "id": "before_roll",
+      "handler": "ACTION_WINDOW",
+      "phase": "pre_roll",
+      "actions": [
+        "tradeOffer",
+        "card",
+        "roll",
+        "sellBuilding",
+        "mortgage",
+        "redeem",
+        "sellLand"
+      ],
+      "exitOn": [
+        "roll",
+        "replace_roll"
+      ]
+    },
+    {
+      "id": "before_dice",
+      "handler": "AUTO_HOOK",
+      "hook": "BEFORE_DICE",
+      "steps": []
+    },
+    {
+      "id": "dice",
+      "handler": "ROLL"
+    },
+    {
+      "id": "after_dice",
+      "handler": "AUTO_HOOK",
+      "hook": "AFTER_DICE",
+      "steps": []
+    },
+    {
+      "id": "movement",
+      "handler": "MOVEMENT"
+    },
+    {
+      "id": "landing",
+      "handler": "LANDING"
+    },
+    {
+      "id": "manage",
+      "handler": "ACTION_WINDOW",
+      "phase": "manage",
+      "actions": [
+        "tradeOffer",
+        "sellBuilding",
+        "mortgage",
+        "redeem",
+        "sellLand",
+        "endTurn"
+      ],
+      "exitOn": [
+        "endTurn"
+      ]
+    },
+    {
+      "id": "turn_end",
+      "handler": "AUTO_HOOK",
+      "hook": "TURN_END",
+      "steps": []
+    },
+    {
+      "id": "next_turn",
+      "handler": "END_TURN"
+    }
+  ]
+}

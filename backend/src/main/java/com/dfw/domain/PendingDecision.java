@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PendingDecision {
+    /** 费用标识，供偿债报价绑定；旧待选可在首次报价时补齐。 */
+    public String id;
     /** 待处理类型。 */
     public String type;
     /** 操作人。 */

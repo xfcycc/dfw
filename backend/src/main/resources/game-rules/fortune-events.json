@@ -1,0 +1,80 @@
+{
+  "events": [
+    {
+      "id": "fortune_income_300",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "GRANT_MONEY",
+          "params": {
+            "amount": 300
+          },
+          "message": "{actor.name} 在财富格获得 {effect.amount}"
+        }
+      ]
+    },
+    {
+      "id": "fortune_income_500",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "GRANT_MONEY",
+          "params": {
+            "amount": 500
+          },
+          "message": "{actor.name} 在财富格获得 {effect.amount}"
+        }
+      ]
+    },
+    {
+      "id": "fortune_income_800",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "GRANT_MONEY",
+          "params": {
+            "amount": 800
+          },
+          "message": "{actor.name} 在财富格获得 {effect.amount}"
+        }
+      ]
+    },
+    {
+      "id": "fortune_income_1000",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "GRANT_MONEY",
+          "params": {
+            "amount": 1000
+          },
+          "message": "{actor.name} 在财富格获得 {effect.amount}"
+        }
+      ]
+    },
+    {
+      "id": "fortune_supply_1",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "DRAW_CARDS",
+          "params": {
+            "amount": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "fortune_supply_2",
+      "steps": [
+        {
+          "op": "APPLY_EFFECT",
+          "type": "DRAW_CARDS",
+          "params": {
+            "amount": 2
+          }
+        }
+      ]
+    }
+  ]
+}

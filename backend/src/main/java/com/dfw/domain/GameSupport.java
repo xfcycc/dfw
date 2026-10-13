@@ -15,6 +15,8 @@ public final class GameSupport {
     }
     /** 输入房间和索引，返回地块或空。 */
     public static Tile tile(Room room, Integer id) { return id == null || id < 0 || id >= room.board.size() ? null : room.board.get(id); }
+    /** 输入房间，返回当前待选是否为强制费用结算。 */
+    public static boolean paymentPending(Room room) { return room.pending != null && (room.pending.type.equals("rent") || room.pending.type.equals("debt")); }
     /** 输入决策参数，返回完整待处理事项。 */
     public static PendingDecision pending(String type, Player player, Integer tileId, long amount, String creditorId) {
         PendingDecision result = new PendingDecision(); result.type = type; result.playerId = player.id; result.tileId = tileId; result.amount = amount; result.creditorId = creditorId; return result;

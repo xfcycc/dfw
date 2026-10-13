@@ -26,27 +26,29 @@ HTTP Controller / WebSocket Handler
 
 ## 规则修改
 
-- 经济数值：`Rules`；地图种子与地标：`MapService`。
+- 经济默认倍率与固定金额：`game-rules/economy.json`、`EconomyRules`；本局快照在 `Room.economy`；估值公式在 `Rules`。地区地名池：`game-rules/map-regions.json`、`MapRegions`；房间 `mapSize` 由房主在大厅修改；按大小、人数和种子生成矩形闭环：`MapService`、`Rules.mapLength`，前端 `boardDimensions` 与 `tileCoordinates` 使用同一边长口径。地区目前只命名，配置细节见 [配置指南](game-configuration.md)。
 - 行动者、跳过回合、移动与机会财富落点：`TurnService`。
 - 资产变现、经营与破产清算：`EconomyService`。
-- 新版六种道具窗口、次数、条件和组合：`game-rules/classic-v2.json`；配置加载校验：`GameRulesConfig`、`RuleSet`、`RuleExpression`；阶段推进与出牌：`RuleRuntime`。`ItemService` 提供基础道具效果并保留旧版本路径；报价和交换：`TradeService`。
-- 首期全图扣款、目标游标和单地块灾害补偿：`EventService`、`GlobalEventFrame`；三个后续个人回合的陷阱免疫：`StatusService`、`PlayerStatus`。新版本机会扩展来自 `classic-v3.json`，保留 `classic-v2.json` 的原文件摘要。
+- 六种道具窗口、次数、条件和组合：`game-rules/card-events.json`；公共阶段：`turn-rules.json`；配置加载校验：`GameRulesConfig`、`RuleSet`、`RuleExpression`；阶段推进与出牌：`RuleRuntime`。`ItemService` 提供基础道具效果；报价和交换：`TradeService`。
+- 完整机会池与灾害补偿订阅：`chance-events.json`；完整财富池：`fortune-events.json`。全图扣款、目标游标、单地块实际灾害、随机补偿与银行奖励由 `EventService`、`GlobalEventFrame` 处理；三个后续个人回合陷阱免疫由 `StatusService`、`PlayerStatus` 处理。
 - 大厅、开局、再开、移出离线玩家与命令路由：`GameEngine`。
 - 通用流程启动、任务完成和系统推进同步：`application/GameWorkflow`；固定流程：`processes/generic-game-runtime.bpmn20.xml`；无状态回调和受控同步作用域：`infrastructure/flowable/`。
-- 原子效果注册和联动顺序：`EffectResolver`；内部运行时和队列：`GameRuntime`、`GameEffect`。默认新局为 `classic-v3`，阶段和六种道具采用最小 DSL；无运行时旧局及 `classic-v1` 对局保留原 Java 路径。配置契约见 [回合阶段与道具规则配置](game-rules-dsl.md)。
-- 前端 `src/shared/types.ts` 和 Java DTO/VO 同时维护 JSON 契约；`src/shared/rules.ts` 为展示及地图算法对照。任何后端规则变化都要核对展示与冒烟场景。
+- 原子效果注册和联动顺序：`EffectResolver`；内部运行时和队列：`GameRuntime`、`GameEffect`。四类文件启动时编译为唯一不可变 `RuleSet`，直接注入领域服务，全部对局统一走队列。配置契约见 [回合阶段与道具规则配置](game-rules-dsl.md)。
+- 前端 `src/shared/types.ts` 和 Java DTO/VO 同时维护 JSON 契约；`src/shared/rules.ts` 为展示及地图算法对照。任何后端规则变化都要核对展示与实际页面/API 行为。
+
+`StateViews` 向所有角色投影本局经济参数、地区元数据、净资产和并列名次，不输出手牌或报价。净资产按成本估值扣抵押地产固定赎回费用，单地产剩余权益最低为零；排名事件选择随机并列目标尚未接入。开局保存地图及固定现金步骤最终值，重启后的新经济和命名配置仅作用于新局；既有行为规则仍按上述当前规则集执行。
 
 ## 一致性与隐私
 
 同一房间的 HTTP 变更、认证、游戏命令、断线和定时任务使用同一把 `ReentrantLock`。不同房间独立，Hikari 池最大连接数为四，InnoDB 在短事务内按涉及记录协调写入，不在事务内等待网络。
 
-命令在锁内先查历史回执，再检查预期版本。复制原快照后才运行规则；应用层的 `TransactionTemplate` 覆盖 Flowable 推进、房间快照和命令回执，Repository 的事务加入同一外层事务。认证、断线、报价超时和移出离线玩家也同步处理任务关联。成功后替换内存快照并推送。数据库保存失败不更改原快照，流程与业务写入一起回滚。
+命令在锁内先查历史回执，核对身份与规范化 action 摘要，再检查预期版本。旧回执缺少摘要时保留原行为；新回执同 ID 改 action 拒绝，摘要只保存在存储 JSON，不修改公开结果。复制原快照后才运行规则；应用层的 `TransactionTemplate` 覆盖 Flowable 推进、房间快照和命令回执，Repository 的事务加入同一外层事务。认证、断线和移出离线玩家也同步处理任务关联。成功后替换内存快照并推送。数据库保存失败不更改原快照，流程与业务写入一起回滚。
 
 公开快照通过 `StateViews` 显式白名单生成。内部 Room、Player 不直接发送；私人手牌和双方报价逐连接投递。玩家连接替换后，旧连接不能执行命令，其关闭回调也不能覆盖新连接的在线状态。底层发送使用 `ConcurrentWebSocketSessionDecorator`，发送失败不撤回已提交操作。
 
-断线保存失败时保留原状态，定时任务根据有效连接注册再次尝试持久化离线状态。重启先将内存连接状态设为离线并冻结报价计时；认证成功后继续原操作。旧快照缺少 `jailed` 字段时按监狱位置和待跳过回合兼容恢复。
+断线保存失败时保留原状态，定时任务根据有效连接注册再次尝试持久化离线状态。玩法与交易不限时，不再调度到期取消报价。重启先将内存连接状态设为离线，清除旧报价计时值但保留报价；认证成功后继续原操作。不提供旧格式存档迁移或恢复兜底。
 
-新局一局一个 Flowable 实例，以 `gameId` 为业务关联。通用任务循环接受原命令，调用领域校验和效果队列，再等待下一操作或结束。任务 assignee 只标记主要等待人，交易发起者取消报价和房主管理仍使用原领域权限。启动批量读取通用任务并校验内部运行时关联，配置版同时核对规则文件版本和摘要，缺失或不匹配时拒绝启动，不静默重建流程。自动阶段、替代骰子结果和暂停效果的游标随房间快照提交，不重做已提交步骤。旧快照 `runtime` 为空时继续原引擎，结束后返回大厅再开局才启用新流程。
+新局一局一个 Flowable 实例，以 `gameId` 为业务关联。通用任务循环接受原命令，调用领域校验和效果队列，再等待下一操作或结束。任务 assignee 只标记主要等待人，交易发起者取消报价和房主管理仍使用原领域权限。启动批量读取通用任务并校验内部运行时关联，校验流程实例、任务、房间、对局、决策键及阶段游标，错配时拒绝继续，不静默重建流程。自动阶段、替代骰子结果和暂停效果的游标随房间快照提交，不重做已提交步骤。进行中对局后续抽取/出牌使用重启后当前配置，原队列、全图批次金额、pending 和已提交样本保持保存值；恢复时刷新三项扩展机会说明。规则版本、摘要及引擎模式字段已删除，房间并发 version 和命令 expectedVersion 保留。
 
 ## 存储与切换
 
@@ -54,7 +56,7 @@ HTTP Controller / WebSocket Handler
 
 `MysqlRoomRepository` 使用参数化 upsert 保存房间，身份和回执与快照一次事务提交。SQL 只位于 Repository，应用和领域服务不包含数据库语句。启动批量读取所有房间，不逐玩家查询。
 
-SQLite 切换：停止旧游戏服务 → `npm run db:init` 创建空 MySQL 目标 → `npm run db:migrate:sqlite` 原子导入 → 启动 Java 并刷新浏览器。导入工具只读取得 SQLite 一致性备份，批量读取三表，按行数及字节数分批写入，验证数量后提交；目标非空时拒绝覆盖，源文件保留。导入锁只协调同目标库的导入工具，不替代游戏停服。
+历史 SQLite 导入工具（不迁移旧游戏运行时）：停止旧游戏服务 → `npm run db:init` 创建空 MySQL 目标 → `npm run db:migrate:sqlite` 原子导入 → 启动 Java 并刷新浏览器。导入工具只读取得 SQLite 一致性备份，批量读取三表，按行数及字节数分批写入，验证数量后提交；目标非空时拒绝覆盖，源文件保留。导入锁只协调同目标库的导入工具，不替代游戏停服。
 
 后端直接使用 Java 启动，已移除 Node 启动包装器。独立数据库工具加载忽略的 `.env.local`，Java/IDE 则通过进程环境变量或 Spring 参数提供配置，不自动加载该文件。提交版本的 `application.yml` 使用 `DB_*` 占位符及示例默认值，实际数据库凭据不纳入提交。运行时设置 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`，也可用显式 `spring.datasource.*` 参数或 `SPRING_DATASOURCE_*` 环境变量覆盖。Docker Compose 使用 `.env` 和独立 MySQL 服务，数据库文件位于 `mysql-data` 卷。备份应涵盖整个数据库的业务表和 Flowable 表，不能把不同时间的房间快照、命令回执与流程任务混合恢复。`FLOWABLE_SCHEMA_UPDATE` 默认 `true`，允许启动创建缺失引擎表；表结构准备完成后可设为 `false`，不清理已有数据。
 

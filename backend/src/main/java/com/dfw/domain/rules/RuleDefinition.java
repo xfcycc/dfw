@@ -9,22 +9,71 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RuleDefinition {
-    /** 唯一不可变版本标识。 */
-    public String version;
     /** 按顺序推进的回合阶段。 */
     public List<Stage> stages;
-    /** 在原六种机会结果后追加的等权事件，缺失表示沿用旧事件池。 */
+    /** 全部等权机会事件。 */
     public List<EventRule> chanceEvents;
+    /** 全部等权财富事件。 */
+    public List<EventRule> fortuneEvents;
+    /** 实际灾害损失的补偿订阅。 */
+    public List<PassiveRule> passiveRules;
     /** 按现有卡牌 kind 标识的定义。 */
     public List<CardRule> cards;
 
-    /** 机会事件定义，不增加前端命令或私人卡牌类型。 */
+    /** 机会文件独立根结构，包含实际损失订阅。 */
+    @Getter
+    @Setter
+    public static class ChanceFile {
+        /** 全部机会事件。 */
+        public List<EventRule> events;
+        /** 灾害损失补偿订阅。 */
+        public List<PassiveRule> passiveRules;
+    }
+    /** 财富文件独立根结构。 */
+    @Getter
+    @Setter
+    public static class FortuneFile {
+        /** 全部财富事件。 */
+        public List<EventRule> events;
+    }
+    /** 卡牌文件独立根结构。 */
+    @Getter
+    @Setter
+    public static class CardFile {
+        /** 六种卡牌定义。 */
+        public List<CardRule> cards;
+    }
+    /** 公共回合文件独立根结构。 */
+    @Getter
+    @Setter
+    public static class TurnFile {
+        /** 顺序回合阶段。 */
+        public List<Stage> stages;
+    }
+
+    /** 首期事实订阅，仅支持灾害建筑损失后按业主独立判定补偿。 */
+    @Getter
+    @Setter
+    public static class PassiveRule {
+        /** 类别内唯一订阅标识。 */
+        public String id;
+        /** 实际结果触发类型，当前为 BUILDINGS_DESTROYED。 */
+        public String trigger;
+        /** 匹配的效果标签，当前为 DISASTER。 */
+        public String tag;
+        /** 每次实际损失事件的成功概率，整数百分比。 */
+        public Integer probability;
+        /** 按损失快照补偿的整数百分比。 */
+        public Integer compensationPercent;
+    }
+
+    /** 机会或财富事件定义，不增加前端命令或私人卡牌类型。 */
     @Getter
     @Setter
     public static class EventRule {
-        /** 本版本内唯一事件标识。 */
+        /** 两类事件池之间唯一的业务标识。 */
         public String id;
-        /** 公开玩法说明，随本局版本投影。 */
+        /** 可选公开扩展玩法说明，缺省不进入追加说明。 */
         public String description;
         /** 自动执行的基础效果组合。 */
         public List<Step> steps;

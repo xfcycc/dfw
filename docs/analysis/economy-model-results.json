@@ -1,0 +1,443 @@
+{
+  "seed": 20261013,
+  "model": "现金/地产/抵押/当前事件近似，非完整游戏实现",
+  "input_sha256": {
+    "economy.json": "2ce9b7c3b376bc652a245e0a0e5d3c67a13a1116ce93c2e68937a6acf6f134b9",
+    "map-regions.json": "c4121efd1f03f8a207427015609a2ed530fa018336f0e32c556dda1435b7fb95",
+    "chance-events.json": "b26707ea44ead53fb770ee1dc655b51266867585976aa010ffdd4f4790069bad",
+    "fortune-events.json": "aeaef3f71fb7614de1357ddd29ca23bd0e2d93f452c25a458087c7031cc2615d"
+  },
+  "initial_total": 48000,
+  "mean_land_total": 93506,
+  "mean_full_build_total": 140259,
+  "fortune_direct_cash_expectation": 866.6666666666666,
+  "chance_system_cash_expectation": -266.6666666666667,
+  "uniform_system_cash_per_action": 183.33333333333334,
+  "scenarios": [
+    {
+      "policy": "积极投入",
+      "games": 2000,
+      "censored_at": 1200,
+      "unfinished_at_cap": 0.06299999999999994,
+      "completed_sample_median": 795.0,
+      "overall_median_actions": 808,
+      "p10_actions": 612,
+      "p90_actions": 1114,
+      "rent_scale": 1,
+      "checkpoints": [
+        {
+          "actions": 80,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 22.6635,
+          "mean_buildings": 2.5395,
+          "mean_chance": 5.741,
+          "mean_fortune": 4.996
+        },
+        {
+          "actions": 120,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 24.786,
+          "mean_buildings": 4.948,
+          "mean_chance": 8.0885,
+          "mean_fortune": 7.3065
+        },
+        {
+          "actions": 160,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 26.858,
+          "mean_buildings": 7.8235,
+          "mean_chance": 10.6055,
+          "mean_fortune": 9.981
+        },
+        {
+          "actions": 180,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 27.7185,
+          "mean_buildings": 9.59,
+          "mean_chance": 12.032,
+          "mean_fortune": 11.11
+        },
+        {
+          "actions": 240,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.9925,
+          "mean_owned": 30.3565,
+          "mean_buildings": 14.4755,
+          "mean_chance": 16.005,
+          "mean_fortune": 14.8225
+        },
+        {
+          "actions": 360,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.855,
+          "mean_owned": 34.344,
+          "mean_buildings": 24.818,
+          "mean_chance": 23.7215,
+          "mean_fortune": 22.294
+        },
+        {
+          "actions": 600,
+          "finished_fraction": 0.0855,
+          "mean_alive": 2.513,
+          "mean_owned": 34.4215,
+          "mean_buildings": 42.3325,
+          "mean_chance": 38.7685,
+          "mean_fortune": 36.944
+        },
+        {
+          "actions": 1200,
+          "finished_fraction": 0.937,
+          "mean_alive": 1.067,
+          "mean_owned": 23.515,
+          "mean_buildings": 45.9965,
+          "mean_chance": 53.881,
+          "mean_fortune": 51.753
+        }
+      ]
+    },
+    {
+      "policy": "保留最高档地价现金",
+      "games": 2000,
+      "censored_at": 1200,
+      "unfinished_at_cap": 0.17500000000000004,
+      "completed_sample_median": 897.0,
+      "overall_median_actions": 947,
+      "p10_actions": 729,
+      "p90_actions": null,
+      "rent_scale": 1,
+      "checkpoints": [
+        {
+          "actions": 80,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 17.535,
+          "mean_buildings": 2.2825,
+          "mean_chance": 5.7505,
+          "mean_fortune": 5.022
+        },
+        {
+          "actions": 120,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 19.699,
+          "mean_buildings": 4.2705,
+          "mean_chance": 8.03,
+          "mean_fortune": 7.4005
+        },
+        {
+          "actions": 160,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 21.832,
+          "mean_buildings": 6.5125,
+          "mean_chance": 10.5375,
+          "mean_fortune": 10.067
+        },
+        {
+          "actions": 180,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 22.72,
+          "mean_buildings": 8.1945,
+          "mean_chance": 11.986,
+          "mean_fortune": 11.1435
+        },
+        {
+          "actions": 240,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 25.436,
+          "mean_buildings": 12.422,
+          "mean_chance": 15.795,
+          "mean_fortune": 14.954
+        },
+        {
+          "actions": 360,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.99,
+          "mean_owned": 30.4595,
+          "mean_buildings": 21.4155,
+          "mean_chance": 23.4135,
+          "mean_fortune": 22.37
+        },
+        {
+          "actions": 600,
+          "finished_fraction": 0.009,
+          "mean_alive": 3.292,
+          "mean_owned": 35.776,
+          "mean_buildings": 40.45,
+          "mean_chance": 38.7995,
+          "mean_fortune": 37.129
+        },
+        {
+          "actions": 1200,
+          "finished_fraction": 0.825,
+          "mean_alive": 1.1925,
+          "mean_owned": 27.3585,
+          "mean_buildings": 56.486,
+          "mean_chance": 61.6235,
+          "mean_fortune": 59.278
+        }
+      ]
+    },
+    {
+      "policy": "租金20%被防御_假设",
+      "games": 2000,
+      "censored_at": 1200,
+      "unfinished_at_cap": 0.24050000000000005,
+      "completed_sample_median": 913,
+      "overall_median_actions": 982,
+      "p10_actions": 738,
+      "p90_actions": null,
+      "rent_scale": 1,
+      "checkpoints": [
+        {
+          "actions": 80,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 22.562,
+          "mean_buildings": 2.555,
+          "mean_chance": 5.7325,
+          "mean_fortune": 4.981
+        },
+        {
+          "actions": 120,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 24.738,
+          "mean_buildings": 4.9345,
+          "mean_chance": 8.0415,
+          "mean_fortune": 7.364
+        },
+        {
+          "actions": 160,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.9995,
+          "mean_owned": 26.759,
+          "mean_buildings": 7.7915,
+          "mean_chance": 10.5295,
+          "mean_fortune": 10.0875
+        },
+        {
+          "actions": 180,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.999,
+          "mean_owned": 27.5755,
+          "mean_buildings": 9.587,
+          "mean_chance": 11.948,
+          "mean_fortune": 11.245
+        },
+        {
+          "actions": 240,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.998,
+          "mean_owned": 30.1755,
+          "mean_buildings": 14.521,
+          "mean_chance": 15.792,
+          "mean_fortune": 14.996
+        },
+        {
+          "actions": 360,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.9515,
+          "mean_owned": 34.408,
+          "mean_buildings": 25.0555,
+          "mean_chance": 23.4215,
+          "mean_fortune": 22.4615
+        },
+        {
+          "actions": 600,
+          "finished_fraction": 0.013,
+          "mean_alive": 3.0865,
+          "mean_owned": 36.317,
+          "mean_buildings": 44.261,
+          "mean_chance": 38.65,
+          "mean_fortune": 37.4185
+        },
+        {
+          "actions": 1200,
+          "finished_fraction": 0.7595,
+          "mean_alive": 1.263,
+          "mean_owned": 26.9215,
+          "mean_buildings": 57.8675,
+          "mean_chance": 63.1115,
+          "mean_fortune": 61.0385
+        }
+      ]
+    },
+    {
+      "policy": "租金另乘2_假设",
+      "games": 2000,
+      "censored_at": 1200,
+      "unfinished_at_cap": 0.0,
+      "completed_sample_median": 421.0,
+      "overall_median_actions": 421,
+      "p10_actions": 312,
+      "p90_actions": 578,
+      "rent_scale": 2,
+      "checkpoints": [
+        {
+          "actions": 80,
+          "finished_fraction": 0.0,
+          "mean_alive": 4,
+          "mean_owned": 22.954,
+          "mean_buildings": 2.6035,
+          "mean_chance": 5.6305,
+          "mean_fortune": 4.996
+        },
+        {
+          "actions": 120,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.997,
+          "mean_owned": 25.612,
+          "mean_buildings": 4.9685,
+          "mean_chance": 7.916,
+          "mean_fortune": 7.339
+        },
+        {
+          "actions": 160,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.9145,
+          "mean_owned": 27.9815,
+          "mean_buildings": 7.5595,
+          "mean_chance": 10.434,
+          "mean_fortune": 9.988
+        },
+        {
+          "actions": 180,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.8455,
+          "mean_owned": 28.7965,
+          "mean_buildings": 9.119,
+          "mean_chance": 11.8525,
+          "mean_fortune": 11.1435
+        },
+        {
+          "actions": 240,
+          "finished_fraction": 0.0065,
+          "mean_alive": 3.3595,
+          "mean_owned": 29.9875,
+          "mean_buildings": 13.568,
+          "mean_chance": 15.6975,
+          "mean_fortune": 14.89
+        },
+        {
+          "actions": 360,
+          "finished_fraction": 0.26,
+          "mean_alive": 2.0865,
+          "mean_owned": 28.221,
+          "mean_buildings": 21.237,
+          "mean_chance": 22.67,
+          "mean_fortune": 21.6805
+        },
+        {
+          "actions": 600,
+          "finished_fraction": 0.924,
+          "mean_alive": 1.079,
+          "mean_owned": 20.9145,
+          "mean_buildings": 22.783,
+          "mean_chance": 27.895,
+          "mean_fortune": 26.758
+        },
+        {
+          "actions": 1200,
+          "finished_fraction": 1.0,
+          "mean_alive": 1,
+          "mean_owned": 19.6345,
+          "mean_buildings": 21.9135,
+          "mean_chance": 28.2785,
+          "mean_fortune": 27.1095
+        }
+      ]
+    },
+    {
+      "policy": "租金另乘3_假设",
+      "games": 2000,
+      "censored_at": 1200,
+      "unfinished_at_cap": 0.0,
+      "completed_sample_median": 290.0,
+      "overall_median_actions": 290,
+      "p10_actions": 215,
+      "p90_actions": 402,
+      "rent_scale": 3,
+      "checkpoints": [
+        {
+          "actions": 80,
+          "finished_fraction": 0.0,
+          "mean_alive": 3.986,
+          "mean_owned": 23.24,
+          "mean_buildings": 2.5855,
+          "mean_chance": 5.708,
+          "mean_fortune": 5.0545
+        },
+        {
+          "actions": 120,
+          "finished_fraction": 0.0005,
+          "mean_alive": 3.8235,
+          "mean_owned": 25.987,
+          "mean_buildings": 4.8175,
+          "mean_chance": 8.003,
+          "mean_fortune": 7.4805
+        },
+        {
+          "actions": 160,
+          "finished_fraction": 0.01,
+          "mean_alive": 3.355,
+          "mean_owned": 27.2505,
+          "mean_buildings": 7.469,
+          "mean_chance": 10.4835,
+          "mean_fortune": 10.14
+        },
+        {
+          "actions": 180,
+          "finished_fraction": 0.0255,
+          "mean_alive": 3.081,
+          "mean_owned": 27.3425,
+          "mean_buildings": 8.9465,
+          "mean_chance": 11.8475,
+          "mean_fortune": 11.2935
+        },
+        {
+          "actions": 240,
+          "finished_fraction": 0.2195,
+          "mean_alive": 2.1875,
+          "mean_owned": 26.086,
+          "mean_buildings": 12.616,
+          "mean_chance": 15.304,
+          "mean_fortune": 14.7455
+        },
+        {
+          "actions": 360,
+          "finished_fraction": 0.8065,
+          "mean_alive": 1.2135,
+          "mean_owned": 20.6045,
+          "mean_buildings": 14.836,
+          "mean_chance": 18.9365,
+          "mean_fortune": 18.1275
+        },
+        {
+          "actions": 600,
+          "finished_fraction": 0.9985,
+          "mean_alive": 1.0015,
+          "mean_owned": 18.03,
+          "mean_buildings": 14.142,
+          "mean_chance": 19.6475,
+          "mean_fortune": 18.8095
+        },
+        {
+          "actions": 1200,
+          "finished_fraction": 1.0,
+          "mean_alive": 1,
+          "mean_owned": 18.007,
+          "mean_buildings": 14.116,
+          "mean_chance": 19.658,
+          "mean_fortune": 18.8215
+        }
+      ]
+    }
+  ]
+}

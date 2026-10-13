@@ -10,6 +10,8 @@ import lombok.Setter;
 public class GameAction {
     /** 操作类型。 */
     public String type;
+    /** 房主在大厅选择的地图大小，small、medium 或 large。 */
+    public String mapSize;
     /** 准备状态。 */
     public Boolean value;
     /** 是否使用免租。 */
@@ -32,6 +34,8 @@ public class GameAction {
     public List<Integer> giveTiles;
     /** 接收人地产。 */
     public List<Integer> wantTiles;
+    /** 接收人同意抵扣的债务金额，可选。 */
+    public Long debtCredit;
     /** 是否接受交易。 */
     public Boolean accept;
 }

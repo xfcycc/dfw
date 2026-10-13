@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2023", "module": "ESNext", "moduleResolution": "Bundler",
-    "strict": true, "skipLibCheck": true, "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "resolveJsonModule": true, "strict": true, "skipLibCheck": true, "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "types": ["vite/client"], "allowImportingTsExtensions": true, "noEmit": true
   },
   "include": ["src/web/**/*.ts", "src/web/**/*.vue", "src/shared/**/*.ts", "vite.config.ts"]

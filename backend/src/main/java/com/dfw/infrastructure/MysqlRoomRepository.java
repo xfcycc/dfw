@@ -28,7 +28,10 @@ public class MysqlRoomRepository implements RoomRepository {
     }
     /** 输入房间和命令标识，查找原提交结果。 */
     public Receipt receipt(String code, String id) {
-        List<Receipt> values = jdbc.query("SELECT actor_id, result FROM receipts WHERE code = ? AND command_id = ?", (rs, row) -> new Receipt(id, rs.getString(1), json.read(rs.getString(2), CommandResult.class)), code, id);
+        List<Receipt> values = jdbc.query("SELECT actor_id, result FROM receipts WHERE code = ? AND command_id = ?", (rs, row) -> {
+            String stored = rs.getString(2); var digest = json.mapper.readTree(stored).get("requestDigest");
+            return new Receipt(id, rs.getString(1), json.read(stored, CommandResult.class), digest == null || digest.isNull() ? null : digest.asString());
+        }, code, id);
         return values.isEmpty() ? null : values.getFirst();
     }
     /** 输入房间及可选身份和回执，原子提交或整体回滚。 */
@@ -37,7 +40,11 @@ public class MysqlRoomRepository implements RoomRepository {
         transaction.executeWithoutResult(status -> {
             jdbc.update("INSERT INTO rooms(code,state) VALUES (?,?) ON DUPLICATE KEY UPDATE state=?", room.code, state, state);
             if (session != null) jdbc.update("INSERT INTO sessions(token_hash,code,player_id) VALUES (?,?,?)", session.tokenHash(), session.code(), session.playerId());
-            if (receipt != null) jdbc.update("INSERT INTO receipts(code,command_id,actor_id,result) VALUES (?,?,?,?)", room.code, receipt.id(), receipt.actorId(), json.write(receipt.result()));
+            if (receipt != null) {
+                var stored = json.mapper.valueToTree(receipt.result()).deepCopy();
+                ((tools.jackson.databind.node.ObjectNode) stored).put("requestDigest", receipt.requestDigest());
+                jdbc.update("INSERT INTO receipts(code,command_id,actor_id,result) VALUES (?,?,?,?)", room.code, receipt.id(), receipt.actorId(), json.write(stored));
+            }
         });
     }
     /** 输入观战身份，独立写入会话。 */

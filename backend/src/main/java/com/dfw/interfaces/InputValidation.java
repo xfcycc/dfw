@@ -1,6 +1,7 @@
 package com.dfw.interfaces;
 
 import com.dfw.domain.GameError;
+import com.dfw.domain.Rules;
 import com.dfw.interfaces.dto.*;
 import com.dfw.infrastructure.JsonCodec;
 import java.util.List;
@@ -19,8 +20,8 @@ public final class InputValidation {
     private static void uuid(JsonNode value, String field) { check(value.has(field) && value.get(field).isString() && (value.get(field).asString().matches(UUID_PATTERN) || value.get(field).asString().equals("00000000-0000-0000-0000-000000000000") || value.get(field).asString().equalsIgnoreCase("ffffffff-ffff-ffff-ffff-ffffffffffff"))); }
     /** 输入数值节点与上下界，确认 JSON 整数范围。 */
     private static void number(JsonNode value, long min, long max) { check(value != null && value.isIntegralNumber() && value.canConvertToLong() && value.asLong() >= min && value.asLong() <= max); }
-    /** 输入地产列表，确认最多四十个有效索引。 */
-    private static void tiles(JsonNode value) { check(value != null && value.isArray() && value.size() <= 40); for (JsonNode id : value) number(id, 0, 39); }
+    /** 输入地产列表，确认最多六十四个索引；实际地图范围仍由领域层校验。 */
+    private static void tiles(JsonNode value) { check(value != null && value.isArray() && value.size() <= Rules.MAX_TILES); for (JsonNode id : value) number(id, 0, Rules.MAX_TILES - 1); }
     /** 输入请求 JSON 及是否要求房间号，返回兼容的房间输入。 */
     public static RoomInput room(JsonNode value, boolean codeRequired, JsonCodec json) {
         object(value); if (value.has("name")) check(value.get("name").isString());
@@ -35,24 +36,26 @@ public final class InputValidation {
         object(value); uuid(value, "id"); number(value.get("expectedVersion"), 0, 9007199254740991L);
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
-            case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame" -> { }
+            case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy" -> { }
             case "ready" -> bool(action, "value");
+            case "setMapSize" -> check(action.has("mapSize") && action.get("mapSize").isString() && List.of("small", "medium", "large").contains(action.get("mapSize").asString()));
             case "rentDecision" -> bool(action, "useCard");
             case "tradeRespond" -> bool(action, "accept");
             case "removePlayer" -> uuid(action, "playerId");
-            case "sellBuilding", "mortgage", "redeem", "sellLand" -> number(action.get("tileId"), 0, 39);
-            case "card" -> { uuid(action, "cardId"); if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, 39); if (action.has("playerId")) uuid(action, "playerId"); }
-            case "tradeOffer" -> { uuid(action, "toId"); number(action.get("giveCash"), 0, 9007199254740991L); number(action.get("wantCash"), 0, 9007199254740991L); tiles(action.get("giveTiles")); tiles(action.get("wantTiles")); }
+            case "sellBuilding", "mortgage", "redeem", "sellLand" -> number(action.get("tileId"), 0, Rules.MAX_TILES - 1);
+            case "card" -> { uuid(action, "cardId"); if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, Rules.MAX_TILES - 1); if (action.has("playerId")) uuid(action, "playerId"); }
+            case "tradeOffer" -> { uuid(action, "toId"); number(action.get("giveCash"), 0, 9007199254740991L); number(action.get("wantCash"), 0, 9007199254740991L); tiles(action.get("giveTiles")); tiles(action.get("wantTiles")); if (action.has("debtCredit")) number(action.get("debtCredit"), 0, 9007199254740991L); }
             default -> check(false);
         }
         List<String> fields = switch (type) {
             case "ready" -> List.of("value");
+            case "setMapSize" -> List.of("mapSize");
             case "rentDecision" -> List.of("useCard");
             case "tradeRespond" -> List.of("accept");
             case "removePlayer" -> List.of("playerId");
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> List.of("tileId");
             case "card" -> List.of("cardId", "point", "tileId", "playerId");
-            case "tradeOffer" -> List.of("toId", "giveCash", "wantCash", "giveTiles", "wantTiles");
+            case "tradeOffer" -> List.of("toId", "giveCash", "wantCash", "giveTiles", "wantTiles", "debtCredit");
             default -> List.of();
         };
         var cleanAction = json.mapper.createObjectNode(); cleanAction.set("type", action.get("type"));

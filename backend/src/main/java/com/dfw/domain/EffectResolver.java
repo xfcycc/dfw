@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-/** 同步执行原子效果；新局按队列展开，旧局仍立即执行原规则。 */
+/** 同步执行原子效果，所有对局按持久化队列展开。 */
 public class EffectResolver {
     private final RandomSource random;
     private final Map<String, BiConsumer<Room, GameEffect>> handlers = new HashMap<>();
@@ -22,7 +22,6 @@ public class EffectResolver {
     }
     /** 输入房间和效果，添加到当前效果之后、其兄弟效果之前，保证联动先完成。 */
     public void submit(Room room, GameEffect effect) {
-        if (room.runtime == null) { handler(effect).accept(room, effect); return; }
         Integer index = insertionIndex.get();
         if (index == null && room.runtime.effectsWaiting && effect.resumesDecision) room.runtime.effects.addFirst(effect);
         else if (index == null) room.runtime.effects.add(effect);
@@ -30,7 +29,7 @@ public class EffectResolver {
     }
     /** 输入有序组合，把解决当前选择的整组效果插入暂停组合之前，保持组内顺序。 */
     public void submitAll(Room room, List<GameEffect> effects) {
-        if (room.runtime != null && insertionIndex.get() == null && room.runtime.effectsWaiting && !effects.isEmpty() && effects.getFirst().resumesDecision) room.runtime.effects.addAll(0, effects);
+        if (insertionIndex.get() == null && room.runtime.effectsWaiting && !effects.isEmpty() && effects.getFirst().resumesDecision) room.runtime.effects.addAll(0, effects);
         else effects.forEach(effect -> submit(room, effect));
     }
     /** 输入房间，结算队列至选择或为空；解决选择的效果先于暂停的后续组合。 */

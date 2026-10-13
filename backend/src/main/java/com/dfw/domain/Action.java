@@ -10,6 +10,8 @@ import lombok.Setter;
 public class Action {
     /** 操作类型。 */
     public String type;
+    /** 大厅地图设置，small、medium 或 large。 */
+    public String mapSize;
     /** 准备状态。 */
     public Boolean value;
     /** 免租选择。 */
@@ -32,6 +34,8 @@ public class Action {
     public List<Integer> giveTiles;
     /** 索取地产。 */
     public List<Integer> wantTiles;
+    /** 报价中的协商抵债金额，省略视为普通资产交换。 */
+    public Long debtCredit;
     /** 报价回应。 */
     public Boolean accept;
 }
