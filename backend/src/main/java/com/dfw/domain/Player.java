@@ -8,6 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Player {
+    /** 最新私人卡面（补给或双方可见的被转移牌）。 */
+    public ContentResult contentNotice;
+    /** 私人结果说明，不发给观战者。 */
+    public String contentNoticeText;
     /** 玩家唯一标识。 */
     public String id;
     /** 公开昵称。 */

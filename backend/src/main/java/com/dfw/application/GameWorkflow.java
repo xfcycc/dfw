@@ -31,6 +31,8 @@ public class GameWorkflow {
                 .collect(Collectors.toMap(Task::getId, Function.identity()));
         for (Room room : active) {
             if (room.runtime == null || room.runtime.stageIndex < 0 || room.runtime.stageIndex >= rules.getStages().size()) throw new IllegalStateException("房间 " + room.code + " 的运行时或阶段游标不可用，不支持旧格式迁移");
+            ContentChoice choice=room.runtime.choice;
+            if ((choice!=null || room.pending!=null && room.pending.type.equals("choice")) && (choice==null || room.pending==null || !room.pending.type.equals("choice") || !Objects.equals(room.pending.id,choice.id) || !Objects.equals(room.pending.playerId,choice.playerId) || room.trade!=null)) throw new IllegalStateException("房间 "+room.code+" 的内容选择快照不一致");
             Task task = tasks.get(room.runtime.taskId);
             if (task == null || !Objects.equals(task.getProcessInstanceId(), room.runtime.processInstanceId)
                     || !Objects.equals(task.getProcessVariables().get("gameId"), room.gameId)

@@ -1,9 +1,6 @@
 package com.dfw.domain;
 
 import java.util.*;
-import com.dfw.domain.rules.RuleSet;
-import com.dfw.domain.rules.RuleEffects;
-import com.dfw.domain.rules.RuleExpression;
 import static com.dfw.domain.GameSupport.*;
 
 /** 回合、移动、落点和在线暂停规则。 */
@@ -11,10 +8,10 @@ public class TurnService {
     private final EconomyService economy;
     private final RandomSource random;
     private final EffectResolver effects;
-    private final RuleSet rules;
+    private final ContentService content;
     /** 输入经济规则与独立随机源，构造回合服务。 */
-    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, RuleSet rules) {
-        this.economy = economy; this.random = random; this.effects = effects; this.rules = rules;
+    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content) {
+        this.economy = economy; this.random = random; this.effects = effects; this.content = content;
         effects.register("DRAW_CARDS", this::drawCards);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", (room, effect) -> { move(room, player(room, effect.playerId), (int) effect.amount); if (effect.message != null) log(room, effect.message); });
@@ -27,25 +24,23 @@ public class TurnService {
         });
     }
     /** 输入玩家和数量，增加私人道具，不记录种类与数量。 */
-    public void giveCards(Player player, int count) {
-        for (int i = 0; i < count; i++) { Card card = new Card(); card.id = random.id(); card.kind = Rules.ITEMS[random.nextInt(Rules.ITEMS.length)]; player.hand.add(card); }
-    }
+    public void giveCards(Room room, Player player, int count) { content.giveCards(room, player, count, null); }
     /** 输入私人补给效果，增加作用玩家手牌，公开日志不包含种类与数量。 */
     private void drawCards(Room room, GameEffect effect) {
         Player owner = player(room, effect.playerId); if (owner == null || owner.bankrupt) return;
-        giveCards(owner, Math.toIntExact(effect.amount)); log(room, owner.name + " 收到一份私人补给");
+        giveCards(room, owner, Math.toIntExact(effect.amount)); content.overflow(room); log(room, owner.name + " 收到一份私人补给");
     }
     /** 输入休息效果，设置后续跳过次数，保留普通休息与监禁的既有区别。 */
     private void skipTurn(Room room, GameEffect effect) {
         Player owner = player(room, effect.playerId); if (owner == null || owner.bankrupt) return;
-        owner.skipTurns = Math.toIntExact(effect.amount); log(room, owner.name + " 下次行动休息");
+        content.restrict(room, owner, Math.toIntExact(effect.amount), false);
     }
     /** 输入房间，仅余一人时结束游戏并返回真。 */
     public boolean checkWinner(Room room) {
         List<Player> alive = room.players.stream().filter(p -> !p.bankrupt).toList();
         if (alive.size() > 1) return false;
         room.status = "finished"; room.winnerId = alive.isEmpty() ? null : alive.getFirst().id;
-        room.pending = null; room.trade = null; room.pausedReason = null;
+        room.pending = null; room.trade = null; room.pausedReason = null; if(room.runtime!=null) room.runtime.choice=null;
         log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！"); return true;
     }
     /** 输入房间，切换下一行动者并重置回合标志。 */
@@ -54,6 +49,8 @@ public class TurnService {
         if (checkWinner(room)) return;
         do { room.turnIndex = (room.turnIndex + 1) % room.turnOrder.size(); } while (current(room).bankrupt);
         room.turnNumber++; room.phase = "pre_roll"; room.pending = null; room.dice = null;
+        // 房主移出原行动者会终止其父结算；其他玩家的超限牌仍完整保留，由新回合重新开放整理。
+        if(room.runtime!=null) room.runtime.choice=null;
         room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
     }
     /** 输入费用参数，打开可管理资产和协商抵债的支付选择。 */
@@ -85,12 +82,10 @@ public class TurnService {
     public void settle(Room room, Player player) {
         Tile tile = room.board.get(player.position); room.phase = "manage"; room.pending = null;
         switch (tile.type) {
-            case "jail" -> { player.skipTurns = 1; player.jailed = true; log(room, player.name + " 进入监狱，下次行动休息"); }
+            case "jail" -> { content.restrict(room, player, 1, true); }
             case "chance", "fortune" -> {
                 if (room.eventDrawn) return; room.eventDrawn = true;
-                var pool = tile.type.equals("chance") ? rules.getChanceEvents() : rules.getFortuneEvents();
-                var event = pool.get(random.nextInt(pool.size()));
-                effects.submitAll(room, RuleEffects.plan(event.steps(), new RuleExpression.Context(room, player, new Action()), effects, event.id()));
+                content.event(room, player, tile.type);
             }
             case "property" -> {
                 if (tile.ownerId == null) { room.phase = "buy"; room.pending = pending("buy", player, tile.id, tile.price, null); }

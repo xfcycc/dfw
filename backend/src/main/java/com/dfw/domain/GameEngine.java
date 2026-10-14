@@ -20,14 +20,16 @@ public class GameEngine {
     private final ItemService items;
     private final TradeService trades;
     private final RandomSource random;
+    private final ContentService content;
     /** 输入随机源、规则集、经济和地区配置，组装无网络或数据库依赖的游戏规则。 */
     public GameEngine(RandomSource random, RuleSet rules, EconomyRules economyRules, MapRegions regions) {
         this.random = random; this.rules = rules; this.economyRules = economyRules; maps = new MapService(regions); economy = new EconomyService(random);
         effects = new EffectResolver(random);
-        turns = new TurnService(economy, random, effects, rules);
+        content = new ContentService(rules.getContent(), effects, random);
+        turns = new TurnService(economy, random, effects, content);
         new EventService(effects, economy, turns, random, rules);
-        ruleRuntime = new RuleRuntime(rules, effects, turns, random);
-        items = new ItemService(effects, ruleRuntime); trades = new TradeService(economy, random, effects);
+        ruleRuntime = new RuleRuntime(rules, effects, turns, random, content);
+        items = new ItemService(effects, ruleRuntime, content); trades = new TradeService(economy, random, effects);
     }
     /** 输入房间，返回是否需由通用流程继续配置阶段。 */
     public boolean needsAdvance(Room room) { return room.runtime != null && ruleRuntime.needsAdvance(room); }
@@ -36,7 +38,11 @@ public class GameEngine {
     /** 输入房间，刷新公开扩展说明及大厅的新局金额预览，进行中金额不重算。 */
     public void refreshRuleDescriptions(Room room) {
         if (room.status.equals("lobby")) room.economy = economyRules.snapshot();
-        room.chanceEventDescriptions = room.status.equals("lobby") ? new ArrayList<>() : new ArrayList<>(rules.getChanceEvents().stream().map(RuleSet.EventRule::description).filter(Objects::nonNull).toList());
+        room.chanceEventDescriptions = room.status.equals("lobby") ? new ArrayList<>() : new ArrayList<>(List.of("排名事件按净资产锁定目标，并列随机选择", "免费升级可选择或放弃，确实无合法地产时改给现金", "赌博可放弃，仅使用已有现金；下注后按卡面概率开奖", "灾害按实际建筑损失，以 30% 概率补偿 50%；抵押地产也可能受损"));
+    }
+    /** 输入同格式已恢复房间，保留基线版本已经进入筹款或协商的债务，不允许按余额再次减免。 */
+    public void restoreContentState(Room room) {
+        if(paymentPending(room) && room.pending.originalAmount==0) { room.pending.originalAmount=room.pending.amount; room.pending.defenseResolved=true; }
     }
     /** 输入昵称和颜色索引，返回新的大厅玩家。 */
     public Player createPlayer(String name, int index) {
@@ -53,11 +59,12 @@ public class GameEngine {
         for (int i = room.turnOrder.size() - 1; i > 0; i--) Collections.swap(room.turnOrder, i, random.nextInt(i + 1));
         room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
-        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.INITIAL_CASH); turns.giveCards(player, Rules.INITIAL_CARDS); }
+        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.INITIAL_CASH); turns.giveCards(room, player, Rules.INITIAL_CARDS); }
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
     }
     /** 输入新局房间，将基础项目及现有规则的现金常量换算为固定金额，重启不重算旧基准。 */
     private void freezeMoney(Room room) {
+        content.freeze(room);
         room.economy.fixedAmounts.put("initialCash", room.economy.money("initialCash", Rules.INITIAL_CASH));
         room.economy.fixedAmounts.put("startIncome", room.economy.money("startIncome", Rules.START_INCOME));
         for (int i = 0; i < Rules.PRICES.length; i++) room.economy.fixedAmounts.put("landPrice." + i, room.economy.money("landPrice." + i, Rules.PRICES[i]));
@@ -73,7 +80,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); }
+    private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; }
     /** 输入房间和身份操作，在候选房间中应用规则，由应用层持久化。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
@@ -107,7 +114,11 @@ public class GameEngine {
         require(room.status.equals("playing") && !player.bankrupt, "你当前不能进行游戏操作"); require(room.pausedReason == null, room.pausedReason == null ? "游戏已暂停" : room.pausedReason);
         if (room.trade != null) { trades.respond(room, player, action); return; }
         require(room.pending == null ? current(room) == player : room.pending.playerId.equals(player.id), "还没有轮到你");
-        if (paymentPending(room)) require(Set.of("payDebt", "rentDecision", "sellBuilding", "mortgage", "sellLand", "tradeOffer", "declareBankruptcy").contains(action.type), "请先处理当前费用");
+        if (room.runtime.choice != null) {
+            require(action.type.equals("contentDecision"), "请先完成当前私人选择"); content.decide(room, player, action); return;
+        }
+        if (paymentPending(room) && !room.pending.defenseResolved) require(Set.of("paymentDefense", "rentDecision").contains(action.type), "请先选择本笔费用的防御或放弃");
+        if (paymentPending(room)) require(Set.of("paymentDefense", "payDebt", "rentDecision", "sellBuilding", "mortgage", "sellLand", "tradeOffer", "declareBankruptcy").contains(action.type), "请先处理当前费用");
         ruleRuntime.validateAction(room, action.type);
         switch (action.type) {
             case "roll" -> {
@@ -124,7 +135,15 @@ public class GameEngine {
                 player.cash -= cost; room.phase = "manage"; room.pending = null;
             }
             case "pass" -> { require(room.phase.equals("buy") || room.phase.equals("upgrade"), "当前没有可放弃的选项"); room.phase = "manage"; room.pending = null; }
-            case "rentDecision" -> { require(room.phase.equals("rent") && room.pending != null, "当前没有待支付的租金"); if (action.useCard) items.immune(room, player); else turns.pay(room, player); }
+            case "paymentDefense" -> items.defense(room, player, action);
+            case "rentDecision" -> {
+                require(room.phase.equals("rent") && room.pending != null, "当前没有待支付的租金");
+                if (!room.pending.defenseResolved) {
+                    if (Boolean.TRUE.equals(action.useCard)) action.cardId = player.hand.stream().filter(c -> c.kind.equals("immunity")).map(c -> c.id).findFirst().orElseThrow(() -> new GameError("你没有免租卡"));
+                    items.defense(room, player, action);
+                } else require(!Boolean.TRUE.equals(action.useCard), "本笔费用已完成防御选择");
+                if (!Boolean.TRUE.equals(action.useCard) && room.pending != null) turns.pay(room, player);
+            }
             case "payDebt" -> { require(paymentPending(room), "当前没有待支付的费用"); turns.pay(room, player); }
             case "declareBankruptcy" -> { require(paymentPending(room), "当前没有待支付的费用"); turns.declareBankruptcy(room, player); }
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> {

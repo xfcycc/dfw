@@ -4,7 +4,7 @@ import { mortgageValue, redeemCost, rentFor, sellBuildingValue, landValue } from
 import { useGameStore } from '../stores/game';
 const game = useGameStore();
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
-const allowed = computed(() => game.canAct && game.canDecide && !game.room?.tradePending);
+const allowed = computed(() => game.canAct && game.canDecide && !game.room?.tradePending && game.room?.pending?.type !== 'choice' && (!payment.value || game.room?.pending?.defenseResolved));
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt');
 </script>
 <template>

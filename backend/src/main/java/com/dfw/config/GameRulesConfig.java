@@ -23,8 +23,10 @@ public class GameRulesConfig {
         JsonMapper mapper = JsonMapper.builder().enable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES).enable(DeserializationFeature.FAIL_ON_TRAILING_TOKENS).build();
         var chanceFile = read(chance, RuleDefinition.ChanceFile.class, mapper);
         RuleDefinition definition = new RuleDefinition(); definition.chanceEvents = chanceFile.events; definition.passiveRules = chanceFile.passiveRules;
-        definition.fortuneEvents = read(fortune, RuleDefinition.FortuneFile.class, mapper).events;
-        definition.cards = read(cards, RuleDefinition.CardFile.class, mapper).cards;
+        var fortuneFile = read(fortune, RuleDefinition.FortuneFile.class, mapper);
+        var cardFile = read(cards, RuleDefinition.CardFile.class, mapper);
+        definition.fortuneEvents = fortuneFile.events; definition.cards = cardFile.cards;
+        definition.content = new ContentCatalog(chanceFile.content, fortuneFile.content, cardFile.content);
         definition.stages = read(turn, RuleDefinition.TurnFile.class, mapper).stages;
         return RuleSet.compile(definition);
     }

@@ -33,6 +33,14 @@ public class GameRuntime {
     public GlobalEventFrame globalEvent;
     /** 最近一次灾害的实际结果与随机样本，仅用于内部恢复和诊断。 */
     public DisasterResult lastDisaster;
+    /** 已保存的私人选择及父等待位置。 */
+    public ContentChoice choice;
+    /** 最近一次事件完整结果，私人补给不进入公开投影。 */
+    public ContentResult lastContent;
+    /** 最近一次事件的获得者。 */
+    public String contentPlayerId;
+    /** 本次骰子的加码，只作用于同一次连续移动。 */
+    public int rollBonus;
     /** 本局已完成的效果数量。 */
     public long settledEffects;
 }

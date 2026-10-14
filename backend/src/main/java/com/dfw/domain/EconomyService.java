@@ -20,9 +20,17 @@ public class EconomyService {
         Player creditor = player(room, creditorId);
         if (creditor != null && !creditor.bankrupt) creditor.cash += Math.min(liquidationValue(room, player), debt);
         for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id)) { tile.ownerId = null; tile.level = 0; tile.mortgaged = false; tile.mortgageBase = null; }
-        player.cash = 0; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; player.skipTurns = 0; player.jailed = false;
+        player.cash = 0; player.contentNotice=null; player.contentNoticeText=null; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; player.skipTurns = 0; player.jailed = false;
         player.eliminationOrder = (int) room.players.stream().filter(p -> p.bankrupt).count();
         if (room.trade != null && (room.trade.fromId.equals(player.id) || room.trade.toId.equals(player.id))) room.trade = null;
+        if (room.runtime != null && room.runtime.choice != null && room.runtime.choice.returnPending != null) {
+            PendingDecision parent=room.runtime.choice.returnPending;
+            if(Objects.equals(parent.playerId,player.id)) { room.runtime.choice.returnPending=null; room.runtime.choice.returnPhase="manage"; }
+            else if(Objects.equals(parent.creditorId,player.id)) parent.creditorId=null;
+        }
+        if (room.runtime != null && room.runtime.choice != null && Objects.equals(room.runtime.choice.playerId,player.id)) {
+            ContentChoice choice=room.runtime.choice; room.pending=choice.returnPending; room.phase=choice.returnPhase; room.runtime.choice=null;
+        }
         if (room.pending != null && Objects.equals(room.pending.playerId, player.id)) room.pending = null;
         if (room.pending != null && Objects.equals(room.pending.creditorId, player.id)) { room.pending.creditorId = null; room.trade = null; }
         log(room, player.name + " 已清算并退出竞争");
@@ -31,14 +39,17 @@ public class EconomyService {
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
+        if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,player.name+" 本次正租金翻倍，状态已消耗"); }
+        if (StatusService.consume(player,"NEXT_PAYMENT_WAIVER")) { log(room,player.name+" 自动免除本笔强制费用，状态已消耗"); return; }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
-        room.pending = pending(type, player, tileId, amount, creditorId); room.pending.id = random.id(); room.phase = type;
+        room.pending = pending(type, player, tileId, amount, creditorId); room.pending.id = random.id(); room.pending.originalAmount = amount; room.phase = type;
         log(room, player.name + " 待支付 " + String.format("%,d", amount) + "，请选择支付方式");
     }
     /** 输入付款人，确认用现金支付当前费用余额并恢复父流程。 */
     public void pay(Room room, Player player) {
         require(paymentPending(room) && room.pending.playerId.equals(player.id), "当前没有你的待支付费用");
         PendingDecision debt = room.pending;
+        require(debt.defenseResolved, "请先确认付款防御");
         require(player.cash >= debt.amount, "现金不足，请先抵押资产或协商抵债");
         player.cash -= debt.amount; Player creditor = player(room, debt.creditorId);
         if (creditor != null && !creditor.bankrupt) creditor.cash += debt.amount;

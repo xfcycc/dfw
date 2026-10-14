@@ -9,6 +9,12 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 最新公开事件卡面，私人补给只投影泛化日志。 */
+    public ContentResult event;
+    /** 最新公开事件的落格者。 */
+    public String eventPlayerId;
+    /** 本回合已经免费或付费升级的地产，供界面显示合法目标。 */
+    public List<Integer> upgradedTiles;
     /** 本局公开经济参数，旧对局缺省按一倍基准。 */
     public EconomyRules economy;
     /** 本局新增机会结果的公开说明，空列表表示原事件池。 */

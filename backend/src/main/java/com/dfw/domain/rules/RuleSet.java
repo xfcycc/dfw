@@ -19,6 +19,8 @@ public final class RuleSet {
             Map.entry("CHARGE_ALL", Map.of("amount", "NUMBER")), Map.entry("ADD_STATUS", Map.of("statusId", "STRING", "amount", "NUMBER")),
             Map.entry("DESTROY_BUILDINGS", Map.of("tileId", "NUMBER", "selector", "STRING")));
     private static final Pattern PLACEHOLDER = Pattern.compile("\\{([a-zA-Z][a-zA-Z0-9_.]*)}");
+    /** 分层内容池，与既有阶段 DSL 共用效果队列。 */
+    private final ContentCatalog content;
     /** 有序阶段。 */
     private final List<Stage> stages;
     /** 全部等权机会事件。 */
@@ -30,7 +32,8 @@ public final class RuleSet {
     /** 道具定义索引。 */
     private final Map<String, CardRule> cards;
     /** 输入校验后的阶段、道具、两类事件及订阅，保存不可变集合。 */
-    private RuleSet(List<Stage> stages, Map<String, CardRule> cards, List<EventRule> chanceEvents, List<EventRule> fortuneEvents, List<PassiveRule> passiveRules) {
+    private RuleSet(List<Stage> stages, Map<String, CardRule> cards, List<EventRule> chanceEvents, List<EventRule> fortuneEvents, List<PassiveRule> passiveRules, ContentCatalog content) {
+        this.content = content;
         this.stages = List.copyOf(stages); this.cards = Map.copyOf(cards); this.chanceEvents = List.copyOf(chanceEvents); this.fortuneEvents = List.copyOf(fortuneEvents); this.passiveRules = List.copyOf(passiveRules);
     }
     /** 已校验的补偿订阅，参数按事件发生时固定，不依赖执行时产权。 */
@@ -118,7 +121,7 @@ public final class RuleSet {
                 passives.add(new PassiveRule(passive.id, passive.trigger, passive.tag, passive.probability, passive.compensationPercent));
             }
         }
-        return new RuleSet(stages, cards, chance, fortune, passives);
+        return new RuleSet(stages, cards, chance, fortune, passives, definition.content);
     }
     /** 输入事件池和跨池 ID 集合，编译完整等权事件并限定自动上下文，不执行客户端选择。 */
     private static List<EventRule> events(List<RuleDefinition.EventRule> definitions, Set<String> ids) {

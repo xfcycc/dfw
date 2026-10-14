@@ -76,5 +76,1065 @@
         }
       ]
     }
-  ]
+  ],
+  "content": {
+    "mechanisms": [
+      {
+        "id": "income",
+        "weight": 60,
+        "groups": [
+          {
+            "id": "small",
+            "weight": 70,
+            "parameters": [
+              {
+                "id": "amount-600",
+                "values": {
+                  "amount": 600
+                },
+                "skins": [
+                  {
+                    "id": "fortune_salary_day",
+                    "name": "发工资了",
+                    "rarity": "R",
+                    "quote": "到账了！晚上吃点好的！",
+                    "description": "工资到账，你立刻从省电模式切回人类模式，先把欠的奶茶安排上。"
+                  },
+                  {
+                    "id": "fortune_fund_breakeven",
+                    "name": "基金终于回本",
+                    "rarity": "R",
+                    "quote": "回本了！快卖！快卖啊！",
+                    "description": "基金终于回本，你熟练地截图留念，生怕下一秒又变绿。"
+                  },
+                  {
+                    "id": "fortune_night_market_sellout",
+                    "name": "摆摊卖光收工",
+                    "rarity": "R",
+                    "quote": "还上什么班，明天继续出摊！",
+                    "description": "摆摊卖到最后一份，收摊时你发现最动听的声音是到账提醒。"
+                  },
+                  {
+                    "id": "fortune_chest_gold_drop",
+                    "name": "开宝箱爆金",
+                    "rarity": "R",
+                    "quote": "这箱能出金？真的假的？",
+                    "description": "宝箱这次没塞几根萝卜，真给了现金，你决定礼貌地再开一个。"
+                  },
+                  {
+                    "id": "fortune_gym_badge_win",
+                    "name": "打赢道馆",
+                    "rarity": "R",
+                    "quote": "馆主，就这啊？再来一场！",
+                    "description": "道馆馆主输得很体面，奖金给得也很痛快，你宣布下次继续来。"
+                  },
+                  {
+                    "id": "fortune_shipwreck_supplies",
+                    "name": "沉船里的物资",
+                    "rarity": "R",
+                    "quote": "岛上没网，船上有货啊！",
+                    "description": "荒岛没网，但沉船有货，搬完物资你发现离线也能改善余额。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-400",
+                "values": {
+                  "amount": 400
+                },
+                "skins": [
+                  {
+                    "id": "fortune_double11_refund",
+                    "name": "双十一退款",
+                    "rarity": "R",
+                    "quote": "不买了不买了，退款真香。",
+                    "description": "冲动消费按下撤销键，退款变成现金补给，购物车输给了求生欲。"
+                  },
+                  {
+                    "id": "fortune_side_hustle_income",
+                    "name": "副业第一笔收入",
+                    "rarity": "R",
+                    "quote": "辞职信先写着，万一呢。",
+                    "description": "副业赚到第一笔钱，你已在脑内写好辞职信，现实里还在打卡。"
+                  },
+                  {
+                    "id": "fortune_korok_reward",
+                    "name": "呀哈哈的奖励",
+                    "rarity": "R",
+                    "quote": "呀哈哈！又逮到你一个！",
+                    "description": "藏得很深的呀哈哈被你找到了，这次奖励至少能在账本上看见。"
+                  },
+                  {
+                    "id": "fortune_crop_harvest_sale",
+                    "name": "卖了一筐作物",
+                    "rarity": "R",
+                    "quote": "菜卖完了，终于能睡了。",
+                    "description": "一筐作物卖出去了，你的现金流第一次真的靠光合作用撑起来。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "fortune_takeout_red_packet",
+                    "name": "外卖红包膨胀",
+                    "rarity": "R",
+                    "quote": "这红包，能不能天天这么大？",
+                    "description": "外卖红包突然膨胀，你的午饭预算获得了游戏里才有的正向结算。"
+                  },
+                  {
+                    "id": "fortune_pdd_bargain",
+                    "name": "拼多多砍成功",
+                    "rarity": "R",
+                    "quote": "家人们，这刀居然真成了！",
+                    "description": "最后一刀居然砍成了，你怀疑平台客服今天忘了上难度。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "medium",
+            "weight": 25,
+            "parameters": [
+              {
+                "id": "amount-1300",
+                "values": {
+                  "amount": 1300
+                },
+                "skins": [
+                  {
+                    "id": "fortune_year_end_bonus",
+                    "name": "年终奖到账",
+                    "rarity": "SSR",
+                    "quote": "老板，刚才群里骂你的撤回了。",
+                    "description": "老板终于把年终总结做成转账，你决定将过去的怨气暂存草稿箱。"
+                  },
+                  {
+                    "id": "fortune_diamond_ore",
+                    "name": "挖到钻石矿",
+                    "rarity": "SR",
+                    "quote": "整片都是钻石！谁都别挖！",
+                    "description": "铁镐下去一片蓝，你忽然觉得下矿这事比做周报有前途。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-1200",
+                "values": {
+                  "amount": 1200
+                },
+                "skins": [
+                  {
+                    "id": "fortune_client_payment",
+                    "name": "甲方结款",
+                    "rarity": "SR",
+                    "quote": "甲方爸爸，我又相信爱情了！",
+                    "description": "甲方终于结款，你反复刷新账户，怀疑自己误入了科幻片。"
+                  },
+                  {
+                    "id": "fortune_extraction_loot",
+                    "name": "撤离带货回城",
+                    "rarity": "SR",
+                    "quote": "别追了！我都到撤离点了！",
+                    "description": "你带着一背包高价值货回城，商人笑着收货，你笑着收款。"
+                  },
+                  {
+                    "id": "fortune_pirate_treasure_share",
+                    "name": "分到一箱财宝",
+                    "rarity": "SR",
+                    "quote": "财宝先分，梦想等会儿聊。",
+                    "description": "船队分财宝，你拎起自己的那箱，暂时放下了关于梦想的长篇演讲。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-800",
+                "values": {
+                  "amount": 800
+                },
+                "skins": [
+                  {
+                    "id": "fortune_lottery_small_win",
+                    "name": "彩票中了小奖",
+                    "rarity": "SR",
+                    "quote": "谁说我买彩票只会亏的？",
+                    "description": "小奖到账后，你开始组织中奖经验分享，听众主要是自己。"
+                  },
+                  {
+                    "id": "fortune_italian_cannon",
+                    "name": "意大利炮彩头",
+                    "rarity": "R",
+                    "quote": "把我的意大利炮抬上来！",
+                    "description": "聚会上你把意大利炮喊成气氛组暗号，大家笑完给你凑了笔彩头。"
+                  },
+                  {
+                    "id": "fortune_boss_rune",
+                    "name": "BOSS的卢恩",
+                    "rarity": "R",
+                    "quote": "过了！我终于过了！",
+                    "description": "BOSS终于倒下，掉落的卢恩换成现金，你的受苦记录有了收入列。"
+                  },
+                  {
+                    "id": "fortune_a_rank_mission",
+                    "name": "完成A级委托",
+                    "rarity": "R",
+                    "quote": "任务做完了，尾款先结一下。",
+                    "description": "A级委托顺利完成，对方当场结款，你感叹忍界的回款速度。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-900",
+                "values": {
+                  "amount": 900
+                },
+                "skins": [
+                  {
+                    "id": "fortune_stock_limit_up",
+                    "name": "股票涨停",
+                    "rarity": "SR",
+                    "quote": "看见没？我就说我有眼光。",
+                    "description": "股票涨停，你马上把昨天的随手一买改写成长期研究成果。"
+                  },
+                  {
+                    "id": "fortune_control_room_split",
+                    "name": "中控室分赃",
+                    "rarity": "SR",
+                    "quote": "你们打，我摸一下中控。",
+                    "description": "中控室摸了一圈，值钱货都被你装走，队友突然称你为老师。"
+                  },
+                  {
+                    "id": "fortune_jinchi_abbot_stash",
+                    "name": "金池长老的私房钱",
+                    "rarity": "R",
+                    "quote": "长老，你到底藏了多少钱？",
+                    "description": "金池长老藏钱的水平不错，你找钱的水平更好，私房钱换了主人。"
+                  },
+                  {
+                    "id": "fortune_curse_exorcism_pay",
+                    "name": "祓除咒灵领报酬",
+                    "rarity": "SR",
+                    "quote": "祓除了，麻烦结一下账。",
+                    "description": "咒灵祓除了，委托费也到账了，今天总算不是靠爱发电。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "large",
+            "weight": 5,
+            "parameters": [
+              {
+                "id": "amount-2000",
+                "values": {
+                  "amount": 2000
+                },
+                "skins": [
+                  {
+                    "id": "fortune_demolition_payout",
+                    "name": "拆迁款下来了",
+                    "rarity": "SSR",
+                    "quote": "我以后，是不是不用上班了？",
+                    "description": "拆迁款到账，你的家族群第一次主动询问你对未来发展的看法。"
+                  },
+                  {
+                    "id": "fortune_spend_more_earn_more",
+                    "name": "越花越有钱",
+                    "rarity": "SSR",
+                    "quote": "我都这么花了，怎么还没花完？",
+                    "description": "你越想把钱花完，钱越往账户里钻，预算表直接宣布罢工。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-1600",
+                "values": {
+                  "amount": 1600
+                },
+                "skins": [
+                  {
+                    "id": "fortune_livestream_hot_sale",
+                    "name": "直播带货爆单",
+                    "rarity": "SSR",
+                    "quote": "家人们，库存真没了！",
+                    "description": "直播间突然爆单，你一边发货一边怀疑自己被算法认成了亲戚。"
+                  },
+                  {
+                    "id": "fortune_african_star",
+                    "name": "摸到非洲之星",
+                    "rarity": "SSR",
+                    "quote": "兄弟们我先撤了",
+                    "description": "背包里躺着一颗非洲之星，你突然觉得兄弟情可以等回城再聊。撤离点怎么走来着？"
+                  },
+                  {
+                    "id": "fortune_upper_moon_bounty",
+                    "name": "上弦的赏金",
+                    "rarity": "SSR",
+                    "quote": "上弦倒了！我还能呼吸！",
+                    "description": "上弦倒下，赏金到账，你第一次觉得呼吸训练可以列入创收项目。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cards_two",
+        "weight": 3,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "count-2",
+                "values": {
+                  "count": 2
+                },
+                "skins": [
+                  {
+                    "id": "fortune_gacha_double_gold",
+                    "name": "十连双黄",
+                    "rarity": "R",
+                    "quote": "双黄！谁还敢说我是非酋？",
+                    "description": "十连蹦出两张道具卡，你立即截图，顺便给群友增加一点血压。"
+                  },
+                  {
+                    "id": "fortune_felix_felicis",
+                    "name": "喝下福灵剂",
+                    "rarity": "SSR",
+                    "quote": "这药真有用？再给我一口！",
+                    "description": "福灵剂下肚，补给箱连出两张牌，你开始怀疑幸运是否也有保质期。"
+                  },
+                  {
+                    "id": "fortune_ruin_chest_haul",
+                    "name": "宝箱开到手软",
+                    "rarity": "SR",
+                    "quote": "开不完，根本开不完！",
+                    "description": "遗迹宝箱给了两张牌，你的背包没装满，战术选择先装满了。"
+                  },
+                  {
+                    "id": "fortune_infinity_stones",
+                    "name": "集齐无限宝石",
+                    "rarity": "SSR",
+                    "quote": "宝石集齐，响指先打一个。",
+                    "description": "无限宝石齐活，补给箱响应了两张牌；宇宙级场面，桌游级报酬。"
+                  },
+                  {
+                    "id": "fortune_parcel_unboxing",
+                    "name": "拆快递盲盒",
+                    "rarity": "SR",
+                    "quote": "还有一箱？谁买的？我买的？",
+                    "description": "快递拆出两张牌，这次物流到的是战术储备，你的等待没有白费。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cards_one",
+        "weight": 10,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "count-1",
+                "values": {
+                  "count": 1
+                },
+                "skins": [
+                  {
+                    "id": "fortune_enchanted_book_drop",
+                    "name": "开箱出附魔书",
+                    "rarity": "R",
+                    "quote": "别扔！这本书能用！",
+                    "description": "附魔书换成一张道具卡，知识终于以你看得懂的方式进入手牌。"
+                  },
+                  {
+                    "id": "fortune_pokeball_restock",
+                    "name": "精灵球补货",
+                    "rarity": "R",
+                    "quote": "球补好了，下一个是谁？",
+                    "description": "补给站给你添了一张道具卡，训练家总算不用靠口袋空空装气势。"
+                  },
+                  {
+                    "id": "fortune_anywhere_door_gift",
+                    "name": "任意门送惊喜",
+                    "rarity": "R",
+                    "quote": "哆啦A梦，门后还有没有？",
+                    "description": "任意门打开的是补给间，一张道具卡到手，你先把惊喜放进手牌。"
+                  },
+                  {
+                    "id": "fortune_treasure_chest_dig",
+                    "name": "挖到宝箱",
+                    "rarity": "R",
+                    "quote": "这地怎么还长宝箱啊！",
+                    "description": "锄头刨出宝箱，宝箱装着一张道具卡，农活突然带上开盲盒的快乐。"
+                  },
+                  {
+                    "id": "fortune_epic_loot_drop",
+                    "name": "开出紫装",
+                    "rarity": "R",
+                    "quote": "紫了！这次不是垃圾吧？",
+                    "description": "紫光一闪，道具卡入手，围观的人比你本人更想知道怎么用。"
+                  },
+                  {
+                    "id": "fortune_balloon_gift",
+                    "name": "气球礼物",
+                    "rarity": "R",
+                    "quote": "气球掉了！别掉河里啊！",
+                    "description": "气球礼物落到脚边，拆开是一张道具卡，你宣布这叫空中物流。"
+                  },
+                  {
+                    "id": "fortune_question_block",
+                    "name": "顶问号砖",
+                    "rarity": "SR",
+                    "quote": "别光问号，给点好东西啊！",
+                    "description": "问号砖终于不再只给音效，一张道具卡掉下来，头疼也算值了。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "directed",
+        "weight": 2,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "cardType-0",
+                "values": {
+                  "cardType": 0
+                },
+                "skins": [
+                  {
+                    "id": "fortune_empty_fort_stratagem",
+                    "name": "空城计",
+                    "rarity": "SR",
+                    "quote": "城门开着呢，有本事你来。",
+                    "description": "空城里藏着一张免租卡，你拿好它，等房东来时再表演镇定。"
+                  },
+                  {
+                    "id": "fortune_time_stop_steal",
+                    "name": "时间暂停",
+                    "rarity": "SSR",
+                    "quote": "你们先停一下，我拿张牌。",
+                    "description": "你暂停的是补给箱的开合，拿到一张免租卡，别人手牌一张没动。"
+                  },
+                  {
+                    "id": "fortune_empress_reward_card",
+                    "name": "皇后赏牌",
+                    "rarity": "SR",
+                    "quote": "谢娘娘！这牌臣就收下了！",
+                    "description": "皇后赏下一张免租卡，你恭敬收好，心里已经在等下一位房东。"
+                  },
+                  {
+                    "id": "fortune_zhang_mazi_gun",
+                    "name": "张麻子发枪",
+                    "rarity": "SR",
+                    "quote": "张大哥，这东西真能顶租？",
+                    "description": "张麻子递来一张免租卡，枪声留在故事里，省租留给下一次使用。"
+                  },
+                  {
+                    "id": "fortune_silk_bag_plan",
+                    "name": "锦囊妙计",
+                    "rarity": "SSR",
+                    "quote": "军师，这锦囊可得靠谱啊。",
+                    "description": "锦囊里藏着一张免租卡，计策还没用，底气已经先到账。"
+                  },
+                  {
+                    "id": "fortune_secret_gadget",
+                    "name": "掏出秘密道具",
+                    "rarity": "R",
+                    "quote": "我就知道你口袋里还有！",
+                    "description": "机器猫掏了半天，送你一张免租卡，未来科技终于照顾了住房成本。"
+                  },
+                  {
+                    "id": "fortune_landlady_voucher",
+                    "name": "房东太太的券",
+                    "rarity": "SR",
+                    "quote": "太太，您真是房东界的清流。",
+                    "description": "房东太太送了一张免租卡，你决定把这份恩情用在下一次租金上。"
+                  }
+                ]
+              },
+              {
+                "id": "cardType-1",
+                "values": {
+                  "cardType": 1
+                },
+                "skins": [
+                  {
+                    "id": "fortune_free_cyberware",
+                    "name": "义体白嫖",
+                    "rarity": "R",
+                    "quote": "免费？老板，你可别反悔。",
+                    "description": "义体店送的是免费升级卡，你先拿在手里，等选好地产再施工。"
+                  },
+                  {
+                    "id": "fortune_pierre_seed_bag",
+                    "name": "皮埃尔送种子",
+                    "rarity": "R",
+                    "quote": "皮埃尔，今天居然这么大方？",
+                    "description": "皮埃尔送来一张免费升级卡，这次种子能种出的东西有点高。"
+                  }
+                ]
+              },
+              {
+                "id": "cardType-2",
+                "values": {
+                  "cardType": 2
+                },
+                "skins": [
+                  {
+                    "id": "fortune_agasa_invention",
+                    "name": "阿笠博士的发明",
+                    "rarity": "R",
+                    "quote": "博士，你这次别又炸了啊。",
+                    "description": "博士送来一张遥控骰子卡，你把点数选择权先存进了手牌。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "free_upgrade",
+        "weight": 10,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "fallback-400",
+                "values": {
+                  "fallback": 400
+                },
+                "skins": [
+                  {
+                    "id": "fortune_home_renovation",
+                    "name": "装修升级",
+                    "rarity": "R",
+                    "quote": "装修师傅，今天真不加价？",
+                    "description": "装修队今天不报价，只等你选合规地产，免费升级省掉一轮砍价。"
+                  },
+                  {
+                    "id": "fortune_nook_expansion",
+                    "name": "狸克来扩建",
+                    "rarity": "R",
+                    "quote": "狸克你说免费？我录音了！",
+                    "description": "狸克今天真接免费扩建，选好合规地产，你盯着账单确认了三遍。"
+                  },
+                  {
+                    "id": "fortune_loot_crate_materials",
+                    "name": "舔包舔到建材",
+                    "rarity": "SR",
+                    "quote": "这包里怎么还有水泥啊？",
+                    "description": "舔包捡到建材，你选一块合规地产升级，枪声停了，工地开工了。"
+                  },
+                  {
+                    "id": "fortune_jungle_equipment_drop",
+                    "name": "打野爆装备",
+                    "rarity": "SR",
+                    "quote": "野刷完了，房子也能升级？",
+                    "description": "野区战利品被你改成建材，选地升级，打野终于给资产表带来收益。"
+                  },
+                  {
+                    "id": "fortune_baron_buff",
+                    "name": "大龙BUFF",
+                    "rarity": "R",
+                    "quote": "大龙拿了，兄弟们回家补一波！",
+                    "description": "大龙打完，团队BUFF照进资产表，你挑一块合规地产免费升一级。"
+                  },
+                  {
+                    "id": "fortune_defuse_reward_materials",
+                    "name": "拆包得材料",
+                    "rarity": "SR",
+                    "quote": "拆了！手别抖，拆了！",
+                    "description": "拆包成功，奖励材料用于免费升级；你终于从拆弹专家转行搞装修。"
+                  },
+                  {
+                    "id": "fortune_builder_boost",
+                    "name": "建造者加速",
+                    "rarity": "R",
+                    "quote": "再快点，隔壁都三层了！",
+                    "description": "建造者一提速，免费升级就到位；你选地，他动工，钱包负责看热闹。"
+                  },
+                  {
+                    "id": "fortune_base_new_building",
+                    "name": "造新建筑",
+                    "rarity": "SR",
+                    "quote": "农民拉过来，这儿补个楼！",
+                    "description": "基地多了一张施工单，你选择合规地产，SCV立刻把扩建排上。"
+                  },
+                  {
+                    "id": "fortune_winterfell_repair",
+                    "name": "修缮临冬城",
+                    "rarity": "SSR",
+                    "quote": "凛冬来了，屋顶先修一下。",
+                    "description": "临冬城修缮名额落到你手里，选好合规地产，先加楼层再聊凛冬。"
+                  },
+                  {
+                    "id": "fortune_elven_craftsman",
+                    "name": "精灵工匠的手艺",
+                    "rarity": "R",
+                    "quote": "这手艺，精灵看了都说好。",
+                    "description": "精灵工匠手艺细，收费还省了；选一块合规地产，让长寿种族认真施工。"
+                  },
+                  {
+                    "id": "fortune_monster_material_upgrade",
+                    "name": "用素材强化",
+                    "rarity": "R",
+                    "quote": "材料够了，先给家里升一级！",
+                    "description": "打怪素材终于不用囤箱底，你选一块合规地产，把战利品变成楼层。"
+                  },
+                  {
+                    "id": "fortune_space_elevator",
+                    "name": "太空电梯通车",
+                    "rarity": "SSR",
+                    "quote": "电梯通了！谁还走楼梯啊！",
+                    "description": "太空电梯通车的排面很大，奖励落到一块合规地产上，免费升一级。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "all_income",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "fortune_peach_garden_share",
+                    "name": "桃园分红",
+                    "rarity": "SSR",
+                    "quote": "大哥二哥，分钱带上我啊！",
+                    "description": "桃园三兄弟今天带着分红来，全桌一起收款，结义气氛瞬间到位。"
+                  },
+                  {
+                    "id": "fortune_crew_treasure_split",
+                    "name": "全员分财宝",
+                    "rarity": "SR",
+                    "quote": "都有份，都有份，别挤！",
+                    "description": "财宝箱打开，全桌按份拿钱，梦想与航线暂时都让位给清点现金。"
+                  },
+                  {
+                    "id": "fortune_lucky_money_all",
+                    "name": "压岁钱人人有",
+                    "rarity": "SSR",
+                    "quote": "恭喜发财，红包先拿来！",
+                    "description": "压岁钱人人有份，玩家身份临时切成晚辈，收红包的手法都很熟练。"
+                  },
+                  {
+                    "id": "fortune_red_packet_rain",
+                    "name": "红包雨",
+                    "rarity": "SSR",
+                    "quote": "下大点，我接得住！",
+                    "description": "红包雨下到整桌，人人拿到现金，这场天气预报大家都很满意。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "fortune_guild_dividend",
+                    "name": "公会分红",
+                    "rarity": "SR",
+                    "quote": "会长，这次真发钱啊？",
+                    "description": "公会把共同努力结算成现金，全桌都有份，这次贡献值没白刷。"
+                  },
+                  {
+                    "id": "fortune_golden_dividend",
+                    "name": "发光的分红",
+                    "rarity": "R",
+                    "quote": "别晃了，金币都快闪瞎我了。",
+                    "description": "钱袋发着光，全桌都拿到分红，魔法这次把喜悦落到了余额上。"
+                  },
+                  {
+                    "id": "fortune_stark_treats",
+                    "name": "斯塔克请客",
+                    "rarity": "R",
+                    "quote": "托尼，能不能再请一顿？",
+                    "description": "斯塔克随手发钱，全桌都获得零花钱，亿万富翁的礼貌非常实在。"
+                  },
+                  {
+                    "id": "fortune_village_harvest_bonus",
+                    "name": "全村大丰收",
+                    "rarity": "SR",
+                    "quote": "别哼了别哼了，分钱了！",
+                    "description": "全村丰收，全桌分现金，村民终于不只会用鼻音表达支持。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "extra_action",
+        "weight": 0,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "fortune_speedy_extraction",
+                    "name": "摸金提速",
+                    "rarity": "SR",
+                    "quote": "包卸了，走，再进一把！",
+                    "description": "你刚卸下背包又想跑一趟，队友还没坐稳，就开始怀疑你的体力条没有上限。"
+                  },
+                  {
+                    "id": "fortune_anemoculus_stamina",
+                    "name": "风神瞳加速",
+                    "rarity": "R",
+                    "quote": "体力满了，我还能跑！",
+                    "description": "风神瞳一收，腿突然不累了；你想再走一轮，队友想先把零食吃完。"
+                  },
+                  {
+                    "id": "fortune_mushroom_dash",
+                    "name": "吃蘑菇冲刺",
+                    "rarity": "R",
+                    "quote": "蘑菇还管用，再冲一段！",
+                    "description": "蘑菇劲儿有点大，你刚冲完一趟，又想把地图当赛道跑一遍。"
+                  },
+                  {
+                    "id": "fortune_worker_stim",
+                    "name": "农民提速",
+                    "rarity": "SR",
+                    "quote": "这农民，怎么比我还能卷？",
+                    "description": "农民提速后忙得像开了两份工，你开始担心自己的工位也会被他承包。"
+                  },
+                  {
+                    "id": "fortune_tailwind_sail",
+                    "name": "顺风航行",
+                    "rarity": "R",
+                    "quote": "风正好，帆别收啊！",
+                    "description": "风正好、帆正满，船长提议再跑一段，甲板上的人刚把行李放下。"
+                  },
+                  {
+                    "id": "fortune_body_flicker",
+                    "name": "瞬身术",
+                    "rarity": "R",
+                    "quote": "等你结印，我都跑两趟了。",
+                    "description": "瞬身术一闪，你想把下一轮一起走了，桌上的人还在研究你刚才的起手式。"
+                  },
+                  {
+                    "id": "fortune_instant_transmission",
+                    "name": "瞬间移动",
+                    "rarity": "SSR",
+                    "quote": "导航还没报完，我就到了。",
+                    "description": "瞬间移动练到位，你打算再赶一段路，导航只能努力假装自己跟得上。"
+                  },
+                  {
+                    "id": "fortune_ender_pearl_teleport",
+                    "name": "末影珍珠传送",
+                    "rarity": "R",
+                    "quote": "珍珠还有，再扔一个！",
+                    "description": "末影珍珠还在发光，你已开始瞄准下一段路线，手速比休息计划积极。"
+                  },
+                  {
+                    "id": "fortune_coffee_boost",
+                    "name": "喝了杯咖啡",
+                    "rarity": "R",
+                    "quote": "咖啡续上，我还能肝！",
+                    "description": "一杯咖啡下肚，困意离职、精神入职，你想多走一轮补上昨晚的进度。"
+                  },
+                  {
+                    "id": "fortune_cyberware_speed",
+                    "name": "义体加速",
+                    "rarity": "SSR",
+                    "quote": "风扇别叫了，我还没热呢。",
+                    "description": "义体超频后你想再跑一趟，散热风扇表示这工作量不在合同里。"
+                  },
+                  {
+                    "id": "fortune_ashina_run",
+                    "name": "苇名流跑法",
+                    "rarity": "SR",
+                    "quote": "苇名人，跑就完事儿了！",
+                    "description": "苇名跑法主打跑得勤快，你又想冲一趟，对手开始认真研究你的鞋。"
+                  },
+                  {
+                    "id": "fortune_fast_break_layup",
+                    "name": "快攻上篮",
+                    "rarity": "R",
+                    "quote": "别停，球给我，再打一波！",
+                    "description": "快攻的劲头还没过，你想再来一轮，队友抬头发现你已经在热身了。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "next_waiver",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "fortune_beauty_intrigue",
+                    "name": "美人离间计",
+                    "rarity": "SR",
+                    "quote": "美人计真有用？我学一下。",
+                    "description": "离间计把下一笔强制费用拦在外面，账单到来时自动免除这一笔。"
+                  },
+                  {
+                    "id": "fortune_decoy_doll",
+                    "name": "掏出替身",
+                    "rarity": "R",
+                    "quote": "账单给替身，人我先走了。",
+                    "description": "替身准备接住下一笔强制费用，替你挡完一次账单就功成身退。"
+                  },
+                  {
+                    "id": "fortune_substitution_jutsu",
+                    "name": "替身术躲过",
+                    "rarity": "SR",
+                    "quote": "打的是木头，关我啥事？",
+                    "description": "木桩准备替你迎接下一笔强制费用，账单一到，本人余额安全撤离。"
+                  },
+                  {
+                    "id": "fortune_golden_experience",
+                    "name": "黄金体验",
+                    "rarity": "R",
+                    "quote": "黄金体验！这单算了吧！",
+                    "description": "黄金体验给下一笔强制费用留了免单位，触发后就结束这次服务。"
+                  },
+                  {
+                    "id": "fortune_zhongli_shield",
+                    "name": "钟离上盾",
+                    "rarity": "R",
+                    "quote": "有钟离，还躲什么啊！",
+                    "description": "钟离盾不只看着结实，还会自动免掉下一笔强制费用，消费购物另算。"
+                  },
+                  {
+                    "id": "fortune_paladin_bubble",
+                    "name": "圣骑无敌",
+                    "rarity": "SSR",
+                    "quote": "无敌开了，你收谁的钱？",
+                    "description": "圣骑给下一笔强制费用套了无敌，挡完一笔就收工，不是包月。"
+                  },
+                  {
+                    "id": "fortune_sling_ring_portal",
+                    "name": "奇异博士画圈",
+                    "rarity": "R",
+                    "quote": "博士，给账单也开个门。",
+                    "description": "奇异博士给下一笔强制费用画了个免单圈，账单进来就消失。"
+                  },
+                  {
+                    "id": "fortune_huang_silang_pays",
+                    "name": "黄四郎买单",
+                    "rarity": "SR",
+                    "quote": "黄老爷都说买单了，你急啥？",
+                    "description": "黄四郎买单只是皮肤说法：下一笔强制费用免除，不让别的玩家代扣。"
+                  },
+                  {
+                    "id": "fortune_tong_xiangyu_credit",
+                    "name": "佟掌柜赊账",
+                    "rarity": "R",
+                    "quote": "掌柜的，这次真记你账上啊？",
+                    "description": "掌柜嘴上说先赊着，实际送的是下次强制费用免单，不留跨回合欠条。"
+                  },
+                  {
+                    "id": "fortune_emperor_pardon",
+                    "name": "皇上免了这罚",
+                    "rarity": "R",
+                    "quote": "皇上都免了，你还催啥？",
+                    "description": "皇上提前给下一笔强制费用下了免单旨，账单来的时候自动生效。"
+                  },
+                  {
+                    "id": "fortune_nook_tab",
+                    "name": "狸克记账",
+                    "rarity": "R",
+                    "quote": "狸克记着吧，我先装没看见。",
+                    "description": "狸克翻开本子，这回只记下次强制费用免单，不是以后追缴的贷款。"
+                  },
+                  {
+                    "id": "fortune_wang_duoyu_pays",
+                    "name": "王多鱼买单",
+                    "rarity": "SSR",
+                    "quote": "多鱼兄，这单也算你的啊！",
+                    "description": "王多鱼负责故事里的排面，你负责享受下一笔强制费用自动免除。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bottom_bonus",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-400_bonus-600",
+                "values": {
+                  "amount": 400,
+                  "bonus": 600
+                },
+                "skins": [
+                  {
+                    "id": "fortune_recruit_extra_training",
+                    "name": "新兵补课",
+                    "rarity": "SR",
+                    "quote": "我这装备，补课还发钱啊？",
+                    "description": "补课奖励先给踩格者基础现金，再给锁定的榜底补助；同一个人就拿两份。"
+                  },
+                  {
+                    "id": "fortune_gintoki_found_money",
+                    "name": "穷人银时捡钱",
+                    "rarity": "SR",
+                    "quote": "别讲道理了，饭钱有着落了。",
+                    "description": "银时式捡钱照顾两份账：踩格者拿基础现金，榜底额外领续命补助。"
+                  },
+                  {
+                    "id": "fortune_spirit_repayment",
+                    "name": "妖怪报恩",
+                    "rarity": "SR",
+                    "quote": "诶，报恩居然还带现金？",
+                    "description": "妖怪报恩不只讲故事，踩格者有基础奖励，榜底另外收到暖心补助。"
+                  },
+                  {
+                    "id": "fortune_bottom_rebound",
+                    "name": "触底反弹",
+                    "rarity": "R",
+                    "quote": "谁敲门？钱啊？快请进！",
+                    "description": "幸福敲门先带基础现金，再给榜底额外补助，励志桥段终于有现金配套。"
+                  },
+                  {
+                    "id": "fortune_relief_fund",
+                    "name": "救助金到账",
+                    "rarity": "R",
+                    "quote": "终于有人看见我这余额了。",
+                    "description": "救助金先覆盖踩格者，再额外照顾榜底，材料不用多填一遍。"
+                  },
+                  {
+                    "id": "fortune_fund_victim_subsidy",
+                    "name": "套牢者补贴",
+                    "rarity": "SR",
+                    "quote": "别问赚多少，能回点就行。",
+                    "description": "套牢者互助计划启动，踩格者拿基础，榜底再补一笔，暂缓盯盘内耗。"
+                  },
+                  {
+                    "id": "fortune_timely_help_silver",
+                    "name": "雪中送炭",
+                    "rarity": "SR",
+                    "quote": "这炭来得好，我快冻成账单了。",
+                    "description": "雪中送炭这次落在账上，踩格者先收基础现金，榜底另有额外帮助。"
+                  },
+                  {
+                    "id": "fortune_rookie_subsidy",
+                    "name": "新人补贴",
+                    "rarity": "R",
+                    "quote": "会长，我还没入职就领补贴？",
+                    "description": "公会把新人经费拆成基础奖励和榜底补助，领钱前不要求你先证明自己。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-400_bonus-800",
+                "values": {
+                  "amount": 400,
+                  "bonus": 800
+                },
+                "skins": [
+                  {
+                    "id": "fortune_underdog_comeback",
+                    "name": "吊车尾逆袭",
+                    "rarity": "R",
+                    "quote": "别叫吊车尾，叫未来大佬！",
+                    "description": "吊车尾故事终于附带经费：踩格者拿基础现金，榜底另外拿一笔追赶补助。"
+                  },
+                  {
+                    "id": "fortune_karasuno_revival",
+                    "name": "乌野复活赛",
+                    "rarity": "R",
+                    "quote": "我们还没输，球再给我！",
+                    "description": "乌野把逆袭经费安排明白，踩格者先领基础，榜底再领额外支持。"
+                  },
+                  {
+                    "id": "fortune_frieren_encouragement",
+                    "name": "给新人的鼓励",
+                    "rarity": "R",
+                    "quote": "前辈，这次别只给魔法书啊。",
+                    "description": "前辈把鼓励换成现金，踩格者先拿基础，锁定的榜底再拿额外一笔。"
+                  },
+                  {
+                    "id": "fortune_count_gift",
+                    "name": "给落魄者的馈赠",
+                    "rarity": "SSR",
+                    "quote": "伯爵大人，这恩我先记着。",
+                    "description": "伯爵给馈赠分两份，踩格者先领基础，榜底再领额外支持，体面也有预算。"
+                  },
+                  {
+                    "id": "fortune_guanyin_relief",
+                    "name": "观音救济",
+                    "rarity": "SSR",
+                    "quote": "菩萨，看看我这空钱包吧。",
+                    "description": "救济先给踩格者基础，再给榜底额外补助，保留一份把日子过下去的底气。"
+                  },
+                  {
+                    "id": "fortune_rob_rich_feed_poor",
+                    "name": "劫富济贫",
+                    "rarity": "SSR",
+                    "quote": "好汉，这回终于轮到我了！",
+                    "description": "这一张发基础现金和榜底补助，豪气在故事里，不额外扣首富的钱。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

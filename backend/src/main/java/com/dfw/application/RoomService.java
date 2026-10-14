@@ -39,7 +39,7 @@ public class RoomService {
         this.workflow = workflow; this.transaction = transaction; engine = new GameEngine(random, rules, economyRules, regions);
         List<Room> restored = repository.loadRooms(); workflow.verifyRecovery(restored);
         for (Room room : restored) {
-            engine.refreshRuleDescriptions(room);
+            engine.restoreContentState(room); engine.refreshRuleDescriptions(room);
             for (Player player : room.players) player.online = false;
             engine.turns.refresh(room); rooms.put(room.code, room);
         }

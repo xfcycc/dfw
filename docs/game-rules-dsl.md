@@ -6,18 +6,18 @@
 
 | Spring 配置 | 环境变量 | 默认 classpath 文件 | 根结构 |
 | --- | --- | --- | --- |
-| `game.rules.chance-events` | `GAME_RULES_CHANCE_EVENTS` | `game-rules/chance-events.json` | `events`、`passiveRules` |
-| `game.rules.fortune-events` | `GAME_RULES_FORTUNE_EVENTS` | `game-rules/fortune-events.json` | `events` |
-| `game.rules.card-events` | `GAME_RULES_CARD_EVENTS` | `game-rules/card-events.json` | `cards` |
+| `game.rules.chance-events` | `GAME_RULES_CHANCE_EVENTS` | `game-rules/chance-events.json` | `events`、`passiveRules`、`content` |
+| `game.rules.fortune-events` | `GAME_RULES_FORTUNE_EVENTS` | `game-rules/fortune-events.json` | `events`、`content` |
+| `game.rules.card-events` | `GAME_RULES_CARD_EVENTS` | `game-rules/card-events.json` | `cards`、`content` |
 | `game.rules.turn-rules` | `GAME_RULES_TURN_RULES` | `game-rules/turn-rules.json` | `stages` |
 
 `GameRulesConfig` 分别读取四种独立根结构，严格拒绝未知字段、重复业务 ID、未知处理器、非法阶段引用和参数，再编译为不可变集合。每文件最多 256 KiB，不支持资源模式或在游戏中热替换。事件 ID 在机会和财富池之间也不能重复。
 
-修改配置后重启，所有进行中对局后续抽取、出牌和阶段推进使用当前配置。已经入队的具体效果、全体扣款固定目标与金额、原 `pending` 债务、灾害匹配订阅及已提交样本继续按保存的进度执行，不重新解析、匹配或抽样。恢复时刷新公开扩展机会说明。结构或流程任务不一致时拒绝继续，不迁移旧存档或重建流程。
+修改配置后重启，所有进行中对局后续抽取和阶段推进使用当前配置；完整新手牌按取得时冻结的参数和皮肤使用，原六种无皮肤手牌仍按兼容 DSL 使用。已经入队的具体效果、全体扣款固定目标与金额、原 `pending` 债务、灾害匹配订阅及已提交样本继续按保存的进度执行，不重新解析、匹配或抽样。恢复时刷新公开扩展机会说明。结构或流程任务不一致时拒绝继续，不迁移旧存档或重建流程。
 
 新局另保存本局经济快照和固定现金步骤的最终金额。`PAY_FEE`、`CHARGE_ALL`、`GRANT_MONEY` 的常量金额默认乘经济倍率，金额引用使用已计算的实际值；`<规则ID>.<从0开始的步骤序号>.amount` 可以覆盖最终金额。MOVE 等非现金效果不乘倍率，比例补偿也由实际建筑损失计算，不二次放大。现金步骤日志可使用 `{effect.amount}`，避免文案仍显示基准金额。进行中对局勿修改同一规则的 ID、步骤顺序或效果结构；经济快照不等于完整行为规则版本冻结。
 
-当前机会池仍为九种、财富池六种等权事件，卡牌仍为六种；340 条内容库的双层机制／皮肤抽取尚未实现，不能在现有 JSON 中直接添加 `weight`、新激活类型或未注册效果。
+2026-10-13 新增 `content` 分层抽取，已接入全部 342 条素材、十二类道具和确认的事件机制，详见 [完整内容接入](game-content-runtime.md)。三份内容配置均须提供 `content`，旧外部规则文件需要按该结构补齐。本文的 `events` 和六卡 `cards` DSL 保留旧手牌、自动阶段与已入队效果的兼容能力，不再决定新事件和新手牌的抽取概率；不要将 `weight` 混入旧 DSL 层。
 
 例如将机会配置替换为外部文件：
 
@@ -55,7 +55,7 @@ TURN_START 自动阶段
 
 行动窗口的 `phase` 使用前端已有的 `pre_roll` 或 `manage`。`actions` 使用 `roll`、`card`、`tradeOffer`、`sellBuilding`、`mortgage`、`redeem`、`sellLand`、`endTurn`；`exitOn` 可以引用允许命令，或在出牌窗口使用 `replace_roll`。落点的买地、升级、租金、偿债选择仍使用原 `pending`，不会被窗口配置绕过。
 
-地图大小使用大厅生命周期命令 `setMapSize`，只允许房主开局前设置，不属于这些回合行动窗口，也不能通过配置在进行中重建地图。大小随房间保存，四份行为文件不管理地图尺寸。机会与财富新确认的机制概率见 [评审主稿](game-content-design.md#6-财富与机会的确认规则)，尚未接入当前等权运行池。
+地图大小使用大厅生命周期命令 `setMapSize`，只允许房主开局前设置，不属于这些回合行动窗口，也不能通过配置在进行中重建地图。大小随房间保存，四份行为文件不管理地图尺寸。机会与财富新确认的机制概率见 [评审主稿](game-content-design.md#6-财富与机会的确认规则)，已接入新的分层内容目录。
 
 静态校验要求首阶段为 `TURN_START`，唯一的 `ROLL`、`MOVEMENT`、`LANDING`、`END_TURN` 按依赖顺序排列，最后为 `END_TURN`，掷骰与回合结束窗口能到达对应自动段。可以插入自动阶段及配置步骤，无需修改 BPMN。阶段 handler 提供能力，`hook` 是当前阶段的发生名称；阶段 hook 的通用订阅尚未实现，当前限定订阅只响应实际灾害建筑损失。
 
@@ -155,7 +155,7 @@ TURN_START 自动阶段
 
 ## 机会事件与持续状态
 
-机会和财富文件的 `events` 均为完整等权事件池，每项提供唯一 `id`、非空 `steps`，`description` 可省略。机会九种结果：获得 300、支付 300、前进三格、后退三格、休息一次、私人补给一张、全体扣款 300、三回合陷阱免疫和随机建筑灾害，各为 1/9。财富六种结果：获得 300/500/800/1000、私人补给一张/两张，各为 1/6。两池共用每回合一次抽取限制。移动事件配置 `MOVE` 后接 `SETTLE_TILE`，仍结算经过起点、路障和落点，但不能再抽第二个机会/财富事件。
+机会和财富文件原 `events` 是保留的兼容自动组合，每项提供唯一 `id`、非空 `steps`，`description` 可省略。此前简化机会九种结果：获得 300、支付 300、前进三格、后退三格、休息一次、私人补给一张、全体扣款 300、三回合陷阱免疫和随机建筑灾害，各为 1/9。此前简化财富六种结果：获得 300/500/800/1000、私人补给一张/两张，各为 1/6。当前实际抽取使用 `content`，概率见内容主稿；每回合一次抽取限制继续有效。移动事件配置 `MOVE` 后接 `SETTLE_TILE`，仍结算经过起点、路障和落点，但不能再抽第二个机会/财富事件。
 
 事件可使用 `CHARGE_ALL`、`ADD_STATUS`、`DESTROY_BUILDINGS`、`GRANT_MONEY`、`DRAW_CARDS`、`SKIP_TURN`、`PAY_FEE`、`MOVE`、`SETTLE_TILE`、`LOG`；自动引用仅限 `actor`/`turn`。默认只为三项扩展机会填写 `description`，继续通过 `chanceEventDescriptions` 展示这三项说明，不新增前端必填字段。基础六项文案和私人补给隐私保持原样。
 

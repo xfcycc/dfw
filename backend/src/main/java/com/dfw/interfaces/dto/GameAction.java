@@ -8,6 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameAction {
+    /** 待选身份，防止恢复后提交旧选择。 */
+    public String decisionId;
+    /** 手牌超限时恰好保留的六张牌。 */
+    public List<String> keepCardIds;
     /** 操作类型。 */
     public String type;
     /** 房主在大厅选择的地图大小，small、medium 或 large。 */

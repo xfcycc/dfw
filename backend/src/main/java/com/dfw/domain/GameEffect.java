@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameEffect {
+    /** 已抽取的完整内容，不重新抽取参数或皮肤。 */
+    public ContentResult content;
     /** 本次效果标识。 */
     public String id;
     /** 注册的处理器名称。 */

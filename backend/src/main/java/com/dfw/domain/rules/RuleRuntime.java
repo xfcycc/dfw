@@ -11,11 +11,12 @@ public final class RuleRuntime {
     private final EffectResolver effects;
     private final TurnService turns;
     private final RandomSource random;
+    private final ContentService content;
     /** 输入当前规则集、基础结算及随机源，注册替代骰子和公开消息原语。 */
-    public RuleRuntime(RuleSet catalog, EffectResolver effects, TurnService turns, RandomSource random) {
-        this.catalog = catalog; this.effects = effects; this.turns = turns; this.random = random;
+    public RuleRuntime(RuleSet catalog, EffectResolver effects, TurnService turns, RandomSource random, ContentService content) {
+        this.catalog = catalog; this.effects = effects; this.turns = turns; this.random = random; this.content = content;
         effects.register("REPLACE_ROLL", (room, effect) -> {
-            require(effect.amount >= 0 && effect.amount <= 6, "规则骰子点数不可用");
+            require(effect.amount >= -3 && effect.amount <= 6, "规则骰子点数不可用");
             room.runtime.rollMode = "REPLACE"; room.runtime.movementSteps = (int) effect.amount; room.dice = (int) effect.amount;
             if (stage(room).handler().equals("ACTION_WINDOW")) room.runtime.windowExit = "replace_roll";
             if (effect.message != null) log(room, effect.message);
@@ -35,8 +36,8 @@ public final class RuleRuntime {
         executeCard(room, actor, action, card, rule);
     }
     /** 输入收费玩家，以当前租金选择上下文执行配置中的防御卡，不占主动次数。 */
-    public void immune(Room room, Player actor) {
-        Card card = actor.hand.stream().filter(value -> rentDefense(room, value.kind)).findFirst().orElse(null);
+    public void immune(Room room, Player actor, String cardId) {
+        Card card = actor.hand.stream().filter(value -> value.id.equals(cardId) && rentDefense(room, value.kind)).findFirst().orElse(null);
         require(card != null, "你没有可用的防御道具"); var rule = catalog.getCards().get(card.kind);
         require(rule.stages().contains("rent_choice") && room.phase.equals("rent"), "当前没有待支付的租金");
         executeCard(room, actor, new Action(), card, rule);
@@ -63,14 +64,16 @@ public final class RuleRuntime {
     }
     /** 输入房间，返回连接或系统变更后是否需通过通用流程继续自动阶段。 */
     public boolean needsAdvance(Room room) {
-        if (!room.status.equals("playing") || room.pausedReason != null || room.pending != null || room.trade != null) return false;
+        if (!room.status.equals("playing") || room.pausedReason != null || room.trade != null) return false;
+        if (content.needsOverflow(room)) return true;
+        if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
     }
     /** 输入候选房间，逐阶段结算至行动窗口、落点选择、交易等待或终局。 */
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
-            effects.drain(room); turns.refresh(room);
+            content.overflow(room); effects.drain(room); turns.refresh(room);
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
             switch (stage.handler()) {
@@ -88,7 +91,7 @@ public final class RuleRuntime {
                 }
                 case "ROLL" -> {
                     require(room.runtime.rollMode != null, "缺少掷骰行动结果");
-                    if (room.runtime.rollMode.equals("RANDOM")) { room.dice = random.nextInt(6) + 1; room.runtime.movementSteps = room.dice; log(room, current(room).name + " 掷出 " + room.dice + " 点"); }
+                    if (room.runtime.rollMode.equals("RANDOM")) { room.dice = random.nextInt(6) + 1; room.runtime.movementSteps = room.dice + room.runtime.rollBonus; log(room, current(room).name + " 掷出 " + room.dice + " 点" + (room.runtime.rollBonus == 0 ? "" : "，加码后移动 " + room.runtime.movementSteps + " 格")); room.runtime.rollBonus = 0; }
                     room.runtime.stageIndex++;
                 }
                 case "MOVEMENT" -> {
@@ -108,7 +111,7 @@ public final class RuleRuntime {
         if (room.runtime.stageTurnNumber == room.turnNumber) return;
         if (room.runtime.stageTurnNumber != 0) { room.runtime.effects.clear(); room.runtime.effectsWaiting = false; }
         room.runtime.stageTurnNumber = room.turnNumber; room.runtime.stageIndex = 0;
-        room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null;
+        room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null; room.runtime.rollBonus = 0;
     }
     /** 输入房间，返回当前配置中的阶段，错误游标拒绝继续。 */
     private RuleSet.Stage stage(Room room) {

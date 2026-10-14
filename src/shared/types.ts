@@ -8,9 +8,38 @@ export interface EconomySettings {
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap';
+export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash';
+/** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
+export interface ContentResult {
+  kind?: ItemKind | null;
+  id: string;
+  pool?: 'chance' | 'fortune' | 'card';
+  mechanism?: string;
+  parameterId?: string;
+  skinId?: string;
+  name?: string;
+  rarity?: 'R' | 'SR' | 'SSR';
+  cardType?: '主动' | '防御' | '持续' | '即时' | null;
+  quote?: string;
+  description?: string;
+  effect?: string;
+  parameters?: Record<string, number>;
+  targetId?: string | null;
+}
 /** 私有手牌。 */
-export interface Card { id: string; kind: ItemKind }
+export interface Card extends ContentResult { kind: ItemKind }
+/** 只向实际选择者发送的内容窗口。 */
+export interface ContentChoice {
+  id: string;
+  type: 'free_upgrade' | 'self_destroy' | 'gamble' | 'release' | 'hand_limit';
+  tileIds: number[];
+  cards: Card[];
+  cardId: string | null;
+  content: ContentResult | null;
+  skipTurns: number;
+  jailed: boolean;
+  discardCash: number;
+}
 /** 公开玩家信息，不包含身份令牌或手牌。 */
 export interface PublicPlayer {
   id: string;
@@ -29,6 +58,8 @@ export interface PublicPlayer {
   eliminationOrder: number | null;
   /** 剩余后续个人回合，旧服务端缺省为无免疫。 */
   trapImmunityTurns?: number;
+  nextPaymentWaiver?: boolean;
+  nextRentDouble?: boolean;
 }
 /** 棋盘格公开状态。 */
 export interface Tile {
@@ -51,11 +82,13 @@ export interface Tile {
 export interface PendingDecision {
   /** 费用标识，旧待选可省略。 */
   id?: string | null;
-  type: 'buy' | 'upgrade' | 'rent' | 'debt';
+  type: 'buy' | 'upgrade' | 'rent' | 'debt' | 'choice';
   playerId: string;
   tileId: number | null;
   amount: number;
   creditorId: string | null;
+  originalAmount?: number;
+  defenseResolved?: boolean;
 }
 /** 交易报价仅向双方发送，等待主动接受、拒绝或取消。 */
 export interface Trade {
@@ -105,9 +138,18 @@ export interface PublicRoomState {
   logs: PublicLog[];
   /** 当前配置的扩展机会说明，沿用可选公开字段。 */
   chanceEventDescriptions?: string[];
+  event?: ContentResult | null;
+  eventPlayerId?: string | null;
+  upgradedTiles?: number[];
 }
 /** 当前玩家私有状态，只有本人可收到。 */
-export interface PrivatePlayerState { playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean }
+export interface PrivatePlayerState {
+  playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
+  choice?: ContentChoice | null;
+  event?: ContentResult | null;
+  notice?: ContentResult | null;
+  noticeText?: string | null;
+}
 /** 通过身份令牌建立会话；令牌不放入 URL。 */
 export interface Session { code: string; token: string; playerId: string | null }
 /** 服务端操作结果。 */
@@ -120,6 +162,8 @@ export type GameAction =
   | { type: 'setMapSize'; mapSize: MapSize }
   | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }
+  | { type: 'paymentDefense'; decisionId?: string; cardId?: string }
+  | { type: 'contentDecision'; decisionId: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[] }
   | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }
   | { type: 'tradeOffer'; toId: string; giveCash: number; wantCash: number; giveTiles: number[]; wantTiles: number[]; debtCredit?: number }

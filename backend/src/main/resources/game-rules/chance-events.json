@@ -135,5 +135,1466 @@
       "probability": 30,
       "compensationPercent": 50
     }
-  ]
+  ],
+  "content": {
+    "mechanisms": [
+      {
+        "id": "income",
+        "weight": 12,
+        "groups": [
+          {
+            "id": "large",
+            "weight": 1,
+            "parameters": [
+              {
+                "id": "amount-2000",
+                "values": {
+                  "amount": 2000
+                },
+                "skins": [
+                  {
+                    "id": "chance_delta_central_control",
+                    "name": "落地中控",
+                    "rarity": "SSR",
+                    "quote": "兄弟们我先撤了",
+                    "description": "你落地直冲中控，箱子里真躺着一颗非洲之星。上一秒还喊着一起打，下一秒已经在找撤离点了。"
+                  },
+                  {
+                    "id": "chance_lottery_jackpot",
+                    "name": "彩票头奖",
+                    "rarity": "SSR",
+                    "quote": "先别醒，让我再高兴一会儿。",
+                    "description": "彩票老板第一次比你更激动，你决定先兑奖，再练习中奖感言。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "medium",
+            "weight": 19,
+            "parameters": [
+              {
+                "id": "amount-800",
+                "values": {
+                  "amount": 800
+                },
+                "skins": [
+                  {
+                    "id": "chance_zelda_chest",
+                    "name": "呀哈哈",
+                    "rarity": "SR",
+                    "quote": "究竟还有多少呀哈哈?!",
+                    "description": "恭喜你找到了一个呀哈哈，还剩899个～"
+                  },
+                  {
+                    "id": "chance_stock_limit_up",
+                    "name": "一字涨停",
+                    "rarity": "R",
+                    "quote": "我就说这票有东西吧！",
+                    "description": "随手买的股票涨停了，你立刻把运气改名为投资体系。"
+                  },
+                  {
+                    "id": "chance_minecraft_diamond",
+                    "name": "挖到钻石",
+                    "rarity": "R",
+                    "quote": "钻石！兄弟们是钻石！",
+                    "description": "挖了一晚石头终于见到蓝光，你的脖子疼开始有了回报。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-1200",
+                "values": {
+                  "amount": 1200
+                },
+                "skins": [
+                  {
+                    "id": "chance_demolition_compensation",
+                    "name": "拆迁暴富",
+                    "rarity": "SR",
+                    "quote": "不装了，我家真拆迁了。",
+                    "description": "老房子突然比你的简历值钱，中介连夜把称呼从小伙改成老师。"
+                  },
+                  {
+                    "id": "chance_huang_silang_silver",
+                    "name": "黄四郎的家产",
+                    "rarity": "SR",
+                    "quote": "黄老爷，钱拿来吧你！",
+                    "description": "鹅城开始散银，你凭多年抢食堂第一排的经验抢到了前排。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "small",
+            "weight": 80,
+            "parameters": [
+              {
+                "id": "amount-500",
+                "values": {
+                  "amount": 500
+                },
+                "skins": [
+                  {
+                    "id": "chance_salary_arrived",
+                    "name": "月底发薪",
+                    "rarity": "R",
+                    "quote": "活了！兄弟们，我又活了！",
+                    "description": "工资短信一响，你从工位上的行尸走肉恢复成人类，保质期到交房租前。"
+                  },
+                  {
+                    "id": "chance_stardew_harvest",
+                    "name": "星露谷丰收",
+                    "rarity": "R",
+                    "quote": "你们卷吧，我回村种地了。",
+                    "description": "菜地终于大丰收，种田游戏成了本局最靠谱的工资系统。"
+                  },
+                  {
+                    "id": "chance_caishen_blessing",
+                    "name": "迎财神",
+                    "rarity": "R",
+                    "quote": "财神爷，这边，这边！",
+                    "description": "财神路过你家，发现余额太有节目效果，临走塞了个红包。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_mario_coin",
+                    "name": "吃金币",
+                    "rarity": "R",
+                    "quote": "再顶一下，再顶一下！",
+                    "description": "别人顶砖练弹跳，你顶砖改善现金流；头疼有了明确的经济意义。"
+                  },
+                  {
+                    "id": "chance_liangshan_share",
+                    "name": "劫生辰纲",
+                    "rarity": "R",
+                    "quote": "大哥，我也算自己人吧？",
+                    "description": "梁山分账速度比公司报销快，你还没填表，银子已经到手。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "chance_reimbursement_arrived",
+                    "name": "报销到账",
+                    "rarity": "R",
+                    "quote": "终于批了！这单我等多久了！",
+                    "description": "你以为报销单已经进了失踪人口名单，财务今天突然把钱打了过来。金额不大，手机提示音却比老板的夸奖好听。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fee",
+        "weight": 12,
+        "groups": [
+          {
+            "id": "small",
+            "weight": 80,
+            "parameters": [
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "chance_overtime_taxi",
+                    "name": "加班打车",
+                    "rarity": "R",
+                    "quote": "不是，班白加了？",
+                    "description": "加班费还在审批，打车费已经扣款；公司省的钱由你补齐。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-500",
+                "values": {
+                  "amount": 500
+                },
+                "skins": [
+                  {
+                    "id": "chance_client_revision",
+                    "name": "甲方改需求",
+                    "rarity": "R",
+                    "quote": "那你倒是早说啊！",
+                    "description": "改到第十八版，甲方决定回到第一版；你的钱包也跟着返工。"
+                  },
+                  {
+                    "id": "chance_palace_bribe",
+                    "name": "打点关系",
+                    "rarity": "R",
+                    "quote": "公公，您看这事儿……",
+                    "description": "办事流程本来很长，银子一递突然就短了；钱包负责为效率买单。"
+                  },
+                  {
+                    "id": "chance_genshin_topup",
+                    "name": "原神氪金",
+                    "rarity": "R",
+                    "quote": "出金！给我出金啊！",
+                    "description": "十连的动画很好看，付款记录也很壮观；限定没替你付房租。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_delivery_fee",
+                    "name": "外卖加料",
+                    "rarity": "R",
+                    "quote": "我凑的满减，怎么还更贵了？",
+                    "description": "为了省下配送费多点一堆菜，你成功把小额消费升级成大型项目。"
+                  },
+                  {
+                    "id": "chance_warcraft_fee",
+                    "name": "缴纳过路费",
+                    "rarity": "R",
+                    "quote": "不是哥们，过个桥也收费？",
+                    "description": "地精在桥头开出收费单，你刚想讲道理，对方先亮了价目表。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "medium",
+            "weight": 19,
+            "parameters": [
+              {
+                "id": "amount-800",
+                "values": {
+                  "amount": 800
+                },
+                "skins": [
+                  {
+                    "id": "chance_double11_haul",
+                    "name": "双十一剁手",
+                    "rarity": "SR",
+                    "quote": "这手不要也罢！",
+                    "description": "你本来只想看看优惠，支付成功页面替你作出了成熟的决定。"
+                  },
+                  {
+                    "id": "chance_leek_cut",
+                    "name": "被割韭菜",
+                    "rarity": "SR",
+                    "quote": "家人们，谁把我根割了？",
+                    "description": "你以为自己在抄底，主力以为终于有人接盘，双方都很满意。"
+                  },
+                  {
+                    "id": "chance_involution_class",
+                    "name": "内卷报班",
+                    "rarity": "R",
+                    "quote": "谁又背着我偷偷报班了！",
+                    "description": "同事偷偷报班，你偷偷付款；大家都进步了，只有余额在退步。"
+                  },
+                  {
+                    "id": "chance_kogoro_horse",
+                    "name": "赌马输光",
+                    "rarity": "SR",
+                    "quote": "再押最后一把！真最后一把！",
+                    "description": "赛马跑得飞快，你的小酒钱也跑得飞快，而且没打算回来。"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "large",
+            "weight": 1,
+            "parameters": [
+              {
+                "id": "amount-1200",
+                "values": {
+                  "amount": 1200
+                },
+                "skins": [
+                  {
+                    "id": "chance_rent_due",
+                    "name": "房东收租",
+                    "rarity": "SSR",
+                    "quote": "阿姨，这房子镶金的啊？",
+                    "description": "房东精准卡点出现，比你上班打卡还敬业，顺手带走一笔现金。"
+                  },
+                  {
+                    "id": "chance_stock_crash",
+                    "name": "股市暴跌",
+                    "rarity": "SSR",
+                    "quote": "天台风有点大，我先下来。",
+                    "description": "开盘前你是价值投资者，开盘后你只想卸载软件保护视力。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "forward",
+        "weight": 8,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "steps-5",
+                "values": {
+                  "steps": 5
+                },
+                "skins": [
+                  {
+                    "id": "chance_hiraishin",
+                    "name": "飞雷神之术",
+                    "rarity": "SR",
+                    "quote": "看清楚了吗？我已经过去了。",
+                    "description": "飞雷神标记一亮，你抄了五格近路；落点的房东已经准备欢迎仪式。"
+                  },
+                  {
+                    "id": "chance_extraction_point",
+                    "name": "高速撤离",
+                    "rarity": "R",
+                    "quote": "别舔了别舔了，快撤！",
+                    "description": "撤离倒计时刚响，你跑出了体育老师都没见过的水平。"
+                  }
+                ]
+              },
+              {
+                "id": "steps-6",
+                "values": {
+                  "steps": 6
+                },
+                "skins": [
+                  {
+                    "id": "chance_kinto_un",
+                    "name": "筋斗云",
+                    "rarity": "SR",
+                    "quote": "筋斗云，快来接我！",
+                    "description": "筋斗云比早高峰靠谱，一口气带你向前；司机不负责挑便宜落点。"
+                  },
+                  {
+                    "id": "chance_somersault_cloud",
+                    "name": "腾云驾雾",
+                    "rarity": "SR",
+                    "quote": "俺老孙先走一步！",
+                    "description": "一个跟头翻过几户人家，悟空负责速度，落地费用由你负责。"
+                  }
+                ]
+              },
+              {
+                "id": "steps-3",
+                "values": {
+                  "steps": 3
+                },
+                "skins": [
+                  {
+                    "id": "chance_nether_portal",
+                    "name": "下界传送门",
+                    "rarity": "R",
+                    "quote": "谁家传送门开这儿啊！",
+                    "description": "传送门解决了距离问题，没解决另一头可能更贵的问题。"
+                  },
+                  {
+                    "id": "chance_ryze_realm_warp",
+                    "name": "曲境折跃",
+                    "rarity": "R",
+                    "quote": "瑞兹别开车，等一下我！",
+                    "description": "瑞兹开车不问乘客意见，你还没坐稳，前面已开始报站。"
+                  },
+                  {
+                    "id": "chance_engine_burn",
+                    "name": "行星发动机点火",
+                    "rarity": "R",
+                    "quote": "点火！谁把我刹车拆了？",
+                    "description": "发动机一响，地球流浪，你跟着滑；这次搬家按格数结算。"
+                  }
+                ]
+              },
+              {
+                "id": "steps-2",
+                "values": {
+                  "steps": 2
+                },
+                "skins": [
+                  {
+                    "id": "chance_kart_boost",
+                    "name": "蘑菇加速",
+                    "rarity": "R",
+                    "quote": "蘑菇吃了！都闪开！",
+                    "description": "蘑菇一吃车速上来，导航都没来得及问你是否避开收费路段。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "back",
+        "weight": 8,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "steps--3",
+                "values": {
+                  "steps": -3
+                },
+                "skins": [
+                  {
+                    "id": "chance_blackhole_pull",
+                    "name": "谜团黑洞",
+                    "rarity": "R",
+                    "quote": "别大我啊！我只是路过！",
+                    "description": "谜团把你吸进黑洞，出来发现进度少了一截，宇宙也会撤回消息。"
+                  },
+                  {
+                    "id": "chance_pubg_zone",
+                    "name": "毒圈推人",
+                    "rarity": "R",
+                    "quote": "圈怎么又刷脸反方向啊！",
+                    "description": "安全区在后面，你的前进计划被迫改名为战术性回撤。"
+                  },
+                  {
+                    "id": "chance_involution_fail",
+                    "name": "卷输了",
+                    "rarity": "R",
+                    "quote": "卷不动了，你们赢吧。",
+                    "description": "你卷了一宿，同事卷了一周；进度榜决定给你一点反向激励。"
+                  }
+                ]
+              },
+              {
+                "id": "steps--2",
+                "values": {
+                  "steps": -2
+                },
+                "skins": [
+                  {
+                    "id": "chance_banana_peel",
+                    "name": "踩到香蕉皮",
+                    "rarity": "R",
+                    "quote": "谁扔的香蕉皮，出来！",
+                    "description": "一块香蕉皮完成了你苦练多年的倒车入库，姿势不太体面。"
+                  },
+                  {
+                    "id": "chance_cs_ambush",
+                    "name": "被阴了一枪",
+                    "rarity": "R",
+                    "quote": "我真服了，这也有人蹲？",
+                    "description": "转角没遇到爱，遇到蹲守的枪口；你连退两步重新认识地图。"
+                  }
+                ]
+              },
+              {
+                "id": "steps--5",
+                "values": {
+                  "steps": -5
+                },
+                "skins": [
+                  {
+                    "id": "chance_bagua_formation",
+                    "name": "八卦阵",
+                    "rarity": "R",
+                    "quote": "丞相，这出口在哪儿啊？",
+                    "description": "八卦阵的出口比工作群的消息难找，转了半天只收获倒退。"
+                  },
+                  {
+                    "id": "chance_client_reject",
+                    "name": "甲方退稿",
+                    "rarity": "SR",
+                    "quote": "又重做？你是认真的吗？",
+                    "description": "甲方把你辛苦推进的项目打回原处，连棋盘都开始要求重做。"
+                  }
+                ]
+              },
+              {
+                "id": "steps--6",
+                "values": {
+                  "steps": -6
+                },
+                "skins": [
+                  {
+                    "id": "chance_stock_pullback",
+                    "name": "股票回撤",
+                    "rarity": "SR",
+                    "quote": "别跌了，我认错还不行吗！",
+                    "description": "你说只是正常回调，棋子却诚实地往回走，回调得有点具体。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "skip",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "count-1",
+                "values": {
+                  "count": 1
+                },
+                "skins": [
+                  {
+                    "id": "chance_lying_flat",
+                    "name": "彻底躺平",
+                    "rarity": "R",
+                    "quote": "扶我起来？不用了，谢谢。",
+                    "description": "沙发与身体达成长期合作意向，你决定下个回合再考虑翻身。"
+                  },
+                  {
+                    "id": "chance_worker_slacking",
+                    "name": "打工人摆烂",
+                    "rarity": "R",
+                    "quote": "在线，勿扰，没在干活。",
+                    "description": "工位还亮着，灵魂已下班；这一回合你只负责保持在线。"
+                  },
+                  {
+                    "id": "chance_dragon_ball_freeze",
+                    "name": "被定身术",
+                    "rarity": "R",
+                    "quote": "我怎么动不了了？救一下！",
+                    "description": "定身术一落，你连伸手拿零食都像卡在加载界面。"
+                  },
+                  {
+                    "id": "chance_sharingan_illusion",
+                    "name": "中了幻术",
+                    "rarity": "R",
+                    "quote": "解！解！怎么还不解啊！",
+                    "description": "幻术里你已财富自由，现实里你还站在原地；先休息一回合。"
+                  },
+                  {
+                    "id": "chance_fake_wine",
+                    "name": "喝了碗假酒",
+                    "rarity": "SR",
+                    "quote": "掌柜的，这酒是不是不对劲？",
+                    "description": "假酒喝出真困意，同福客栈的床位顺势承包了你的下一回合。"
+                  },
+                  {
+                    "id": "chance_genshin_gacha_binge",
+                    "name": "抽卡上头",
+                    "rarity": "SR",
+                    "quote": "等一下，十连动画还没看完！",
+                    "description": "你点十连点到忘记时间，抬头发现大家已经把回合打完了。"
+                  },
+                  {
+                    "id": "chance_delta_star_stolen",
+                    "name": "非洲之心被抢走",
+                    "rarity": "R",
+                    "quote": "下次再架二员我就是狗！",
+                    "description": "你在二员架枪架了半天，回头一看，中控的非洲之心已经被别人揣走了，气得你原地硬控一回合。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "cards",
+        "weight": 8,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "count-2",
+                "values": {
+                  "count": 2
+                },
+                "skins": [
+                  {
+                    "id": "chance_airdrop_crate",
+                    "name": "抢空投",
+                    "rarity": "R",
+                    "quote": "空投我的！谁都别碰！",
+                    "description": "空投落得像点名，你冲过去抱回两张牌，队友立刻表示关系很好。"
+                  },
+                  {
+                    "id": "chance_pokeball_catch",
+                    "name": "丢精灵球",
+                    "rarity": "R",
+                    "quote": "三下了，给我进球啊！",
+                    "description": "精灵球转了三下，道具卡也跟着进包；今天的补给很懂事。"
+                  },
+                  {
+                    "id": "chance_four_dim_pocket",
+                    "name": "四次元口袋",
+                    "rarity": "SR",
+                    "quote": "哆啦A梦！这次多掏一点！",
+                    "description": "四次元口袋掏出两张牌，你开始怀疑机器猫才是真正的供应链。"
+                  }
+                ]
+              },
+              {
+                "id": "count-1",
+                "values": {
+                  "count": 1
+                },
+                "skins": [
+                  {
+                    "id": "chance_delta_loot",
+                    "name": "摸金开箱",
+                    "rarity": "R",
+                    "quote": "出大金！求你了出个大金！",
+                    "description": "这一箱没摸出大金，摸出了能翻盘的道具；先拿着，总有用。"
+                  },
+                  {
+                    "id": "chance_wukong_drop",
+                    "name": "打怪掉落",
+                    "rarity": "R",
+                    "quote": "你掉点东西啊，我都打半天了。",
+                    "description": "妖怪倒下后掉了一张牌，天命人总算收到了打怪绩效。"
+                  },
+                  {
+                    "id": "chance_double11_bag",
+                    "name": "拆快递福袋",
+                    "rarity": "R",
+                    "quote": "拆完这个，我真不买了。",
+                    "description": "福袋里终于有能用的东西，你对盲盒行业短暂恢复了信任。"
+                  },
+                  {
+                    "id": "chance_gacha_ten",
+                    "name": "抽卡十连",
+                    "rarity": "R",
+                    "quote": "金了！截图，快截图！",
+                    "description": "十连的好运折成一张道具卡，你决定先截图，再研究怎么用。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "all_income",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_red_envelope",
+                    "name": "发红包",
+                    "rarity": "R",
+                    "quote": "都别潜水了，发红包了！",
+                    "description": "群主发红包，全桌同时停止聊天；手速终于兑现成了生产力。"
+                  },
+                  {
+                    "id": "chance_goose_city_silver",
+                    "name": "鹅城撒银",
+                    "rarity": "SR",
+                    "quote": "钱都出来了，还等什么呢？",
+                    "description": "鹅城撒银，大家一起弯腰，刚才还在争论的人突然非常团结。"
+                  },
+                  {
+                    "id": "chance_shenron_wish",
+                    "name": "神龙许愿",
+                    "rarity": "SR",
+                    "quote": "神龙啊，能不能全桌都发？",
+                    "description": "神龙刚听到愿望就给全桌发钱，公平得让许愿者略感心酸。"
+                  },
+                  {
+                    "id": "chance_server_compensation",
+                    "name": "全服补偿",
+                    "rarity": "SR",
+                    "quote": "别急着开服，补偿发了没？",
+                    "description": "服务器出问题，全桌收补偿；你突然对维护公告有了感情。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "chance_company_bonus",
+                    "name": "庆功宴分红",
+                    "rarity": "R",
+                    "quote": "老板你来真的？我先鼓个掌。",
+                    "description": "老板终于把大家辛苦了翻译成现金，庆功宴的掌声一下真诚起来。"
+                  },
+                  {
+                    "id": "chance_angel_invest",
+                    "name": "天使轮撒钱",
+                    "rarity": "R",
+                    "quote": "这位老板，您还缺朋友吗？",
+                    "description": "投资人今天手松，全桌获得启动资金，人人都敢自称创始人了。"
+                  },
+                  {
+                    "id": "chance_tong_boss_wage",
+                    "name": "佟掌柜发月钱",
+                    "rarity": "R",
+                    "quote": "掌柜的，这月钱可算来了！",
+                    "description": "佟掌柜把月钱发下来了，大家终于确认账本不只是装饰。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "all_fee",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_everyone_rent",
+                    "name": "全员交房租",
+                    "rarity": "R",
+                    "quote": "不是，怎么全桌都得交啊？",
+                    "description": "房租账单群发到全桌，大家默契地关闭了刚才的财富自由话题。"
+                  },
+                  {
+                    "id": "chance_galactic_tax",
+                    "name": "帝国征税",
+                    "rarity": "R",
+                    "quote": "我不在帝国编制里也要交？",
+                    "description": "帝国征税不挑阵营，整桌玩家都体验了一次银河级收费服务。"
+                  },
+                  {
+                    "id": "chance_double11_all",
+                    "name": "全民剁手",
+                    "rarity": "SR",
+                    "quote": "你也买了？行，那我不亏。",
+                    "description": "优惠活动覆盖全桌，大家一起下单，钱包一起参与集体跳水。"
+                  },
+                  {
+                    "id": "chance_world_boss",
+                    "name": "世界BOSS来袭",
+                    "rarity": "SR",
+                    "quote": "先别开怪，谁还有修理费？",
+                    "description": "世界BOSS还没打倒，修装备的账单先打倒了全桌现金流。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "chance_team_building",
+                    "name": "团建AA",
+                    "rarity": "R",
+                    "quote": "团建还要AA？我能不去吗？",
+                    "description": "团建要求自愿参加，AA要求全员到账；气氛靠你们，费用也靠你们。"
+                  },
+                  {
+                    "id": "chance_westeros_tax",
+                    "name": "铁王座征税",
+                    "rarity": "SR",
+                    "quote": "换个王也不打折是吧？",
+                    "description": "铁王座又换了人，征税通知倒是从没断过，全桌统一缴费。"
+                  },
+                  {
+                    "id": "chance_sophon_lock",
+                    "name": "智子封锁",
+                    "rarity": "R",
+                    "quote": "你们锁科技，关我钱包啥事？",
+                    "description": "智子把路堵了，系统还收维护费；全桌为科技倒退贡献经费。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rich_fee",
+        "weight": 7,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-500",
+                "values": {
+                  "amount": 500
+                },
+                "skins": [
+                  {
+                    "id": "chance_tithe_palace",
+                    "name": "向皇上进贡",
+                    "rarity": "R",
+                    "quote": "皇上，臣只是暂时排第一啊！",
+                    "description": "皇上扫了一眼净资产榜，宣布首富最该为宫里的新项目出点力。"
+                  },
+                  {
+                    "id": "chance_thanos_target",
+                    "name": "灭霸盯上你",
+                    "rarity": "R",
+                    "quote": "灭霸，你能不能先打别人？",
+                    "description": "灭霸看了一眼榜单，觉得最富的那位需要一点余额平衡。"
+                  },
+                  {
+                    "id": "chance_sophon_target",
+                    "name": "智子针对",
+                    "rarity": "SR",
+                    "quote": "别针对我了，我退榜还不行？",
+                    "description": "智子精准定位财富榜第一，首富终于拥有了专属的麻烦客服。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_platform_cut",
+                    "name": "平台抽成",
+                    "rarity": "R",
+                    "quote": "我刚赚一点，你又来抽成？",
+                    "description": "平台发现榜一赚得不错，马上更新抽成规则；首富体验专属服务。"
+                  },
+                  {
+                    "id": "chance_protection_money",
+                    "name": "交保护费",
+                    "rarity": "R",
+                    "quote": "大哥，首富也没余粮啊！",
+                    "description": "好汉专找最有钱的那位谈合作，合作内容主要是对方付款。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-800",
+                "values": {
+                  "amount": 800
+                },
+                "skins": [
+                  {
+                    "id": "chance_rob_rich",
+                    "name": "劫富济贫",
+                    "rarity": "R",
+                    "quote": "谁富找谁，别看我，找他！",
+                    "description": "张麻子先翻净资产榜，再决定谁交钱；别急，这张只收首富税。"
+                  },
+                  {
+                    "id": "chance_iron_throne",
+                    "name": "铁王座税",
+                    "rarity": "SR",
+                    "quote": "这王座谁爱坐谁坐！",
+                    "description": "坐上财富榜铁王座的代价，是先替王国结一笔税单。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-1200",
+                "values": {
+                  "amount": 1200
+                },
+                "skins": [
+                  {
+                    "id": "chance_jia_family_raid",
+                    "name": "贾府抄家",
+                    "rarity": "SSR",
+                    "quote": "我家底还没炫完呢！",
+                    "description": "净资产榜第一还没炫耀完，抄家清单已经开始打印。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bottom_income",
+        "weight": 7,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "amount-500",
+                "values": {
+                  "amount": 500
+                },
+                "skins": [
+                  {
+                    "id": "chance_alms",
+                    "name": "化缘布施",
+                    "rarity": "R",
+                    "quote": "师父，我这碗里是真没钱。",
+                    "description": "师父翻了翻净资产榜，把化缘所得递给最需要续命的那位。"
+                  },
+                  {
+                    "id": "chance_un_relief",
+                    "name": "联合国援助",
+                    "rarity": "SR",
+                    "quote": "援助在哪领？我排队了！",
+                    "description": "援助名单按净资产倒着读，榜底玩家终于在一份名单上拔得头筹。"
+                  },
+                  {
+                    "id": "chance_weasley_gift",
+                    "name": "韦斯莱家的礼物",
+                    "rarity": "SSR",
+                    "quote": "礼物不大，我真有被暖到。",
+                    "description": "韦斯莱家把礼物递给榜底玩家，附赠一份不拿排名开玩笑的体面。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-300",
+                "values": {
+                  "amount": 300
+                },
+                "skins": [
+                  {
+                    "id": "chance_delivery_subsidy",
+                    "name": "骑手补贴",
+                    "rarity": "R",
+                    "quote": "平台总算记得我这号了。",
+                    "description": "平台突然想起榜底也要吃饭，一笔补贴把最低资产玩家拉了拉。"
+                  },
+                  {
+                    "id": "chance_doraemon_help",
+                    "name": "哆啦A梦帮忙",
+                    "rarity": "R",
+                    "quote": "大雄有机器猫，我也要！",
+                    "description": "机器猫锁定榜底，掏出的不是建议，是能直接用的现金。"
+                  },
+                  {
+                    "id": "chance_townsfolk_mutual",
+                    "name": "镇民互助",
+                    "rarity": "R",
+                    "quote": "各位乡亲，这回真谢谢了。",
+                    "description": "镇民看榜底过得有点辛苦，凑了一笔钱；这村邻里关系真不错。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-200",
+                "values": {
+                  "amount": 200
+                },
+                "skins": [
+                  {
+                    "id": "chance_pdd_cut",
+                    "name": "砍一刀成功",
+                    "rarity": "R",
+                    "quote": "成了？最后一刀真成了？！",
+                    "description": "最后一刀终于砍成，榜底玩家第一次觉得助力群有用。"
+                  }
+                ]
+              },
+              {
+                "id": "amount-800",
+                "values": {
+                  "amount": 800
+                },
+                "skins": [
+                  {
+                    "id": "chance_poor_share",
+                    "name": "穷人分银",
+                    "rarity": "SR",
+                    "quote": "分钱能不能让我先来一次？",
+                    "description": "散银散到榜底面前，鹅城终于给排名最后的玩家开了绿色通道。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gamble",
+        "weight": 8,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "prize-1000_probability-30_wager-200",
+                "values": {
+                  "wager": 200,
+                  "probability": 30,
+                  "prize": 1000
+                },
+                "skins": [
+                  {
+                    "id": "chance_blind_box",
+                    "name": "开盲盒",
+                    "rarity": "R",
+                    "quote": "隐藏款！隐藏款！别又重复！",
+                    "description": "盲盒柜台向你招手，参加前先看概率；不想交学费也可以路过。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-1500_probability-50_wager-300",
+                "values": {
+                  "wager": 300,
+                  "probability": 50,
+                  "prize": 1500
+                },
+                "skins": [
+                  {
+                    "id": "chance_pokemon_pack",
+                    "name": "开卡包",
+                    "rarity": "SR",
+                    "quote": "这包有金光，我有预感！",
+                    "description": "卡包闪着金光，你可以下注开包，也可以把运气留到下一局。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-1000_probability-50_wager-300",
+                "values": {
+                  "wager": 300,
+                  "probability": 50,
+                  "prize": 1000
+                },
+                "skins": [
+                  {
+                    "id": "chance_gear_upgrade",
+                    "name": "强化装备",
+                    "rarity": "SR",
+                    "quote": "强化师，你这次手稳一点。",
+                    "description": "强化师承诺有机会大赚，但失败不退钱；你决定要不要听这个饼。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-1500_probability-50_wager-200",
+                "values": {
+                  "wager": 200,
+                  "probability": 50,
+                  "prize": 1500
+                },
+                "skins": [
+                  {
+                    "id": "chance_bottom_fishing",
+                    "name": "抄底",
+                    "rarity": "SR",
+                    "quote": "底了吧？这回真到底了吧？",
+                    "description": "市场说到底了，你可以押一笔验证，也可以选择保护现有现金。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-1000_probability-50_wager-200",
+                "values": {
+                  "wager": 200,
+                  "probability": 50,
+                  "prize": 1000
+                },
+                "skins": [
+                  {
+                    "id": "chance_a_way_out_bet",
+                    "name": "双人成行赌一把",
+                    "rarity": "SR",
+                    "quote": "兄弟，这把靠你了啊！",
+                    "description": "搭档喊你试一把，报名费和概率写得清楚；点头前先看看钱包。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-2000_probability-30_wager-300",
+                "values": {
+                  "wager": 300,
+                  "probability": 30,
+                  "prize": 2000
+                },
+                "skins": [
+                  {
+                    "id": "chance_all_in",
+                    "name": "梭哈",
+                    "rarity": "SSR",
+                    "quote": "我不信这把还能输！",
+                    "description": "赌桌给出大奖赔率，你可以梭这一注，也可以拒绝当本桌节目效果。"
+                  },
+                  {
+                    "id": "chance_super_lotto",
+                    "name": "大乐透",
+                    "rarity": "SSR",
+                    "quote": "我已经想好钱怎么花了。",
+                    "description": "彩票柜台写着大奖，你可以试一次，也可以把这笔现金留着交租。"
+                  }
+                ]
+              },
+              {
+                "id": "prize-2000_probability-30_wager-200",
+                "values": {
+                  "wager": 200,
+                  "probability": 30,
+                  "prize": 2000
+                },
+                "skins": [
+                  {
+                    "id": "chance_souls_start",
+                    "name": "魂系开局",
+                    "rarity": "SSR",
+                    "quote": "这次肯定能过，真的。",
+                    "description": "魂系挑战门票先收，成功才有大奖；觉得今天手感不行也可以退出。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "self_destroy",
+        "weight": 3,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_demolition_mistake",
+                    "name": "拆迁队误拆",
+                    "rarity": "SR",
+                    "quote": "师傅！拆错了！那是我家！",
+                    "description": "拆迁队走错片场，你得选一块自家有建筑的地产，给乌龙施工腾地方。"
+                  },
+                  {
+                    "id": "chance_godzilla_stomp",
+                    "name": "哥斯拉踩平",
+                    "rarity": "SSR",
+                    "quote": "哥！脚下留房啊哥！",
+                    "description": "哥斯拉一脚就需要一整块地，你选好自家建筑，接受巨兽的脚底验收。"
+                  },
+                  {
+                    "id": "chance_chibi_fire",
+                    "name": "火烧赤壁",
+                    "rarity": "SSR",
+                    "quote": "丞相，风能不能往那边吹？",
+                    "description": "赤壁火势拐进你的资产表，选一块自家有建筑的地产承受这一把火。"
+                  },
+                  {
+                    "id": "chance_titan_trample",
+                    "name": "巨人践踏",
+                    "rarity": "SSR",
+                    "quote": "你踩别人去啊，别踩我家！",
+                    "description": "巨人需要落脚点，你得在自家有建筑的地产里选一个倒霉现场。"
+                  },
+                  {
+                    "id": "chance_cyber_maxtac",
+                    "name": "暴恐机动队",
+                    "rarity": "SSR",
+                    "quote": "抓人就抓人，拆我楼干嘛？",
+                    "description": "暴恐机动队进场声势浩大，你选择一块自家建筑承担行动的附带损失。"
+                  },
+                  {
+                    "id": "chance_creeper_boom",
+                    "name": "苦力怕炸房",
+                    "rarity": "SSR",
+                    "quote": "别嘶！别嘶！别嘶！",
+                    "description": "苦力怕凑过来嘶了一声，你只能选一块自家建筑接住这份绿色惊喜。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "disaster",
+        "weight": 3,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_autumn_wind",
+                    "name": "秋风破屋",
+                    "rarity": "SSR",
+                    "quote": "谁家屋顶在天上飞啊？",
+                    "description": "风挑了一块有建筑的地产下手，业主被迫体验露天居住的新趋势。"
+                  },
+                  {
+                    "id": "chance_ny_battle",
+                    "name": "纽约大战",
+                    "rarity": "SSR",
+                    "quote": "英雄们，打架看看脚下啊！",
+                    "description": "英雄忙着拯救世界，随机一处楼房忙着成为战后修缮项目。"
+                  },
+                  {
+                    "id": "chance_wall_breach",
+                    "name": "巨人破墙",
+                    "rarity": "SSR",
+                    "quote": "墙破了，我楼也没了？",
+                    "description": "巨人破墙的动静传遍棋盘，随机一块地产的建筑承担了镜头特写。"
+                  },
+                  {
+                    "id": "chance_dragon_fire",
+                    "name": "龙妈屠城",
+                    "rarity": "SSR",
+                    "quote": "龙妈，烤串也不用这么猛吧！",
+                    "description": "龙焰划过地图，随机一处建筑被烧成了业主不想看的战绩。"
+                  },
+                  {
+                    "id": "chance_corpo_war",
+                    "name": "公司战争",
+                    "rarity": "SSR",
+                    "quote": "你俩吵架，怎么拆我房子？",
+                    "description": "两家公司吵到动用火力，随机一处地产替他们支付了公关成本。"
+                  },
+                  {
+                    "id": "chance_deathwing_rage",
+                    "name": "死亡之翼",
+                    "rarity": "SSR",
+                    "quote": "翼哥，路过不用拆个楼吧！",
+                    "description": "死亡之翼路过棋盘，随机一栋楼当场体验资料片级别的拆迁。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "free_upgrade",
+        "weight": 5,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "fallback-400",
+                "values": {
+                  "fallback": 400
+                },
+                "skins": [
+                  {
+                    "id": "chance_infra_madness",
+                    "name": "基建狂魔",
+                    "rarity": "R",
+                    "quote": "这速度，隔壁都看傻了。",
+                    "description": "施工队连夜加班，你选一块合规地产升级，房子比你的项目推进快。"
+                  },
+                  {
+                    "id": "chance_civ_builder",
+                    "name": "建造者",
+                    "rarity": "R",
+                    "quote": "工人呢？来我这儿加个班！",
+                    "description": "建造者把锤子扛来，你选好合规地产，他负责把免费升级落地。"
+                  },
+                  {
+                    "id": "chance_yugong_house",
+                    "name": "愚公移山",
+                    "rarity": "SR",
+                    "quote": "山都能移，盖个楼算什么！",
+                    "description": "愚公不只会移山，也接扩建；选好合规地产，今天把毅力折成楼层。"
+                  },
+                  {
+                    "id": "chance_cyber_chrome",
+                    "name": "义体升级",
+                    "rarity": "SR",
+                    "quote": "医生，给我房子也装一套！",
+                    "description": "义体工程师给合规地产上了套硬件，楼层提升，付款步骤省略。"
+                  },
+                  {
+                    "id": "chance_building_machine",
+                    "name": "建筑机",
+                    "rarity": "SR",
+                    "quote": "哆啦A梦，机器借我一下！",
+                    "description": "建筑机把手工活改成一键施工，你选地，它加层，老板暂时失业。"
+                  },
+                  {
+                    "id": "chance_scv_build",
+                    "name": "建造基地",
+                    "rarity": "SR",
+                    "quote": "SCV，收到没有？开工！",
+                    "description": "SCV表示收到，选一块合规地产，免费升级进入施工队列。"
+                  },
+                  {
+                    "id": "chance_redstone_tech",
+                    "name": "红石自动化",
+                    "rarity": "SSR",
+                    "quote": "这次真能用，绝对不会炸！",
+                    "description": "红石机器终于没把房子炸掉，你选一块合规地产，让工程师证明自己。"
+                  },
+                  {
+                    "id": "chance_house_flip",
+                    "name": "炒房成功",
+                    "rarity": "SSR",
+                    "quote": "不卖了不卖了，先再盖一层。",
+                    "description": "地产翻新赶上好时机，你选一块合规地产升级，先升楼层再做发财梦。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "trap_immunity",
+        "weight": 2,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "count-3",
+                "values": {
+                  "count": 3
+                },
+                "skins": [
+                  {
+                    "id": "chance_shadow_clone",
+                    "name": "影分身之术",
+                    "rarity": "R",
+                    "quote": "别找我，找我分身去。",
+                    "description": "影分身接下三个后续个人回合的陷阱活，本体负责走路，不负责免租。"
+                  },
+                  {
+                    "id": "chance_golden_bell",
+                    "name": "金钟罩",
+                    "rarity": "R",
+                    "quote": "来，往我身上招呼。",
+                    "description": "金钟罩替你挡三个后续个人回合的陷阱，账单敲过来还是得接。"
+                  },
+                  {
+                    "id": "chance_unlimited_void",
+                    "name": "无量空处",
+                    "rarity": "SR",
+                    "quote": "领域展开！都别来烦我！",
+                    "description": "领域内三个后续个人回合的陷阱绕开你，收租系统却没被领域接管。"
+                  },
+                  {
+                    "id": "chance_za_warudo",
+                    "name": "砸瓦鲁多",
+                    "rarity": "SSR",
+                    "quote": "砸——瓦——鲁——多！",
+                    "description": "时间暂停的气势足够大，三个后续个人回合内你能避开陷阱，账单照常走表。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "next_waiver",
+        "weight": 1,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_zongzi_charm",
+                    "name": "端午菖蒲",
+                    "rarity": "R",
+                    "quote": "艾草插好了，这单别找我。",
+                    "description": "菖蒲艾草给下一笔强制费用开出免单符，买地购物还得自己付。"
+                  },
+                  {
+                    "id": "chance_guardian_angel",
+                    "name": "复活甲",
+                    "rarity": "SR",
+                    "quote": "有复活甲，慌什么！",
+                    "description": "复活甲把下一笔强制费用挡掉；别急着送命，这件装备只救账单。"
+                  },
+                  {
+                    "id": "chance_elden_shield",
+                    "name": "黄金盾",
+                    "rarity": "SR",
+                    "quote": "盾举好了，这单别想碰我。",
+                    "description": "黄金盾接住下一笔强制费用，挡完就退场，不提供长期包月服务。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "rent_double",
+        "weight": 1,
+        "groups": [
+          {
+            "id": "default",
+            "weight": 100,
+            "parameters": [
+              {
+                "id": "default",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_immobilize",
+                    "name": "定身术",
+                    "rarity": "R",
+                    "quote": "定我就定我，怎么租还翻倍？",
+                    "description": "定身术没拦住脚步，却给下一笔实际租金加了倍数，房东笑得很熟练。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
 }

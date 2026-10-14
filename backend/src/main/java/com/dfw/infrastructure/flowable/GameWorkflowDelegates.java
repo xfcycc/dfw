@@ -19,6 +19,7 @@ public final class GameWorkflowDelegates {
         if (!room.status.equals("playing")) return room.status;
         PendingDecision pending = room.pending;
         String choice = pending == null ? "" : pending.type + ":" + pending.playerId + ":" + pending.tileId + ":" + pending.amount + ":" + pending.creditorId;
+        if (pending != null && pending.type.equals("choice")) choice += ":" + pending.id;
         return room.turnNumber + ":" + GameSupport.current(room).id + ":" + room.phase + ":" + choice + ":" + (room.trade == null ? "" : room.trade.id)
                 + (room.runtime != null ? ":stage:" + room.runtime.stageIndex : "");
     }

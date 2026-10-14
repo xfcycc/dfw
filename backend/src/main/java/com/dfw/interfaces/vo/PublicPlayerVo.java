@@ -7,6 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PublicPlayerVo {
+    /** 已持有的一次性强制费用免单状态。 */
+    public boolean nextPaymentWaiver;
+    /** 已持有的下一次正租金翻倍状态。 */
+    public boolean nextRentDouble;
     /** 玩家唯一标识。 */
     public String id;
     /** 公开昵称。 */

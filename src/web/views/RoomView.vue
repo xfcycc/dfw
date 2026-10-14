@@ -10,6 +10,8 @@ import Board from '../components/Board.vue';
 import Modal from '../components/Modal.vue';
 import Assets from '../components/Assets.vue';
 import CardAction from '../components/CardAction.vue';
+import ContentCard from '../components/ContentCard.vue';
+import ContentChoice from '../components/ContentChoice.vue';
 import TradeEditor from '../components/TradeEditor.vue';
 import Rules from '../components/Rules.vue';
 
@@ -17,8 +19,9 @@ const props = withDefaults(defineProps<{ spectator?: boolean }>(), { spectator: 
 const route = useRoute();
 const origin = window.location.origin;
 const game = useGameStore();
-const modal = ref<'rules' | 'assets' | 'card' | 'trade' | 'bankruptcy' | null>(null);
+const modal = ref<'rules' | 'assets' | 'card' | 'trade' | 'bankruptcy' | 'choice' | null>(null);
 const selectedCard = ref<Card | null>(null);
+const selectedDefense = ref('');
 const selectedTile = ref<Tile | null>(null);
 let entryGeneration = 0;
 const code = computed(() => String(route.params.code));
@@ -26,11 +29,12 @@ const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === ga
 const allReady = computed(() => !!game.room && game.room.players.length >= 2 && game.room.players.every(player => player.ready && player.online));
 const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2));
 const canPlay = computed(() => !props.spectator && game.canAct && game.canDecide && !game.room?.tradePending);
-const activeCardAllowed = computed(() => canPlay.value && game.room?.phase === 'pre_roll' && !game.privateData?.activeCardUsed);
+const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
+const defenseCards = computed(() => game.privateData?.hand.filter(card => card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent') ?? []);
 const pendingTile = computed(() => game.room?.board[game.room.pending?.tileId ?? -1]);
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
 const creditorName = computed(() => game.room?.players.find(player => player.id === payment.value?.creditorId)?.name ?? '银行');
-const canTrade = computed(() => canPlay.value && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
+const canTrade = computed(() => canPlay.value && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved) && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
 const liquidationValue = computed(() => (game.me?.cash ?? 0) + owned.value.reduce((sum, tile) => sum + (tile.mortgaged ? 0 : mortgageValue(tile, game.room?.economy)), 0));
 const canLiquidate = computed(() => canPlay.value && !!payment.value && liquidationValue.value < payment.value.amount && (!!payment.value.creditorId || owned.value.every(tile => tile.mortgaged)));
 const elimination = computed(() => game.room?.players.filter(player => player.bankrupt).sort((a, b) => (a.eliminationOrder ?? 0) - (b.eliminationOrder ?? 0)) ?? []);
@@ -39,6 +43,7 @@ const publicProgress = computed(() => {
   if (game.room?.status === 'finished') return '本局已结束，等待房主再开一局。';
   if (game.room?.pausedReason) return game.room.pausedReason;
   if (game.room?.tradePending) return '双方正在商量交易。';
+  if (game.room?.pending?.type === 'choice') return `${game.decisionPlayer?.name ?? '玩家'} 正在处理私人选择。`;
   const descriptions = { pre_roll: '准备移动', buy: '选择是否购买地产', upgrade: '选择是否升级建筑', rent: '选择路费支付方式', debt: '选择费用支付方式', manage: '管理资产或准备结束回合' };
   return `${game.decisionPlayer?.name ?? '玩家'} 正在${descriptions[game.room?.phase ?? 'pre_roll']}。`;
 });
@@ -55,7 +60,8 @@ async function enter(): Promise<void> {
 }
 watch([code, () => props.spectator], enter, { immediate: true });
 watch(() => game.privateData?.trade?.id, id => { if (id) modal.value = 'trade'; else if (modal.value === 'trade') modal.value = null; });
-watch(() => payment.value?.id, () => { if (modal.value === 'bankruptcy') modal.value = null; });
+watch(() => payment.value?.id, () => { selectedDefense.value = ''; if (modal.value === 'bankruptcy') modal.value = null; });
+watch(() => choice.value?.id, id => { if (id && !props.spectator) modal.value = 'choice'; else if (modal.value === 'choice') modal.value = null; });
 onBeforeUnmount(() => { entryGeneration++; game.disconnect(); });
 
 /** 请求浏览器进入或退出全屏，失败时提示用户。 */
@@ -100,33 +106,43 @@ async function resetSession(): Promise<void> {
             <section v-if="!spectator && !game.me?.bankrupt && game.room.status === 'playing'" class="panel action-panel"><div class="section-heading"><h2>{{ game.canDecide ? (payment ? '选择支付方式' : '轮到你了') : '下一步，好运' }}</h2><span class="turn-tag">{{ game.canDecide ? (payment ? '等待结算' : '你的回合') : '等待行动' }}</span></div>
               <template v-if="game.room.tradePending"><p class="muted">双方正在商量交易，其他操作暂停。</p><button v-if="game.privateData?.trade" class="button secondary full" @click="modal = 'trade'">查看交易报价</button></template>
               <template v-else-if="game.canDecide">
-                <template v-if="game.room.phase === 'pre_roll'"><p class="muted">可以先使用一张道具，再看看骰子把你带到哪里。</p><button class="button primary full roll-button" :disabled="!canPlay" @click="game.act({ type: 'roll' })">⚄ 掷骰子<span>向好运迈一步</span></button></template>
+                <template v-if="game.room.pending?.type === 'choice'"><p class="muted">请先处理当前选择，确认后继续原结算。</p><button class="button primary full" :disabled="!choice || !canPlay" @click="modal = 'choice'">打开当前选择</button></template>
+                <template v-else-if="game.room.phase === 'pre_roll'"><p class="muted">可以先使用一张道具，再看看骰子把你带到哪里。</p><button class="button primary full roll-button" :disabled="!canPlay" @click="game.act({ type: 'roll' })">⚄ 掷骰子<span>向好运迈一步</span></button></template>
                 <template v-else-if="game.room.phase === 'buy' || game.room.phase === 'upgrade'"><div class="landing-info"><span>⌂</span><div><strong>{{ pendingTile?.name }}</strong><small>{{ game.room.phase === 'buy' ? '这块地还没有主人' : `你的地产 · 当前 ${pendingTile?.level} 级` }}</small></div></div><p class="decision-price">¥{{ game.room.pending?.amount.toLocaleString() }} <small>{{ game.room.phase === 'buy' ? '购入价格' : '升级费用' }}</small></p><div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'pass' })">暂时放弃</button><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < (game.room.pending?.amount ?? 0)" @click="game.act({ type: game.room.phase === 'buy' ? 'buy' : 'upgrade' })">{{ game.room.phase === 'buy' ? '买下这块地' : '升级房子' }}</button></div></template>
                 <template v-else-if="payment">
                   <p class="muted">{{ payment.type === 'rent' ? `停在 ${pendingTile?.name}，本次路费` : '本次强制费用' }}付给 {{ creditorName }}。</p>
                   <p class="decision-price">¥{{ payment.amount.toLocaleString() }} <small>剩余待支付</small></p>
                   <p class="muted">当前现金 ¥{{ game.me?.cash.toLocaleString() }}。可先管理资产保留现金流，确认后才扣款。</p>
-                  <div class="button-row"><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < payment.amount" @click="game.act({ type: 'payDebt' })">确认现金支付</button><button v-if="payment.type === 'rent' && game.privateData?.hand.some(card => card.kind === 'immunity')" class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'rentDecision', useCard: true })">🛡️ 使用免租</button></div>
-                  <div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="modal = 'assets'">选择资产抵押或变现</button><button v-if="payment.creditorId" class="button secondary" :disabled="!canTrade" @click="modal = 'trade'">协商抵债或出售资产</button></div>
+                  <template v-if="!payment.defenseResolved">
+                    <p class="notice">先选择本笔费用的一种防御，或放弃使用。确认后再管理资产或协商抵债。</p>
+                    <label v-if="defenseCards.length" class="field">选择防御道具<select v-model="selectedDefense"><option value="">不使用道具</option><option v-for="card in defenseCards" :key="card.id" :value="card.id">{{ card.name ?? ITEMS[card.kind].name }} · {{ card.rarity ?? 'R' }}</option></select></label>
+                    <ContentCard v-if="defenseCards.find(card => card.id === selectedDefense)" :content="defenseCards.find(card => card.id === selectedDefense)!" />
+                    <button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'paymentDefense', ...(payment.id ? { decisionId: payment.id } : {}), ...(selectedDefense ? { cardId: selectedDefense } : {}) })">{{ selectedDefense ? '确认使用本笔防御' : '不使用道具，继续支付选择' }}</button>
+                  </template>
+                  <div v-else class="button-row"><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < payment.amount" @click="game.act({ type: 'payDebt' })">确认现金支付</button></div>
+                  <div v-if="payment.defenseResolved" class="button-row"><button class="button secondary" :disabled="!canPlay" @click="modal = 'assets'">选择资产抵押或变现</button><button v-if="payment.creditorId" class="button secondary" :disabled="!canTrade" @click="modal = 'trade'">协商抵债或出售资产</button></div>
                   <p v-if="!payment.creditorId && (game.me?.cash ?? 0) < payment.amount" class="notice warning">系统费用需自行选择地产抵押筹款。</p>
-                  <template v-if="liquidationValue < payment.amount"><p class="muted">银行变现仍不足。{{ payment.creditorId ? '可继续与玩家协商成交，或主动结束协商并清算。' : '抵押全部可用地产后仍不足，可确认清算。' }}</p><button class="button ghost small danger" :disabled="!canLiquidate" @click="modal = 'bankruptcy'">结束协商并申请清算</button></template>
+                  <template v-if="payment.defenseResolved && liquidationValue < payment.amount"><p class="muted">银行变现仍不足。{{ payment.creditorId ? '可继续与玩家协商成交，或主动结束协商并清算。' : '抵押全部可用地产后仍不足，可确认清算。' }}</p><button class="button ghost small danger" :disabled="!canLiquidate" @click="modal = 'bankruptcy'">结束协商并申请清算</button></template>
                 </template>
                 <template v-else><p class="muted">本次落点已处理，可以管理资产、交易或结束回合。</p><button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'endTurn' })">结束我的回合 →</button></template>
               </template>
               <div v-else class="waiting-turn"><span class="avatar" :style="{ background: game.decisionPlayer?.color }">{{ game.decisionPlayer?.name.slice(0, 1) }}</span><p>{{ game.decisionPlayer?.name }} 正在{{ game.room.phase === 'debt' ? '偿债' : '行动' }}<small>观察棋盘，筹划下一步。</small></p></div>
               <div class="quick-actions"><button class="button ghost small" @click="modal = 'assets'">⌂ 我的地产 {{ owned.length }}</button><button class="button ghost small" :disabled="!canTrade" @click="modal = 'trade'">⇄ 发起交易</button></div>
             </section>
-            <section class="panel players-panel"><div class="section-heading"><h2>城市里的朋友</h2><span>{{ game.room.players.filter(p => !p.bankrupt).length }} 人竞争中</span></div><div v-for="player in game.room.players" :key="player.id" class="player-row" :class="{ current: player.id === game.current?.id && game.room.status === 'playing', bankrupt: player.bankrupt }"><span class="avatar" :style="{ background: player.color }">{{ player.name.slice(0, 1) }}</span><div class="player-info"><strong>{{ player.name }}<small v-if="player.id === game.me?.id">你</small><small v-if="player.id === game.room.hostId">房主</small></strong><span>{{ player.bankrupt ? '已清算 · 观战中' : `${game.room.board.filter(tile => tile.ownerId === player.id).length} 块地产${player.skipTurns ? ' · 下次休息' : ''}` }}<small v-if="player.trapImmunityTurns"> · 陷阱免疫 {{ player.trapImmunityTurns }} 回合</small><small v-if="!player.bankrupt && player.assetRank"> · 净资产 ¥{{ player.netWorth?.toLocaleString() }} · 第 {{ player.assetRank }} 名</small><i v-if="!player.online"> · 离线</i></span></div><strong class="player-cash">¥{{ player.cash.toLocaleString() }}</strong><button v-if="game.isHost && !spectator && !player.online && player.id !== game.me?.id && !player.bankrupt && game.room.status === 'playing'" class="remove-player" :disabled="game.busy" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出并清算</button></div></section>
-            <section v-if="!spectator && !game.me?.bankrupt && game.room.status === 'playing'" class="panel cards-panel"><div class="section-heading"><h2>我的道具</h2><span>仅你可见</span></div><p v-if="!game.privateData?.hand.length" class="muted">暂时没有道具，机会和财富格会带来新补给。</p><div class="hand-grid"><button v-for="card in game.privateData?.hand" :key="card.id" class="item-card" :title="ITEMS[card.kind].description" :disabled="!activeCardAllowed || card.kind === 'immunity'" @click="chooseCard(card)"><span>{{ ITEMS[card.kind].icon }}</span><strong>{{ ITEMS[card.kind].name }}</strong><small>{{ card.kind === 'immunity' ? '收费时使用' : '掷骰前使用' }}</small></button></div></section>
+            <section class="panel players-panel"><div class="section-heading"><h2>城市里的朋友</h2><span>{{ game.room.players.filter(p => !p.bankrupt).length }} 人竞争中</span></div><div v-for="player in game.room.players" :key="player.id" class="player-row" :class="{ current: player.id === game.current?.id && game.room.status === 'playing', bankrupt: player.bankrupt }"><span class="avatar" :style="{ background: player.color }">{{ player.name.slice(0, 1) }}</span><div class="player-info"><strong>{{ player.name }}<small v-if="player.id === game.me?.id">你</small><small v-if="player.id === game.room.hostId">房主</small></strong><span>{{ player.bankrupt ? '已清算 · 观战中' : `${game.room.board.filter(tile => tile.ownerId === player.id).length} 块地产${player.skipTurns ? ' · 下次休息' : ''}` }}<small v-if="player.trapImmunityTurns"> · 陷阱免疫 {{ player.trapImmunityTurns }} 回合</small><small v-if="player.nextPaymentWaiver"> · 下次强制费用免单</small><small v-if="player.nextRentDouble"> · 下次正租金翻倍</small><small v-if="!player.bankrupt && player.assetRank"> · 净资产 ¥{{ player.netWorth?.toLocaleString() }} · 第 {{ player.assetRank }} 名</small><i v-if="!player.online"> · 离线</i></span></div><strong class="player-cash">¥{{ player.cash.toLocaleString() }}</strong><button v-if="game.isHost && !spectator && !player.online && player.id !== game.me?.id && !player.bankrupt && game.room.status === 'playing'" class="remove-player" :disabled="game.busy" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出并清算</button></div></section>
+            <section v-if="!spectator && !game.me?.bankrupt && game.room.status === 'playing'" class="panel cards-panel"><div class="section-heading"><h2>我的道具</h2><span>仅你可见</span></div><p v-if="!game.privateData?.hand.length" class="muted">暂时没有道具，机会和财富格会带来新补给。</p><div class="hand-grid"><button v-for="card in game.privateData?.hand" :key="card.id" class="item-card content-hand-card" :title="card.description ?? ITEMS[card.kind].description" @click="chooseCard(card)"><ContentCard :content="card" compact /></button></div></section>
+            <section v-if="!spectator && game.privateData?.noticeText" class="panel private-content-panel"><div class="section-heading"><h2>私人结果</h2><span>仅你可见</span></div><p>{{ game.privateData.noticeText }}</p><ContentCard v-if="game.privateData.event" :content="game.privateData.event" /><ContentCard v-if="game.privateData.notice" :content="game.privateData.notice" /></section>
             <section v-if="spectator || game.me?.bankrupt" class="panel spectator-note"><span>▣</span><h3>{{ spectator ? '聚会的公共视角' : '你已退出竞争' }}</h3><p>{{ publicProgress }}</p><p>跟随棋盘实时变化，为朋友们的下一步加油。</p></section>
           </aside>
         </div>
+        <section v-if="game.room.event" class="panel public-content-panel"><div class="section-heading"><h2>{{ game.room.players.find(player => player.id === game.room?.eventPlayerId)?.name }} 的城市事件</h2><span>公开卡面</span></div><ContentCard :content="game.room.event" /><p v-if="game.room.event.targetId" class="notice">本次排名目标：{{ game.room.players.find(player => player.id === game.room?.event?.targetId)?.name }}（事件开始时锁定，并列随机选择）</p></section>
         <section class="panel event-panel"><div class="section-heading"><h2>城市新鲜事</h2><span>实时公开记录</span></div><div class="event-list"><div v-for="entry in game.room.logs" :key="entry.id" class="event-row"><time>{{ new Date(entry.at).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }}</time><p>{{ entry.text }}</p></div></div></section>
       </template>
     </main>
     <Modal v-if="modal === 'rules'" title="大富翁玩法说明" wide @close="modal = null"><Rules :economy="game.room?.economy" :spectator="spectator" :chance-events="game.room?.chanceEventDescriptions" /></Modal>
     <Modal v-if="modal === 'assets' && !spectator" title="我的地产与现金周转" wide @close="modal = null"><Assets /></Modal>
-    <Modal v-if="modal === 'card' && selectedCard && !spectator" :title="ITEMS[selectedCard.kind].name" @close="modal = null"><CardAction :key="selectedCard.id" :card="selectedCard" @done="modal = null" /></Modal>
+    <Modal v-if="modal === 'card' && selectedCard && !spectator" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" @close="modal = null"><CardAction :key="selectedCard.id" :card="selectedCard" @done="modal = choice ? 'choice' : null" /></Modal>
+    <Modal v-if="modal === 'choice' && choice && !spectator" title="处理当前选择" :wide="choice.type === 'hand_limit'" @close="modal = null"><ContentChoice :key="choice.id" :choice="choice" /></Modal>
     <Modal v-if="modal === 'trade' && !spectator" title="朋友间的好生意" wide @close="modal = null"><TradeEditor @done="modal = null" /></Modal>
     <Modal v-if="modal === 'bankruptcy' && payment && !spectator" title="结束偿债并清算" @close="modal = null"><p>待支付 ¥{{ payment.amount.toLocaleString() }}，现金加银行可变现资产 ¥{{ liquidationValue.toLocaleString() }}。</p><p class="notice warning">确认后全部地产归还银行，你退出本局竞争。{{ payment.creditorId ? `银行变现所得用于向 ${creditorName} 偿债。` : '剩余现金用于向银行偿债。' }}</p><div class="button-row"><button class="button secondary" @click="modal = null">继续筹款协商</button><button class="button danger" :disabled="!canLiquidate" @click="game.act({ type: 'declareBankruptcy' }).then(ok => { if (ok) modal = null; })">确认清算并退出竞争</button></div></Modal>
     <Modal v-if="liveSelectedTile" :title="liveSelectedTile.name" @close="selectedTile = null"><div class="tile-detail"><span :class="`district-${liveSelectedTile.district}`">{{ liveSelectedTile.type === 'property' ? '⌂' : '✦' }}</span><p>{{ districtName(liveSelectedTile) }} · {{ liveSelectedTile.id }} 号地块</p><template v-if="liveSelectedTile.type === 'property'"><dl><div><dt>地产价格</dt><dd>¥{{ liveSelectedTile.price.toLocaleString() }}</dd></div><div><dt>地产主人</dt><dd>{{ game.room?.players.find(player => player.id === liveSelectedTile?.ownerId)?.name || '待购入' }}</dd></div><div><dt>建筑等级</dt><dd>{{ liveSelectedTile.level }} / 3</dd></div><div><dt>当前路费</dt><dd>¥{{ rentFor(liveSelectedTile, game.room?.economy) }}</dd></div><div><dt>抵押状态</dt><dd>{{ liveSelectedTile.mortgaged ? `已抵押 · 赎回 ¥${redeemCost(liveSelectedTile)}` : '未抵押' }}</dd></div><div><dt>路障</dt><dd>{{ liveSelectedTile.barrier ? '首位经过者将停下' : '无' }}</dd></div></dl></template><p v-else class="muted">{{ liveSelectedTile.type === 'start' ? `正向经过或到达，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()}。` : liveSelectedTile.type === 'jail' ? '停在此处，跳过下一次行动。' : '停在此处，服务端抽取随机事件，费用由玩家选择支付方式。' }}</p></div></Modal>

@@ -18,6 +18,14 @@ export function mapLength(count: number, size: MapSize = 'large'): number { retu
 /** 输入闭环地图格数，返回整数行列；34／46 格使用相邻长度的矩形边。 */
 export function boardDimensions(length: number): { rows: number; columns: number } { return { rows: Math.floor(length / 4) + 1, columns: Math.ceil(length / 4) + 1 }; }
 export const ITEMS: Record<ItemKind, { name: string; icon: string; description: string }> = {
+  fixed: { name: '固定步数', icon: '👣', description: '按卡面固定步数替代本次掷骰，结算落点。' },
+  move: { name: '主动位移', icon: '↔️', description: '按卡面前进或后退，替代本次掷骰，结算落点。' },
+  bonus: { name: '掷骰加码', icon: '🎲', description: '掷骰前使用，加码与骰子合成一次连续移动。' },
+  freeUpgrade: { name: '免费升级', icon: '🏗️', description: '自己的合法地产升一级，确认前取消保留卡。' },
+  halfPayment: { name: '付款减半', icon: '🧾', description: '本笔强制费用减免一半，减免额向下取整。' },
+  release: { name: '解除监禁／休息', icon: '🔑', description: '限制刚施加时使用，不占主动次数。' },
+  steal: { name: '抢夺手牌', icon: '🃏', description: '随机转移未破产对手的一张牌；对方无牌时保留卡与次数。' },
+  cash: { name: '即时现金', icon: '💰', description: '获得卡面现金，占本回合主动次数。' },
   remote: { name: '遥控骰子', icon: '🎯', description: '指定 1～6 点，替代本次掷骰。' },
   barrier: { name: '路障', icon: '🚧', description: '在前方六格内的地产放置路障，首个经过者停下。' },
   stay: { name: '停留', icon: '⚓', description: '替代掷骰，留在当前格重新结算。' },

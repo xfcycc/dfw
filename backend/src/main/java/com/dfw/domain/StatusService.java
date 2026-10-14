@@ -7,21 +7,23 @@ import static com.dfw.domain.GameError.require;
 public final class StatusService {
     /** 输入房间和已解析效果，立即赋予或刷新三个后续个人回合的陷阱免疫。 */
     public static void add(Room room, GameEffect effect) {
-        require("TRAP_IMMUNITY".equals(effect.statusId) && effect.amount == 3, "持续状态参数不可用");
+        require(("TRAP_IMMUNITY".equals(effect.statusId) && effect.amount == 3) || (java.util.Set.of("NEXT_PAYMENT_WAIVER","NEXT_RENT_DOUBLE").contains(effect.statusId) && effect.amount == 1), "持续状态参数不可用");
         Player owner = player(room, effect.playerId);
         if (owner == null || owner.bankrupt) return;
         PlayerStatus status = owner.statuses.stream().filter(value -> value.type.equals(effect.statusId)).findFirst().orElse(null);
         if (status == null) { status = new PlayerStatus(); status.type = effect.statusId; owner.statuses.add(status); }
-        status.sourceEffectId = effect.id; status.appliedTurn = room.turnNumber; status.remainingTurns = 3;
-        log(room, owner.name + " 获得陷阱免疫，持续三个后续个人回合，休息也计数");
+        status.sourceEffectId = effect.id; status.appliedTurn = room.turnNumber; status.remainingTurns = (int)effect.amount;
+        log(room, owner.name + switch(effect.statusId) { case "TRAP_IMMUNITY" -> " 获得陷阱免疫，持续三个后续个人回合，休息也计数"; case "NEXT_PAYMENT_WAIVER" -> " 获得下次强制费用免单，不叠加"; default -> " 下次正租金翻倍，不叠加"; });
     }
     /** 输入玩家和效果标签，返回有效状态是否免疫该标签。 */
     public static boolean immune(Player player, String tag) {
         return "TRAP".equals(tag) && player.statuses.stream().anyMatch(value -> "TRAP_IMMUNITY".equals(value.type) && value.remainingTurns > 0);
     }
+    /** 输入玩家和一次性状态类型，存在时消费并返回真，重复获得不会累加。 */
+    public static boolean consume(Player owner,String type) { return owner.statuses.removeIf(s -> s.type.equals(type) && s.remainingTurns > 0); }
     /** 输入房间与结束回合的持有人，扣除后续个人回合并移除到期状态，无返回值。 */
     public static void endTurn(Room room, Player owner) {
-        for (PlayerStatus status : owner.statuses) if (room.turnNumber > status.appliedTurn) status.remainingTurns--;
+        for (PlayerStatus status : owner.statuses) if ("TRAP_IMMUNITY".equals(status.type) && room.turnNumber > status.appliedTurn) status.remainingTurns--;
         owner.statuses.removeIf(status -> {
             if (status.remainingTurns > 0) return false;
             log(room, owner.name + " 的陷阱免疫已到期"); return true;

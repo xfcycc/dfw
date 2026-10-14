@@ -11,7 +11,7 @@ const giveTiles = ref<number[]>([]); const wantTiles = ref<number[]>([]);
 const trade = computed(() => game.privateData?.trade);
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
 const toCreditor = computed(() => !!payment.value?.creditorId && toId.value === payment.value.creditorId);
-const canOffer = computed(() => game.canAct && game.canDecide && !game.room?.tradePending && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
+const canOffer = computed(() => game.canAct && game.canDecide && !game.room?.tradePending && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved) && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
 const partners = computed(() => game.room?.players.filter(player => !player.bankrupt && player.id !== game.me?.id) ?? []);
 const partner = computed(() => game.room?.players.find(player => player.id === toId.value));
 const own = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);

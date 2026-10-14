@@ -4,21 +4,28 @@ import static com.dfw.domain.GameError.require;
 import static com.dfw.domain.GameSupport.*;
 import com.dfw.domain.rules.RuleRuntime;
 
-/** 六种道具的验证和消耗。 */
+/** 道具效果执行及旧手牌兼容入口。 */
 public class ItemService {
     private final RuleRuntime ruleRuntime;
+    private final ContentService content;
     /** 输入结算器和配置解释器，注册四种原子道具效果。 */
-    public ItemService(EffectResolver effects, RuleRuntime ruleRuntime) {
-        this.ruleRuntime = ruleRuntime;
+    public ItemService(EffectResolver effects, RuleRuntime ruleRuntime, ContentService content) {
+        this.ruleRuntime = ruleRuntime; this.content = content;
         effects.register("PLACE_BARRIER", this::resolve);
         effects.register("DEMOLISH", this::resolve);
         effects.register("SWAP_POSITION", this::resolve);
         effects.register("WAIVE_RENT", this::resolve);
     }
     /** 输入房间、玩家和道具操作，按当前配置验证、消耗并入队。 */
-    public void use(Room room, Player player, Action action) { ruleRuntime.useCard(room, player, action); }
-    /** 输入收费玩家，按当前配置消耗一张租金防御卡并解决本次费用。 */
-    public void immune(Room room, Player player) { ruleRuntime.immune(room, player); }
+    public void use(Room room, Player player, Action action) { if (player.hand.stream().anyMatch(c -> c.id.equals(action.cardId) && c.skinId != null)) content.use(room, player, action); else ruleRuntime.useCard(room, player, action); }
+    /** 输入付款选择，旧免租卡保持已配置效果组合，新卡按取得时冻结的参数执行。 */
+    public void defense(Room room, Player player, Action action) {
+        Card legacy=player.hand.stream().filter(c -> c.id.equals(action.cardId) && c.skinId==null && c.kind.equals("immunity")).findFirst().orElse(null);
+        if(legacy==null) { content.defense(room,player,action); return; }
+        require(paymentPending(room) && room.pending.type.equals("rent") && !room.pending.defenseResolved && room.pending.playerId.equals(player.id), "本笔租金已完成防御选择");
+        require(action.decisionId==null || java.util.Objects.equals(action.decisionId,room.pending.id), "费用选择已失效");
+        room.pending.defenseResolved=true; ruleRuntime.immune(room,player,legacy.id);
+    }
     /** 输入已验证的原子道具效果，修改候选房间并记录公开结果。 */
     private void resolve(Room room, GameEffect effect) {
         Player player = player(room, effect.playerId); Tile tile = tile(room, effect.tileId);

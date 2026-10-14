@@ -37,6 +37,10 @@ public final class InputValidation {
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
             case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy" -> { }
+            case "contentDecision" -> { uuid(action,"decisionId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
+                if(action.has("keepCardIds")) { JsonNode ids=action.get("keepCardIds"); check(ids.isArray() && ids.size()==6); for(JsonNode id:ids) check(id.isString() && (id.asString().matches(UUID_PATTERN) || id.asString().equals("00000000-0000-0000-0000-000000000000") || id.asString().equalsIgnoreCase("ffffffff-ffff-ffff-ffff-ffffffffffff"))); }
+            }
+            case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); }
             case "ready" -> bool(action, "value");
             case "setMapSize" -> check(action.has("mapSize") && action.get("mapSize").isString() && List.of("small", "medium", "large").contains(action.get("mapSize").asString()));
             case "rentDecision" -> bool(action, "useCard");
@@ -48,6 +52,8 @@ public final class InputValidation {
             default -> check(false);
         }
         List<String> fields = switch (type) {
+            case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds");
+            case "paymentDefense" -> List.of("decisionId","cardId");
             case "ready" -> List.of("value");
             case "setMapSize" -> List.of("mapSize");
             case "rentDecision" -> List.of("useCard");

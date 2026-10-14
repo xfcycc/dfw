@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RuleDefinition {
+    /** 已确认的分层内容目录。 */
+    public ContentCatalog content;
     /** 按顺序推进的回合阶段。 */
     public List<Stage> stages;
     /** 全部等权机会事件。 */
@@ -24,6 +26,8 @@ public class RuleDefinition {
     @Getter
     @Setter
     public static class ChanceFile {
+        /** 机制、参数与匹配皮肤。 */
+        public ContentDefinition content;
         /** 全部机会事件。 */
         public List<EventRule> events;
         /** 灾害损失补偿订阅。 */
@@ -33,6 +37,8 @@ public class RuleDefinition {
     @Getter
     @Setter
     public static class FortuneFile {
+        /** 机制、参数与匹配皮肤。 */
+        public ContentDefinition content;
         /** 全部财富事件。 */
         public List<EventRule> events;
     }
@@ -40,6 +46,8 @@ public class RuleDefinition {
     @Getter
     @Setter
     public static class CardFile {
+        /** 机制、参数与匹配皮肤。 */
+        public ContentDefinition content;
         /** 六种卡牌定义。 */
         public List<CardRule> cards;
     }
