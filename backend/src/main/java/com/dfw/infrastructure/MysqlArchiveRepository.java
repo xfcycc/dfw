@@ -93,7 +93,7 @@ public class MysqlArchiveRepository implements ArchiveRepository {
     /** 输入保存行，返回格式或规则不兼容的说明，兼容返回空。 */
     private String compatibility(ResultSet rs) throws SQLException {
         if (rs.getInt("format_version") != ArchiveRules.FORMAT) return "保存格式与当前版本不兼容，可以查看历史";
-        return rules.digest.equals(rs.getString("rules_digest")) ? null : "玩法规则已变化，可以查看历史；恢复需使用保存时的规则配置";
+        return rules.compatible(rs.getString("rules_digest")) ? null : "玩法规则已变化，可以查看历史；恢复需使用保存时的规则配置";
     }
     /** 输入共享码与可选保存点，读取完整内部状态，仅供恢复服务使用。 */
     public SavedRoom saved(String archiveCode, String snapshotId) {

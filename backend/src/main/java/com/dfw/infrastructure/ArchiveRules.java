@@ -11,6 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class ArchiveRules {
     public static final int FORMAT = 1;
+    /** e95cc4c 默认四类规则摘要，路障仅允许放在地产。 */
+    private static final String PREVIOUS_BARRIER_RULES = "46709d3ca47ef8ad32dca845b91bcb56f929fae9eb15f0e9d9b6c2d5067b7ed6";
+    /** 当前默认四类规则摘要，路障允许放在前方六格内任意无路障地块。 */
+    private static final String CURRENT_BARRIER_RULES = "9bec850b41eecf601a0f20cac3448e6f2425185c034eb6f8989cb3226454c247";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -25,6 +29,10 @@ public class ArchiveRules {
             }
         }
         digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.write(values).getBytes(StandardCharsets.UTF_8)));
+    }
+    /** 输入保存时的规则摘要，返回能否保留原进度并按当前规则继续；仅额外兼容本次路障范围扩展。 */
+    public boolean compatible(String savedDigest) {
+        return digest.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
     }
     /** 输入 JSON 值，递归排序对象键，保留数组顺序并返回规范化结构。 */
     private static Object normalize(Object value) {
