@@ -3,6 +3,8 @@
 .illustrated-card.rarity-SR { --card-accent: #765299; --card-tint: #f2eafa; }
 .illustrated-card.rarity-SSR { --card-accent: #986811; --card-tint: #fff3d5; }
 .illustrated-card .card-illustration { display: block; width: 100%; height: auto; overflow: hidden; pointer-events: none; }
+.illustrated-card .card-rarity { position: absolute; top: 12px; right: 12px; padding: 3px 9px; border: 2px solid #fff9e9; border-radius: 10px; background: var(--card-accent); color: #fff9e9; font-size: 18px; line-height: 1.2; font-weight: 900; box-shadow: 0 3px 8px #34453630; transform: rotate(8deg); }
+.illustrated-card.thumbnail .card-rarity { top: 6px; right: 6px; padding: 2px 5px; border-radius: 7px; font-size: 11px; }
 .illustrated-card .card-copy { position: relative; display: flex; flex-direction: column; min-height: 240px; padding: 6% 6% 5%; margin: 0 3% 3%; border: 1px solid #aa946450; border-radius: 0 0 10px 10px; background: linear-gradient(135deg, #fffcf6, #fcf7ec); }
 .illustrated-card .content-card-heading { display: block; margin: 0 0 12px; padding: 0; }
 .illustrated-card .content-card-heading strong { font-size: 24px; line-height: 1.35; color: var(--card-accent); overflow-wrap: anywhere; }

@@ -1,0 +1,23 @@
+{
+  "coverage": {
+    "card": {
+      "entries": 111,
+      "files": 111
+    },
+    "chance": {
+      "entries": 121,
+      "files": 121
+    },
+    "fortune": {
+      "entries": 110,
+      "files": 110
+    }
+  },
+  "independentPngs": 342,
+  "dimensions": "512x512",
+  "uniqueSha256": 342,
+  "originalSheets": 57,
+  "originalSheetDimensions": "1536x1024",
+  "visualReview": "已抽查 21 组图集，修订第 35、45、46 组中的特定元素；非逐张完整审查。",
+  "integrated": true
+}
