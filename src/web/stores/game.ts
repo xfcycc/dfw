@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { computed, ref } from 'vue';
 import { RealtimeClient } from '../../shared/realtime.js';
 import type { CommandResult, GameAction, GameCommand, PrivatePlayerState, PublicRoomState, Session } from '../../shared/types.js';
+import { postJson } from '../http';
 
 /** 输入会话，返回该浏览器的角色专用存储键。 */
 function sessionKey(identity: string, spectator: boolean, visitor = false): string { return `dfw:${visitor ? 'guest' : spectator ? 'viewer' : 'player'}:${identity}`; }
@@ -81,11 +82,8 @@ export const useGameStore = defineStore('game', () => {
 
   /** 输入接口操作和房间资料，保存返回身份并返回会话。 */
   async function enter(kind: 'create' | 'join' | 'spectate', code = '', name = ''): Promise<Session> {
-    const response = await fetch(`/api/rooms/${kind}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ code, name }),
-    });
-    const data = await response.json() as Session & CommandResult;
-    if (!response.ok || !data.token) throw new Error(data.error || '无法进入房间');
+    const data = await postJson<Session & CommandResult>(`rooms/${kind}`, { code, name });
+    if (!data.token) throw new Error(data.error || '无法进入房间');
     rememberSession(data);
     return data;
   }

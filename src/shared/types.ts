@@ -46,6 +46,8 @@ export interface PublicPlayer {
   name: string;
   color: string;
   cash: number;
+  /** 公开的持有手牌数量；旧服务端及历史快照可缺省，具体卡面仍为私有。 */
+  cardCount?: number | null;
   /** 所有人可见的净资产及名次，旧服务端可缺省。 */
   netWorth?: number;
   assetRank?: number | null;
