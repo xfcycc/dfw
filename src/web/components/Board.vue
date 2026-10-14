@@ -3,15 +3,19 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { boardDimensions, DISTRICTS, districtName, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
 import type { PublicRoomState, Tile } from '../../shared/types';
 import City from './City.vue';
-const props = defineProps<{ room: PublicRoomState; spectator?: boolean }>();
+const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean }>();
 const emit = defineEmits<{ select: [tile: Tile] }>();
 const container = ref<HTMLElement>();
+const viewport = ref<HTMLElement>();
 const size = ref(700);
 const zoom = ref(1);
 const animatedPosition = ref<{ id: string; position: number } | null>(null);
 let animationGeneration = 0;
 let observer: ResizeObserver | undefined;
 let smallScreen = true;
+let lastWidth = 0;
+let lastHeight = 0;
+let lastLength = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
 const dimensions = computed(() => boardDimensions(props.room.board.length));
@@ -25,15 +29,26 @@ function ownerColor(tile: Tile): string | undefined { return props.room.players.
 function occupants(id: number) {
   return props.room.players.filter(player => !player.bankrupt && (animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position) === id);
 }
-/** 根据可用宽度和屏幕高度调整棋盘，手机默认缩小至能完整看到地图。 */
+/** 根据宽度、窗口高度和地图规模调整默认比例，忽略手动缩放引起的高度变化。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   if (width <= 0) return;
-  size.value = Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  if (width < 560) zoom.value = Math.max(0.5, Math.min(1, width / 560));
+  if (width === lastWidth && window.innerHeight === lastHeight && props.room.board.length === lastLength) return;
+  lastWidth = width; lastHeight = window.innerHeight; lastLength = props.room.board.length;
+  size.value = Math.max(560, Math.min(900, width, window.innerHeight - (props.compact ? 420 : 280)));
+  if (props.compact) zoom.value = Math.min(1, width / size.value);
+  else if (width < 560) zoom.value = Math.max(0.5, Math.min(1, width / 560));
   else if (smallScreen) zoom.value = 1;
   smallScreen = width < 560;
 }
+/** 无入参，将滚动视野移到当前行动者；只改变本地棋盘视野。 */
+function locateCurrent(): void {
+  if (!current.value || !viewport.value) return;
+  const cell = tileCoordinates(current.value.position, props.room.board.length);
+  viewport.value.scrollTo({ left: (cell.column - 0.5) * size.value * zoom.value / dimensions.value.columns - viewport.value.clientWidth / 2, top: (cell.row - 0.5) * height.value * zoom.value / dimensions.value.rows - viewport.value.clientHeight / 2, behavior: 'smooth' });
+}
+/** 无入参，恢复能容纳整张棋盘的默认比例。 */
+function fitBoard(): void { zoom.value = Math.min(1, (container.value?.clientWidth ?? size.value) / size.value); }
 watch(() => props.room.motion?.id, async (id, old) => {
   if (!id || id === old) return;
   const motion = props.room.motion!;
@@ -54,19 +69,19 @@ onMounted(() => {
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); animationGeneration++; });
 </script>
 <template>
-  <div ref="container" class="board-container">
-    <div class="board-tools"><span class="eyebrow">{{ room.board.length }} 格随机城市 · 顺时针前进</span><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" min="0.5" max="1.3" step="0.05" /></label></div>
-    <div class="board-viewport">
+  <div ref="container" class="board-container" :class="{ 'game-board': compact }">
+    <div class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" @click="fitBoard">全图</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" min="0.5" max="1.3" step="0.05" /></label></div></div>
+    <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
           <div class="board-center" :style="{ gridRow: `2 / span ${dimensions.rows - 2}`, gridColumn: `2 / span ${dimensions.columns - 2}` }">
             <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
-            <h2>一步好运<br /><span>一城财富</span></h2>
+            <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
             <City />
             <div class="turn-display"><span :style="{ background: current?.color }" class="avatar">{{ current?.name.slice(0, 1) }}</span><div><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small><strong>{{ current?.name }}{{ room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong></div><div class="die" :class="{ fresh: room.dice !== null, 'movement-value': room.dice !== null && room.dice <= 0 }" :key="`${room.turnNumber}-${room.dice}`" :aria-label="room.dice === null ? '等待掷骰' : room.dice < 0 ? `本次后退 ${-room.dice} 格` : room.dice === 0 ? '原地重新结算' : `骰子 ${room.dice} 点`"><strong v-if="room.dice !== null && room.dice <= 0">{{ room.dice }}</strong><template v-else><span v-for="dot in 9" :key="dot" :class="{ filled: faceDots[room.dice ?? 1]?.includes(dot) }"></span></template></div></div>
             <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }">{{ room.players.find(p => p.id === id)?.name }}</span></div>
           </div>
-          <button v-for="tile in room.board" :key="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { owned: tile.ownerId, mortgaged: tile.mortgaged }]" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}` : ''}`" @click="emit('select', tile)">
+          <button v-for="tile in room.board" :key="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { owned: tile.ownerId, mortgaged: tile.mortgaged, 'current-position': compact && current?.position === tile.id }]" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}` : ''}`" @click="emit('select', tile)">
             <span v-if="tile.ownerId" class="owner-strip"></span>
             <span v-if="tile.barrier" class="barrier-marker" title="路障">🚧</span>
             <span class="tile-icon" :class="{ built: tile.level > 0 }">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>

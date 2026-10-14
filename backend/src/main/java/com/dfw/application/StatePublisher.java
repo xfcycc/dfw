@@ -13,6 +13,12 @@ public interface StatePublisher {
     boolean active(String connectionId, StoredSession session);
     /** 输入房间与玩家，返回其有效连接是否仍打开。 */
     boolean online(String code, String playerId);
+    /** 输入令牌摘要，返回该访客是否有有效在线连接。 */
+    boolean connected(String tokenHash);
+    /** 输入连接与房间，同步其最新角色身份，不发送原始令牌。 */
+    void identity(String connectionId, Room room);
+    /** 输入提交后的角色分配，撤销旧角色连接并升级申请人的连接。 */
+    void assign(Room room, StoredSession session);
     /** 输入已提交房间，广播公共状态及逐人私人状态。 */
     void broadcast(Room room);
     /** 输入连接和房间，发送该角色完整状态。 */

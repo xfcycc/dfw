@@ -7,7 +7,7 @@ import java.util.List;
 /** 房间持久化端口，应用层不依赖具体数据库。 */
 public interface RoomRepository {
     /** 令牌摘要对应的身份。 */
-    record StoredSession(String tokenHash, String code, String playerId) { }
+    record StoredSession(String tokenHash, String code, String playerId, String roomId) { }
     /** 已事务提交的命令回执。 */
     record Receipt(String id, String actorId, CommandResult result, String requestDigest) { }
     /** 批量返回全部可恢复房间。 */
@@ -20,4 +20,6 @@ public interface RoomRepository {
     void save(Room room, StoredSession session, Receipt receipt);
     /** 输入观战身份，独立保存，不改变房间版本。 */
     void addSpectator(StoredSession session);
+    /** 输入恢复房间、访客摘要和角色，撤销旧角色会话并绑定已存在访客。 */
+    void assignSeat(Room room, String tokenHash, String playerId);
 }

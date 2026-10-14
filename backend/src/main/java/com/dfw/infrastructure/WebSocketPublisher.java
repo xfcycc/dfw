@@ -49,13 +49,28 @@ public class WebSocketPublisher implements StatePublisher {
         return connection != null && connection.isOpen();
     }
     /** 输入会话，返回玩家连接索引。 */
-    private String key(StoredSession session) { return session.code() + ":" + session.playerId(); }
+    private String key(StoredSession session) { return session.roomId() + ":" + session.playerId(); }
+    /** 输入令牌摘要，检查其访客连接是否仍打开。 */
+    public boolean connected(String tokenHash) { return sessions.entrySet().stream().anyMatch(entry -> entry.getValue().tokenHash().equals(tokenHash) && connections.containsKey(entry.getKey()) && connections.get(entry.getKey()).isOpen()); }
+    /** 输入连接与房间，同步最新角色归属，存档码仅发给已分配玩家。 */
+    public void identity(String id, Room room) {
+        StoredSession session = sessions.get(id); if (session == null) return;
+        Map<String, Object> value = new LinkedHashMap<>(); value.put("code", room.code); value.put("roomId", room.roomId); value.put("playerId", session.playerId()); value.put("archiveCode", session.playerId() == null ? null : room.archiveCode);
+        send(id, "session:identity", null, value);
+    }
+    /** 输入提交后的身份，立即撤销旧角色权限；借现有认证清理期延后关闭，让交接回执先送达。 */
+    public void assign(Room room, StoredSession assigned) {
+        String previous = active.remove(key(assigned));
+        if (previous != null) { send(previous, "session:replaced", null, null); sessions.remove(previous); opened.put(previous, System.currentTimeMillis()); }
+        List<String> visitors = sessions.entrySet().stream().filter(entry -> entry.getValue().tokenHash().equals(assigned.tokenHash())).map(Map.Entry::getKey).toList();
+        for (String id : visitors) { attach(id, assigned); identity(id, room); }
+    }
     /** 输入房间，发送公开快照，私人状态只发到本人有效连接。 */
     public void broadcast(Room room) {
         Object publicState = StateViews.publicRoom(room);
-        sessions.forEach((id, session) -> { if (session.code().equals(room.code)) send(id, "room:snapshot", null, publicState); });
+        sessions.forEach((id, session) -> { if (Objects.equals(session.roomId(), room.roomId)) send(id, "room:snapshot", null, publicState); });
         for (var player : room.players) {
-            String id = active.get(room.code + ":" + player.id);
+            String id = active.get(room.roomId + ":" + player.id);
             if (id != null) send(id, "player:private", null, StateViews.privatePlayer(room, player.id));
         }
     }

@@ -1,4 +1,4 @@
-import type { CommandResult, GameCommand, PrivatePlayerState, PublicRoomState } from './types.js';
+import type { CommandResult, GameCommand, PrivatePlayerState, PublicRoomState, Session } from './types.js';
 
 /** 原生 WebSocket 事件，与公开及私人数据契约分开。 */
 interface Events {
@@ -9,6 +9,7 @@ interface Events {
   'player:private': PrivatePlayerState;
   'room:error': CommandResult;
   'session:replaced': undefined;
+  'session:identity': Omit<Session, 'token'>;
 }
 /** 原生 WebSocket JSON 信封。 */
 interface Message { type: string; requestId?: string; payload?: unknown }

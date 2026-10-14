@@ -4,23 +4,54 @@ import { RealtimeClient } from '../../shared/realtime.js';
 import type { CommandResult, GameAction, GameCommand, PrivatePlayerState, PublicRoomState, Session } from '../../shared/types.js';
 
 /** 输入会话，返回该浏览器的角色专用存储键。 */
-function sessionKey(code: string, spectator: boolean): string { return `dfw:${spectator ? 'viewer' : 'player'}:${code}`; }
+function sessionKey(identity: string, spectator: boolean, visitor = false): string { return `dfw:${visitor ? 'guest' : spectator ? 'viewer' : 'player'}:${identity}`; }
 /** 输入房间号和角色，从浏览器恢复本地会话。 */
 export function readSession(code: string, spectator = false): Session | null {
   try {
-    const value = JSON.parse(localStorage.getItem(sessionKey(code, spectator)) ?? 'null') as Session | null;
+    const roomId = localStorage.getItem(`dfw:room-link:${code}`);
+    const stored = (roomId ? localStorage.getItem(sessionKey(roomId, spectator)) : null) ?? localStorage.getItem(sessionKey(code, spectator));
+    const guest = spectator ? null : (roomId ? localStorage.getItem(sessionKey(roomId, true, true)) : null) ?? localStorage.getItem(sessionKey(code, true, true));
+    const value = JSON.parse(stored ?? guest ?? 'null') as Session | null;
     return value?.code === code && typeof value.token === 'string' ? value : null;
   } catch { return null; }
 }
 
 /** 返回唯一命令 ID，兼容手机通过局域网 HTTP 打开的非安全上下文。 */
-function commandId(): string {
+export function commandId(): string {
   if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
   const bytes = crypto.getRandomValues(new Uint8Array(16));
   bytes[6] = (bytes[6] & 15) | 64;
   bytes[8] = (bytes[8] & 63) | 128;
   const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('');
   return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+}
+
+/** 本浏览器参与过的房间档案索引，不保存额外个人恢复凭证。 */
+export interface RecentRoom { roomId: string; code: string; archiveCode: string; at: number }
+/** 无入参，读取本机参与记录；旧或损坏记录返回空列表。 */
+export function recentRooms(): RecentRoom[] {
+  try { const values: unknown = JSON.parse(localStorage.getItem('dfw:archives') ?? '[]'); return Array.isArray(values) ? values.filter((value): value is RecentRoom => !!value && typeof value.roomId === 'string' && typeof value.code === 'string' && typeof value.archiveCode === 'string') : []; }
+  catch { return []; }
+}
+/** 输入档案索引，按永久房间标识更新参与记录及最近查看的固定码。 */
+export function rememberArchive(value: Omit<RecentRoom, 'at'>): void {
+  localStorage.setItem('dfw:archives', JSON.stringify([{ ...value, at: Date.now() }, ...recentRooms().filter(room => room.roomId !== value.roomId)]));
+  localStorage.setItem('dfw:archive:last', value.archiveCode);
+}
+/** 输入有效会话，以永久房间标识保存身份，同时兼容旧房间号键。 */
+export function rememberSession(value: Session): void {
+  const spectator = value.playerId === null;
+  const visitor = spectator && !!value.visitor;
+  localStorage.setItem(sessionKey(value.roomId ?? value.code, spectator, visitor), JSON.stringify(value));
+  localStorage.setItem(sessionKey(value.code, spectator, visitor), JSON.stringify(value));
+  if (!spectator) { localStorage.removeItem(sessionKey(value.code, true, true)); if (value.roomId) localStorage.removeItem(sessionKey(value.roomId, true, true)); }
+  if (value.roomId) localStorage.setItem(`dfw:room-link:${value.code}`, value.roomId);
+  if (value.roomId && value.archiveCode) rememberArchive({ roomId: value.roomId, code: value.code, archiveCode: value.archiveCode });
+}
+/** 输入房间号和会话种类，同时删除旧键与永久标识键，供显式重新加入。 */
+export function forgetSession(code: string, spectator: boolean): void {
+  const roomId = localStorage.getItem(`dfw:room-link:${code}`); if (roomId) localStorage.removeItem(sessionKey(roomId, spectator)); localStorage.removeItem(sessionKey(code, spectator));
+  if (!spectator) { localStorage.removeItem(sessionKey(code, true, true)); if (roomId) localStorage.removeItem(sessionKey(roomId, true, true)); }
 }
 
 export const useGameStore = defineStore('game', () => {
@@ -55,7 +86,7 @@ export const useGameStore = defineStore('game', () => {
     });
     const data = await response.json() as Session & CommandResult;
     if (!response.ok || !data.token) throw new Error(data.error || '无法进入房间');
-    localStorage.setItem(sessionKey(data.code, data.playerId === null), JSON.stringify(data));
+    rememberSession(data);
     return data;
   }
 
@@ -82,7 +113,14 @@ export const useGameStore = defineStore('game', () => {
     socket.on('connect', () => { connection.value = 'online'; fatalError.value = ''; socket?.emit('room:sync'); });
     socket.on('room:snapshot', (state: PublicRoomState) => { room.value = state; });
     socket.on('player:private', (state: PrivatePlayerState) => {
-      if (value.playerId && state.playerId === value.playerId) privateData.value = state;
+      if (session.value?.playerId && state.playerId === session.value.playerId) {
+        privateData.value = state;
+        if (state.archiveCode) { session.value = { ...session.value, archiveCode: state.archiveCode }; rememberSession(session.value); }
+      }
+    });
+    socket.on('session:identity', identity => {
+      if (!session.value || identity.code !== session.value.code) return;
+      session.value = { ...session.value, ...identity }; privateData.value = null; rememberSession(session.value);
     });
     socket.on('disconnect', () => { if (connection.value !== 'replaced') connection.value = 'offline'; });
     socket.on('connect_error', (error: Error) => {

@@ -64,6 +64,7 @@ public final class EventService {
         target.level = 0; result.eventId = random.id(); room.runtime.lastDisaster = result;
         log(room, target.name + " 的 " + result.destroyedLevels + " 级建筑被摧毁，" + owner.name + " 损失 " + result.loss);
         publishDestroyed(room, result, owner);
+        HistoryTrace.event(room, "disaster", owner.id, "建筑灾害结果已确定", result);
     }
     /** 输入实际损失快照，按当前规则顺序保存匹配明细并插入子效果；不接受客户端伪造事实。 */
     private void publishDestroyed(Room room, DisasterResult result, Player owner) {
@@ -83,6 +84,7 @@ public final class EventService {
         if (owner == null || owner.bankrupt) return;
         require(event.ownerId.equals(owner.id) && event.loss == effect.amount, "补偿损失快照不一致");
         result.sample = random.nextInt(100);
+        HistoryTrace.event(room, "compensation", owner.id, "灾害补偿判定已完成", result);
         if (event.compensations.getFirst() == result) event.sample = result.sample;
         if (result.sample >= effect.probability) { log(room, owner.name + " 本次灾害未获得补偿"); return; }
         result.amount = Math.multiplyExact(effect.amount, effect.compensationPercent) / 100;

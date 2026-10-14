@@ -41,10 +41,12 @@ public class TurnService {
         if (alive.size() > 1) return false;
         room.status = "finished"; room.winnerId = alive.isEmpty() ? null : alive.getFirst().id;
         room.pending = null; room.trade = null; room.pausedReason = null; if(room.runtime!=null) room.runtime.choice=null;
-        log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！"); return true;
+        log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！");
+        HistoryTrace.event(room, "game_finished", room.winnerId, "本局结束", null); return true;
     }
     /** 输入房间，切换下一行动者并重置回合标志。 */
     public void advance(Room room) {
+        HistoryTrace.event(room, "turn_end", current(room) == null ? null : current(room).id, "行动结束", null);
         StatusService.endTurn(room, current(room));
         if (checkWinner(room)) return;
         do { room.turnIndex = (room.turnIndex + 1) % room.turnOrder.size(); } while (current(room).bankrupt);
@@ -52,6 +54,7 @@ public class TurnService {
         // 房主移出原行动者会终止其父结算；其他玩家的超限牌仍完整保留，由新回合重新开放整理。
         if(room.runtime!=null) room.runtime.choice=null;
         room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
+        HistoryTrace.event(room, "turn_start", current(room).id, "新行动开始", null);
     }
     /** 输入费用参数，打开可管理资产和协商抵债的支付选择。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
@@ -100,6 +103,7 @@ public class TurnService {
     }
     /** 输入房间，更新房主和断线暂停，清除旧报价计时数据但保留待处理报价。 */
     public void refresh(Room room) {
+        if (room.recoveryPending) { room.pausedReason = "等待房主分配角色并继续对局"; return; }
         Player host = player(room, room.hostId);
         if (host == null || !host.online) room.players.stream().filter(p -> p.online).findFirst().ifPresent(p -> room.hostId = p.id);
         if (!room.status.equals("playing")) { room.pausedReason = null; return; }

@@ -8,6 +8,20 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Room {
+    /** 永不复用的内部房间标识。 */
+    public String roomId;
+    /** 固定共享存档码，仅玩家身份和档案接口可见。 */
+    public String archiveCode;
+    /** 恢复来源房间标识。 */
+    public String sourceRoomId;
+    /** 恢复来源保存点。 */
+    public String sourceSnapshotId;
+    /** 恢复后等待房主分配席位并继续。 */
+    public boolean recoveryPending;
+    /** 是否允许访客申请保存下来的角色。 */
+    public boolean recovered;
+    /** 尚未批准的席位申请，不公开令牌摘要。 */
+    public List<SeatClaim> seatClaims = new ArrayList<>();
     /** 开局固定的经济参数；旧对局缺失时沿用一倍基准。 */
     public EconomyRules economy;
     /** 本局版本的公开追加机会玩法，旧快照缺失时为空。 */

@@ -12,6 +12,7 @@ public final class GameSupport {
     public static void log(Room room, String text) {
         PublicLog entry = new PublicLog(); entry.id = UUID.randomUUID().toString(); entry.text = text; entry.at = System.currentTimeMillis();
         room.logs.add(0, entry); if (room.logs.size() > 100) room.logs.removeLast();
+        HistoryTrace.event(room, "log", null, text, null);
     }
     /** 输入房间和索引，返回地块或空。 */
     public static Tile tile(Room room, Integer id) { return id == null || id < 0 || id >= room.board.size() ? null : room.board.get(id); }

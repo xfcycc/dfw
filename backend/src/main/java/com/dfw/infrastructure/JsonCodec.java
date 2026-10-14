@@ -31,6 +31,7 @@ public class JsonCodec {
         if (action.mapSize == null) fields.remove("mapSize");
         if (action.decisionId == null) fields.remove("decisionId");
         if (action.keepCardIds == null) fields.remove("keepCardIds");
+        if (action.claimId == null) fields.remove("claimId");
         String canonical = write(fields);
         try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(canonical.getBytes(StandardCharsets.UTF_8))); }
         catch (NoSuchAlgorithmException error) { throw new IllegalStateException(error); }

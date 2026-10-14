@@ -114,6 +114,11 @@ export interface PublicLog { id: string; text: string; at: number }
 export interface Motion { id: string; playerId: string; from: number; path: number[] }
 /** 公开房间快照，可安全发送给任意观战者。 */
 export interface PublicRoomState {
+  roomId?: string;
+  recoveryPending?: boolean;
+  recovered?: boolean;
+  sourceRoomId?: string | null;
+  sourceSnapshotId?: string | null;
   /** 本局经济快照；旧对局缺省使用一倍基准。 */
   economy?: EconomySettings | null;
   code: string;
@@ -144,6 +149,8 @@ export interface PublicRoomState {
 }
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState {
+  archiveCode?: string;
+  seatClaims?: SeatClaim[];
   playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
   choice?: ContentChoice | null;
   event?: ContentResult | null;
@@ -151,13 +158,23 @@ export interface PrivatePlayerState {
   noticeText?: string | null;
 }
 /** 通过身份令牌建立会话；令牌不放入 URL。 */
-export interface Session { code: string; token: string; playerId: string | null }
+export interface Session { code: string; token: string; playerId: string | null; roomId?: string; archiveCode?: string | null; visitor?: boolean }
+/** 房主可见的角色申请，不含身份令牌。 */
+export interface SeatClaim { id: string; playerId: string; name: string; at: number }
+/** 保存时的公开状态，内部手牌与效果队列不进入历史预览。 */
+export interface ArchiveSnapshot { snapshotId: string; gameId: string | null; version: number; turnNumber: number; at: number; status: string; manual: boolean; label: string | null; restorable: boolean; restoreError: string | null; state: PublicRoomState | null }
+export interface ArchiveGame { gameId: string | null; firstAt: number; lastAt: number; turnNumber: number; snapshots: number }
+export interface RoomArchive { roomId: string; archiveCode: string; code: string; sourceArchiveCode: string | null; sourceSnapshotId: string | null; latest: ArchiveSnapshot; games: ArchiveGame[]; bookmarks: ArchiveSnapshot[]; nextCursor: number | null }
+export interface HistoryEntry { sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
+export interface HistoryPage { entries: HistoryEntry[]; nextCursor: number | null }
 /** 服务端操作结果。 */
 export interface CommandResult { ok: boolean; version?: number; error?: string; code?: string }
 /** 带去重标识与版本号的客户端命令。 */
 export interface GameCommand { id: string; expectedVersion: number; action: GameAction }
 /** 所有业务操作的显式输入类型。 */
 export type GameAction =
+  | { type: 'assignSeat'; claimId: string }
+  | { type: 'continueRecovery' }
   | { type: 'ready'; value: boolean }
   | { type: 'setMapSize'; mapSize: MapSize }
   | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }

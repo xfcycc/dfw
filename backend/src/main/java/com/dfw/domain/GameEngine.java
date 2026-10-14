@@ -61,6 +61,8 @@ public class GameEngine {
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
         for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.INITIAL_CASH); turns.giveCards(room, player, Rules.INITIAL_CARDS); }
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
+        HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
+        HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
     }
     /** 输入新局房间，将基础项目及现有规则的现金常量换算为固定金额，重启不重算旧基准。 */
     private void freezeMoney(Room room) {

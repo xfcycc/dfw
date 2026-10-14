@@ -38,6 +38,8 @@ export async function importLegacy(connection: Connection, rows: LegacyRows): Pr
     await connection.beginTransaction();
     const counts = await rowCounts(connection);
     if (Object.values(counts).some(count => count > 0)) throw new Error('目标库已有对局或身份，拒绝覆盖；请停服后选择空目标库');
+    const [archives] = await connection.query<import('mysql2/promise').RowDataPacket[]>('SELECT EXISTS(SELECT 1 FROM room_archives) + EXISTS(SELECT 1 FROM room_snapshots) + EXISTS(SELECT 1 FROM room_history) AS occupied');
+    if (archives[0].occupied > 0) throw new Error('目标库已有存档或历史，拒绝覆盖；请停服后选择空目标库');
     // 只分批写入，不在循环中逐条查询。限制单批体积，避免快照超过 max_allowed_packet。
     const writes = [
       { sql: 'INSERT INTO rooms(code,state) VALUES ', values: rows.rooms.map(row => [row.code, row.state]) },

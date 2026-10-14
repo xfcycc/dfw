@@ -4,7 +4,12 @@
              xmlns:flowable="http://flowable.org/bpmn" targetNamespace="https://dfw/game">
   <process id="genericGameRuntime" name="通用游戏运行时" isExecutable="true">
     <startEvent id="start"/>
-    <sequenceFlow id="s1" sourceRef="start" targetRef="advance"/>
+    <sequenceFlow id="s1" sourceRef="start" targetRef="entry"/>
+    <exclusiveGateway id="entry" default="normalStart"/>
+    <sequenceFlow id="normalStart" sourceRef="entry" targetRef="advance"/>
+    <sequenceFlow id="restoreWait" sourceRef="entry" targetRef="decision">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${execution.hasVariable('restoreMode') && restoreMode}]]></conditionExpression>
+    </sequenceFlow>
     <serviceTask id="advance" name="结算至等待点" flowable:delegateExpression="${gameAdvance}"/>
     <sequenceFlow id="s2" sourceRef="advance" targetRef="state"/>
     <exclusiveGateway id="state" default="wait"/>

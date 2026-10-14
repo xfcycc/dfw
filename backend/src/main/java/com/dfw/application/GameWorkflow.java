@@ -52,7 +52,7 @@ public class GameWorkflow {
         engine.apply(room, actorId, action);
         if (action.type.equals("start")) {
             room.runtime = new GameRuntime();
-            scope.run(room, engine, null, null, () -> process.getRuntimeService().startProcessInstanceByKey(PROCESS_KEY, room.gameId, Map.of("roomCode", room.code, "gameId", room.gameId)));
+            scope.run(room, engine, null, null, () -> process.getRuntimeService().startProcessInstanceByKey(PROCESS_KEY, room.gameId, Map.of("roomCode", room.code, "roomId", room.roomId, "gameId", room.gameId, "restoreMode", false)));
         }
         if (action.type.equals("newGame")) room.runtime = null;
         refresh(room, engine);
@@ -60,7 +60,22 @@ public class GameWorkflow {
     /** 输入候选房间，更新在线暂停并在决策变化或需继续推进时同步通用等待任务。 */
     public void refresh(Room room, GameEngine engine) {
         requireTransaction(); engine.turns.refresh(room);
+        if (room.recoveryPending) return;
         if (room.runtime != null && (!Objects.equals(room.runtime.decisionKey, GameWorkflowDelegates.decisionKey(room)) || engine.needsAdvance(room))) complete(room, engine, null, null);
+    }
+    /** 输入完整恢复快照，只建立新等待任务，不推进或重新抽取已保存的游戏结果。 */
+    public void restore(Room room, GameEngine engine) {
+        requireTransaction();
+        if (room.runtime != null) { room.runtime.processInstanceId = null; room.runtime.taskId = null; }
+        if (!room.status.equals("playing")) return;
+        if (room.runtime == null) throw new GameError("存档缺少游戏进度，无法恢复");
+        room.runtime.processInstanceId = null; room.runtime.taskId = null; room.runtime.decisionKey = GameWorkflowDelegates.decisionKey(room);
+        String actorId = room.trade != null ? room.trade.toId : room.pending != null ? room.pending.playerId : GameSupport.current(room).id;
+        scope.run(room, engine, null, null, () -> {
+            var instance = process.getRuntimeService().startProcessInstanceByKey(PROCESS_KEY, room.gameId,
+                    Map.of("roomCode", room.code, "roomId", room.roomId, "gameId", room.gameId, "restoreMode", true, "gameOver", false, "decisionKey", room.runtime.decisionKey, "actorId", actorId));
+            room.runtime.processInstanceId = instance.getId();
+        });
     }
     /** 输入候选和可选玩家操作，完成已有任务；交易取消仍由领域规则校验发起者。 */
     private void complete(Room room, GameEngine engine, String actorId, Action action) {

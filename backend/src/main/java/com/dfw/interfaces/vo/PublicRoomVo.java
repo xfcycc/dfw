@@ -9,6 +9,16 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 永久房间标识。 */
+    public String roomId;
+    /** 是否等待分配角色后继续。 */
+    public boolean recoveryPending;
+    /** 是否为可申请原角色的恢复房间。 */
+    public boolean recovered;
+    /** 来源房间标识。 */
+    public String sourceRoomId;
+    /** 来源保存点。 */
+    public String sourceSnapshotId;
     /** 最新公开事件卡面，私人补给只投影泛化日志。 */
     public ContentResult event;
     /** 最新公开事件的落格者。 */

@@ -53,6 +53,7 @@ public final class ContentService {
             result.targetId=candidates.get(random.nextInt(candidates.size())).id;
         }
         room.runtime.lastContent=result; room.runtime.contentPlayerId=owner.id;
+        HistoryTrace.event(room, "event_drawn", owner.id, result.privateSupply ? "获得私人事件" : "抽取城市事件：" + result.name, result);
         if (result.privateSupply) { owner.contentNotice=result; owner.contentNoticeText="收到私人事件补给"; log(room,owner.name+" 收到一份私人补给"); }
         else { log(room,owner.name+" 触发「"+result.name+"」："+result.effect); if (result.targetId!=null) log(room,"本次排名目标已锁定为 "+player(room,result.targetId).name+"，并列时随机选择"); }
         GameEffect effect=effects.effect("CONTENT_EVENT",owner); effect.content=result; effects.submit(room,effect);

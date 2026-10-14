@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { readSession, useGameStore } from '../stores/game';
+import { readSession, recentRooms, useGameStore } from '../stores/game';
+import { selectArchiveCode } from '../archive';
+import '../archive.css';
 import Logo from '../components/Logo.vue';
 import City from '../components/City.vue';
 const game = useGameStore();
@@ -11,6 +13,7 @@ const name = ref(localStorage.getItem('dfw:nickname') || '');
 const code = ref('');
 const loading = ref(false);
 const error = ref('');
+const recent = recentRooms().slice(0, 3);
 onMounted(() => { game.disconnect(); });
 /** 按当前模式进入房间，优先恢复本浏览器已有玩家席位。 */
 async function submit(): Promise<void> {
@@ -46,6 +49,8 @@ async function submit(): Promise<void> {
           <p v-if="error" class="error-text" role="alert">{{ error }}</p>
           <button class="button primary full" :disabled="loading">{{ loading ? '正在进入…' : mode === 'create' ? '创建我的房间' : mode === 'join' ? '加入好友的房间' : '打开观战大屏' }}<span>↗</span></button>
         </form>
+        <RouterLink class="button secondary full" to="/archives">历史与恢复 ↗</RouterLink>
+        <div v-if="recent.length" class="recent-room-links"><RouterLink v-for="room in recent" :key="room.roomId" class="button ghost small" :to="readSession(room.code)?.playerId ? `/room/${room.code}` : '/archives'" @click="selectArchiveCode(room.archiveCode)">{{ readSession(room.code)?.playerId ? '继续房间' : '查看存档' }} {{ room.code }}</RouterLink></div>
         <div class="entry-footer"><span>电脑手机都能玩</span><span>无需下载</span><span>实时同步</span></div>
       </section>
     </main>

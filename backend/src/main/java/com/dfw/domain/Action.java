@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Action {
+    /** 房主批准的角色申请标识。 */
+    public String claimId;
     /** 待选身份，防止恢复后提交旧选择。 */
     public String decisionId;
     /** 手牌超限时恰好保留的六张牌。 */

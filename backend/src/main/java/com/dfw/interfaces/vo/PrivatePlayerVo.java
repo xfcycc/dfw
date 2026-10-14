@@ -9,6 +9,10 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PrivatePlayerVo {
+    /** 固定存档码，观战投影没有此字段。 */
+    public String archiveCode;
+    /** 仅房主可见的待批准角色申请。 */
+    public List<SeatClaimVo> seatClaims = new ArrayList<>();
     /** 本人的完整内容选择。 */
     public ContentChoiceVo choice;
     /** 本人获得的私人事件卡面。 */
