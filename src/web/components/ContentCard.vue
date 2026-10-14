@@ -2,17 +2,30 @@
 import { computed } from 'vue';
 import type { ContentResult } from '../../shared/types';
 import { ITEMS } from '../../shared/rules';
-const props = defineProps<{ content: ContentResult; compact?: boolean }>();
+const props = defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean }>();
 const kind = computed(() => props.content.kind ?? null);
 const fallback = computed(() => kind.value ? ITEMS[kind.value] : null);
-const timing = computed(() => kind.value === 'release' ? '限制施加时' : kind.value === 'immunity' || kind.value === 'halfPayment' ? '付款防御' : kind.value ? '掷骰前' : props.content.pool === 'chance' ? '机会事件' : '财富事件');
+const pool = computed(() => kind.value || props.content.pool === 'card' ? 'card' : props.content.pool === 'chance' ? 'chance' : 'fortune');
+const poolName = computed(() => ({ card: '道具卡', chance: '机会卡', fortune: '财富卡' })[pool.value]);
+// 每类图集保留确认稿的三个插画及右上角字标；视窗只展示插画，正文由真实卡池填充。
+const frames = {
+  chance: { R: [22, 93, 487, 345], SR: [530, 93, 477, 345], SSR: [1028, 93, 487, 345] },
+  fortune: { R: [32, 107, 485, 350], SR: [535, 107, 470, 350], SSR: [1020, 107, 485, 350] },
+  card: { R: [31, 95, 483, 376], SR: [533, 95, 474, 376], SSR: [1020, 95, 483, 376] },
+} as const;
+const artwork = computed(() => {
+  const frame = frames[pool.value][props.content.rarity ?? 'R'];
+  return { source: `/images/cards/${pool.value}.jpg`, viewBox: frame.join(' '), width: frame[2], height: frame[3] };
+});
 </script>
 <template>
-  <article class="content-card" :class="[{ compact }, `rarity-${content.rarity ?? 'R'}`]">
-    <div class="content-card-heading"><span>{{ fallback?.icon ?? (content.pool === 'chance' ? '✦' : '🎁') }}</span><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong><small v-if="content.rarity" class="rarity-tag">{{ content.rarity }}</small></div>
-    <small class="content-timing">{{ content.cardType ? `${content.cardType} · ` : '' }}{{ timing }}</small>
-    <blockquote v-if="content.quote">“{{ content.quote }}”</blockquote>
-    <p v-if="!compact">{{ content.description ?? fallback?.description }}</p>
-    <p class="content-effect">{{ content.effect ?? fallback?.description }}</p>
+  <article :key="content.id" class="content-card illustrated-card" :class="[{ compact, thumbnail, 'card-reveal': reveal }, `rarity-${content.rarity ?? 'R'}`]" :aria-label="`${poolName} · ${content.rarity ?? 'R'} · ${content.name ?? fallback?.name ?? '事件'}`">
+    <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" width="1536" height="1024" /></svg>
+    <div class="card-copy">
+      <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
+      <p v-if="!thumbnail" class="card-description">{{ kind === 'barrier' ? fallback?.description : content.description ?? fallback?.description }}</p>
+      <p class="content-effect">{{ kind === 'barrier' ? fallback?.description : content.effect ?? fallback?.description }}</p>
+      <blockquote v-if="content.quote && !thumbnail">“{{ content.quote }}”</blockquote>
+    </div>
   </article>
 </template>

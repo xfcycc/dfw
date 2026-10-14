@@ -8,6 +8,8 @@ import Logo from '../components/Logo.vue';
 import Board from '../components/Board.vue';
 import Modal from '../components/Modal.vue';
 import '../archive.css';
+withDefaults(defineProps<{ embedded?: boolean }>(), { embedded: false });
+const emit = defineEmits<{ restoring: [value: boolean] }>();
 const router = useRouter();
 const game = useGameStore();
 const inputCode = ref(localStorage.getItem('dfw:archive:last') || '');
@@ -86,7 +88,7 @@ function chooseRestore(): void { ownPlayerId.value = state.value?.hostId ?? ''; 
 /** 无入参，以稳定请求 ID 恢复当前保存点，重试不会创建多个房间。 */
 async function restore(): Promise<void> {
   if (!archive.value || !preview.value || !ownPlayerId.value) return;
-  restoring.value = true; error.value = '';
+  restoring.value = true; emit('restoring', true); error.value = '';
   const choice = `${archive.value.archiveCode}:${preview.value.snapshotId}:${ownPlayerId.value}`;
   let requestId = commandId();
   try {
@@ -96,15 +98,15 @@ async function restore(): Promise<void> {
     const session = await archiveRequest<Session>('archives/restore', { archiveCode: archive.value.archiveCode, snapshotId: preview.value.snapshotId, requestId, playerId: ownPlayerId.value });
     rememberSession(session); await router.push(`/room/${session.code}`); sessionStorage.removeItem('dfw:restore-request');
   } catch (cause) { error.value = cause instanceof Error ? cause.message : '恢复失败'; }
-  finally { restoring.value = false; }
+  finally { restoring.value = false; emit('restoring', false); }
 }
 onMounted(() => { game.disconnect(); if (inputCode.value) void load(); });
 </script>
 <template>
-  <div class="archives-page">
-    <header class="site-header"><RouterLink to="/" aria-label="返回首页"><Logo /></RouterLink><RouterLink class="button secondary small" to="/">返回首页</RouterLink></header>
+  <div class="archives-page" :class="{ 'archives-embedded': embedded }">
+    <header v-if="!embedded" class="site-header"><RouterLink to="/" aria-label="返回首页"><Logo /></RouterLink><RouterLink class="button secondary small" to="/">返回首页</RouterLink></header>
     <main class="archives-main">
-      <section class="panel archive-search"><span class="eyebrow">城市的每一步，都有记录</span><h1>历史与恢复</h1><p class="muted">输入本房间固定存档码，查看完整记录，选择一个进度继续。</p><form class="archive-search-form" @submit.prevent="load()"><label class="field">固定存档码<input v-model="inputCode" placeholder="输入完整存档码，支持分组符号" autocomplete="off" required /></label><button class="button primary" :disabled="loading">{{ loading ? '正在读取…' : '查看存档' }}</button></form><p v-if="error" class="error-text" role="alert">{{ error }}</p>
+      <section class="panel archive-search"><span class="eyebrow">城市的每一步，都有记录</span><h1 v-if="!embedded">历史与恢复</h1><p class="muted">输入本房间固定存档码，查看完整记录，选择一个进度继续。</p><form class="archive-search-form" @submit.prevent="load()"><label class="field">固定存档码<input v-model="inputCode" placeholder="输入完整存档码，支持分组符号" autocomplete="off" required /></label><button class="button primary" :disabled="loading">{{ loading ? '正在读取…' : '查看存档' }}</button></form><p v-if="error" class="error-text" role="alert">{{ error }}</p>
         <div v-if="recent.length" class="archive-recent"><span class="muted">本浏览器的房间</span><button v-for="room in recent" :key="room.roomId" class="button ghost small" @click="load(room.archiveCode)">房间 {{ room.code }} · {{ formatArchiveCode(room.archiveCode).slice(0, 11) }}…</button></div>
       </section>
       <template v-if="archive">

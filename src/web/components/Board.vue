@@ -1,41 +1,86 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { boardDimensions, DISTRICTS, districtName, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
-import type { PublicRoomState, Tile } from '../../shared/types';
+import type { PublicPlayer, PublicRoomState, Tile } from '../../shared/types';
 import City from './City.vue';
-const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean }>();
-const emit = defineEmits<{ select: [tile: Tile] }>();
+import CharacterPawn from './CharacterPawn.vue';
+import DiceFace from './DiceFace.vue';
+import PlayerText from './PlayerText.vue';
+import PropertyGrade from './PropertyGrade.vue';
+import { useGameEffects } from '../composables/useGameEffects';
+const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean }>();
+const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
 const size = ref(700);
+const availableWidth = ref(700);
 const zoom = ref(1);
-const animatedPosition = ref<{ id: string; position: number } | null>(null);
-let animationGeneration = 0;
+const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); });
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
 let lastLength = 0;
+let lastViewportHeight = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
 const dimensions = computed(() => boardDimensions(props.room.board.length));
-const height = computed(() => size.value * dimensions.value.rows / dimensions.value.columns);
+const height = computed(() => { const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
+const baseUrl = import.meta.env.BASE_URL;
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
-const faceDots: Record<number, number[]> = { 0: [], 1: [5], 2: [1, 9], 3: [1, 5, 9], 4: [1, 3, 7, 9], 5: [1, 3, 5, 7, 9], 6: [1, 3, 4, 6, 7, 9] };
+const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
+const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
+const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
+const movementLabel = computed(() => rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
+watch(motion, value => { emit('animating', !!value); }, { flush: 'sync' });
+// 操作面板置于未缩放的内圈，保持手机端文字和按钮可读。
+const centerStyle = computed(() => {
+  const inset = props.compact ? 10 : 9;
+  const gap = props.compact ? 4 : 3;
+  const cellWidth = (size.value - inset * 2 + gap) / dimensions.value.columns;
+  const cellHeight = (height.value - inset * 2 + gap) / dimensions.value.rows;
+  if (!props.compact) return { left: `${(inset + cellWidth) * zoom.value}px`, top: `${(inset + cellHeight) * zoom.value}px`, width: `${(dimensions.value.columns - 2) * cellWidth - gap}px`, height: `${(dimensions.value.rows - 2) * cellHeight - gap}px`, transform: `scale(${zoom.value})`, transformOrigin: 'top left' };
+  const panelWidth = props.stretch && availableWidth.value < 760 ? Math.min(((dimensions.value.columns - 2) * cellWidth - gap) * zoom.value, availableWidth.value - 24) : ((dimensions.value.columns - 2) * cellWidth - gap) * zoom.value;
+  return {
+    left: `${(size.value * zoom.value - panelWidth) / 2}px`, top: `${(inset + cellHeight) * zoom.value}px`,
+    width: `${panelWidth}px`,
+    height: `${((dimensions.value.rows - 2) * cellHeight - gap) * zoom.value}px`,
+  };
+});
 const icons = { start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⌂' };
 /** 输入地块，返回其所有者的显示颜色。 */
-function ownerColor(tile: Tile): string | undefined { return props.room.players.find(player => player.id === tile.ownerId)?.color; }
+function ownerColor(tile: Tile): string | undefined { return tileOwner(tile)?.color; }
+/** 输入地块，返回其拥有者，未售出地块返回空。 */
+function tileOwner(tile: Tile): PublicPlayer | undefined { return props.room.players.find(player => player.id === tile.ownerId); }
 /** 输入地块索引，返回当前可见的棋子列表。 */
 function occupants(id: number) {
   return props.room.players.filter(player => !player.bankrupt && (animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position) === id);
 }
-/** 根据容器宽度和地图规模设置可读尺寸，返回全图默认比例；历史预览沿用高度限制。 */
+/** 输入公开玩家，返回不随地图文字缩小的小人位置；同格角色略错开显示。 */
+function pawnStyle(player: PublicPlayer) {
+  const position = animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position;
+  const cell = tileCoordinates(position, props.room.board.length);
+  const together = occupants(position); const offset = (together.findIndex(p => p.id === player.id) - (together.length - 1) / 2) * 16;
+  const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
+  return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color };
+}
+/** 输入容器与地图规模，按相同格距展开棋盘；房间默认不压缩，历史预览沿用原限制。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
+  const availableHeight = viewport.value?.clientHeight ?? 0;
   if (width <= 0) return;
-  if (width === lastWidth && window.innerHeight === lastHeight && props.room.board.length === lastLength) return;
+  if (width === lastWidth && (!props.bounded || availableHeight === lastViewportHeight) && window.innerHeight === lastHeight && props.room.board.length === lastLength) return;
+  availableWidth.value = width;
   lastWidth = width; lastHeight = window.innerHeight; lastLength = props.room.board.length;
-  size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  zoom.value = Math.max(0.3, Math.min(1, (width - 6) / size.value));
+  lastViewportHeight = availableHeight;
+  if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
+  else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
+  if (props.stretch) expandBoard();
+  else fitBoard();
+}
+/** 无入参，恢复方格可读尺寸，并将窄屏视野对准地图中央操作区。 */
+function expandBoard(): void {
+  zoom.value = 1;
+  void nextTick(() => { if (viewport.value) viewport.value.scrollLeft = Math.max(0, (size.value - availableWidth.value) / 2); });
 }
 /** 无入参，将滚动视野移到当前行动者；只改变本地棋盘视野。 */
 function locateCurrent(): void {
@@ -44,53 +89,68 @@ function locateCurrent(): void {
   viewport.value.scrollTo({ left: (cell.column - 0.5) * size.value * zoom.value / dimensions.value.columns - viewport.value.clientWidth / 2, top: (cell.row - 0.5) * height.value * zoom.value / dimensions.value.rows - viewport.value.clientHeight / 2, behavior: 'smooth' });
 }
 /** 无入参，恢复能容纳整张棋盘的默认比例。 */
-function fitBoard(): void { zoom.value = Math.max(0.3, Math.min(1, ((container.value?.clientWidth ?? size.value) - 6) / size.value)); }
-watch(() => props.room.motion?.id, async (id, old) => {
-  if (!id || id === old) return;
-  const motion = props.room.motion!;
-  const generation = ++animationGeneration;
-  animatedPosition.value = { id: motion.playerId, position: motion.from };
-  for (const position of motion.path) {
-    await new Promise(resolve => setTimeout(resolve, 100));
-    if (generation !== animationGeneration) return;
-    animatedPosition.value = { id: motion.playerId, position };
-  }
-  if (generation === animationGeneration) animatedPosition.value = null;
-});
+function fitBoard(): void {
+  const heightLimit = props.stretch ? Math.max(240, window.innerHeight - Math.max(0, container.value?.getBoundingClientRect().top ?? 0) - 24) / height.value : props.bounded && viewport.value?.clientHeight ? (viewport.value.clientHeight - 10) / height.value : 1;
+  zoom.value = Math.max(props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
+}
 onMounted(() => {
   observer = new ResizeObserver(resizeBoard);
   if (container.value) observer.observe(container.value);
+  if (props.bounded && viewport.value) observer.observe(viewport.value);
   window.addEventListener('resize', resizeBoard);
 });
-onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); animationGeneration++; });
+onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); emit('animating', false); });
 </script>
 <template>
-  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14 }">
-    <div class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" @click="fitBoard">全图</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" min="0.3" max="1.3" step="0.01" /></label></div></div>
+  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch }" :style="{ '--town-background': `url(${baseUrl}images/board/town-background.png)`, '--tile-background': `url(${baseUrl}images/board/tile-common.png)`, '--property-levels': `url(${baseUrl}images/board/property-levels.png)`, '--turn-arrow': `url(${baseUrl}images/board/turn-arrow.svg)` }">
+    <div v-if="!stretch" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" @click="fitBoard">全图</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
+    <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
-          <div class="board-center" :style="{ gridRow: `2 / span ${dimensions.rows - 2}`, gridColumn: `2 / span ${dimensions.columns - 2}` }">
-            <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
-            <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
-            <City />
-            <div class="turn-display"><span :style="{ background: current?.color }" class="avatar">{{ current?.name.slice(0, 1) }}</span><div><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small><strong>{{ current?.name }}{{ room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong></div><div class="die" :class="{ fresh: room.dice !== null, 'movement-value': room.dice !== null && room.dice <= 0 }" :key="`${room.turnNumber}-${room.dice}`" :aria-label="room.dice === null ? '等待掷骰' : room.dice < 0 ? `本次后退 ${-room.dice} 格` : room.dice === 0 ? '原地重新结算' : `骰子 ${room.dice} 点`"><strong v-if="room.dice !== null && room.dice <= 0">{{ room.dice }}</strong><template v-else><span v-for="dot in 9" :key="dot" :class="{ filled: faceDots[room.dice ?? 1]?.includes(dot) }"></span></template></div></div>
-            <div v-if="$slots.controls" class="board-center-controls"><slot name="controls" /></div>
-            <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }">{{ room.players.find(p => p.id === id)?.name }}</span></div>
-          </div>
-          <button v-for="tile in room.board" :key="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { owned: tile.ownerId, mortgaged: tile.mortgaged, 'current-position': compact && current?.position === tile.id }]" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
-            <span v-if="tile.ownerId" class="owner-strip"></span>
+          <button v-for="tile in room.board" :key="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
+            <span v-if="compact" class="tile-ground" aria-hidden="true"></span>
+            <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
+            <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
+            <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
             <span v-if="tile.barrier" class="barrier-marker" title="路障">🚧</span>
-            <span class="tile-icon" :class="{ built: tile.level > 0 }">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
-            <strong>{{ tile.name }}</strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮' }[tile.type]) }}</small>
-            <span v-if="compact && tile.type === 'property'" class="tile-ownership" :title="room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'"><i v-if="tile.ownerId" :style="{ background: ownerColor(tile) }"></i><span>{{ room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入' }}</span><b v-if="tile.ownerId"> · {{ tile.level }}级</b></span>
-            <span v-else-if="tile.level" class="building-level">{{ '●'.repeat(tile.level) }}</span>
-            <div v-if="occupants(tile.id).length" class="pawns"><span v-for="player in occupants(tile.id)" :key="player.id" :style="{ background: player.color }" :title="player.name">{{ player.name.slice(0, 1) }}</span></div>
+            <img v-if="tile.type !== 'property' && compact" class="special-tile-art" :src="`${baseUrl}images/tiles/${tile.type}.png`" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
+            <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
+            <strong><span class="tile-name">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮' }[tile.type]) }}</small>
+            <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}` : '待购入'">{{ tile.ownerId ? tile.ownerId === meId && !spectator ? '我的' : tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>
+            <span v-else-if="compact && tile.type === 'property'" class="tile-ownership" :title="room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'"><i v-if="tile.ownerId" :style="{ background: ownerColor(tile) }"></i><PlayerText :text="room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'" :players="room.players" /><b v-if="tile.ownerId"> · {{ tile.level }}级</b></span>
+            <span v-else-if="!stretch && tile.level" class="building-level">{{ '●'.repeat(tile.level) }}</span>
             <span class="tile-number">{{ tile.id }}</span>
           </button>
+          <div v-for="(change, index) in money" :key="change.key" class="money-float" :class="{ expense: change.amount < 0 }" :style="{ gridRow: tileCoordinates(change.tileId, room.board.length).row, gridColumn: tileCoordinates(change.tileId, room.board.length).column, '--float-offset': `${index % 3 * 14}px` }" aria-hidden="true"><small><PlayerText :text="change.name" :players="room.players" /></small>{{ change.amount > 0 ? '+' : '−' }}¥{{ Math.abs(change.amount).toLocaleString() }}</div>
+        </div>
+        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
+        <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="centerStyle">
+          <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
+          <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
+          <City />
+          <div v-if="celebrating" class="village-confetti" aria-hidden="true"><i v-for="leaf in 18" :key="leaf" :style="{ '--leaf': leaf }">{{ leaf % 3 === 0 ? '✦' : '▰' }}</i></div>
+          <div class="turn-display"><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="summary" /><DiceFace v-if="!diceFullscreen && (!stretch || room.dice !== null)" :value="room.dice" /></div>
+          <div v-if="$slots.controls" class="board-center-controls"><slot name="controls" /></div>
+          <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }"><PlayerText :text="room.players.find(p => p.id === id)?.name ?? '玩家'" :players="room.players" /></span></div>
         </div>
       </div>
     </div>
+    <Teleport to="body">
+      <Transition name="dice-overlay">
+        <div v-if="diceFullscreen && motion && motionPlayer" :key="motion.id" class="dice-overlay" :class="{ 'is-rolling': rolling }" role="status" aria-live="polite">
+          <div class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
+          <div class="dice-overlay-caption"><strong><PlayerText :text="motionPlayer.name" :players="room.players" /></strong><span>{{ movementLabel }}</span></div>
+        </div>
+      </Transition>
+    </Teleport>
+    <Transition name="motion-feedback">
+      <div v-if="motion && motionPlayer && !diceFullscreen" :key="motion.id" class="board-motion-feedback" :class="{ 'is-rolling': rolling, 'is-settled': !rolling }" :style="{ '--motion-color': motionPlayer.color }" role="status" aria-live="polite">
+        <div v-if="diceResult !== null" class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
+        <CharacterPawn v-else :avatar-id="motionPlayer.avatarId" :color="motionPlayer.color" :moving="moving" />
+        <div class="motion-caption"><strong><PlayerText :text="motionPlayer.name" :players="room.players" /></strong><span>{{ movementLabel }}</span><div v-if="!rolling && motion.path.length" class="motion-progress" aria-hidden="true"><i :style="{ width: `${step / motion.path.length * 100}%` }"></i></div></div>
+      </div>
+    </Transition>
     <div class="map-legend"><span v-for="(name, i) in districts" :key="i"><i :class="`district-${i}`"></i>{{ name }}</span></div>
     <div v-if="compact" class="board-state-legend"><span>彩色边框 · 地产主人</span><span>0级土地 · 1～3级建筑</span><span>🚧 路障 · 经过即停</span><span>▨ 条纹 · 已抵押</span></div>
   </div>

@@ -22,7 +22,7 @@ const example = computed(() => {
     <div class="rules-goal">
       <h3>买地收路费，成为最后的赢家</h3>
       <p>2～6 人轮流行动。<strong>最后一名未破产的玩家获胜</strong>，资产榜第一名只是当前领先。</p>
-      <div class="rules-facts"><span>起始现金 <strong>¥{{ ruleMoney(economy, 'initialCash', 6000).toLocaleString() }}</strong></span><span>向前经过起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }}</strong></span><span>开局手牌 <strong>2 张</strong></span></div>
+      <div class="rules-facts"><span>起始现金 <strong>¥{{ ruleMoney(economy, 'initialCash', 6000).toLocaleString() }}</strong></span><span>向前经过起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} ＋1 张道具</strong></span><span>开局手牌 <strong>2 张</strong></span></div>
     </div>
 
     <div v-if="version === 'brief'">
@@ -47,7 +47,7 @@ const example = computed(() => {
       <section>
         <h3>1. 一回合怎么走</h3>
         <p><strong>掷骰前用道具（可跳过） → 掷骰 / 道具移动 → 处理落点 → 管理资产或交易（可跳过） → 结束回合。</strong></p>
-        <ul class="rules-list"><li>通常顺时针移动。向前经过或到达起点，获得 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }}；后退经过起点不领钱。</li><li>普通移动只处理最终落点；路障会让首个经过者提前停下，路障随即消失。带有路障免疫状态时会继续通过，路障保留。</li><li>玩法选择、偿债和交易报价都不限时。先处理当前待办，才能继续后续操作。</li></ul>
+        <ul class="rules-list"><li>通常顺时针移动。向前经过或到达起点，获得 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }}，并补给一张道具；超过手牌上限时先整理手牌，再继续落点结算。后退经过起点不领钱或补给。</li><li>普通移动只处理最终落点；路障会让首个经过者提前停下，路障随即消失。带有路障免疫状态时会继续通过，路障保留。</li><li>玩法选择、偿债和交易报价都不限时。先处理当前待办，才能继续后续操作。</li></ul>
       </section>
       <section>
         <h3>2. 买地、建房和收路费</h3>

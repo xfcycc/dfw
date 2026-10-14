@@ -1,0 +1,451 @@
+/* 房间沿用白色操作面板，棋盘采用统一的小镇背景与微缩地块插画。 */
+.modern-room.game-session {
+  --green: #26334a;
+  --muted: #758094;
+  background: linear-gradient(#fffdf5b3, #fffdf5b3), var(--town-background) center top / 100% auto no-repeat #eef4e4;
+  color: #26334a;
+  max-width: none;
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+  display: block;
+}
+.modern-room.game-session > main { padding: 0 24px 24px; display: block; overflow: visible; }
+.modern-room.game-session .room-header { background: #fff; border-bottom: 1px solid #e7ebf2; padding: 12px 24px; }
+.modern-room .room-tag, .modern-room .mobile-room-menu summary { background: #f2f5fa; color: #46546e; border-color: #e1e7f0; }
+.modern-room.game-session .game-layout { display: block; }
+.modern-room.game-session .immersive-layout .board-view { padding: 14px; background: #fffdf5c9; border: 1px solid #e5eaf2; border-radius: 20px; box-shadow: 0 8px 32px #23365b06; display: block; }
+.modern-room.game-session .board-container { display: block; }
+.modern-room.game-session .board-viewport { height: auto; max-height: none; overflow: auto; overscroll-behavior: auto; }
+/* 地图和内圈内容滚到边缘后，继续滚动整页。 */
+.modern-room.game-session :is(.workbench-center, .hub-content, .hub-decision, .central-hand, .players-inspector, .workbench-content) { overscroll-behavior: auto; }
+.modern-room .game-board .board { background: linear-gradient(#fffdf54d, #fffdf54d), var(--town-background) center / cover #eef4e4; border: 2px solid #e1e7f0; box-shadow: none; border-radius: 16px; padding: 8px; gap: 4px; }
+.modern-room .game-board .tile { padding: 0; background: #fff; color: #33415b; border: 1px solid #e1e7f0; border-radius: 10px; box-shadow: 0 2px 5px #2c41610a; }
+.modern-room .game-board .tile.property { background: #fff; color: #33415b; }
+/* 通用底图只承载装饰，文字、产权和操作状态独立显示。 */
+.game-board .tile-ground { position: absolute; inset: 0; border-radius: inherit; background: var(--tile-background) center / cover #fffdf5; pointer-events: none; }
+.game-board .property-tile-art { position: absolute; width: 78%; aspect-ratio: 1; left: 50%; top: 51%; transform: translate(-50%, -50%); background: var(--property-levels) 0 0 / 200% 200% no-repeat; pointer-events: none; }
+.game-board .tile.level-1 .property-tile-art { background-position: 100% 0; }
+.game-board .tile.level-2 .property-tile-art { background-position: 0 100%; }
+.game-board .tile.level-3 .property-tile-art { background-position: 100% 100%; }
+.game-board .tile.mortgaged .tile-ground { opacity: .4; }
+.game-board .tile.mortgaged .property-tile-art { opacity: .55; filter: grayscale(.65); }
+.game-board .tile.target-selected .tile-ground { opacity: .55; }
+.modern-room .game-board .tile.owned { border: 2px solid var(--owner); box-shadow: inset 0 0 0 1px var(--owner); }
+.modern-room .game-board .tile.owned.level-2 { box-shadow: inset 0 0 0 2px var(--owner); }
+.modern-room .game-board .tile.owned.level-3 { box-shadow: inset 0 0 0 3px var(--owner), inset 0 0 0 5px #e5ebf5; }
+.modern-room .game-board .tile.mortgaged { background: repeating-linear-gradient(135deg, #fff, #fff 8px, #f4f6fa 8px, #f4f6fa 16px) !important; }
+.modern-room .game-board .tile.my-position { outline-color: #5874e7; }
+.modern-room .game-board .tile > strong { position: absolute; top: 5px; left: 4px; right: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; max-width: none; white-space: nowrap; overflow: visible; text-overflow: clip; font-size: 13px; line-height: 1.4; font-weight: 700; text-align: center; letter-spacing: 0; z-index: 1; text-shadow: 0 1px 2px #fffdf5; }
+.modern-room .game-board .tile-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.modern-room .game-board .tile > small { position: absolute; bottom: 9px; left: 22px; right: 22px; text-align: center; font-size: 12px; font-weight: 600; color: #67768f; z-index: 1; background: transparent; border-radius: 0; text-shadow: 0 1px 2px #fffdf5; }
+.modern-room .game-board .tile-number { left: auto; right: 5px; bottom: 4px; font-size: 9px; color: #a1acbc; }
+.modern-room .game-board .tile-ownership, .modern-room .game-board .owner-strip { display: none; }
+.modern-room .game-board .tile-grade { top: auto; bottom: 4px; left: 4px; color: #61708b; background: #edf1f7; font-size: 9px; padding: 2px 3px; }
+.modern-room .game-board .tile > strong .property-grade { padding: 2px 3px; border-radius: 4px; font-size: 10px; }
+.modern-room .immersive-board .tile > small { left: 50%; right: auto; bottom: 5px; transform: translateX(-50%); max-width: calc(100% - 12px); padding: 3px 10px; border: 1px solid #d6ad60; border-radius: 7px; background: linear-gradient(#fff8df, #ffe8ae); color: #80501e; font-size: 16px; line-height: 1.2; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: none; box-shadow: 0 2px 0 #b7893d30; }
+.modern-room .game-board .tile-owner-label { position: absolute; right: 4px; bottom: 37px; max-width: 46%; padding: 2px 4px; border: 1px solid color-mix(in srgb, var(--owner, #8490a4) 30%, white); border-radius: 4px; background: color-mix(in srgb, var(--owner, #8490a4) 12%, white); color: var(--owner, #8490a4); font-size: 11px; font-weight: 700; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 1; }
+.modern-room .immersive-board .tile .tile-number { bottom: 37px; left: 5px; right: auto; }
+.modern-room .game-board .tile-number, .modern-room .game-board .tile-grade { z-index: 1; }
+.modern-room .special-tile-art { position: absolute; width: 62%; height: 62%; left: 19%; top: 23%; object-fit: contain; mix-blend-mode: multiply; pointer-events: none; }
+.modern-room .game-board .tile:not(.property) > strong { color: #475773; }
+.modern-room .game-board:not(.immersive-board) .tile:not(.property) > small { left: 5px; right: 5px; font-size: 10px; }
+.modern-room .building-decor { top: auto; bottom: 28px; right: 7px; opacity: .65; }
+.modern-room .barrier-marker { top: auto; bottom: 27px; right: 6px; }
+.modern-room .map-character { --pawn-size: 75px; transform: translate(-50%, -42%); }
+.modern-room .map-character.mine { --pawn-size: 84px; }
+.modern-room .map-character.mine .character-pawn { filter: drop-shadow(0 0 4px #5874e760); }
+/* 回合摘要保持紧凑，动态、聊天和个人面板在内圈并排展示。 */
+.modern-room.game-session .immersive-board .workbench-center { background: linear-gradient(180deg, #fffdf5, #f6f0df); border: 3px solid #b99b72; border-radius: 28px; padding: 24px; overflow: hidden; box-shadow: inset 0 0 0 4px #fff8e7, 0 4px 0 #b99b7240; }
+.modern-room.game-session .workbench-center.has-decision > .turn-display { display: flex; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display { background: #fff8df; border: 2px solid #d6bc81; padding: 10px 12px; border-radius: 18px; gap: 12px; box-shadow: inset 0 0 0 3px #fffdf3, 0 3px 0 #d6bc8138; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display > .character-pawn { width: 40px; height: 40px; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display strong { color: #354a3d; font-size: 16px; margin-top: 4px; }
+.modern-room.game-session .workbench-center .turn-display > div:first-of-type { flex: 0 1 auto; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display > .turn-identity { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 12px; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display .turn-identity strong { margin-top: 0; font-size: 20px; line-height: 1.4; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display .turn-identity small { color: #6e805f; font-size: 16px; line-height: 1.4; }
+.modern-room .turn-display small { color: #8b978f; letter-spacing: 0; }
+.modern-room.game-session .immersive-board .workbench-center .turn-display > .hub-turn-callout { display: flex; align-items: center; justify-content: center; flex: 1 1 176px; min-width: 0; transform: translateY(6px); }
+.modern-room .hub-turn-callout .chibi-lettering { animation: your-turn-bounce 1.2s ease-in-out infinite; }
+@keyframes your-turn-bounce { 0%, 55%, 85%, 100% { transform: translateY(0); } 35% { transform: translateY(-4px); } 72% { transform: translateY(-1px); } }
+@media (prefers-reduced-motion: reduce) { .modern-room .hub-turn-callout .chibi-lettering { animation: none; } }
+.modern-room.game-session .workbench-center .turn-display > div.hub-summary { margin-left: auto; display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; flex: 0 1 auto; gap: 10px; min-width: 0; }
+.modern-room .hub-wallet { margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-variant-numeric: tabular-nums; }
+.modern-room .hub-wallet > div { display: flex; align-items: center; padding: 5px 8px; }
+.modern-room .hub-wallet > div, .modern-room .hub-asset-rank { width: 136px; min-height: 44px; flex-shrink: 0; justify-content: center; }
+.modern-room .hub-wallet dd { display: flex; align-items: center; gap: 6px; white-space: nowrap; margin: 0; color: #4f7443; font-size: 18px; font-weight: 800; line-height: 1.4; }
+.modern-room .hub-net-worth dd { color: #94702e; }
+.modern-room .hub-asset-rank { display: flex; align-items: center; padding: 3px 8px; color: #8d784d; font-size: 14px; font-weight: 700; white-space: nowrap; }
+.modern-room.game-session .immersive-board .workbench-center .die { border-radius: 12px; width: 36px; height: 36px; padding: 8px; border-color: #e3e9e1; box-shadow: none; transform: none; margin-left: 0; }
+.modern-room .die span.filled { background: #47715a; }
+.modern-room .hub-notice { background: #fff7e7; border-color: #ecdfbf; color: #887249; padding: 10px 14px; font-size: 12px; }
+.modern-room .hub-notice strong { font-weight: 500; }
+.modern-room .hub-actions { justify-content: center; gap: 12px; padding: 0; }
+.modern-room .hub-actions .button { flex: 0 0 60px; width: 60px; height: 60px; min-height: 60px; border-radius: 50%; padding: 0; background: #fff; border: 1px solid #e3e9e1; color: #617562; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 3px; box-shadow: 0 3px 10px #36523b06; }
+.modern-room .hub-actions .button.primary:not(:first-child) { background: #fff; color: #617562; border-color: #e3e9e1; }
+.modern-room .hub-actions .button:first-child { background: #47715a; color: #fff; border-color: #47715a; }
+.modern-room .hub-actions .button > span { font-size: 25px; line-height: 1; }
+.modern-room .hub-actions .button > small { font-size: 10px; font-weight: 500; }
+.modern-room .hub-actions .button:disabled { opacity: .32; box-shadow: none; }
+.modern-room .hub-finish { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
+.modern-room .button.secondary, .modern-room .button.ghost { background: #fff; border-color: #e1e7f0; color: #526078; }
+.modern-room .button.primary { background: #5874e7; border-color: #5874e7; color: #fff; }
+.modern-room .target-map-hint { background: #f1f5ff; border-color: #dce5ff; color: #526ad4; }
+.modern-room .game-board .tile.target-eligible { outline-color: #9eb0f8; }
+.modern-room .game-board .tile.target-selected { outline-color: #5874e7; background: #f1f5ff !important; }
+.modal.modern-modal { background: #fff; border-color: #e1e7f0; color: #33415b; }
+.modern-modal .trade-identity { background: #f5f7ff; border-color: #dce5ff; }
+.modern-modal .trade-side { background: #fff; border-color: #e1e7f0; }
+.modern-modal .trade-preview .trade-me { background: #f7f9ff; }
+.modern-modal .button.primary { background: #5874e7; border-color: #5874e7; color: #fff; }
+.modal.tile-detail-modal { width: min(100%, 480px); padding: 24px; border-radius: 24px; box-shadow: 0 24px 80px #23365b30; }
+.tile-detail-modal .modal-heading { margin-bottom: 20px; }
+.tile-detail-modal .modal-heading h2 { font-size: 22px; overflow-wrap: anywhere; }
+.tile-detail-modal .icon-button { background: #f2f5fa; color: #758094; border-radius: 50%; }
+.tile-detail-card { text-align: left; }
+.tile-detail-hero { display: flex; align-items: center; gap: 20px; padding: 16px; border: 1px solid #ffffff80; border-radius: 16px; }
+.tile-detail-art { width: 112px; aspect-ratio: 1; flex-shrink: 0; }
+.tile-detail-art.property { background: var(--detail-property-art) 0 0 / 200% 200% no-repeat; }
+.tile-detail-art.level-1 { background-position: 100% 0; }
+.tile-detail-art.level-2 { background-position: 0 100%; }
+.tile-detail-art.level-3 { background-position: 100% 100%; }
+.tile-detail-art.mortgaged { opacity: .6; filter: grayscale(.65); }
+.tile-detail-art img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
+.tile-detail-intro { min-width: 0; }
+.tile-detail-intro p { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #46546e; overflow-wrap: anywhere; }
+.tile-detail-location { display: block; color: #758094; font-size: 12px; }
+.tile-detail-status { display: inline-flex; margin-top: 12px; padding: 4px 9px; border-radius: 6px; background: #ffffffb3; color: #47715a; font-size: 11px; font-weight: 600; }
+.tile-detail-status.mortgaged { color: #a17b3d; }
+.tile-detail-card dl.tile-detail-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 16px 0; }
+.tile-detail-card .tile-detail-metrics > div { display: block; padding: 16px; background: #f5f7fb; border: 1px solid #e9edf4; border-radius: 12px; }
+.tile-detail-card dt { color: #8490a4; font-size: 12px; }
+.tile-detail-card .tile-detail-metrics dd { margin-top: 6px; color: #354a3d; font-size: 23px; font-weight: 700; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.tile-detail-card dl.tile-detail-facts { margin: 0; }
+.tile-detail-card .tile-detail-facts > div { gap: 16px; padding: 14px 0; border-color: #edf0f5; }
+.tile-detail-card .tile-detail-facts dt { flex-shrink: 0; }
+.tile-detail-card .tile-detail-facts dd { min-width: 0; color: #46546e; font-size: 13px; text-align: right; overflow-wrap: anywhere; }
+.tile-detail-title-deed { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding: 16px; border: 1px solid color-mix(in srgb, var(--deed-color) 22%, white); border-left: 4px solid var(--deed-color); border-radius: 12px; background: color-mix(in srgb, var(--deed-color) 6%, white); text-align: left; }
+.tile-detail-title-deed > .character-pawn { width: 44px; height: 44px; border-radius: 50%; }
+.tile-detail-owner-info { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.tile-detail-owner-info small { display: block; margin-bottom: 4px; color: #8490a4; font-size: 11px; }
+.tile-detail-owner-info strong { display: block; color: #46546e; font-size: 15px; line-height: 1.6; }
+.tile-detail-owner-info > span { display: block; color: #758094; font-size: 11px; line-height: 1.7; }
+.tile-detail-card .tile-detail-facts .tile-detail-mortgaged { color: #a17b3d; }
+.tile-detail-card > .tile-detail-description { margin: 18px 0; padding: 16px; background: #f5f7fb; border-radius: 12px; font-size: 13px; line-height: 1.9; color: #61708b; }
+.tile-detail-card > .tile-detail-barrier { display: flex; align-items: center; gap: 10px; margin: 14px 0 0; padding: 12px 14px; background: #f6f8f4; border: 1px solid #e9ede5; border-radius: 10px; color: #7d897f; }
+.tile-detail-barrier > span:first-child { font-size: 22px; }
+.tile-detail-barrier strong { display: block; font-size: 12px; font-weight: 600; }
+.tile-detail-barrier small { display: block; margin-top: 3px; font-size: 11px; line-height: 1.7; }
+.tile-detail-card > .tile-detail-barrier.active { background: #fff7e7; border-color: #ecdfbf; color: #887249; }
+@media (max-width: 800px) {
+  .modern-room.game-session > main { padding: 0 8px 14px; }
+  .modern-room.game-session .room-header { padding: 9px 8px; }
+  .modern-room.game-session .immersive-layout .board-view { padding: 6px; }
+  .modern-room.game-session .immersive-board .workbench-center { padding: 14px; }
+  .modern-room.game-session .immersive-board .workbench-center .turn-display { gap: 9px; padding-bottom: 12px; flex-wrap: wrap; }
+  .modern-room.game-session .immersive-board .workbench-center .turn-display strong { font-size: 14px; }
+  .modern-room.game-session .immersive-board .workbench-center .turn-display .turn-identity strong { font-size: 18px; }
+  .modern-room.game-session .immersive-board .workbench-center .turn-display .turn-identity small { font-size: 14px; }
+  .modern-room.game-session .workbench-center .turn-display > div:first-of-type { max-width: calc(100% - 90px); }
+  .modern-room .turn-display .die { position: absolute; top: 0; right: 0; }
+  .modern-room.game-session .workbench-center .turn-display > div.hub-summary { gap: 8px; flex: 1 1 100%; justify-content: space-between; }
+  .modern-room .hub-wallet { gap: 8px; }
+  .modern-room .hub-wallet dd { font-size: 16px; }
+  .modern-room .hub-actions { gap: 18px; }
+  .modern-room .hub-actions .button { width: 54px; height: 54px; min-height: 54px; flex-basis: 54px; }
+  .modern-room .hub-actions .button > span { font-size: 23px; }
+  .modern-room .game-board .tile > strong { font-size: 11px; }
+  .modern-room .game-board .tile > small { font-size: 10px; }
+  .modern-room .immersive-board .tile > small { font-size: 14px; padding: 3px 8px; }
+  .modern-room .game-board .tile > strong .property-grade { font-size: 9px; }
+  .modern-room .game-board .tile-owner-label { font-size: 10px; }
+  .modern-room .map-character { --pawn-size: 66px; }
+  .modern-room .map-character.mine { --pawn-size: 75px; }
+}
+@media (max-width: 480px) {
+  .modal.tile-detail-modal { padding: 18px; }
+  .tile-detail-hero { gap: 12px; padding: 12px; }
+  .tile-detail-art { width: 88px; }
+  .tile-detail-card .tile-detail-metrics > div { padding: 12px; }
+  .tile-detail-card .tile-detail-metrics dd { font-size: 20px; }
+  .tile-detail-title-deed { flex-wrap: wrap; padding: 12px; }
+  .tile-detail-title-deed > .property-grade { margin-left: auto; }
+}
+
+/* 铺满地图内圈：上方动态与资产，下方完整手牌和固定行动栏。 */
+.modern-room .dashboard-scroll { flex: 1; min-height: 0; display: flex; flex-direction: column; overflow: hidden; gap: 14px; padding: 2px; }
+.modern-room .dashboard-scroll > .hub-notice, .modern-room .dashboard-scroll > .hub-finish { margin-bottom: 16px; }
+.modern-room .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 20px; flex: 1; min-height: 260px; align-items: stretch; }
+.modern-room .dashboard-sidebar { min-width: 0; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.modern-room .workspace-panel { min-width: 0; min-height: 0; background: #fff; border: 1px solid #e4ebe4; border-radius: 16px; padding: 18px; box-shadow: 0 3px 14px #33543a04; }
+.modern-room .workspace-heading { display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; gap: 12px; margin-bottom: 16px; }
+.modern-room .workspace-heading h2 { display: block; position: static; font-size: 16px; line-height: 1.4; margin: 0; color: #354a3d; letter-spacing: 0; }
+.modern-room .workspace-heading h2 > span { margin-left: 8px; font-size: 11px; color: #89978b; font-weight: 500; }
+.modern-room .workspace-count { color: #8b998d; background: #f4f7f2; border-radius: 6px; padding: 4px 7px; font-size: 10px; white-space: nowrap; }
+.modern-room .workspace-caption { margin: 0 0 14px; color: #8b978f; font-size: 11px; line-height: 1.7; }
+.modern-room .dashboard-cards { flex-shrink: 0; padding: 0; border: 0; box-shadow: none; }
+.modern-room .dashboard-cards .workspace-heading { margin-bottom: 10px; }
+.modern-room .chat-composer-actions .hub-actions { gap: 8px; }
+.modern-room .chat-composer-actions .hub-actions .button { width: 40px; height: 40px; min-height: 40px; flex-basis: 40px; }
+.modern-room .chat-composer-actions .hub-actions .button > span { font-size: 17px; }
+.modern-room .chat-composer-actions .hub-actions .button > small { font-size: 8px; }
+.modern-room .dashboard-card-rail { display: flex; gap: 8px; overflow-x: auto; padding: 2px 0 8px; scrollbar-width: thin; }
+.modern-room .dashboard-hand-card, .modern-room .empty-hand-slot { flex: 0 0 calc((100% - 40px) / 6); min-width: 0; padding: 0; background: transparent; border: 0; border-radius: 12px; }
+.modern-room .dashboard-hand-card { cursor: pointer; transition: transform .15s ease; }
+.modern-room .dashboard-hand-card:hover { transform: translateY(-2px); }
+.modern-room .dashboard-hand-card:focus-visible { outline: 2px solid #7c9b72; outline-offset: 2px; }
+.modern-room .dashboard-hand-card .illustrated-card { margin: 0; height: 100%; border-width: 1px; border-radius: 10px; box-shadow: 0 2px 7px #2c4c3420; }
+.modern-room .dashboard-hand-card .illustrated-card .card-copy { padding: 8px 6px; }
+.modern-room .dashboard-hand-card .content-card.illustrated-card.thumbnail { height: 100%; }
+.modern-room .dashboard-hand-card .content-card-heading { min-height: 30px; margin-bottom: 0; }
+.modern-room .dashboard-hand-card .illustrated-card .content-card-heading { margin-top: 0; }
+.modern-room .dashboard-hand-card .illustrated-card .content-card-heading strong { font-size: 11px; line-height: 1.5; }
+.modern-room .dashboard-card-rail .content-card.illustrated-card.thumbnail .content-effect { display: none; }
+.modern-room .dashboard-card-rail .content-card.illustrated-card.thumbnail .content-card-heading strong { font-size: 12px; }
+.modern-room .empty-hand-slot { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; min-height: 100px; border: 1px dashed #dfe7da; color: #c2cec1; font-size: 10px; background: #fafcf8; }
+.modern-room .empty-hand-slot > span { font-size: 20px; font-weight: 300; }
+.modern-room .dashboard-ranking { display: flex; flex-direction: column; overflow: hidden; padding: 12px 16px; }
+.modern-room .dashboard-ranking .leaderboard-panel { padding: 0; margin: 0; min-height: 0; flex: 1; overflow: auto; scrollbar-width: thin; }
+.modern-room .dashboard-ranking .workspace-heading { margin-bottom: 8px; }
+.modern-room .ranking-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 8px; padding: 14px 0; border-bottom: 1px dashed #ded4b9; }
+.modern-room .ranking-row:last-child { border-bottom: 0; padding-bottom: 0; }
+.modern-room .ranking-row.bankrupt { opacity: .55; }
+.modern-room .ranking-header { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-width: 0; }
+.modern-room .ranking-identity { display: flex; align-items: center; gap: 8px; flex: 1 1 158px; padding: 0; min-width: 0; border: 0; text-align: left; color: #405443; background: transparent; }
+.modern-room .ranking-identity:disabled { opacity: 1; cursor: default; }
+.modern-room .ranking-number { font-size: 18px; font-weight: 800; color: #85967d; width: 18px; flex-shrink: 0; }
+.modern-room .ranking-row:first-child .ranking-number { color: #b59b64; }
+.modern-room .ranking-identity .character-pawn { width: 38px; height: 38px; border-radius: 50%; }
+.modern-room .ranking-identity > span:last-child { min-width: 0; }
+.modern-room .ranking-identity strong { font-size: 16px; display: block; line-height: 1.6; overflow-wrap: anywhere; }
+.modern-room .ranking-identity small { display: block; margin-top: 3px; color: #6e8268; font-size: 12px; line-height: 1.5; white-space: nowrap; }
+.modern-room .ranking-stats { display: grid; grid-template-columns: repeat(2, max-content); align-items: center; justify-content: end; flex: 1 1 224px; gap: 6px; }
+.modern-room .ranking-stat { display: inline-flex; align-items: center; gap: 4px; padding: 3px 4px; border: 1px solid #e3d7b6; border-radius: 10px; background: #fffdf4; color: #6d654e; font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.modern-room .ranking-stat b { font-weight: 800; }
+.modern-room .ranking-stat.cash { color: #4f7443; border-color: #c7d8b1; background: #f1f7e7; }
+.modern-room .ranking-stat.worth { color: #94702e; border-color: #e2cb91; background: #fff4d4; }
+.modern-room .ranking-stat.cards { color: #8e6749; background: #fff3dc; }
+.modern-room .ranking-stat.property { color: #9c6049; background: #fff0e6; border-color: #e8c6b1; }
+.modern-room .ranking-status { grid-column: 1 / -1; display: flex; gap: 6px; flex-wrap: wrap; }
+.modern-room .ranking-status:empty { display: none; }
+.modern-room .ranking-status span { background: #f0ece1; color: #786b55; padding: 4px 8px; border: 1px solid #ddd4c2; border-radius: 8px; font-size: 13px; font-weight: 700; line-height: 1.4; }
+.modern-room .ranking-status .buff { background: #edf5df; border-color: #c5d6ac; color: #617b45; }
+.modern-room .ranking-status .debuff { background: #fbeadd; border-color: #e4bfaa; color: #9b6248; }
+.modern-room .ranking-properties { grid-column: 1 / -1; min-width: 0; margin-left: 0; text-align: left; color: #657c50; font-size: 13px; font-weight: 700; }
+.modern-room .ranking-properties summary { cursor: pointer; padding: 4px 0; }
+.modern-room .ranking-tile-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 104px), 1fr)); align-items: start; gap: 10px; margin-top: 10px; padding-bottom: 4px; }
+.modern-room .ranking-row .remove-player { grid-column: 1 / -1; }
+.modern-room .dashboard-assets { display: flex; flex-direction: column; overflow: hidden; padding: 12px 16px; }
+.modern-room .dashboard-assets .workspace-heading { margin-bottom: 10px; }
+.modern-room .asset-portfolio { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 10px; }
+.modern-room .portfolio-card { padding: 12px; background: #fafcf8; border: 1px solid #e7ede2; border-radius: 12px; min-width: 0; }
+.modern-room .portfolio-heading { display: flex; gap: 8px; align-items: center; min-width: 0; }
+.modern-room .portfolio-heading > div { min-width: 0; }
+.modern-room .portfolio-heading strong { color: #4b614a; display: block; font-size: 11px; overflow-wrap: anywhere; }
+.modern-room .portfolio-heading small { display: block; color: #98a591; font-size: 9px; margin-top: 3px; }
+.modern-room .portfolio-status { margin-left: auto; flex-shrink: 0; color: #8fa180; font-size: 8px; padding: 3px 5px; border-radius: 4px; background: #eff4e9; }
+.modern-room .portfolio-status.mortgaged { background: #f6f0e6; color: #b29b6c; }
+.modern-room .portfolio-metrics { display: flex; justify-content: space-between; margin: 12px 0; gap: 12px; }
+.modern-room .portfolio-metrics dt { color: #98a591; font-size: 9px; }
+.modern-room .portfolio-metrics dd { margin: 4px 0 0; color: #4c654a; font-size: 13px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.modern-room .portfolio-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.modern-room .portfolio-actions .button { flex: 1; padding: 5px 6px; font-size: 9px; min-height: 28px; white-space: nowrap; }
+.modern-room .asset-guidance { margin-top: 14px; color: #99a791; font-size: 10px; }
+.modern-room .asset-guidance summary { cursor: pointer; width: fit-content; }
+.modern-room .asset-guidance p, .modern-room .asset-payment-note { font-size: 11px; line-height: 1.7; color: #899b7e; }
+.modern-room .asset-empty { padding: 20px; text-align: center; color: #a4b29a; font-size: 12px; background: #f8faf5; border-radius: 10px; }
+.modern-room .dashboard-records { display: flex; flex-direction: column; overflow: hidden; padding: 0; border: 0; background: transparent; box-shadow: none; }
+.modern-room .city-feed-panel { position: relative; overflow: hidden; min-height: 0; flex: 1; display: flex; flex-direction: column; padding: 16px; border-radius: 14px; background: #eef4ef; border: 1px solid #e5eee6; }
+.modern-room .dashboard-records .workspace-heading { flex-shrink: 0; margin-bottom: 10px; }
+.modern-room .news-indicator { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #579273; margin: 0 8px 2px 0; box-shadow: 0 0 0 4px #edf5ef; }
+.modern-room .record-switch { display: flex; gap: 3px; padding: 3px; background: #f2f6ee; border-radius: 7px; }
+.modern-room .record-switch button { padding: 5px 11px; border: 0; border-radius: 5px; color: #9eac93; background: transparent; font-size: 10px; }
+.modern-room .record-switch button.active { color: #58714e; background: #fff; box-shadow: 0 1px 5px #3f5c3310; }
+.modern-room .records-scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; font-family: ui-rounded, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
+.modern-room .records-scroll .live-records { padding: 0; background: transparent; }
+.modern-room .records-scroll .section-heading h2 { color: #9aa68f; font-size: 10px; font-weight: 500; }
+.modern-room .records-scroll .section-heading { margin-bottom: 12px; }
+.modern-room .records-scroll .field { font-size: 10px; color: #9aa68f; margin: 10px 0; }
+.modern-room .records-scroll .field input, .modern-room .records-scroll .field select { padding: 7px 10px; min-height: 32px; margin-top: 4px; border-color: #e3eade; border-radius: 7px; background: #fbfcf9; font-size: 11px; }
+.modern-room .records-scroll .history-toolbar { gap: 8px; }
+.modern-room .records-scroll :is(.live-record-row, .history-entry) { padding: 12px; margin: 6px 0; border: 1px solid transparent; border-top-color: #dfe7d7; text-align: left; }
+.modern-room .records-scroll :is(.live-record-row, .history-entry) time { font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; font-size: 11px; font-weight: 500; font-variant-numeric: tabular-nums; letter-spacing: .04em; color: #819078; }
+.modern-room .records-scroll :is(.live-record-row, .history-entry) p { margin: 7px 0 0; font-size: 14px; line-height: 1.85; font-weight: 500; letter-spacing: .025em; color: #354b40; }
+
+/* 房间中的卡牌、交易、选择、声音与历史弹窗使用同一尺寸和表单语言。 */
+.modal.modern-modal { border-radius: 22px; width: min(100%, 520px); max-height: calc(100dvh - 48px); padding: 24px; box-shadow: 0 24px 80px #29423330; background: #fff; border-color: #e1e9dc; color: #50634c; }
+.modal.modern-modal.wide { width: min(100%, 920px); }
+.modern-modal .modal-heading { position: sticky; top: -24px; z-index: 3; background: #fff; margin: -1px 0 20px; padding: 0 0 16px; border-bottom: 1px solid #ecf1e7; }
+.modern-modal .modal-heading h2 { font-size: 19px; color: #40563b; line-height: 1.5; }
+.modern-modal .modal-heading .icon-button { width: 34px; height: 34px; border-radius: 50%; background: #f3f7ee; color: #97a68a; font-size: 17px; flex-shrink: 0; }
+.modern-modal .field { color: #8b9c7d; font-size: 12px; margin: 14px 0; }
+.modern-modal .field input, .modern-modal .field select { background: #fafcf7; border-color: #e1e9d9; border-radius: 9px; min-height: 40px; padding: 9px 12px; font-size: 12px; }
+.modern-modal .button { min-height: 38px; border-radius: 9px; font-size: 12px; }
+.modern-modal .button.primary { background: #69875a; border-color: #69875a; color: #fff; }
+.modern-modal .button.secondary, .modern-modal .button.ghost { background: #f8faf4; border-color: #e3eadb; color: #8b9f7b; }
+.modern-modal .notice { font-size: 12px; line-height: 1.8; background: #f4f8ee; border-color: #e2ead9; color: #81966f; padding: 12px; }
+.modern-modal .notice.warning { background: #fcf7ec; border-color: #eee2c8; color: #ad9768; }
+.modern-modal .muted { font-size: 12px; line-height: 1.8; color: #9aa98d; }
+.modern-modal .trade-identity { background: #f5f8ef; border-color: #dee8d3; }
+.modern-modal .trade-side { background: #f9fbf5; border-color: #e2eada; }
+.modern-modal .trade-preview .trade-me { border-color: #92ac7d; background: #f3f8eb; }
+.modern-modal .trade-outcome > div { grid-template-columns: 88px minmax(0, 1fr); }
+.modern-modal .trade-outcome dt { color: #9baa8d; }
+.modern-modal .trade-outcome dd { color: #657d53; }
+.card-use-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 24px; align-items: start; }
+.card-use-preview .illustrated-card { max-width: 240px; margin: 0; }
+.card-use-controls { min-width: 0; }
+.card-use-controls h3 { font-size: 14px; color: #637b52; margin: 0 0 8px; }
+.card-use-controls .card-action { margin-top: 18px; padding-top: 14px; border-top: 1px solid #edf2e7; }
+.card-use-controls .card-action .button-row { margin-top: 14px; display: flex; justify-content: flex-end; gap: 8px; }
+.card-use-controls .target-current { color: #7f956c; font-size: 12px; line-height: 1.8; }
+.card-target-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: 340px; overflow: auto; padding: 2px; scrollbar-width: thin; }
+.target-option { display: flex; align-items: center; gap: 9px; min-width: 0; min-height: 64px; text-align: left; padding: 10px; border: 1px solid #e2ead9; border-radius: 10px; background: #fbfcf8; color: #7d9469; }
+.target-option.selected { border-color: #8eab77; box-shadow: inset 0 0 0 1px #8eab77; background: #f1f7e9; }
+.target-option.unavailable { opacity: .5; background: #f6f7f3; }
+.target-tile-symbol { display: grid; place-items: center; width: 26px; height: 30px; color: #b0c19e; background: #f1f5ea; border-radius: 6px; flex-shrink: 0; font-size: 18px; }
+.target-option .character-pawn { width: 30px; height: 30px; border-radius: 50%; }
+.target-option-copy { min-width: 0; flex: 1; }
+.target-option-copy strong { display: block; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.target-option-copy small { display: block; color: #a2b196; font-size: 9px; margin-top: 4px; line-height: 1.6; overflow-wrap: anywhere; }
+.target-check { color: #7f9f66; font-size: 13px; }
+.choice-use-modal .card-target-picker { margin-bottom: 16px; }
+.choice-use-modal .button-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
+.defense-amount { color: #7b9365; font-size: 14px; line-height: 1.8; }
+.defense-use-modal .illustrated-card { max-width: 230px; margin: 16px auto; }
+.modern-modal .choice-card-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.modern-modal .keep-card { border: 1px solid #e2ead9; border-radius: 10px; padding: 8px; background: #fafcf7; }
+.modern-modal .keep-card.selected { border-color: #86a46f; box-shadow: inset 0 0 0 1px #86a46f; }
+@media (max-width: 1000px) {
+  .modern-room .dashboard-scroll { overflow: auto; }
+  .modern-room .dashboard-grid { grid-template-columns: minmax(0, 1fr); flex: none; min-height: 0; }
+  .modern-room .dashboard-records { height: 460px; }
+  .modern-room .dashboard-sidebar { grid-template-rows: 220px 220px; }
+  .modern-room .workspace-panel { padding: 14px; }
+  .modern-room .dashboard-records, .modern-room .dashboard-cards { padding: 0; }
+  .modern-room .dashboard-action-bar { flex-wrap: wrap; }
+  .modern-room .dashboard-hand-card, .modern-room .empty-hand-slot { min-width: 84px; }
+}
+@media (max-width: 600px) {
+  .modal.modern-modal { max-height: calc(100dvh - 24px); padding: 18px; border-radius: 17px; }
+  .modern-modal .modal-heading { top: -18px; margin-bottom: 16px; padding-bottom: 12px; }
+  .modern-modal .modal-heading h2 { font-size: 17px; }
+  .card-use-layout { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .card-use-preview .illustrated-card { max-width: 240px; margin: auto; }
+  .card-use-preview .illustrated-card .card-illustration { max-height: 130px; }
+  .card-use-preview .illustrated-card .card-copy { padding: 12px; }
+  .card-use-preview .illustrated-card blockquote { display: none; }
+  .card-target-picker { max-height: 280px; }
+  .modern-modal .choice-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .modern-modal .trade-columns { grid-template-columns: minmax(0, 1fr); }
+  .modern-modal .trade-outcome > div { grid-template-columns: 78px minmax(0, 1fr); }
+}
+
+
+.modern-room .chat-heading { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.modern-room .chat-heading h3 { flex-shrink: 0; font-size: 12px; color: #526a58; margin: 0; }
+.modern-room .chat-composer { display: flex; align-items: center; gap: 10px; }
+.modern-room .room-chat { flex-shrink: 0; display: flex; flex-direction: column; gap: 10px; margin-top: 14px; padding: 12px; background: #f7f9f6; border: 1px solid #e3eae0; border-radius: 12px; }
+.modern-room .room-chat textarea { flex: 1; min-width: 0; min-height: 40px; resize: none; border: 0; outline: 0; background: transparent; color: #405a48; font: inherit; font-size: 12px; line-height: 1.7; padding: 8px 0; }
+.modern-room .room-chat:focus-within { border-color: #a7bfa7; box-shadow: 0 0 0 3px #eef4eb; }
+.modern-room .room-chat textarea::placeholder { color: #a0ad9e; }
+.modern-room .chat-send { flex: 0 0 38px; width: 38px; height: 38px; min-height: 38px; padding: 0; border-radius: 10px; font-size: 18px; }
+.modern-room .dashboard-action-bar { flex: 1; min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 0; border: 0; background: transparent; }
+.modern-room .action-bar-status { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 10px; color: #526d59; }
+.modern-room .chat-composer-actions .hub-actions { margin: 0; }
+.modern-room .asset-overview { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 104px), 1fr)); align-content: start; align-items: start; gap: 10px; flex: 1; min-height: 0; overflow: auto; padding: 2px 2px 5px; scrollbar-width: thin; }
+.modern-room .asset-overview > p { grid-column: 1 / -1; }
+.modern-room .asset-all { align-self: flex-start; flex-shrink: 0; margin-top: 12px; border: 0; padding: 4px 0; background: transparent; color: #637e51; font-size: 14px; font-weight: 700; }
+.modern-room :is(.dashboard-ranking, .dashboard-assets) .workspace-heading h2 { font-size: 19px; font-weight: 800; }
+.modern-room :is(.dashboard-ranking, .dashboard-assets) .workspace-count { color: #6a7c5c; font-size: 12px; font-weight: 600; }
+.decision-modal .landing-info { display: flex; align-items: center; gap: 12px; }
+.decision-modal .landing-info > span { font-size: 28px; color: #8aa581; }
+.decision-modal .landing-info small { display: block; margin-top: 6px; color: #93a18c; font-size: 11px; }
+.decision-modal .decision-price { font-size: 28px; color: #526f51; font-weight: 700; }
+.decision-modal .decision-price small { font-size: 11px; font-weight: 400; }
+.decision-modal .decision-outcome { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; padding: 16px; margin: 20px 0; border-radius: 12px; background: #f6f9f2; }
+.decision-modal .decision-outcome dt { color: #91a185; font-size: 11px; }
+.decision-modal .decision-outcome dd { margin: 8px 0 0; color: #506d4c; font-size: 19px; font-weight: 700; }
+.decision-modal .button-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.decision-modal .button-row .button { flex: 1; }
+.assets-modal .asset-portfolio { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,230px),1fr)); gap: 12px; }
+.assets-modal .portfolio-card { padding: 16px; border: 1px solid #e4ecdf; border-radius: 12px; background: #fafcf7; }
+.assets-modal .portfolio-heading { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; padding-top: 14px; text-align: center; }
+.assets-modal .portfolio-heading strong { display: block; margin-bottom: 8px; color: #526a45; font-size: 18px; font-weight: 800; overflow-wrap: anywhere; }
+.assets-modal .portfolio-heading .property-grade { font-size: 13px; }
+.assets-modal .portfolio-heading small { display: block; margin-top: 6px; color: #78886a; font-size: 12px; }
+.assets-modal .portfolio-status { position: absolute; top: 0; right: 0; padding: 4px 8px; border-radius: 8px; background: #edf5df; color: #647d4e; font-size: 12px; font-weight: 700; }
+.assets-modal .portfolio-status.mortgaged { background: #fbeadd; color: #9b6248; }
+.assets-modal .portfolio-heading .property-art { width: 100px; height: 100px; }
+.assets-modal .portfolio-metrics { display: flex; justify-content: space-between; margin: 18px 0; }
+.assets-modal .portfolio-metrics dt { color: #78886a; font-size: 13px; }
+.assets-modal .portfolio-metrics dd { margin: 6px 0 0; color: #526a45; font-size: 19px; font-weight: 800; }
+.assets-modal .portfolio-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+.modal.assets-modal .portfolio-actions .button.small { flex: 1; font-size: 13px; padding: 8px; }
+.assets-modal .asset-guidance { margin-top: 18px; color: #78886a; font-size: 14px; }
+.assets-modal .asset-guidance p, .assets-modal .asset-payment-note, .assets-modal .asset-empty { font-size: 14px; line-height: 1.7; }
+.modern-room .records-scroll .chat-record { border-color: #bfd0b2; border-radius: 10px; background: linear-gradient(135deg, #fffdf4, #f3f8ed); box-shadow: 0 2px 5px #4761370a; }
+.modern-room .chat-record-tag { display: inline-flex; align-items: center; margin-left: 8px; padding: 1px 6px; border: 1px solid #cfddc4; border-radius: 5px; background: #e8f0df; color: #58734e; font-size: 10px; line-height: 1.4; font-weight: 600; letter-spacing: .04em; vertical-align: middle; }
+.modern-room .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+.modern-room .action-bar-status .button { font-size: 10px; padding: 6px 9px; min-height: 30px; }
+@media (max-width: 600px) {
+  .modern-room .chat-heading { gap: 8px; }
+  .modern-room .dashboard-action-bar { flex-basis: 100%; justify-content: space-between; }
+}
+
+.modern-room .chat-composer-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+/* 四个操作共用彩色图集；禁用态由原有 disabled 状态驱动，无需额外图片。 */
+.modern-room .chat-composer-actions .button.game-action-button { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 0 0 48px; width: 48px; height: 48px; min-height: 48px; padding: 0; gap: 2px; border-radius: 12px; background: #fff; border-color: #dfe7dc; color: #617562; }
+.modern-room .chat-composer-actions .game-action-button > small { font-size: 10px; font-weight: 600; line-height: 1.2; }
+.modern-room .chat-composer-actions .game-action-button:hover:not(:disabled) { background: #eff5eb; border-color: #a7bea0; }
+.modern-room .chat-composer-actions .game-action-button:disabled { background: #f0f2ee; border-color: #e3e7df; color: #9ba497; opacity: 1; box-shadow: none; transform: none; }
+.modern-room .game-action-button:disabled .action-icon { filter: grayscale(1); opacity: .4; }
+.modern-room .chat-todo { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border: 1px solid #e4d9b9; border-radius: 7px; background: #fff9e9; color: #8d7945; font-size: 10px; }
+.modern-room .chat-todo > span:last-child { white-space: nowrap; color: #a28c56; }
+/* 内圈沿用棋盘坐标；各区域在原有网格内绘制边框，阴影不超出间距。 */
+.modern-room .workbench-center :is(.city-feed-panel, .room-chat, .dashboard-ranking, .dashboard-assets, .dashboard-cards) { position: relative; min-width: 0; border: 2px solid var(--frame-edge); border-radius: 20px; background: linear-gradient(180deg, #ffffffb3, transparent 80px), var(--frame-fill); box-shadow: inset 0 0 0 3px #fffdf5, 0 3px 0 color-mix(in srgb, var(--frame-edge) 35%, transparent); }
+.modern-room .workbench-center .city-feed-panel { --frame-edge: #9db697; --frame-fill: #eff5e9; }
+.modern-room .workbench-center .room-chat { --frame-edge: #99b8c9; --frame-fill: #f0f7fb; }
+.modern-room .workbench-center .dashboard-ranking { --frame-edge: #cfb272; --frame-fill: #fff9e9; }
+.modern-room .workbench-center .dashboard-assets { --frame-edge: #a5bc8c; --frame-fill: #f4f8e9; }
+.modern-room .workbench-center .dashboard-cards { --frame-edge: #b5a3c7; --frame-fill: #f7f2fb; padding: 10px 12px; }
+.modern-room .workbench-center .room-chat:focus-within { border-color: #729eaf; box-shadow: inset 0 0 0 3px #fffdf5, 0 3px 0 #99b8c959, 0 0 0 2px #99b8c930; }
+.modern-room .workbench-center .empty-hand-slot { border: 2px dashed #cfbfdd; border-radius: 14px; background: #fffafc; color: #aa97bb; }
+@media (max-width: 600px) {
+  .modern-room .chat-composer { flex-wrap: wrap; }
+  .modern-room .room-chat textarea { flex-basis: 100%; }
+  .modern-room .chat-composer-actions { margin-left: auto; }
+}
+
+/* 对局工具沿用小镇的奶油描边与糖果色，所有屏幕尺寸共用同一入口。 */
+.modern-room .immersive-header .game-utilities { gap: 8px; padding: 6px 8px 8px 12px; border: 2px solid #e5d5b4; border-radius: 24px; background: #fffaf0; box-shadow: inset 0 2px 0 #fff, 0 3px 0 #e5d5b43d; }
+.modern-room .game-utilities .connection-label { gap: 7px; padding-right: 4px; color: #9b8170; font-size: 11px; }
+.modern-room .game-utilities .connection-label i { width: 8px; height: 8px; background: #d68f83; box-shadow: 0 0 0 3px #f6e8dd; }
+.modern-room .game-utilities .connection-label.online i { background: #8eaf72; box-shadow: 0 0 0 3px #e8efd9; }
+.modern-room .game-utilities .connection-label.connecting i { background: #d8b566; box-shadow: 0 0 0 3px #fbefcf; }
+.modern-room .game-utilities .button { flex-shrink: 0; min-height: 38px; padding: 7px 12px; border: 2px solid #c7b3d8; border-radius: 15px; background: linear-gradient(#fbf5ff, #eee0f7); color: #8a6b9c; font-size: 12px; font-weight: 700; box-shadow: inset 0 2px 0 #fff, 0 3px 0 #c7b3d85c; }
+.modern-room .game-utilities .game-tools-trigger { gap: 5px; border-color: #a4bd8c; background: linear-gradient(#f6fbe9, #e2edcb); color: #718652; box-shadow: inset 0 2px 0 #fff, 0 3px 0 #a4bd8c66; }
+.game-tools-trigger svg { width: 23px; height: 23px; fill: #e4bd77; stroke: #94734e; stroke-width: 1.6; stroke-linejoin: round; }
+.game-tools-trigger svg circle { fill: #fff9e9; }
+.modern-room .game-utilities .button:hover { filter: brightness(1.03); transform: translateY(-1px); }
+.modern-room .game-utilities .button:active { transform: translateY(2px); box-shadow: inset 0 2px 0 #fff; }
+.modal.modern-modal.game-tools-modal { width: min(100%, 420px); padding: 22px; border: 3px solid #cfb58e; border-radius: 30px; background: #fff9eb; color: #80664b; box-shadow: inset 0 0 0 5px #fffdf5, 0 7px 0 #9c7c4e38, 0 24px 80px #43361c30; }
+.game-tools-modal .modal-heading { top: -22px; background: #fff9eb; border-bottom: 2px dashed #e8d8b9; }
+.game-tools-modal .modal-heading h2 { color: #80664b; }
+.game-tools-modal .modal-heading .icon-button { background: #f4e7d0; color: #a38967; box-shadow: inset 0 2px 0 #fff8ea; }
+.game-tools-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding-bottom: 4px; }
+.game-tool { --tool-edge: #e3b69b; --tool-fill: #fff0e4; --tool-ink: #a36e50; display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; min-height: 108px; padding: 12px 6px; border: 2px solid var(--tool-edge); border-radius: 20px; background: linear-gradient(#ffffff80, transparent), var(--tool-fill); color: var(--tool-ink); box-shadow: inset 0 0 0 3px #ffffff80, 0 4px 0 color-mix(in srgb, var(--tool-edge) 45%, transparent); font-size: 12px; font-weight: 700; }
+.game-tool.mint { --tool-edge: #adc395; --tool-fill: #edf5df; --tool-ink: #748d59; }
+.game-tool.sky { --tool-edge: #a4c6d7; --tool-fill: #eaf5fc; --tool-ink: #6c92a6; }
+.game-tool.lavender { --tool-edge: #c9b5d9; --tool-fill: #f4eafa; --tool-ink: #9476a7; }
+.game-tool-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 16px; background: #ffffffa6; font-size: 29px; line-height: 1; box-shadow: inset 0 -2px 0 #ffffffb3; }
+.game-tool-icon .character-pawn { width: 42px; height: 42px; }
+.game-tool:hover { transform: translateY(-2px); }
+.game-tool:active { transform: translateY(2px); box-shadow: inset 0 0 0 3px #ffffff80; }
+@media (max-width: 600px) {
+  .modern-room .immersive-header .game-utilities { gap: 6px; padding: 4px 6px 6px; }
+  .modern-room .game-utilities .connection-label { padding: 0 3px; font-size: 0; }
+  .modern-room .game-utilities .button { padding: 6px 8px; min-height: 36px; font-size: 11px; }
+}

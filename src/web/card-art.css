@@ -1,0 +1,57 @@
+/* 卡面文字独立于插画，沿用服务端冻结的名称、台词与效果。 */
+.content-card.illustrated-card { --card-accent: #386b57; --card-tint: #edf6eb; position: relative; isolation: isolate; width: 100%; max-width: 380px; min-height: 0; padding: 0; border: 2px solid var(--card-accent); border-radius: 16px; overflow: hidden; background: #fffaf1; color: #344536; box-shadow: 0 8px 24px #203c3024; text-align: center; }
+.illustrated-card.rarity-SR { --card-accent: #765299; --card-tint: #f2eafa; }
+.illustrated-card.rarity-SSR { --card-accent: #986811; --card-tint: #fff3d5; }
+.illustrated-card .card-illustration { display: block; width: 100%; height: auto; overflow: hidden; pointer-events: none; }
+.illustrated-card .card-copy { position: relative; display: flex; flex-direction: column; min-height: 240px; padding: 6% 6% 5%; margin: 0 3% 3%; border: 1px solid #aa946450; border-radius: 0 0 10px 10px; background: linear-gradient(135deg, #fffcf6, #fcf7ec); }
+.illustrated-card .content-card-heading { display: block; margin: 0 0 12px; padding: 0; }
+.illustrated-card .content-card-heading strong { font-size: 24px; line-height: 1.35; color: var(--card-accent); overflow-wrap: anywhere; }
+.illustrated-card .card-description { font-size: 14px; line-height: 1.8; margin: 0 0 14px; text-align: left; color: #534e44; overflow-wrap: anywhere; }
+.illustrated-card .content-effect { margin: auto 0 0; padding: 13px 12px; border: 1px solid #aa946430; border-radius: 10px; background: var(--card-tint); font-size: 15px; line-height: 1.7; color: var(--card-accent); text-align: left; font-weight: 700; overflow-wrap: anywhere; }
+.illustrated-card blockquote { font-size: 11px; font-weight: 400; line-height: 1.6; margin: 16px 0 0; padding-top: 11px; border-top: 1px solid #aa946440; color: #827969; overflow-wrap: anywhere; }
+.content-card.illustrated-card.compact .content-card-heading strong { font-size: 18px; }
+.content-card.illustrated-card.compact .card-description { font-size: 12px; }
+.content-card.illustrated-card.compact blockquote { font-size: 10px; margin: 12px 0 0; }
+.content-card.illustrated-card.thumbnail { min-height: 0; height: auto; padding: 0; border-radius: 10px; }
+.illustrated-card.thumbnail .card-copy { min-height: 0; padding: 9% 6%; }
+.illustrated-card.thumbnail .content-card-heading { margin-bottom: 8px; }
+.content-card.illustrated-card.thumbnail .content-card-heading strong { font-size: 13px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.content-card.illustrated-card.thumbnail .content-effect { font-size: 10px; line-height: 1.5; padding: 6px; margin: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.game-session .content-hand-card .content-card.illustrated-card { padding: 0; min-height: 0; height: 100%; }
+.keep-card input { z-index: 1; }
+.central-action-panel .keep-card .content-card.illustrated-card { padding: 0; margin: 0; }
+
+/* 揭卡仅覆盖城市新鲜事容器，卡面按容器内的可用尺寸完整展示。 */
+.card-reveal-panel { --reveal-color: #7eaa6a; position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; padding: 12px; border-radius: inherit; background: radial-gradient(ellipse at 50% 42%, #fffdf0, #e1edcf 75%); color: #705a43; overflow: hidden; isolation: isolate; }
+.card-reveal-panel.reveal-SR { --reveal-color: #ab82bf; background: radial-gradient(ellipse at 50% 42%, #fff9f2, #e9daf3 75%); }
+.card-reveal-panel.reveal-SSR { --reveal-color: #c99a3e; background: radial-gradient(ellipse at 50% 42%, #fffdf0, #f6e3ae 75%); }
+.card-reveal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; flex-shrink: 0; z-index: 2; font-size: 11px; }
+.card-reveal-toolbar .icon-button { width: 28px; height: 28px; border: 2px solid #dcc39a; border-radius: 11px; color: #967650; background: #fff5db; box-shadow: 0 2px 0 #dcc39a70; }
+.card-reveal-heading { text-align: center; z-index: 1; margin: 0; flex-shrink: 0; }
+.card-reveal-heading h3 { font-size: 18px; margin: 2px 0; color: #806344; }
+.card-reveal-heading p { margin: 2px 0; font-size: 11px; color: #968065; }
+.card-reveal-viewport { display: grid; place-items: center; width: 100%; min-height: 0; flex: 1; margin: 8px 0; }
+.card-reveal-fit { position: relative; }
+.card-reveal-stage { position: absolute; top: 0; left: 0; width: 330px; perspective: 1200px; transform-origin: top left; z-index: 1; }
+.card-reveal-stage::before { content: ''; position: absolute; inset: -20% -40%; background: radial-gradient(ellipse, var(--reveal-color), transparent 65%); opacity: .22; filter: blur(18px); animation: card-glow 1.4s ease-out; pointer-events: none; }
+.card-reveal-stage .illustrated-card { width: 100%; max-width: none; animation: card-unveil 1s cubic-bezier(.2,.7,.25,1) both; box-shadow: 0 0 40px #ffffff80, 0 14px 35px #816a4438; }
+.card-reveal-stage::after { content: ''; position: absolute; inset: 0; border-radius: 16px; background: linear-gradient(115deg, transparent 25%, #ffffffaa 48%, transparent 68%); transform: translateX(-120%); opacity: 0; pointer-events: none; animation: card-foil 1.4s .25s ease-out; }
+.card-reveal-particles { position: absolute; inset: 0; overflow: hidden; z-index: -1; pointer-events: none; }
+.card-reveal-particles i { position: absolute; left: var(--x); top: 80%; width: 4px; height: 4px; border-radius: 50%; background: var(--reveal-color); box-shadow: 0 0 12px var(--reveal-color); animation: card-spark 3s var(--delay) ease-out infinite; }
+.reveal-SSR .card-reveal-particles i { width: 6px; height: 6px; border-radius: 1px; }
+.card-reveal-footer { text-align: center; flex-shrink: 0; z-index: 3; }
+.card-reveal-footer .button { min-width: 150px; padding: 8px 14px; border: 2px solid #93ad74; border-radius: 14px; background: linear-gradient(#b8cf94, #9ab775); color: #344c2c; box-shadow: inset 0 2px 0 #e4efcf, 0 3px 0 #7e9a5c70; }
+/* 抽卡先展示叠放卡背，再抽出翻面；出牌沿用原揭卡效果。 */
+.card-draw-back { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; border: 3px solid #fff7de; border-radius: 16px; background: repeating-linear-gradient(45deg, #ffffff18 0 2px, transparent 2px 18px), linear-gradient(135deg, var(--reveal-color), #567351); box-shadow: 7px 7px 0 #fff7de, 10px 10px 0 var(--reveal-color), 17px 17px 0 #fff7de, 20px 20px 0 var(--reveal-color); opacity: 0; pointer-events: none; animation: card-draw-back 1s cubic-bezier(.2,.7,.25,1) both; }
+.card-draw-back::before { content: ''; position: absolute; inset: 18px; border: 2px solid #fff7de90; border-radius: 12px; }
+.card-draw-back span { padding: 22px 14px; border: 2px solid #fff7de90; border-radius: 50%; background: #fff7de20; color: #fff7de; font-size: 28px; font-weight: 700; letter-spacing: 4px; }
+.card-draw-reveal .card-reveal-stage .illustrated-card { animation: card-draw-unveil 1.5s cubic-bezier(.2,.7,.25,1) both; }
+.card-draw-reveal .card-reveal-stage::before { animation-delay: .6s; animation-fill-mode: both; }
+.card-draw-reveal .card-reveal-stage::after { animation-delay: 1s; }
+@keyframes card-draw-back { 0% { opacity: 0; transform: translateY(55px) rotate(-8deg) scale(.75); } 20% { opacity: 1; transform: translateY(8px) rotate(-8deg) scale(.9); } 55% { opacity: 1; transform: translateY(-22px) rotate(4deg) scale(1); } 85%, 100% { opacity: 0; transform: translateY(-8px) rotateY(-95deg); } }
+@keyframes card-draw-unveil { 0%, 45% { opacity: 0; transform: translateY(-8px) rotateY(95deg) scale(.95); } 75% { opacity: 1; transform: translateY(-8px) rotateY(-10deg) scale(1.03); } 100% { opacity: 1; transform: none; } }
+@keyframes card-unveil { 0% { opacity: 0; transform: translateY(65px) rotateY(95deg) scale(.65); } 50% { opacity: 1; transform: translateY(-8px) rotateY(-10deg) scale(1.03); } 100% { opacity: 1; transform: none; } }
+@keyframes card-glow { from { opacity: 0; transform: scale(.4); } 55% { opacity: .5; } to { opacity: .22; transform: scale(1); } }
+@keyframes card-foil { 0% { opacity: 0; transform: translateX(-120%); } 35% { opacity: .6; } 100% { opacity: 0; transform: translateX(120%); } }
+@keyframes card-spark { from { opacity: 0; transform: translateY(0) rotate(0); } 20% { opacity: .8; } to { opacity: 0; transform: translateY(-400px) rotate(180deg); } }
+@media (prefers-reduced-motion: reduce) { .card-reveal-stage .illustrated-card, .card-draw-reveal .card-reveal-stage .illustrated-card, .card-reveal-stage::before, .card-reveal-stage::after, .card-reveal-particles i { animation: none; } .card-reveal-particles, .card-draw-back { display: none; } }
