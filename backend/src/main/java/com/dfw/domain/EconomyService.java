@@ -39,11 +39,12 @@ public class EconomyService {
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
-        if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,player.name+" 本次正租金翻倍，状态已消耗"); }
-        if (StatusService.consume(player,"NEXT_PAYMENT_WAIVER")) { log(room,player.name+" 自动免除本笔强制费用，状态已消耗"); return; }
+        if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
-        room.pending = pending(type, player, tileId, amount, creditorId); room.pending.id = random.id(); room.pending.originalAmount = amount; room.phase = type;
-        log(room, player.name + " 待支付 " + String.format("%,d", amount) + "，请选择支付方式");
+        PendingDecision payment = pending(type, player, tileId, amount, creditorId);
+        if (StatusService.consume(player,"NEXT_PAYMENT_WAIVER")) { log(room,"log",player.id,player.name+" 自动免除 "+paymentDescription(room,payment)+" ¥"+String.format("%,d",amount)+"，剩余待支付 ¥0，状态已消耗"); return; }
+        room.pending = payment; room.pending.id = random.id(); room.pending.originalAmount = amount; room.phase = type;
+        log(room, "log", player.id, player.name + " 待支付 " + paymentDescription(room, room.pending) + " ¥" + String.format("%,d", amount) + "，请选择支付方式");
     }
     /** 输入付款人，确认用现金支付当前费用余额并恢复父流程。 */
     public void pay(Room room, Player player) {
@@ -53,7 +54,7 @@ public class EconomyService {
         require(player.cash >= debt.amount, "现金不足，请先抵押资产或协商抵债");
         player.cash -= debt.amount; Player creditor = player(room, debt.creditorId);
         if (creditor != null && !creditor.bankrupt) creditor.cash += debt.amount;
-        log(room, player.name + " 支付 " + String.format("%,d", debt.amount) + (creditor != null && !creditor.bankrupt ? " 给 " + creditor.name : " 给银行"));
+        log(room, "log", player.id, player.name + " 用现金支付 " + paymentDescription(room, debt) + " ¥" + String.format("%,d", debt.amount) + "，本笔欠款已结清");
         room.pending = null; room.phase = "manage";
     }
     /** 输入债务人，主动结束资不抵债的结算；银行费用须先自行抵押可用地产。 */
@@ -68,15 +69,33 @@ public class EconomyService {
     public Tile ownedTile(Room room, Player player, Integer id) {
         Tile tile = tile(room, id); require(tile != null && tile.type.equals("property") && Objects.equals(tile.ownerId, player.id), "这块地产不属于你"); return tile;
     }
-    /** 输入经营操作，变更地产与现金；强制费用始终保留到手动确认支付。 */
+    /** 输入房间、操作人、经营操作及地产索引，变更资产并公开实际金额与结果；费用仍需手动支付。 */
     public void manage(Room room, Player player, String action, int id) {
         require(!paymentPending(room) || !action.equals("redeem"), "费用结算期间不可赎回地产");
         Tile tile = ownedTile(room, player, id);
+        String land = tile.name + "（" + tile.id + "号）";
         switch (action) {
-            case "sellBuilding" -> { require(tile.level > 0 && !tile.mortgaged, "地产没有可出售建筑，或建筑已随地产抵押"); tile.level--; player.cash += Rules.sellBuildingValue(room, tile); log(room, player.name + " 出售 " + tile.name + " 的一级建筑"); }
-            case "mortgage" -> { require(!tile.mortgaged, "不可重复抵押"); tile.mortgageBase = Rules.propertyValue(room, tile); tile.mortgaged = true; long cash = Rules.mortgageValue(room, tile); player.cash += cash; log(room, player.name + " 整体抵押 " + tile.name + "，取得 " + cash + "，赎回需 " + Rules.redeemCost(tile)); }
-            case "redeem" -> { require(tile.mortgaged && player.cash >= Rules.redeemCost(tile), "地产未抵押或赎回现金不足"); player.cash -= Rules.redeemCost(tile); tile.mortgaged = false; tile.mortgageBase = null; log(room, player.name + " 赎回 " + tile.name); }
-            case "sellLand" -> { require(tile.level == 0, "请先卖完建筑"); if (!tile.mortgaged) player.cash += Rules.landValue(room, tile); tile.ownerId = null; tile.mortgaged = false; tile.mortgageBase = null; log(room, player.name + " 出售 " + tile.name); }
+            case "sellBuilding" -> {
+                require(tile.level > 0 && !tile.mortgaged, "地产没有可出售建筑，或建筑已随地产抵押"); tile.level--;
+                long cash = Rules.sellBuildingValue(room, tile); player.cash += cash;
+                log(room, "log", player.id, player.name + " 出售 " + land + " 的一级建筑，建筑从 " + (tile.level + 1) + " 级降至 " + tile.level + " 级，银行返款 ¥" + String.format("%,d", cash) + "，现金余额 ¥" + String.format("%,d", player.cash));
+            }
+            case "mortgage" -> {
+                require(!tile.mortgaged, "不可重复抵押"); tile.mortgageBase = Rules.propertyValue(room, tile); tile.mortgaged = true;
+                long cash = Rules.mortgageValue(room, tile); player.cash += cash;
+                log(room, "log", player.id, player.name + " 整体抵押 " + land + "，从银行取得 ¥" + String.format("%,d", cash) + "，赎回需 ¥" + String.format("%,d", Rules.redeemCost(tile)) + "，保留 " + tile.level + " 级建筑并暂停收租，现金余额 ¥" + String.format("%,d", player.cash));
+            }
+            case "redeem" -> {
+                long cost = Rules.redeemCost(tile); require(tile.mortgaged && player.cash >= cost, "地产未抵押或赎回现金不足");
+                player.cash -= cost; tile.mortgaged = false; tile.mortgageBase = null;
+                log(room, "log", player.id, player.name + " 赎回 " + land + "，支付银行 ¥" + String.format("%,d", cost) + "，保留 " + tile.level + " 级建筑并恢复收租，现金余额 ¥" + String.format("%,d", player.cash));
+            }
+            case "sellLand" -> {
+                require(tile.level == 0, "请先卖完建筑"); boolean mortgaged = tile.mortgaged;
+                long cash = mortgaged ? 0 : Rules.landValue(room, tile); player.cash += cash;
+                tile.ownerId = null; tile.mortgaged = false; tile.mortgageBase = null;
+                log(room, "log", player.id, player.name + " 出售 " + land + " 的土地，银行返款 ¥" + String.format("%,d", cash) + (mortgaged ? "（已抵押土地不再返款）" : "") + "，地产恢复为待购入，现金余额 ¥" + String.format("%,d", player.cash));
+            }
             default -> throw new GameError("当前操作不可用");
         }
     }

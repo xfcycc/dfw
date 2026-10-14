@@ -131,13 +131,20 @@ public class MysqlArchiveRepository implements ArchiveRepository {
     /** 输入历史筛选，绑定全部参数并返回倒序游标分页。 */
     public HistoryPageVo history(ArchiveInput input) {
         List<Object> params = new ArrayList<>(List.of(roomId(input.archiveCode), input.cursor == null ? Long.MAX_VALUE : input.cursor));
-        String sql = "SELECT sequence,snapshot_id,game_id,version,turn_number,phase,actor_id,actor_name,type,text,at FROM room_history WHERE room_id=? AND sequence<?";
+        String sql = "SELECT sequence,snapshot_id,game_id,version,turn_number,phase,actor_id,actor_name,type,text,at,details FROM room_history WHERE room_id=? AND sequence<?";
         if ("lobby".equals(input.gameId)) sql += " AND game_id IS NULL";
         else if (input.gameId != null) { sql += " AND game_id=?"; params.add(input.gameId); }
         if (input.turnNumber != null) { sql += " AND turn_number=?"; params.add(input.turnNumber); }
-        if (input.type != null) { sql += " AND type=?"; params.add(input.type); }
+        if ("live".equals(input.type)) sql += " AND type IN ('log','card_used','legacy_log','chat')";
+        else if (input.type != null) { sql += " AND type=?"; params.add(input.type); }
         HistoryPageVo page = new HistoryPageVo(); page.entries = jdbc.query(sql + " ORDER BY sequence DESC LIMIT 51", (rs, row) -> {
-            HistoryEntryVo entry = new HistoryEntryVo(); entry.sequence = rs.getLong("sequence"); entry.snapshotId = rs.getString("snapshot_id"); entry.gameId = rs.getString("game_id"); entry.version = rs.getLong("version"); entry.turnNumber = (Integer) rs.getObject("turn_number"); entry.phase = rs.getString("phase"); entry.actorId = rs.getString("actor_id"); entry.actorName = rs.getString("actor_name"); entry.type = rs.getString("type"); entry.text = rs.getString("text"); entry.at = rs.getLong("at"); return entry;
+            HistoryEntryVo entry = new HistoryEntryVo(); entry.sequence = rs.getLong("sequence"); entry.snapshotId = rs.getString("snapshot_id"); entry.gameId = rs.getString("game_id"); entry.version = rs.getLong("version"); entry.turnNumber = (Integer) rs.getObject("turn_number"); entry.phase = rs.getString("phase"); entry.actorId = rs.getString("actor_id"); entry.actorName = rs.getString("actor_name"); entry.type = rs.getString("type"); entry.text = rs.getString("text"); entry.at = rs.getLong("at");
+            String detail = rs.getString("details");
+            if (detail != null && Set.of("log", "card_used", "chat").contains(entry.type)) {
+                Map<?, ?> publicDetail = json.read(detail, Map.class); Object id = publicDetail.get("logId"); if (id instanceof String logId) entry.logId = logId;
+                if (publicDetail.get("mentions") instanceof List<?> mentions) entry.mentions = List.of(json.read(json.write(mentions), PlayerMention[].class));
+            }
+            return entry;
         }, params.toArray());
         if (page.entries.size() > 50) { page.entries.removeLast(); page.nextCursor = page.entries.getLast().sequence; } return page;
     }

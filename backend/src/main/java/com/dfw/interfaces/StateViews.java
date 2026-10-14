@@ -6,18 +6,19 @@ import static com.dfw.domain.GameSupport.*;
 
 /** 显式白名单投影；内部房间不得直接成为 WebSocket payload。 */
 public final class StateViews {
-    /** 输入内部房间，返回不含手牌、种子或报价内容的公开快照。 */
+    /** 输入内部房间，返回不含手牌、种子或内部报价对象的公开快照。 */
     public static PublicRoomVo publicRoom(Room room) {
         PublicRoomVo value = new PublicRoomVo(); value.code = room.code; value.version = room.version; value.status = room.status; value.hostId = room.hostId; value.gameId = room.gameId;
         value.roomId = room.roomId; value.recoveryPending = room.recoveryPending; value.recovered = room.recovered; value.sourceRoomId = room.sourceRoomId; value.sourceSnapshotId = room.sourceSnapshotId;
         value.mapSize = room.mapSize == null ? "large" : room.mapSize; value.economy = Rules.economy(room); value.board = room.board; value.turnOrder = room.turnOrder; value.turnIndex = room.turnIndex; value.turnNumber = room.turnNumber; value.phase = room.phase;
         value.chanceEventDescriptions = room.chanceEventDescriptions; value.upgradedTiles=room.upgradedTiles;
         if(room.runtime!=null && room.runtime.lastContent!=null && !room.runtime.lastContent.privateSupply) { value.event=room.runtime.lastContent; value.eventPlayerId=room.runtime.contentPlayerId; }
+        if(room.runtime!=null) { value.playedCard=room.runtime.playedCard; value.playedCardPlayerId=room.runtime.playedCardPlayerId; }
         value.pending = room.pending; value.tradePending = room.trade != null; value.pausedReason = room.pausedReason; value.dice = room.dice; value.motion = room.motion; value.winnerId = room.winnerId; value.logs = room.logs;
         var assets = new java.util.HashMap<String, Long>();
         for (Player player : room.players) assets.put(player.id, Rules.netWorth(room, player));
         for (Player player : room.players) {
-            PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.cash = player.cash; p.position = player.position;
+            PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position;
             p.cardCount = player.hand.size();
             p.netWorth = assets.get(player.id); p.assetRank = player.bankrupt ? null : 1 + (int) room.players.stream().filter(other -> !other.bankrupt && assets.get(other.id) > p.netWorth).count();
             p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
@@ -32,7 +33,7 @@ public final class StateViews {
         PrivatePlayerVo value = new PrivatePlayerVo(); value.playerId = id; value.hand = player(room, id).hand;
         value.archiveCode = room.archiveCode;
         if (id.equals(room.hostId)) for (SeatClaim claim : room.seatClaims) { SeatClaimVo v = new SeatClaimVo(); v.id = claim.id; v.playerId = claim.playerId; v.name = claim.name; v.at = claim.at; value.seatClaims.add(v); }
-        Player owner=player(room,id); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText;
+        Player owner=player(room,id); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
         if(room.runtime!=null) {
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
             ContentChoice choice=room.runtime.choice;

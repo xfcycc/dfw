@@ -3,6 +3,8 @@ package com.dfw.interfaces;
 import com.dfw.application.RoomService;
 import com.dfw.infrastructure.JsonCodec;
 import com.dfw.interfaces.dto.RoomInput;
+import com.dfw.interfaces.dto.RoomLogInput;
+import com.dfw.interfaces.vo.HistoryPageVo;
 import com.dfw.interfaces.vo.SessionVo;
 import java.util.Map;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +18,9 @@ public class RoomController {
     private final JsonCodec json;
     /** 输入应用服务和 JSON 编解码器，构造 Controller。 */
     public RoomController(RoomService rooms, JsonCodec json) { this.rooms = rooms; this.json = json; }
+    /** 输入当前房间会话及分页游标，返回完整公开实时记录，不返回共享存档码。 */
+    @PostMapping("/rooms/logs")
+    public HistoryPageVo logs(@RequestBody RoomLogInput input) { return rooms.publicLogs(input); }
     /** 返回进程健康状态。 */
     @GetMapping("/health")
     public Map<String, Boolean> health() { return Map.of("ok", true); }

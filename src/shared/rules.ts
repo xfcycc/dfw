@@ -27,7 +27,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   steal: { name: '抢夺手牌', icon: '🃏', description: '随机转移未破产对手的一张牌；对方无牌时保留卡与次数。' },
   cash: { name: '即时现金', icon: '💰', description: '获得卡面现金，占本回合主动次数。' },
   remote: { name: '遥控骰子', icon: '🎯', description: '指定 1～6 点，替代本次掷骰。' },
-  barrier: { name: '路障', icon: '🚧', description: '在前方六格内的地产放置路障，首个经过者停下。' },
+  barrier: { name: '路障', icon: '🚧', description: '在前方六格内任意无路障地块放置路障，首个经过者停下。' },
   stay: { name: '停留', icon: '⚓', description: '替代掷骰，留在当前格重新结算。' },
   immunity: { name: '免租', icon: '🛡️', description: '支付路费前使用，免除本次全部租金。' },
   demolish: { name: '拆房', icon: '🔨', description: '让另一玩家的一块地产降一级，无退款。' },

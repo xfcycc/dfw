@@ -16,4 +16,6 @@ public class Motion {
     public int from;
     /** 经过路径。 */
     public List<Integer> path = new ArrayList<>();
+    /** 本次结算的全部移动片段，旧快照缺省为空；原字段继续表示最后一段。 */
+    public List<MotionSegment> segments = new ArrayList<>();
 }

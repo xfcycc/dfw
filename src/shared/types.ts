@@ -45,6 +45,8 @@ export interface PublicPlayer {
   id: string;
   name: string;
   color: string;
+  /** 可选公开角色形象，旧快照使用探险家。 */
+  avatarId?: string;
   cash: number;
   /** 公开的持有手牌数量；旧服务端及历史快照可缺省，具体卡面仍为私有。 */
   cardCount?: number | null;
@@ -92,7 +94,7 @@ export interface PendingDecision {
   originalAmount?: number;
   defenseResolved?: boolean;
 }
-/** 交易报价仅向双方发送，等待主动接受、拒绝或取消。 */
+/** 交易报价对象仅向双方发送，双方及报价明细进入公开记录，等待主动接受、拒绝或取消。 */
 export interface Trade {
   id: string;
   fromId: string;
@@ -110,10 +112,21 @@ export interface Trade {
   /** 旧计时字段仅为协议兼容保留，固定为空。 */
   runningSince: number | null;
 }
-/** 公共事件不包含抽到或使用的卡牌名称与数量。 */
-export interface PublicLog { id: string; text: string; at: number }
+/** 公开玩家引用与动态，不包含未使用手牌或内部报价对象；已发起报价的明细通过公开日志展示。 */
+export interface PlayerMention { id?: string; name: string; color: string }
+export interface PublicLog { type?: string; mentions?: PlayerMention[]; id: string; text: string; at: number }
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
-export interface Motion { id: string; playerId: string; from: number; path: number[] }
+export interface MotionSegment {
+  id: string; playerId: string; from: number; path: number[];
+  /** 本段掷骰结果；事件移动为空，旧协议可缺省。 */
+  dice?: number | null;
+  /** 触发本段移动的公开事件，恢复后也先揭卡再移动。 */
+  beforeEvent?: ContentResult | null;
+  /** 本段落点抽出的公开事件，不包含私人补给。 */
+  event?: ContentResult | null;
+}
+/** 保留最后一段的原字段，按顺序扩展完整移动过程。 */
+export interface Motion extends MotionSegment { segments?: MotionSegment[] }
 /** 公开房间快照，可安全发送给任意观战者。 */
 export interface PublicRoomState {
   roomId?: string;
@@ -147,6 +160,10 @@ export interface PublicRoomState {
   chanceEventDescriptions?: string[];
   event?: ContentResult | null;
   eventPlayerId?: string | null;
+  /** 已实际使用的道具展示卡面；旧服务端及快照可缺省。 */
+  playedCard?: ContentResult | null;
+  /** 最近使用道具的玩家。 */
+  playedCardPlayerId?: string | null;
   upgradedTiles?: number[];
 }
 /** 当前玩家私有状态，只有本人可收到。 */
@@ -154,6 +171,8 @@ export interface PrivatePlayerState {
   archiveCode?: string;
   seatClaims?: SeatClaim[];
   playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
+  /** 本人最近报价的拒绝说明，旧快照可缺省。 */
+  tradeRejection?: string | null;
   choice?: ContentChoice | null;
   event?: ContentResult | null;
   notice?: ContentResult | null;
@@ -167,7 +186,7 @@ export interface SeatClaim { id: string; playerId: string; name: string; at: num
 export interface ArchiveSnapshot { snapshotId: string; gameId: string | null; version: number; turnNumber: number; at: number; status: string; manual: boolean; label: string | null; restorable: boolean; restoreError: string | null; state: PublicRoomState | null }
 export interface ArchiveGame { gameId: string | null; firstAt: number; lastAt: number; turnNumber: number; snapshots: number }
 export interface RoomArchive { roomId: string; archiveCode: string; code: string; sourceArchiveCode: string | null; sourceSnapshotId: string | null; latest: ArchiveSnapshot; games: ArchiveGame[]; bookmarks: ArchiveSnapshot[]; nextCursor: number | null }
-export interface HistoryEntry { sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
+export interface HistoryEntry { mentions?: PlayerMention[]; logId?: string | null; sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
 export interface HistoryPage { entries: HistoryEntry[]; nextCursor: number | null }
 /** 服务端操作结果。 */
 export interface CommandResult { ok: boolean; version?: number; error?: string; code?: string }
@@ -175,9 +194,11 @@ export interface CommandResult { ok: boolean; version?: number; error?: string; 
 export interface GameCommand { id: string; expectedVersion: number; action: GameAction }
 /** 所有业务操作的显式输入类型。 */
 export type GameAction =
+  | { type: 'chat'; message: string }
   | { type: 'assignSeat'; claimId: string }
   | { type: 'continueRecovery' }
   | { type: 'ready'; value: boolean }
+  | { type: 'setAvatar'; avatarId: string }
   | { type: 'setMapSize'; mapSize: MapSize }
   | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }

@@ -4,7 +4,7 @@ import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 交易双方可见的报价。 */
+/** 交易双方操作的报价；双方及资产明细同步进入公开记录。 */
 @Getter
 @Setter
 public class Trade {

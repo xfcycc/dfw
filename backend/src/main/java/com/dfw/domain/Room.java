@@ -3,6 +3,7 @@ package com.dfw.domain;
 import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /** 持久化房间聚合；不得直接推送到客户端。 */
 @Getter
@@ -58,6 +59,9 @@ public class Room {
     public Integer dice;
     /** 最新移动路径。 */
     public Motion motion;
+    /** 候选房间本次结算的移动收集器，不序列化，不沿用上次提交的路径。 */
+    @JsonIgnore
+    public List<MotionSegment> movementSequence = new ArrayList<>();
     /** 胜者标识。 */
     public String winnerId;
     /** 公开事件记录。 */

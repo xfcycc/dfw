@@ -39,6 +39,10 @@ public class GameRuntime {
     public ContentResult lastContent;
     /** 最近一次事件的获得者。 */
     public String contentPlayerId;
+    /** 最近实际消耗的道具卡面，仅保存可公开的展示字段。 */
+    public ContentResult playedCard;
+    /** 最近实际使用道具的玩家。 */
+    public String playedCardPlayerId;
     /** 本次骰子的加码，只作用于同一次连续移动。 */
     public int rollBonus;
     /** 本局已完成的效果数量。 */

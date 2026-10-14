@@ -36,6 +36,7 @@ public final class InputValidation {
         object(value); uuid(value, "id"); number(value.get("expectedVersion"), 0, 9007199254740991L);
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
+            case "chat" -> check(action.has("message") && action.get("message").isString() && !action.get("message").asString().isBlank() && action.get("message").asString().length() <= 300);
             case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
             case "contentDecision" -> { uuid(action,"decisionId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
@@ -43,6 +44,7 @@ public final class InputValidation {
             }
             case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); }
             case "ready" -> bool(action, "value");
+            case "setAvatar" -> check(action.has("avatarId") && action.get("avatarId").isString() && com.dfw.domain.PlayerAvatars.IDS.contains(action.get("avatarId").asString()));
             case "setMapSize" -> check(action.has("mapSize") && action.get("mapSize").isString() && List.of("small", "medium", "large").contains(action.get("mapSize").asString()));
             case "rentDecision" -> bool(action, "useCard");
             case "tradeRespond" -> bool(action, "accept");
@@ -53,10 +55,12 @@ public final class InputValidation {
             default -> check(false);
         }
         List<String> fields = switch (type) {
+            case "chat" -> List.of("message");
             case "assignSeat" -> List.of("claimId");
             case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds");
             case "paymentDefense" -> List.of("decisionId","cardId");
             case "ready" -> List.of("value");
+            case "setAvatar" -> List.of("avatarId");
             case "setMapSize" -> List.of("mapSize");
             case "rentDecision" -> List.of("useCard");
             case "tradeRespond" -> List.of("accept");

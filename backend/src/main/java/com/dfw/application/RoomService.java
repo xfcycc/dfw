@@ -7,6 +7,7 @@ import com.dfw.infrastructure.JsonCodec;
 import com.dfw.infrastructure.SessionTokens;
 import com.dfw.application.RoomRepository.*;
 import com.dfw.interfaces.dto.ArchiveInput;
+import com.dfw.interfaces.dto.RoomLogInput;
 import com.dfw.interfaces.dto.SeatClaimInput;
 import java.util.*;
 import java.util.concurrent.*;
@@ -124,7 +125,7 @@ public class RoomService {
             Room value = json.copy(original, Room.class);
             StoredSession[] assigned = new StoredSession[1];
             CommandResult result = transaction.execute(status -> {
-                HistoryTrace.event(value, action.type, session.playerId(), actionText(action.type), action);
+                if (!action.type.equals("chat")) HistoryTrace.event(value, action.type, session.playerId(), actionText(action.type), action);
                 if (action.type.equals("assignSeat")) assigned[0] = assign(value, session.playerId(), action.claimId);
                 else if (action.type.equals("continueRecovery")) {
                     if (!value.recoveryPending || !Objects.equals(value.hostId, session.playerId())) throw new GameError("只有房主可继续恢复对局");
@@ -183,6 +184,17 @@ public class RoomService {
         if (token == null || !token.matches("[a-f0-9]{64}")) throw new GameError("身份已失效，请重新进入房间", "FORBIDDEN");
         StoredSession session = repository.session(tokens.hash(token));
         if (session == null || !Objects.equals(room(session.code()).roomId, session.roomId())) throw new GameError("加入身份已失效，请重新加入", "FORBIDDEN"); return session;
+    }
+    /** 输入房间会话和游标，返回本局完整公开动态，玩家与观战者均可查阅。 */
+    public HistoryPageVo publicLogs(RoomLogInput input) {
+        StoredSession session = validSession(input.token);
+        if (input.cursor != null && input.cursor < 0) throw new GameError("记录游标不可用");
+        return serial(session.code(), () -> {
+            verifySession(session); Room value = room(session.code());
+            ArchiveInput query = new ArchiveInput(); query.archiveCode = value.archiveCode;
+            query.gameId = value.gameId == null ? "lobby" : value.gameId; query.type = "live"; query.cursor = input.cursor;
+            return archives.history(query);
+        });
     }
     /** 输入玩家会话、版本和备注，原子标记当前已提交保存点，不推进游戏。 */
     public ArchiveSnapshotVo saveArchive(ArchiveInput input) {

@@ -58,6 +58,7 @@ Flowable 推进、房间状态、命令回执、历史和完整快照加入同�
 | --- | --- |
 | `/api/archives/query` | `archiveCode`、可选书签版本 `cursor` → 最新进度、对局汇总、书签分页与来源 |
 | `/api/archives/history` | `archiveCode`、可选 `gameId`／`turnNumber`／`type`／序号 `cursor` → 公开事实分页；`gameId=lobby` 筛选大厅 |
+| `/api/rooms/logs` | `token`、可选序号 `cursor` → 当前房间本局完整公开动态分页；玩家与观战会话均可读取，筛选 `log`／`card_used`／`legacy_log`，不返回其他内部明细 |
 | `/api/archives/snapshot` | `archiveCode`、可选 `snapshotId` → 当时公开局面与恢复兼容性；省略保存点读最新 |
 | `/api/archives/save` | 玩家 `token`、`expectedVersion`、可选 `label` → 当前已提交保存点的手动标记 |
 | `/api/archives/restore` | `archiveCode`、`requestId`、可选 `snapshotId`／`playerId` → 新恢复房间会话；默认最新进度与保存时房主角色 |

@@ -12,10 +12,14 @@ public class Player {
     public ContentResult contentNotice;
     /** 私人结果说明，不发给观战者。 */
     public String contentNoticeText;
+    /** 本人发起的最近报价被拒绝时的说明，新报价成功发出后清除。 */
+    public String tradeRejection;
     /** 玩家唯一标识。 */
     public String id;
     /** 公开昵称。 */
     public String name;
+    /** 玩家选择的公开形象，旧快照缺省使用探险家。 */
+    public String avatarId = "explorer";
     /** 座位颜色。 */
     public String color;
     /** 可用现金。 */

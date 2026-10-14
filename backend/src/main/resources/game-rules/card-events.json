@@ -62,13 +62,6 @@
               {
                 "op": "EQ",
                 "left": {
-                  "ref": "targetTile.type"
-                },
-                "right": "property"
-              },
-              {
-                "op": "EQ",
-                "left": {
                   "ref": "targetTile.barrier"
                 },
                 "right": false
@@ -89,7 +82,7 @@
               }
             ]
           },
-          "error": "请选择前方六格内没有路障的地产"
+          "error": "请选择前方六格内没有路障的地块"
         }
       ],
       "steps": [
@@ -419,7 +412,7 @@
                     "name": "定身法",
                     "rarity": "R",
                     "quote": "定！你给我站那儿！",
-                    "description": "前方合法地产放一个路障，首个受它影响的经过者停下，连施法者也别太大意。",
+                    "description": "前方六格内任意无路障地块放一个路障，首个受它影响的经过者停下，连施法者也别太大意。",
                     "cardType": "主动"
                   },
                   {

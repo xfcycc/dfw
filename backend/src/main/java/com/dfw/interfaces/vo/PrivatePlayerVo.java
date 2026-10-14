@@ -27,6 +27,8 @@ public class PrivatePlayerVo {
     public List<Card> hand;
     /** 仅交易双方可见的报价。 */
     public Trade trade;
+    /** 本人发起的最近报价被拒绝时的说明，仅发起人可见。 */
+    public String tradeRejection;
     /** 本人是否已主动使用道具。 */
     public boolean activeCardUsed;
 }

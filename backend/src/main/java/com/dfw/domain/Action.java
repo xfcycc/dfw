@@ -8,12 +8,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Action {
+    /** 玩家发送的公开聊天正文。 */
+    public String message;
     /** 房主批准的角色申请标识。 */
     public String claimId;
     /** 待选身份，防止恢复后提交旧选择。 */
     public String decisionId;
     /** 手牌超限时恰好保留的六张牌。 */
     public List<String> keepCardIds;
+    /** 本人选择的内置角色形象。 */
+    public String avatarId;
     /** 操作类型。 */
     public String type;
     /** 大厅地图设置，small、medium 或 large。 */

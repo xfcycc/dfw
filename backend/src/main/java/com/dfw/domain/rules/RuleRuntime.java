@@ -48,7 +48,7 @@ public final class RuleRuntime {
         for (var check : rule.checks()) require(check.condition().matches(context), check.error());
         List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects, rule.id());
         if (rule.activation().equals("RENT")) planned.getFirst().resumesDecision = true;
-        actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true;
+        actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true; cardLog(room, actor, card, action);
         effects.submitAll(room, planned);
     }
     /** 输入原协议命令，检查当前配置行动窗口；买地、租金和偿债继续原待选校验。 */

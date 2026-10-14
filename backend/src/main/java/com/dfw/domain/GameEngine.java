@@ -82,12 +82,17 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; }
+    private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; }
     /** 输入房间和身份操作，在候选房间中应用规则，由应用层持久化。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
         switch (action.type) {
+            case "chat" -> {
+                require(action.message != null && !action.message.isBlank() && action.message.length() <= 300, "请输入 1～300 字的聊天内容");
+                log(room, "chat", player.id, player.name + "：" + action.message.strip()); return;
+            }
             case "ready" -> { require(room.status.equals("lobby"), "游戏已开始"); player.ready = action.value; return; }
+            case "setAvatar" -> { require(action.avatarId != null && PlayerAvatars.IDS.contains(action.avatarId), "请选择内置角色形象"); player.avatarId = action.avatarId; return; }
             case "setMapSize" -> {
                 require(room.hostId.equals(player.id) && room.status.equals("lobby"), "只有房主可在开局前修改地图大小");
                 require(action.mapSize != null && Set.of("small", "medium", "large").contains(action.mapSize), "请选择小、中或大地图");
@@ -132,9 +137,12 @@ public class GameEngine {
                 require(room.phase.equals(action.type) && room.pending != null && room.pending.tileId != null, "当前没有这项操作");
                 Tile tile = room.board.get(room.pending.tileId); long cost = action.type.equals("buy") ? tile.price : Rules.buildCost(room, tile);
                 require(player.cash >= cost, "现金不足，可先管理资产或放弃");
-                if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; log(room, player.name + " 买下 " + tile.name); }
-                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; room.upgradedTiles.add(tile.id); log(room, player.name + " 将 " + tile.name + " 升至 " + tile.level + " 级"); }
-                player.cash -= cost; room.phase = "manage"; room.pending = null;
+                String result;
+                if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
+                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
+                player.cash -= cost;
+                log(room, "log", player.id, player.name + result + "，支付银行 ¥" + String.format("%,d", cost) + "，现金余额 ¥" + String.format("%,d", player.cash));
+                room.phase = "manage"; room.pending = null;
             }
             case "pass" -> { require(room.phase.equals("buy") || room.phase.equals("upgrade"), "当前没有可放弃的选项"); room.phase = "manage"; room.pending = null; }
             case "paymentDefense" -> items.defense(room, player, action);

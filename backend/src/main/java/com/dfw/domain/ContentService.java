@@ -42,7 +42,7 @@ public final class ContentService {
     }
     /** 输入房间，返回是否需继续整理超限手牌，连接恢复时交给原流程推进。 */
     public boolean needsOverflow(Room room) { return room.trade == null && room.runtime.choice == null && room.players.stream().anyMatch(p -> !p.bankrupt && p.hand.size() > 6); }
-    /** 输入落格玩家和池，抽一次完整事件并锁定排名目标，入队后不在等待或恢复时重抽。 */
+    /** 输入房间、落格玩家和池，抽取并保存事件及关联路径，锁定排名目标后入队，无返回值。 */
     public void event(Room room, Player owner, String pool) {
         ContentResult result = catalog.draw(room,pool,null,random);
         if (Set.of("rich_fee","bottom_income","bottom_bonus").contains(result.mechanism)) {
@@ -53,18 +53,25 @@ public final class ContentService {
             result.targetId=candidates.get(random.nextInt(candidates.size())).id;
         }
         room.runtime.lastContent=result; room.runtime.contentPlayerId=owner.id;
+        if (!result.privateSupply && !room.movementSequence.isEmpty()) {
+            MotionSegment segment = room.movementSequence.getLast();
+            if (segment.playerId.equals(owner.id)) segment.event = result;
+        }
         HistoryTrace.event(room, "event_drawn", owner.id, result.privateSupply ? "获得私人事件" : "抽取城市事件：" + result.name, result);
         if (result.privateSupply) { owner.contentNotice=result; owner.contentNoticeText="收到私人事件补给"; log(room,owner.name+" 收到一份私人补给"); }
         else { log(room,owner.name+" 触发「"+result.name+"」："+result.effect); if (result.targetId!=null) log(room,"本次排名目标已锁定为 "+player(room,result.targetId).name+"，并列时随机选择"); }
         GameEffect effect=effects.effect("CONTENT_EVENT",owner); effect.content=result; effects.submit(room,effect);
     }
-    /** 输入已保存事件，展开确定的原子效果，选择只暂停后续步骤。 */
+    /** 输入房间和已保存事件效果，展开确定的原子效果并保存移动来源，选择只暂停后续步骤，无返回值。 */
     private void resolveEvent(Room room, GameEffect source) {
         ContentResult r=source.content; Player owner=player(room,source.playerId); var p=r.parameters;
         switch (r.mechanism) {
             case "income" -> submit(room,"GRANT_MONEY",owner,p.get("amount"));
             case "fee" -> submit(room,"PAY_FEE",owner,p.get("amount"));
-            case "forward","back" -> { submit(room,"MOVE",owner,p.get("steps")); submit(room,"SETTLE_TILE",owner,0); }
+            case "forward","back" -> {
+                GameEffect movement = effects.effect("MOVE", owner); movement.amount = p.get("steps"); movement.content = r;
+                effects.submit(room, movement); submit(room,"SETTLE_TILE",owner,0);
+            }
             case "skip" -> restrict(room,owner,p.get("count").intValue(),false);
             case "cards","cards_one","cards_two" -> { giveCards(room,owner,p.get("count").intValue(),null); overflow(room); }
             case "directed" -> { giveCards(room,owner,1,List.of("immunity","freeUpgrade","remote").get(p.get("cardType").intValue())); overflow(room); }
@@ -130,8 +137,8 @@ public final class ContentService {
                 if (Boolean.TRUE.equals(action.accept)) {
                     require(choice.tileIds.contains(action.tileId) && upgradeTargets(room,owner).contains(action.tileId),"请选择合法的自家地产");
                     Tile target=tile(room,action.tileId);
-                    if(choice.cardId!=null) consume(room,owner,find(owner,choice.cardId),true);
-                    target.level++; room.upgradedTiles.add(target.id); log(room,owner.name+" 将 "+target.name+" 免费升至 "+target.level+" 级");
+                    if(choice.cardId!=null) consume(room,owner,find(owner,choice.cardId),true,action);
+                    target.level++; room.upgradedTiles.add(target.id); log(room,"log",owner.id,owner.name+" 免费升级 "+target.name+"（"+target.id+"号），建筑从 "+(target.level-1)+" 级升至 "+target.level+" 级，费用 ¥0，现金余额 ¥"+String.format("%,d",owner.cash));
                 }
             }
             case "self_destroy" -> {
@@ -152,7 +159,7 @@ public final class ContentService {
             }
             case "release" -> {
                 if(Boolean.TRUE.equals(action.accept)) {
-                    Card card=find(owner,action.cardId); require(card.kind.equals("release"),"请选择解控卡"); consume(room,owner,card,false);
+                    Card card=find(owner,action.cardId); require(card.kind.equals("release"),"请选择解控卡"); consume(room,owner,card,false,action);
                     log(room,owner.name+" 解除本次"+(choice.jailed?"监禁":"休息"));
                 } else applyRestriction(room,owner,choice.skipTurns,choice.jailed);
             }
@@ -168,24 +175,24 @@ public final class ContentService {
         switch(card.kind) {
             case "fixed","move","remote" -> {
                 long steps=card.kind.equals("remote") ? (action.point==null?0:action.point) : card.parameters.get("steps");
-                require(!card.kind.equals("remote") || steps>=1 && steps<=6,"请选择 1～6 点"); consume(room,owner,card,true);
+                require(!card.kind.equals("remote") || steps>=1 && steps<=6,"请选择 1～6 点"); consume(room,owner,card,true,action);
                 submit(room,"REPLACE_ROLL",owner,steps);
             }
             case "barrier" -> {
                 int distance=target==null?0:Math.floorMod(target.id-owner.position,room.board.size());
-                require(target!=null && target.type.equals("property") && !target.barrier && distance>=1 && distance<=6,"请选择前方六格内没有路障的地产"); consume(room,owner,card,true);
+                require(target!=null && !target.barrier && distance>=1 && distance<=6,"请选择前方六格内没有路障的地块"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("PLACE_BARRIER",owner); e.tileId=target.id; effects.submit(room,e);
             }
             case "demolish" -> {
-                require(target!=null && target.ownerId!=null && !target.ownerId.equals(owner.id) && target.level>0,"请选择对手有建筑的地产"); consume(room,owner,card,true);
+                require(target!=null && target.ownerId!=null && !target.ownerId.equals(owner.id) && target.level>0,"请选择对手有建筑的地产"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("DEMOLISH",owner); e.tileId=target.id; effects.submit(room,e);
             }
             case "swap" -> {
-                require(opponent!=null && !opponent.bankrupt && !opponent.id.equals(owner.id) && !opponent.jailed,"请选择未服刑的对手"); consume(room,owner,card,true);
+                require(opponent!=null && !opponent.bankrupt && !opponent.id.equals(owner.id) && !opponent.jailed,"请选择未服刑的对手"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("SWAP_POSITION",owner); e.targetId=opponent.id; effects.submit(room,e);
             }
-            case "bonus" -> { consume(room,owner,card,true); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); }
-            case "cash" -> { consume(room,owner,card,true); submit(room,"GRANT_MONEY",owner,card.parameters.get("amount")); }
+            case "bonus" -> { consume(room,owner,card,true,action); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); }
+            case "cash" -> { consume(room,owner,card,true,action); submit(room,"GRANT_MONEY",owner,card.parameters.get("amount")); }
             case "freeUpgrade" -> {
                 List<Integer> targets=upgradeTargets(room,owner); if(targets.isEmpty()) { owner.contentNotice=card; owner.contentNoticeText="没有合法免费升级目标，此卡已保留"; return; }
                 ContentChoice choice=open(room,owner,"free_upgrade"); choice.tileIds.addAll(targets); choice.cardId=card.id; choice.content=card;
@@ -193,7 +200,7 @@ public final class ContentService {
             case "steal" -> {
                 require(opponent!=null && !opponent.bankrupt && !opponent.id.equals(owner.id),"请选择未破产的对手");
                 if(opponent.hand.isEmpty()) { owner.contentNotice=card; owner.contentNoticeText="对手没有手牌，抢夺卡和主动次数已保留"; return; }
-                Card transferred=opponent.hand.get(random.nextInt(opponent.hand.size())); consume(room,owner,card,true); opponent.hand.remove(transferred); owner.hand.add(transferred);
+                Card transferred=opponent.hand.get(random.nextInt(opponent.hand.size())); consume(room,owner,card,true,action); opponent.hand.remove(transferred); owner.hand.add(transferred);
                 owner.contentNotice=transferred; owner.contentNoticeText="抢夺获得这张道具"; opponent.contentNotice=transferred; opponent.contentNoticeText="这张道具被转移给 "+owner.name;
                 log(room,owner.name+" 对 "+opponent.name+" 发动私人道具转移"); overflow(room);
             }
@@ -207,14 +214,14 @@ public final class ContentService {
         if(action.cardId!=null) {
             Card card=find(owner,action.cardId);
             require(card.kind.equals("halfPayment") || card.kind.equals("immunity") && debt.type.equals("rent"),"此道具不能减免本笔费用");
-            consume(room,owner,card,false); long reduction=card.kind.equals("immunity")?debt.amount:debt.amount/2; debt.amount-=reduction;
-            log(room,owner.name+" 本笔费用减免 ¥"+reduction+"，剩余 ¥"+debt.amount);
-        }
+            consume(room,owner,card,false,action); long reduction=card.kind.equals("immunity")?debt.amount:debt.amount/2; debt.amount-=reduction;
+            log(room,"log",owner.id,owner.name+" 减免 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",reduction)+"，剩余待支付 ¥"+String.format("%,d",debt.amount));
+        } else log(room,"log",owner.id,owner.name+" 放弃本笔付款防御，仍需支付 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",debt.amount));
         debt.defenseResolved=true;
         if(debt.amount==0) { room.pending=null; room.phase="manage"; }
     }
     /** 输入手牌身份，返回仅属于调用者的真实卡牌。 */
     private static Card find(Player owner,String id) { return owner.hand.stream().filter(c -> Objects.equals(c.id,id)).findFirst().orElseThrow(() -> new GameError("该道具已不在你的手牌中")); }
-    /** 输入已验证的卡牌，消费并登记主动次数，不公开卡面或剩余手牌。 */
-    private static void consume(Room room,Player owner,Card card,boolean active) { owner.hand.remove(card); if(active) room.activeCardUsed=true; }
+    /** 输入已验证的卡牌及发动参数，消费并登记主动次数，记录已使用卡的目标和效果。 */
+    private static void consume(Room room,Player owner,Card card,boolean active,Action action) { owner.hand.remove(card); if(active) room.activeCardUsed=true; cardLog(room,owner,card,action); }
 }

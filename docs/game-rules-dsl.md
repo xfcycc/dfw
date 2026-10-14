@@ -120,7 +120,7 @@ TURN_START 自动阶段
 | 效果类型 | 参数 | 行为 |
 | --- | --- | --- |
 | `REPLACE_ROLL` | `amount` | 设置 0～6 点的替代结果 |
-| `PLACE_BARRIER` | `tileId` | 设置地产路障 |
+| `PLACE_BARRIER` | `tileId` | 设置地块路障 |
 | `DEMOLISH` | `tileId` | 建筑降低一级，无退款 |
 | `SWAP_POSITION` | `targetId` | 交换与目标的位置，不结算落点 |
 | `WAIVE_RENT` | 无 | 解决本次租金选择 |

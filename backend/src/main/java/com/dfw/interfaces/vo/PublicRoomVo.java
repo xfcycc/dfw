@@ -23,6 +23,10 @@ public class PublicRoomVo {
     public ContentResult event;
     /** 最新公开事件的落格者。 */
     public String eventPlayerId;
+    /** 最近实际使用道具的公开卡面，不包含剩余手牌、内部参数或抢夺结果。 */
+    public ContentResult playedCard;
+    /** 最近使用道具的玩家。 */
+    public String playedCardPlayerId;
     /** 本回合已经免费或付费升级的地产，供界面显示合法目标。 */
     public List<Integer> upgradedTiles;
     /** 本局公开经济参数，旧对局缺省按一倍基准。 */

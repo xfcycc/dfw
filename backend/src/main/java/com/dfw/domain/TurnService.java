@@ -14,7 +14,7 @@ public class TurnService {
         this.economy = economy; this.random = random; this.effects = effects; this.content = content;
         effects.register("DRAW_CARDS", this::drawCards);
         effects.register("SKIP_TURN", this::skipTurn);
-        effects.register("MOVE", (room, effect) -> { move(room, player(room, effect.playerId), (int) effect.amount); if (effect.message != null) log(room, effect.message); });
+        effects.register("MOVE", this::moveEffect);
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
         effects.register("PAY_FEE", (room, effect) -> economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId));
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
@@ -69,17 +69,27 @@ public class TurnService {
     public void declareBankruptcy(Room room, Player player) {
         GameEffect effect = effects.effect("DECLARE_BANKRUPTCY", player); effect.resumesDecision = true; effects.submit(room, effect);
     }
-    /** 输入玩家和有符号步数，逐格处理路障和正向起点收入。 */
+    /** 输入房间和移动效果，执行实际路径并关联触发本段的公开事件，无返回值。 */
+    private void moveEffect(Room room, GameEffect effect) {
+        move(room, player(room, effect.playerId), (int) effect.amount);
+        if (effect.content != null && !effect.content.privateSupply) room.movementSequence.getLast().beforeEvent = effect.content;
+        if (effect.message != null) log(room, effect.message);
+    }
+    /** 输入房间、玩家和有符号步数，逐格处理路障及起点收入并保存本次结算路径，无返回值。 */
     public void move(Room room, Player player, int steps) {
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
+        MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
+        segment.dice = room.movementSequence.isEmpty() && room.phase.equals("pre_roll") ? room.dice : null;
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); player.cash += income; log(room, player.name + " 经过起点，获得 " + income); }
+            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); player.cash += income; giveCards(room, player, 1); log(room, player.name + " 经过起点，获得 ¥" + income + " 和一张道具补给"); }
             Tile tile = room.board.get(player.position);
             if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
             if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
         }
-        room.motion = motion;
+        room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
+        // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
+        content.overflow(room);
     }
     /** 输入落点玩家，处理地产或特殊格，每回合最多抽一次事件。 */
     public void settle(Room room, Player player) {

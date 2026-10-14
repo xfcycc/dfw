@@ -15,6 +15,8 @@ public class PublicPlayerVo {
     public String id;
     /** 公开昵称。 */
     public String name;
+    /** 玩家选择的公开形象，旧快照缺省使用探险家。 */
+    public String avatarId = "explorer";
     /** 座位颜色。 */
     public String color;
     /** 可用现金。 */
