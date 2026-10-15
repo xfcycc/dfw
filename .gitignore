@@ -8,3 +8,7 @@ artifacts/
 backend/target/
 
 .env.local
+
+# 本机部署密钥，不进入 Git。
+.ssh/
+.agents/
