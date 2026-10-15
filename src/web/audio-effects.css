@@ -46,7 +46,7 @@
 .money-float small { font-size: 8px; font-weight: 500; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .money-float.expense { color: #af8064; border-color: #e5d7c5; }
 .card-reveal { position: relative; overflow: hidden; animation: village-card .45s ease-out both; transform-origin: center; }
-.card-reveal.rarity-SR::after, .card-reveal.rarity-SSR::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 25%, #fff9d875 48%, transparent 72%); animation: village-shine 1s ease-out both; }
+.card-reveal.rarity-SR::after, .card-reveal.rarity-SSR::after, .card-reveal.rarity-UR::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, transparent 25%, #fff9d875 48%, transparent 72%); animation: village-shine 1s ease-out both; }
 .village-confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 8; }
 .village-confetti i { position: absolute; top: -20px; left: calc(var(--leaf) * 5.2%); color: #b4c995; font-style: normal; font-size: 13px; animation: village-leaf 2.5s ease-out both; animation-delay: calc(var(--leaf) * .025s); }
 .village-confetti i:nth-child(3n) { color: #e2c484; }

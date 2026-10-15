@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { readSession, recentRooms, useGameStore } from '../stores/game';
+import { forgetRecentRoom, readSession, recentRooms, useGameStore } from '../stores/game';
 import { selectArchiveCode } from '../archive';
 import Modal from '../components/Modal.vue';
 import AudioSettings from '../components/AudioSettings.vue';
@@ -16,8 +16,13 @@ const error = ref('');
 const entryOpen = ref(false);
 const archivesOpen = ref(false);
 const archiveRestoring = ref(false);
-const recent = recentRooms().slice(0, 3);
+const recent = ref(recentRooms().slice(0, 3));
 onMounted(() => { game.disconnect(); });
+/** 输入永久房间标识，删除本地历史并刷新最近三个房间，无返回值。 */
+function removeRecent(roomId: string): void {
+  forgetRecentRoom(roomId);
+  recent.value = recentRooms().slice(0, 3);
+}
 /** 输入房间入口模式，清除提示并打开对应表单，无返回值。 */
 function openEntry(value: typeof mode.value): void {
   mode.value = value;
@@ -69,7 +74,10 @@ async function submit(): Promise<void> {
         </div>
       </nav>
       <nav v-if="recent.length" class="home-recent" aria-label="最近房间">
-        <RouterLink v-for="room in recent" :key="room.roomId" :to="readSession(room.code)?.playerId ? `/room/${room.code}` : '/archives'" @click="selectArchiveCode(room.archiveCode)">{{ readSession(room.code)?.playerId ? '继续房间' : '查看存档' }} <strong>{{ room.code }}</strong><span aria-hidden="true">↗</span></RouterLink>
+        <div v-for="room in recent" :key="room.roomId" class="home-recent-room">
+          <RouterLink :to="readSession(room.code)?.playerId ? `/room/${room.code}` : '/archives'" @click="selectArchiveCode(room.archiveCode)">{{ readSession(room.code)?.playerId ? '继续房间' : '查看存档' }} <strong>{{ room.code }}</strong><span aria-hidden="true">↗</span></RouterLink>
+          <button type="button" class="home-recent-remove" :aria-label="`删除房间 ${room.code} 的本地历史`" title="删除本地历史" @click.stop="removeRecent(room.roomId)"><span aria-hidden="true">×</span></button>
+        </div>
       </nav>
     </main>
     <Modal v-if="archivesOpen" title="历史与恢复" panel-class="home-archive-modal" :close-disabled="archiveRestoring" @close="archivesOpen = false">
@@ -109,8 +117,12 @@ async function submit(): Promise<void> {
 .home-join{background:linear-gradient(180deg,#fffdf0,#ffebc7);color:#8a6037;box-shadow:inset 0 2px 0 #fff,0 4px 0 #c69a60,0 8px 16px #45644e26}
 .home-watch{background:linear-gradient(180deg,#eef6df,#d3e7bb);color:#4f714b;border-color:#f5fbe9;box-shadow:inset 0 2px 0 #fff,0 4px 0 #8fa86c,0 8px 16px #45644e26}
 .home-recent{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:500px;margin-top:24px}
-.home-recent a{display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid #ffffff94;border-radius:20px;background:#fff9e6d9;color:#77552f;backdrop-filter:blur(8px);box-shadow:0 3px 10px #235f891c;font-size:11px;transition:background .18s}
+.home-recent-room{display:flex;align-items:center;border:1px solid #ffffff94;border-radius:20px;background:#fff9e6d9;backdrop-filter:blur(8px);box-shadow:0 3px 10px #235f891c;overflow:hidden}
+.home-recent a{display:flex;align-items:center;gap:6px;padding:7px 8px 7px 12px;color:#77552f;font-size:11px;transition:background .18s}
 .home-recent a:hover{background:#fff9e6}
+.home-recent-remove{display:flex;align-items:center;justify-content:center;align-self:stretch;min-width:28px;padding:0 8px 0 4px;border:0;background:transparent;color:#77552f;font-size:18px;line-height:1;transition:background .18s}
+.home-recent-remove:hover{background:#f5dfc2}
+.home-recent-room:focus-within{overflow:visible}
 .home-recent strong{font-size:11px;letter-spacing:.5px}
 .home-page :is(button,a):focus-visible,.home-entry-form :is(button,input):focus-visible{outline:3px solid #fff3b3;outline-offset:5px;box-shadow:0 0 0 7px #356996}
 .home-entry-form .field{color:#785936}

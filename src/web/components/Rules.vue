@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { buildCost, ITEMS, rentFor, RULES, ruleMoney } from '../../shared/rules';
+import { buildCost, initialCards, initialCashBase, ITEMS, rentFor, RULES, ruleMoney, startCards } from '../../shared/rules';
 import type { EconomySettings, Tile } from '../../shared/types';
 
-const props = defineProps<{ spectator?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null }>();
+const props = defineProps<{ spectator?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null; playerCount: number; activityMoney?: Record<string, number> | null }>();
 const version = ref<'brief' | 'detailed'>('brief');
 // 当前补给池没有旧版停留卡，速查只展示本局可获得的道具。
 const availableItems = Object.entries(ITEMS).filter(([kind]) => kind !== 'stay').map(([, item]) => item);
@@ -19,10 +19,11 @@ const example = computed(() => {
       <button :class="{ active: version === 'brief' }" :aria-pressed="version === 'brief'" @click="version = 'brief'">简略版 · 局内玩法</button>
       <button :class="{ active: version === 'detailed' }" :aria-pressed="version === 'detailed'" @click="version = 'detailed'">详细版 · 查看规则</button>
     </div>
+    <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角 · 苏暖暖游园会</strong></summary><p>起点、监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，每人贡献银行奖池¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；基础份额1%～90%，每人独立10%幸运翻倍。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
     <div class="rules-goal">
       <h3>买地收路费，成为最后的赢家</h3>
       <p>2～6 人轮流行动。<strong>最后一名未破产的玩家获胜</strong>，资产榜第一名只是当前领先。</p>
-      <div class="rules-facts"><span>起始现金 <strong>¥{{ ruleMoney(economy, 'initialCash', 6000).toLocaleString() }}</strong></span><span>向前经过起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} ＋1 张道具</strong></span><span>开局手牌 <strong>2 张</strong></span></div>
+      <div class="rules-facts"><span>起始现金 <strong>¥{{ ruleMoney(economy, 'initialCash', initialCashBase(playerCount)).toLocaleString() }}</strong></span><span>向前经过起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} ＋{{ startCards(playerCount) }} 张道具</strong></span><span>开局手牌 <strong>{{ initialCards(playerCount) }} 张</strong></span></div>
     </div>
 
     <div v-if="version === 'brief'">
@@ -47,7 +48,7 @@ const example = computed(() => {
       <section>
         <h3>1. 一回合怎么走</h3>
         <p><strong>掷骰前用道具（可跳过） → 掷骰 / 道具移动 → 处理落点 → 管理资产或交易（可跳过） → 结束回合。</strong></p>
-        <ul class="rules-list"><li>通常顺时针移动。向前经过或到达起点，获得 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }}，并补给一张道具；超过手牌上限时先整理手牌，再继续落点结算。后退经过起点不领钱或补给。</li><li>普通移动只处理最终落点；路障会让首个经过者提前停下，路障随即消失。带有路障免疫状态时会继续通过，路障保留。</li><li>玩法选择、偿债和交易报价都不限时。先处理当前待办，才能继续后续操作。</li></ul>
+        <ul class="rules-list"><li>通常顺时针移动。向前经过或到达起点，获得 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }}，并补给 {{ startCards(playerCount) }} 张道具；超过手牌上限时先整理手牌，再继续落点结算。后退经过起点不领钱或补给。</li><li>普通移动只处理最终落点；路障会让首个经过者提前停下，路障随即消失。带有路障免疫状态时会继续通过，路障保留。</li><li>玩法选择、偿债和交易报价都不限时。先处理当前待办，才能继续后续操作。</li></ul>
       </section>
       <section>
         <h3>2. 买地、建房和收路费</h3>
@@ -79,7 +80,7 @@ const example = computed(() => {
       </section>
       <section>
         <h3>7. 机会、财富和休息</h3>
-        <ul class="rules-list"><li>机会与财富可能给钱、扣款、补给手牌、移动棋子或施加状态，按实际卡面处理。稀有度只影响卡面，不代表事件概率。</li><li>每回合最多抽一次机会或财富事件；事件让你移动到另一事件格时，不再次抽取。本局停用财富的「再次行动」模板。</li><li>免费升级事件可以放弃；仅确实没有合法地产时，改给现金。赌博也可以放弃，参加时只能用已有现金下注。</li><li>排名事件在开始时锁定净资产最高或最低者，并列时随机选一人。灾害按实际建筑损失判定补偿，已抵押地产也可能受损。</li><li>落入监狱会跳过下次行动；其他休息事件按卡面次数跳过。有解控卡时可在限制刚施加时选择解除。</li></ul>
+        <ul class="rules-list"><li>机会、财富及随机道具先按影响程度抽等级：R 40%、SR 30%、SSR 25%、UR 5%；再从该等级等概率抽取实际效果与数值，最后等概率选卡面。同效果的名称和插画数量不增加出货机会。</li><li>R 为轻微影响，SR 为中等影响，SSR 为强力或多人影响，UR 为大成功／大失败；稀有不代表一定有利。UR 机会和财富可能大额获利或支付银行费用；UR 风险道具确认下注后才消耗，中奖和失败均按卡面结算。</li><li>定向补给保持指定牌型，只在该牌型可用等级中按上述权重抽取。每次落在机会或财富格都会抽取对应事件；事件移动到另一事件格时继续抽取并结算。本局停用财富的「再次行动」模板。</li><li>免费升级事件可以放弃；仅确实没有合法地产时，改给现金。赌博也可以放弃，参加时只能用已有现金下注。</li><li>排名事件在开始时锁定净资产最高或最低者，并列时随机选一人。灾害按实际建筑损失判定补偿，已抵押地产也可能受损。</li><li>落入监狱会跳过下次行动；其他休息事件按卡面次数跳过。有解控卡时可在限制刚施加时选择解除。</li></ul>
         <template v-if="chanceEvents?.length"><h4>本局补充说明</h4><ul class="rules-list"><li v-for="description in chanceEvents" :key="description">{{ description }}</li></ul></template>
       </section>
       <section>

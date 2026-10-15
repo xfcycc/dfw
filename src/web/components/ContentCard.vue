@@ -3,12 +3,13 @@ import { computed } from 'vue';
 import type { ContentResult } from '../../shared/types';
 import { ITEMS } from '../../shared/rules';
 import illustrationSources from '../card-illustrations.json';
-const props = defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean }>();
+import CardFrame from './CardFrame.vue';
+const props = defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean }>();
 const kind = computed(() => props.content.kind ?? null);
 const fallback = computed(() => kind.value ? ITEMS[kind.value] : null);
 const pool = computed(() => kind.value || props.content.pool === 'card' ? 'card' : props.content.pool === 'chance' ? 'chance' : 'fortune');
 const poolName = computed(() => ({ card: '道具卡', chance: '机会卡', fortune: '财富卡' })[pool.value]);
-// 旧手牌及未知皮肤继续使用三类通用图集，正文由真实卡池填充。
+// 旧手牌沿用原通用图集；UR 使用本档独立通用插画，正文由真实卡池填充。
 const frames = {
   chance: { R: [22, 93, 487, 345], SR: [530, 93, 477, 345], SSR: [1028, 93, 487, 345] },
   fortune: { R: [32, 107, 485, 350], SR: [535, 107, 470, 350], SSR: [1020, 107, 485, 350] },
@@ -20,23 +21,27 @@ const fallbackSources = {
   chance: 'https://pic.caiguoyu.cn/typora/20261015104009182.webp',
   fortune: 'https://pic.caiguoyu.cn/typora/20261015104009183.webp',
 } as const;
-/** 读取卡面的皮肤或条目标识，返回独立插画及尺寸；未知标识沿用原通用卡面。 */
+/** 输入卡面身份和等级，返回匹配插画；未知 UR 使用同类 UR 通用图，其他旧牌沿用原图集。 */
 const artwork = computed(() => {
   const source = illustrations[props.content.skinId ?? ''] ?? illustrations[props.content.id];
-  if (source) return { source, viewBox: '0 0 512 512', width: 512, height: 512, sourceWidth: 512, sourceHeight: 512, individual: true };
+  if (source || props.content.rarity === 'UR') return { source: source ?? illustrations[`ur_${pool.value}`], viewBox: '0 0 512 512', width: 512, height: 512, sourceWidth: 512, sourceHeight: 512 };
   const frame = frames[pool.value][props.content.rarity ?? 'R'];
-  return { source: fallbackSources[pool.value], viewBox: frame.join(' '), width: frame[2], height: frame[3], sourceWidth: 1536, sourceHeight: 1024, individual: false };
+  return { source: fallbackSources[pool.value], viewBox: frame.join(' '), width: frame[2], height: frame[3], sourceWidth: 1536, sourceHeight: 1024 };
 });
 </script>
 <template>
   <article :key="content.id" class="content-card illustrated-card" :class="[{ compact, thumbnail, 'card-reveal': reveal }, `rarity-${content.rarity ?? 'R'}`]" :aria-label="`${poolName} · ${content.rarity ?? 'R'} · ${content.name ?? fallback?.name ?? '事件'}`">
-    <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
-    <span v-if="artwork.individual" class="card-rarity" aria-hidden="true">{{ content.rarity ?? 'R' }}</span>
-    <div class="card-copy">
-      <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
-      <p v-if="!thumbnail" class="card-description">{{ kind === 'barrier' ? fallback?.description : content.description ?? fallback?.description }}</p>
-      <p class="content-effect">{{ kind === 'barrier' ? fallback?.description : content.effect ?? fallback?.description }}</p>
-      <blockquote v-if="content.quote && !thumbnail">“{{ content.quote }}”</blockquote>
+    <CardFrame :rarity="content.rarity" />
+    <div class="card-surface">
+      <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
+      <div class="card-copy">
+        <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
+        <template v-if="!preview">
+          <p class="card-description">{{ kind === 'barrier' ? fallback?.description : content.description ?? fallback?.description }}</p>
+          <p class="content-effect">{{ kind === 'barrier' ? fallback?.description : content.effect ?? fallback?.description }}</p>
+          <blockquote v-if="content.quote">“{{ content.quote }}”</blockquote>
+        </template>
+      </div>
     </div>
   </article>
 </template>

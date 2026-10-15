@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { boardDimensions, DISTRICTS, districtName, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
-import type { PublicPlayer, PublicRoomState, Tile } from '../../shared/types';
+import type { ActivityKind, PublicPlayer, PublicRoomState, Tile } from '../../shared/types';
 import City from './City.vue';
 import CharacterPawn from './CharacterPawn.vue';
 import DiceFace from './DiceFace.vue';
 import PlayerText from './PlayerText.vue';
 import PropertyGrade from './PropertyGrade.vue';
+import PanelFrame from './PanelFrame.vue';
+import { activityArt } from '../activity-art';
+import { playSound } from '../audio';
+import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
 const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean }>();
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string] }>();
@@ -15,7 +19,7 @@ const viewport = ref<HTMLElement>();
 const size = ref(700);
 const availableWidth = ref(700);
 const zoom = ref(1);
-const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); });
+const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -31,7 +35,26 @@ const diceFullscreen = computed(() => !!motion.value && diceResult.value !== nul
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
 const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
 const movementLabel = computed(() => rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
-watch(motion, value => { emit('animating', !!value); }, { flush: 'sync' });
+const rotating = ref(false);
+const displayedActivityKinds = ref<Record<number, ActivityKind>>({});
+let rotationTimer: ReturnType<typeof setTimeout> | undefined;
+let artSwapTimer: ReturnType<typeof setTimeout> | undefined;
+let rotationBaseline = true;
+const turnsUntilRotation = computed(() => props.room.activityRotation ? props.room.activityRotation.period - props.room.activityRotation.completedTurns % props.room.activityRotation.period : 0);
+/** 输入房间，提取两个活动角当前图案用于翻转中点替换。 */
+function activityKinds(room: PublicRoomState): Record<number, ActivityKind> { return Object.fromEntries(room.board.filter(t => t.activityKind).map(t => [t.id, t.activityKind! ])); }
+watch(() => props.live, live => { if (!live) { rotationBaseline = true; rotating.value = false; clearTimeout(rotationTimer); clearTimeout(artSwapTimer); } });
+watch(() => props.room, (next, previous) => {
+  const fresh = activityKinds(next);
+  if (rotationBaseline || !previous || !props.live || next.recoveryPending || next.gameId !== previous.gameId || document.hidden) { displayedActivityKinds.value = fresh; rotationBaseline = !props.live; return; }
+  if (next.activityRotation?.revision === previous.activityRotation?.revision) { if (!rotating.value) displayedActivityKinds.value = fresh; return; }
+  rotating.value = true; playSound('rotation_switch'); clearTimeout(rotationTimer); clearTimeout(artSwapTimer);
+  artSwapTimer = setTimeout(() => { displayedActivityKinds.value = fresh; }, 600);
+  rotationTimer = setTimeout(() => { rotating.value = false; }, 1200);
+}, { immediate: true });
+watch(turnsUntilRotation, (next, previous) => { if (previous && next !== previous && next >= 1 && next <= 3 && props.live && !props.room.recoveryPending && !rotationBaseline) playSound('rotation_count'); });
+onBeforeUnmount(() => { clearTimeout(rotationTimer); clearTimeout(artSwapTimer); });
+watch([motion, () => rotating.value], ([value, rotation]) => { emit('animating', !!value || !!rotation); }, { flush: 'sync' });
 // 操作面板置于未缩放的内圈，保持手机端文字和按钮可读。
 const centerStyle = computed(() => {
   const inset = props.compact ? 10 : 9;
@@ -46,7 +69,7 @@ const centerStyle = computed(() => {
     height: `${((dimensions.value.rows - 2) * cellHeight - gap) * zoom.value}px`,
   };
 });
-const icons = { start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⌂' };
+const icons = { activity: '✦', start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⌂' };
 /** 输入地块，返回其所有者的显示颜色。 */
 function ownerColor(tile: Tile): string | undefined { return tileOwner(tile)?.color; }
 /** 输入地块，返回其拥有者，未售出地块返回空。 */
@@ -108,29 +131,35 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
-          <button v-for="tile in room.board" :key="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
+          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
             <span v-if="compact" class="tile-ground" aria-hidden="true"></span>
             <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
             <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
             <span v-if="tile.barrier" class="barrier-marker" title="路障">🚧</span>
-            <img v-if="tile.type !== 'property' && compact" class="special-tile-art" :src="`${baseUrl}images/tiles/${tile.type}.png`" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
+            <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : `${baseUrl}images/tiles/${tile.type}.png`" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong><span class="tile-name">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮' }[tile.type]) }}</small>
-            <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}` : '待购入'">{{ tile.ownerId ? tile.ownerId === meId && !spectator ? '我的' : tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>
+            <strong><span class="tile-name">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
+            <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
+              <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
+              <span class="tile-owner-name">{{ tile.ownerId ? tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>
+              <b v-if="tile.ownerId && tile.ownerId === meId && !spectator" class="tile-owner-self">我</b>
+            </span>
             <span v-else-if="compact && tile.type === 'property'" class="tile-ownership" :title="room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'"><i v-if="tile.ownerId" :style="{ background: ownerColor(tile) }"></i><PlayerText :text="room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'" :players="room.players" /><b v-if="tile.ownerId"> · {{ tile.level }}级</b></span>
             <span v-else-if="!stretch && tile.level" class="building-level">{{ '●'.repeat(tile.level) }}</span>
+            <span v-if="tile.type === 'activity' && turnsUntilRotation <= 3" class="activity-tile-countdown">{{ turnsUntilRotation }}回合后轮换</span>
             <span class="tile-number">{{ tile.id }}</span>
           </button>
           <div v-for="(change, index) in money" :key="change.key" class="money-float" :class="{ expense: change.amount < 0 }" :style="{ gridRow: tileCoordinates(change.tileId, room.board.length).row, gridColumn: tileCoordinates(change.tileId, room.board.length).column, '--float-offset': `${index % 3 * 14}px` }" aria-hidden="true"><small><PlayerText :text="change.name" :players="room.players" /></small>{{ change.amount > 0 ? '+' : '−' }}¥{{ Math.abs(change.amount).toLocaleString() }}</div>
         </div>
+        <div v-if="rotating" class="activity-rotation-glow" aria-hidden="true"></div>
         <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
           <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
           <City />
           <div v-if="celebrating" class="village-confetti" aria-hidden="true"><i v-for="leaf in 18" :key="leaf" :style="{ '--leaf': leaf }">{{ leaf % 3 === 0 ? '✦' : '▰' }}</i></div>
-          <div class="turn-display"><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="summary" /><DiceFace v-if="!diceFullscreen && (!stretch || room.dice !== null)" :value="room.dice" /></div>
+          <div class="turn-display"><PanelFrame v-if="stretch" variant="notice" ornament="right" /><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="action-status" /><DiceFace v-if="!diceFullscreen && (!stretch || room.dice !== null)" :value="room.dice" /><slot name="summary" /></div>
           <div v-if="$slots.controls" class="board-center-controls"><slot name="controls" /></div>
           <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }"><PlayerText :text="room.players.find(p => p.id === id)?.name ?? '玩家'" :players="room.players" /></span></div>
         </div>

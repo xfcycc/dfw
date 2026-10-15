@@ -40,7 +40,8 @@ async function decide(accept: boolean): Promise<void> {
     </template>
     <template v-else-if="choice.type === 'gamble'">
       <p class="muted">当前现金 ¥{{ game.me?.cash.toLocaleString() }}，此处只能用已有现金下注。</p>
-      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">放弃赌博</button><button class="button primary" :disabled="!enabled || (game.me?.cash ?? 0) < wager" @click="decide(true)">下注 ¥{{ wager.toLocaleString() }}</button></div>
+      <p v-if="choice.cardId" class="muted">确认下注才消耗卡牌和本回合主动次数；取消会保留卡牌。</p>
+      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ choice.cardId ? '取消并保留卡' : '放弃赌博' }}</button><button class="button primary" :disabled="!enabled || (game.me?.cash ?? 0) < wager" @click="decide(true)">下注 ¥{{ wager.toLocaleString() }}</button></div>
     </template>
     <template v-else-if="choice.type === 'release'">
       <p class="notice warning">即将{{ choice.jailed ? '被监禁' : '休息' }}，跳过后续 {{ choice.skipTurns }} 次行动。现在可使用解控卡。</p>

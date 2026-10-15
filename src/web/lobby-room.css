@@ -36,7 +36,11 @@
 .lobby-room .map-size-options button:disabled { cursor: not-allowed; opacity: .55; }
 .lobby-room .map-size-options button.selected:disabled { opacity: .8; }
 .lobby-room .lobby-avatar-picker { margin-top: 16px; }
-.lobby-room .lobby-avatar-picker h2 { margin: 0 0 10px; color: #8e795b; font-size: 12px; font-weight: 600; }
+.lobby-room .lobby-avatar-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+.lobby-room .lobby-avatar-picker h2 { margin: 0; color: #8e795b; font-size: 12px; font-weight: 600; }
+.lobby-room .lobby-avatar-heading .lobby-rename { flex-shrink: 0; min-height: 30px; padding: 5px 14px; border-radius: 10px; font-size: 12px; }
+.lobby-room .lobby-rename:hover:not(:disabled) { background: #f6ecd5; border-color: #c5a773; }
+.lobby-room .lobby-rename:focus-visible { outline: 2px solid #bda16d; outline-offset: 2px; }
 .lobby-room .avatar-picker { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
 .lobby-room .avatar-option { min-width: 0; padding: 7px 2px; border-color: #e2d7bf; border-radius: 12px; background: #fffdf5; color: #9b8768; font-size: 9px; }
 .lobby-room .avatar-option .character-pawn { width: 42px; height: 42px; border-radius: 10px; }

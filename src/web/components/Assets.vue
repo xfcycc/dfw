@@ -6,7 +6,7 @@ import PropertyArt from './PropertyArt.vue';
 import PropertyGrade from './PropertyGrade.vue';
 const game = useGameStore();
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
-const allowed = computed(() => game.canAct && game.canDecide && !game.room?.tradePending && game.room?.pending?.type !== 'choice' && (!payment.value || game.room?.pending?.defenseResolved));
+const allowed = computed(() => (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending && game.room?.pending?.type !== 'choice' && (!payment.value || game.room?.pending?.defenseResolved));
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt');
 </script>
 <template>

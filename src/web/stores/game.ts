@@ -37,6 +37,13 @@ export function recentRooms(): RecentRoom[] {
   try { const values: unknown = JSON.parse(localStorage.getItem('dfw:archives') ?? '[]'); return Array.isArray(values) ? values.filter((value): value is RecentRoom => !!value && typeof value.roomId === 'string' && typeof value.code === 'string' && typeof value.archiveCode === 'string') : []; }
   catch { return []; }
 }
+/** 输入永久房间标识，仅移除本地参与记录及对应最近查看码，保留会话与服务端存档，无返回值。 */
+export function forgetRecentRoom(roomId: string): void {
+  const rooms = recentRooms();
+  const lastCode = localStorage.getItem('dfw:archive:last');
+  localStorage.setItem('dfw:archives', JSON.stringify(rooms.filter(room => room.roomId !== roomId)));
+  if (rooms.some(room => room.roomId === roomId && room.archiveCode === lastCode)) localStorage.removeItem('dfw:archive:last');
+}
 /** 输入档案索引，按永久房间标识更新参与记录及最近查看的固定码。 */
 export function rememberArchive(value: Omit<RecentRoom, 'at'>): void {
   localStorage.setItem('dfw:archives', JSON.stringify([{ ...value, at: Date.now() }, ...recentRooms().filter(room => room.roomId !== value.roomId)]));
@@ -99,7 +106,7 @@ export const useGameStore = defineStore('game', () => {
     if (state.logs.some(entry => entry.type === 'chat' && !seen.has(entry.id) && (!ownName || !entry.text.startsWith(`${ownName}：`)))) playSound('chat');
   }
 
-  /** 输入公开快照，正常同步结果；新移动先展示路径，结算字段保留到棋盘回调。 */
+  /** 输入公开快照，新移动先展示路径再同步结算；跳过路径动画时仍按顺序揭示各段公开事件，无返回值。 */
   function applyPublicState(state: PublicRoomState, animate = true): void {
     const previous = room.value;
     if (animate && !publicBaseline && previous && state.version > previous.version && state.gameId === previous.gameId && !state.recoveryPending && !previous.recoveryPending && state.motion && state.motion.id !== previous.motion?.id && state.status !== 'lobby' && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -112,6 +119,13 @@ export const useGameStore = defineStore('game', () => {
     if (previous?.gameId !== state.gameId) { cardReveals.value = []; seenReveals.clear(); }
     if (!publicBaseline && previous && state.version >= previous.version && !state.recoveryPending && !previous.recoveryPending) {
       if (state.playedCard && state.playedCard.id !== previous.playedCard?.id) enqueueCardReveal(state.playedCard, 'play', state.players.find(player => player.id === state.playedCardPlayerId)?.name ?? '玩家');
+      if (state.motion && state.motion.id !== previous.motion?.id) {
+        for (const segment of state.motion.segments?.length ? state.motion.segments : [state.motion]) {
+          const actor = state.players.find(player => player.id === segment.playerId)?.name ?? '玩家';
+          if (segment.beforeEvent) enqueueCardReveal(segment.beforeEvent, 'draw', actor);
+          if (segment.event) enqueueCardReveal(segment.event, 'draw', actor);
+        }
+      }
       if (state.event && state.event.id !== previous.event?.id) enqueueCardReveal(state.event, 'draw', state.players.find(player => player.id === state.eventPlayerId)?.name ?? '玩家');
     }
     publicBaseline = false;

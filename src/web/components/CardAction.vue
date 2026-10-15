@@ -32,7 +32,7 @@ async function submit(): Promise<void> {
     <p v-if="['immunity', 'halfPayment', 'release'].includes(card.kind)" class="notice">此卡在对应的付款防御或限制施加窗口选择使用。</p>
     <div class="button-row">
       <button class="button secondary small" :disabled="game.busy" @click="emit('cancel')">{{ readonly ? '关闭说明' : '取消选牌' }}</button>
-      <button v-if="!readonly && !['immunity', 'halfPayment', 'release'].includes(card.kind)" class="button primary small" :disabled="!allowed || (needsTarget && !target)" @click="submit">{{ card.kind === 'freeUpgrade' ? '选择免费升级目标' : '确认使用' }}</button>
+      <button v-if="!readonly && !['immunity', 'halfPayment', 'release'].includes(card.kind)" class="button primary small" :disabled="!allowed || (needsTarget && !target)" @click="submit">{{ card.kind === 'freeUpgrade' ? '选择免费升级目标' : card.kind === 'gamble' ? '查看下注选择' : '确认使用' }}</button>
     </div>
     <p v-if="!allowed && !game.busy && !['immunity', 'halfPayment', 'release'].includes(card.kind)" class="muted">需在自己的掷骰前使用，且本回合尚未使用主动道具。</p>
   </div>

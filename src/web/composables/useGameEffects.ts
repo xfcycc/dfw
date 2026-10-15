@@ -7,8 +7,8 @@ const DICE_HOLD_MS = 220;
 const MOVE_STEP_MS = 190;
 const LANDING_MS = 500;
 
-/** 输入实时房间、连接状态与路径完成回调，返回视听状态；首次进入、恢复及重连建立静默基线。 */
-export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}) {
+/** 输入实时房间、连接状态、路径完成回调及独立现金栏玩家，返回视听状态；首次进入、恢复及重连建立静默基线。 */
+export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined) {
   const money = ref<{ key: string; tileId: number; name: string; amount: number }[]>([]);
   const tiles = ref<{ key: string; tileId: number; kind: 'bought' | 'built' | 'magic' }[]>([]);
   const rolling = ref(false);
@@ -71,6 +71,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if (baseline || !previous || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending) { baseline = false; clear(); return; }
     if (next.version < previous.version || next.version === previous.version && next.motion?.id === previous.motion?.id || next.status === 'lobby') return;
     let sound: Sound | null = null;
+    let cashSound: Sound | null = null;
     const key = `${next.gameId}:${next.version}`;
     const changes: typeof money.value = [];
     const effects: typeof tiles.value = [];
@@ -80,7 +81,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       if (!before || player.cash === before.cash) continue;
       const change = { key: `${key}:${player.id}`, tileId: player.position, name: player.name, amount: player.cash - before.cash };
       changes.push(change);
-      sound ??= change.amount > 0 ? 'coin' : 'pay';
+      if (player.id !== cashPlayer()) cashSound ??= change.amount > 0 ? 'coin' : 'pay';
     }
     const previousTiles = new Map(previous.board.map(tile => [tile.id, tile]));
     for (const tile of next.board) {
@@ -108,6 +109,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
         later(1100, () => { tiles.value = tiles.value.filter(value => value.key !== effect.key); });
       }
       if (sound) playSound(sound);
+      if (cashSound) playSound(cashSound);
     };
     if (next.motion && next.motion.id !== previous.motion?.id) {
       const roll = next.motion.dice !== undefined ? next.motion.dice !== null && next.motion.dice > 0 : next.dice !== null && next.dice > 0 && (next.dice !== previous.dice || next.turnNumber !== previous.turnNumber || previous.phase === 'pre_roll');
