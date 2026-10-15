@@ -30,7 +30,7 @@ HTTP 与 `/ws` 共用端口 3001。开发由 Vite 代理，生产使用 HTTPS / 
 
 `STALE_VERSION` 拒绝旧版本并同步最新状态。相同命令 ID 重放优先返回已保存回执，操作者须与原回执相同。新回执保存已清理 action 的规范化 SHA-256（对象字段按名称排序，列表保持原顺序），同 ID 同 action 即使预期版本已过期仍返回原结果；同 ID 改 action 返回既有 `INVALID_INPUT` 错误码。网络 `requestId` 和 `expectedVersion` 不参与业务摘要。旧回执没有摘要时保留原重放行为，无法追溯校验其原请求。摘要仅保存在回执存储 JSON，不加入 `CommandResult` 或公开状态。`FORBIDDEN` 用于观战或被替换连接操作；`INVALID_INPUT` 用于原接口边界的参数错误；`SAVE_FAILED` 不包含数据库细节。
 
-公开玩家新增 `cardCount`，只包含 `player.hand.size()` 的持有数量，不包含卡面或超限待选候选牌。玩家和观众均收到相同数量，旧服务端和已有历史快照可缺省，前端显示为 `—`。观战不接收具体手牌，公开日志不包含补给卡型；起点固定补给一张。待确认报价对象仅交易双方收到，公共状态保留 `tradePending` 标志；发起报价时将双方、各自现金和地产明细写入公开记录，所有玩家和观众均可查看。同意、拒绝和主动取消包含回应主体及原报价，成交记录说明资金与地产方向。
+公开玩家新增 `cardCount`，只包含 `player.hand.size()` 的持有数量，不包含卡面或超限待选候选牌。玩家和观众均收到相同数量，旧服务端和已有历史快照可缺省，前端显示为 `—`。观战不接收具体手牌，公开日志不包含补给卡型；起点按本局人数补给：2 人局 1 张，3 人及以上对局 2 张（含已淘汰玩家）。待确认报价对象仅交易双方收到，公共状态保留 `tradePending` 标志；发起报价时将双方、各自现金和地产明细写入公开记录，所有玩家和观众均可查看。同意、拒绝和主动取消包含回应主体及原报价，成交记录说明资金与地产方向。
 
 玩家形象通过原操作入口发送 `{ type: 'setAvatar', avatarId }`，仅修改当前会话本人形象，支持 `explorer`、`robot`、`wizard`、`pirate`、`astronaut`、`cat`；公开玩家的可选 `avatarId` 缺省为 `explorer`。最近公开日志包含可选 `mentions`（玩家标识、当时姓名、颜色）。`POST /api/rooms/logs` 输入 `token` 与可选序号 `cursor`，认证当前房间玩家或观战会话后返回本局公开日志分页，沿用 `HistoryPage`，每页至多 50 条；不接收房间或对局标识，不返回私人内部明细。公开历史条目可包含 `logId` 和 `mentions`，用于与实时快照去重及姓名标记，旧条目仍保持原文。
 
@@ -93,7 +93,7 @@ HTTP 与 `/ws` 共用端口 3001。开发由 Vite 代理，生产使用 HTTPS / 
 
 分层内容接入保留原信封与公共阶段。公开 `event` 只包含公开事件的卡面及实际参数；随机／定向补给的整张卡面不给其他玩家或观众。`eventPlayerId` 为触发者，排名目标在卡面 `targetId` 中保存。`upgradedTiles` 显示本回合已升级地产，免费升级也计入。`players[].nextPaymentWaiver`、`nextRentDouble` 为公开的一次性状态。
 
-私人状态新增 `event`（本人获得的补给事件）、`notice`／`noticeText`（最近私人结果）、`choice`（本人当前选择）。完整手牌保存 `kind`、皮肤身份、名称、稀有度、素材类型、台词、描述、实际参数与效果。`choice` 仅给选择者，包含身份、类型、合法地产或本人超限候选牌；不公开父效果队列与恢复位置。公开 `pending.type=choice` 只说明实际选择者，不包含具体选择类型或卡牌数量。
+私人状态新增 `event`（本人获得的补给事件）、`notice`／`noticeText`（最近私人结果）、`choice`（本人当前选择）。完整手牌保存 `kind`、皮肤身份、名称、稀有度、素材类型、台词、描述、实际参数与效果。新抽取结果的 `rarity` 扩展为 R／SR／SSR／UR，表示实际影响等级；道具 `kind=gamble` 复用现有 `choice.type=gamble`。有 `choice.cardId` 时表示风险手牌，确认下注才消费卡与主动次数，取消保留；确认后的开奖样本存入已使用卡快照。`choice` 仅给选择者，包含身份、类型、合法地产或本人超限候选牌；不公开父效果队列与恢复位置。公开 `pending.type=choice` 只说明实际选择者，不包含具体选择类型或卡牌数量。
 
 `contentDecision` 带 `decisionId`，按窗口附确认／放弃的 `accept`、自家地产 `tileId`、解控 `cardId` 或恰好六个 `keepCardIds`。不一致或过期的选择拒绝，相关玩家离线保持等待。`paymentDefense` 可附 `decisionId` 和 `cardId`，省略卡代表放弃；本笔至多选择一次。`pending.originalAmount` 为翻倍后、防御前费用，`defenseResolved` 为已选择事实；未选择防御前不允许筹款、抵债或支付，自动免单则直接继续。旧 `rentDecision` 仍可免租或确认租金，已经放弃防御后不能再用免租。
 
