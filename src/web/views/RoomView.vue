@@ -71,7 +71,7 @@ const selectedCardCopy = computed(() => {
   const card = selectedCard.value;
   if (!card) return null;
   const fallback = ITEMS[card.kind].description;
-  return { description: card.kind === 'barrier' ? fallback : card.description ?? fallback, effect: card.kind === 'barrier' ? fallback : card.effect ?? fallback };
+  return { description: card.description ?? fallback, effect: card.kind === 'barrier' ? fallback : card.effect ?? fallback };
 });
 const tradeEditorVersion = ref(0);
 const submittingCard = ref(false);
@@ -347,7 +347,6 @@ async function resetSession(): Promise<void> {
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
                       <div class="records-scroll"><LiveRecords compact journal :active="recordMode === 'live'" v-show="recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history'"><RoomHistory v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
-                      <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
                       </div>
                       <form v-if="!spectator" class="room-chat" @submit.prevent="sendChat"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3></div><div class="chat-composer">
                         <label class="sr-only" for="room-chat-message">房间聊天</label><textarea id="room-chat-message" v-model="chatMessage" maxlength="300" rows="1" :disabled="!canChat" :placeholder="spectator || !game.me ? '观战中，可以查看房间对话' : game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊…'" @keydown.enter="chatEnter" />
@@ -378,6 +377,9 @@ async function resetSession(): Promise<void> {
                 </div>
                 </FitPanel>
               </template>
+              <template #center-overlay>
+                <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
+              </template>
             </Board>
           </div></section>
         </div>
@@ -389,7 +391,7 @@ async function resetSession(): Promise<void> {
                             <template v-if="choice"><p class="muted">{{ choice.content?.name ?? '当前选择' }} · {{ choice.type === 'hand_limit' ? '整理手牌后继续行动' : '请打开窗口处理本次选择' }}</p><button class="button primary small" :disabled="!game.canAct" @click="openWorkbench('choice')">处理当前选择</button></template>
                             <p v-else class="muted">正在同步当前选择…</p>
                           </template>
-                          <template v-else-if="game.room.phase === 'buy' || game.room.phase === 'upgrade'"><div class="landing-info"><span class="decision-property-art" :class="`level-${pendingTile?.level ?? 0}`" :style="{ backgroundImage: `url(${baseUrl}images/board/property-levels.png)` }" aria-hidden="true"></span><div><strong>{{ pendingTile?.name }}</strong><small>{{ game.room.phase === 'buy' ? '这块地还没有主人' : `你的地产 · 当前 ${pendingTile?.level} 级` }}</small></div></div><p class="decision-price">¥{{ game.room.pending?.amount.toLocaleString() }} <small>{{ game.room.phase === 'buy' ? '购入价格' : '升级费用' }}</small></p><dl v-if="pendingTile && game.me" class="decision-outcome"><div><dt>{{ game.room.phase === 'buy' ? '购买后剩余现金' : '升级后剩余现金' }}</dt><dd>{{ game.me.cash >= (game.room.pending?.amount ?? 0) ? `¥${(game.me.cash - (game.room.pending?.amount ?? 0)).toLocaleString()}` : '现金不足' }}</dd></div><div><dt>{{ game.room.phase === 'buy' ? '当前租金' : '升级后租金' }}</dt><dd>¥{{ rentFor(game.room.phase === 'buy' ? pendingTile : { ...pendingTile, level: pendingTile.level + 1 }, game.room.economy).toLocaleString() }}</dd></div></dl><div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'pass' })">暂时放弃</button><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < (game.room.pending?.amount ?? 0)" @click="game.act({ type: game.room.phase === 'buy' ? 'buy' : 'upgrade' })">{{ game.room.phase === 'buy' ? '买下这块地' : '升级房子' }}</button></div></template>
+                          <template v-else-if="game.room.phase === 'buy' || game.room.phase === 'upgrade'"><div class="landing-info"><span v-if="pendingTile" class="decision-property-art" :class="`level-${pendingTile?.level ?? 0}`" :style="{ backgroundImage: `url(${baseUrl}images/board/property-levels.png)` }" aria-hidden="true"></span><div><strong>{{ pendingTile?.name }}</strong><small>{{ game.room.phase === 'buy' ? '这块地还没有主人' : `你的地产 · 当前 ${pendingTile?.level} 级` }}</small></div></div><p class="decision-price">¥{{ game.room.pending?.amount.toLocaleString() }} <small>{{ game.room.phase === 'buy' ? '购入价格' : '升级费用' }}</small></p><dl v-if="pendingTile && game.me" class="decision-outcome"><div><dt>{{ game.room.phase === 'buy' ? '购买后剩余现金' : '升级后剩余现金' }}</dt><dd>{{ game.me.cash >= (game.room.pending?.amount ?? 0) ? `¥${(game.me.cash - (game.room.pending?.amount ?? 0)).toLocaleString()}` : '现金不足' }}</dd></div><div><dt>{{ game.room.phase === 'buy' ? '当前租金' : '升级后租金' }}</dt><dd>¥{{ rentFor(game.room.phase === 'buy' ? pendingTile : { ...pendingTile, level: pendingTile.level + 1 }, game.room.economy).toLocaleString() }}</dd></div></dl><div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'pass' })">暂时放弃</button><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < (game.room.pending?.amount ?? 0)" @click="game.act({ type: game.room.phase === 'buy' ? 'buy' : 'upgrade' })">{{ game.room.phase === 'buy' ? '买下这块地' : '升级房子' }}</button></div></template>
                           <template v-else-if="payment">
                             <p class="muted">{{ payment.type === 'rent' ? `${pendingTile?.name} · 路费` : '本次强制费用' }} → <PlayerText :text="creditorName" />。</p>
                             <p class="decision-price">¥{{ payment.amount.toLocaleString() }} <small>剩余待支付</small></p>
@@ -409,9 +411,8 @@ async function resetSession(): Promise<void> {
         <div class="card-use-controls">
           <section v-if="selectedCardCopy" class="card-use-details">
             <div class="card-use-meta"><span>{{ selectedCard.rarity ?? 'R' }} · 道具卡</span><span v-if="selectedCard.cardType">{{ selectedCard.cardType }}</span></div>
-            <h3>卡牌效果</h3>
-            <p class="card-use-effect">{{ selectedCardCopy.effect }}</p>
             <p v-if="selectedCardCopy.description !== selectedCardCopy.effect" class="card-use-description">{{ selectedCardCopy.description }}</p>
+            <p class="card-use-effect">{{ selectedCardCopy.effect }}</p>
             <blockquote v-if="selectedCard.quote" class="card-use-quote">“{{ selectedCard.quote }}”</blockquote>
           </section>
           <p v-if="!drafting" class="notice">{{ ['immunity', 'halfPayment', 'release'].includes(selectedCard.kind) ? '这张卡在付款防御或解除限制时使用。' : '当前不能主动使用，可以查看卡牌说明。' }}</p>
@@ -488,7 +489,7 @@ async function resetSession(): Promise<void> {
           </dl>
         </template>
         <p v-else-if="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind" class="tile-detail-description">{{ ACTIVITY_HINTS[liveSelectedTile.activityKind] }}。停在这里触发活动，经过不触发。</p>
-        <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `正向经过或到达，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()}，并获得 ${startCards(game.room?.players.length ?? 2)} 张道具补给。` : '停在此处，跳过下一次行动。' }}</p>
+        <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `经过或停留在起点，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()} 和 ${startCards(game.room?.players.length ?? 2)} 张道具补给。` : '停在此处，跳过下一次行动。' }}</p>
         <p class="tile-detail-barrier" :class="{ active: liveSelectedTile.barrier }"><span aria-hidden="true">{{ liveSelectedTile.barrier ? '🚧' : '↝' }}</span><span><strong>{{ liveSelectedTile.barrier ? '设有路障' : '无路障' }}</strong><small v-if="liveSelectedTile.barrier">首位受影响的经过者将停下，随后正常结算地块</small></span></p>
       </div>
     </Modal>

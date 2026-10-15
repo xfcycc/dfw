@@ -37,7 +37,7 @@ const artwork = computed(() => {
       <div class="card-copy">
         <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
         <template v-if="!preview">
-          <p class="card-description">{{ kind === 'barrier' ? fallback?.description : content.description ?? fallback?.description }}</p>
+          <p class="card-description">{{ content.description ?? fallback?.description }}</p>
           <p class="content-effect">{{ kind === 'barrier' ? fallback?.description : content.effect ?? fallback?.description }}</p>
           <blockquote v-if="content.quote">“{{ content.quote }}”</blockquote>
         </template>

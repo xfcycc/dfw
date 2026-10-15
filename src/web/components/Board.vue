@@ -69,7 +69,7 @@ const centerStyle = computed(() => {
     height: `${((dimensions.value.rows - 2) * cellHeight - gap) * zoom.value}px`,
   };
 });
-const icons = { activity: '✦', start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⌂' };
+const icons = { activity: '✦', start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⛺' };
 /** 输入地块，返回其所有者的显示颜色。 */
 function ownerColor(tile: Tile): string | undefined { return tileOwner(tile)?.color; }
 /** 输入地块，返回其拥有者，未售出地块返回空。 */
@@ -162,6 +162,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
           <div class="turn-display"><PanelFrame v-if="stretch" variant="notice" ornament="right" /><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="action-status" /><DiceFace v-if="!diceFullscreen && (!stretch || room.dice !== null)" :value="room.dice" /><slot name="summary" /></div>
           <div v-if="$slots.controls" class="board-center-controls"><slot name="controls" /></div>
           <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }"><PlayerText :text="room.players.find(p => p.id === id)?.name ?? '玩家'" :players="room.players" /></span></div>
+          <slot name="center-overlay" />
         </div>
       </div>
     </div>

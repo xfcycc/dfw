@@ -36,7 +36,7 @@
 .modern-room .game-board .tile.owned.level-3 { box-shadow: inset 0 0 0 3px var(--owner), inset 0 0 0 5px #e5ebf5; }
 .modern-room .game-board .tile.mortgaged { background: repeating-linear-gradient(135deg, #fff, #fff 8px, #f4f6fa 8px, #f4f6fa 16px) !important; }
 .modern-room .game-board .tile.my-position { outline-color: #5874e7; }
-.modern-room .game-board .tile > strong { position: absolute; top: 5px; left: 4px; right: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; max-width: none; white-space: nowrap; overflow: visible; text-overflow: clip; font-size: 13px; line-height: 1.4; font-weight: 700; text-align: center; letter-spacing: 0; z-index: 1; text-shadow: 0 1px 2px #fffdf5; }
+.modern-room .game-board .tile > strong { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 4px; max-width: none; padding: 5px 4px; color: #53341f; white-space: nowrap; overflow: visible; text-overflow: clip; font-size: 16px; line-height: 1.4; font-weight: 800; text-align: center; letter-spacing: 0; z-index: 1; text-shadow: none; }
 .modern-room .game-board .tile-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .modern-room .game-board .tile > small { position: absolute; bottom: 9px; left: 22px; right: 22px; text-align: center; font-size: 12px; font-weight: 600; color: #67768f; z-index: 1; background: transparent; border-radius: 0; text-shadow: 0 1px 2px #fffdf5; }
 .modern-room .game-board .tile-number { left: auto; right: 5px; bottom: 4px; font-size: 9px; color: #a1acbc; }
@@ -62,7 +62,7 @@
 .modern-room .game-board .tile:not(.property) .tile-ground { display: none; }
 .modern-room .special-tile-art { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: inherit; object-fit: cover; object-position: center 55%; mix-blend-mode: normal; pointer-events: none; }
 .modern-room .game-board .tile:not(.property)::before { content: ''; position: absolute; inset: 0; z-index: 1; border-radius: inherit; background: linear-gradient(180deg, #fff9e8ed 0%, #fff9e88c 20%, transparent 42%, transparent 62%, #49311d99 100%); pointer-events: none; }
-.modern-room .game-board .tile:not(.property) > strong { top: 0; left: 0; right: 0; z-index: 2; padding: 7px 5px; color: #65452e; text-shadow: 0 1px 2px #fff9e8; }
+.modern-room .game-board .tile:not(.property) > strong { top: 0; left: 0; right: 0; z-index: 2; padding: 7px 5px; color: #53341f; text-shadow: none; }
 .modern-room .game-board .tile:not(.property) > small { bottom: 7px; left: 8px; right: 22px; z-index: 2; max-width: none; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; transform: none; color: #fff9e8; font-size: 12px; line-height: 1.4; text-shadow: 0 1px 3px #49311d; }
 .modern-room .game-board .tile:not(.property) .tile-number { bottom: 6px; left: auto; right: 5px; z-index: 2; color: #fff5df; text-shadow: 0 1px 3px #49311d; }
 .modern-room .game-board .tile:not(.property) .activity-tile-countdown { top: auto; bottom: 29px; left: 50%; max-width: calc(100% - 10px); transform: translateX(-50%); white-space: nowrap; }
@@ -173,7 +173,7 @@
   .modern-room .hub-actions { gap: 18px; }
   .modern-room .hub-actions .button { width: 54px; height: 54px; min-height: 54px; flex-basis: 54px; }
   .modern-room .hub-actions .button > span { font-size: 23px; }
-  .modern-room .game-board .tile > strong { font-size: 11px; }
+  .modern-room .game-board .tile > strong { font-size: 14px; }
   .modern-room .game-board .tile > small { font-size: 10px; }
   .modern-room .immersive-board .tile > small { font-size: 14px; padding: 3px 8px; }
   .modern-room .game-board .tile > strong .property-grade { font-size: 9px; }
@@ -359,9 +359,9 @@
 .card-use-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
 .card-use-meta span { padding: 4px 10px; border: 1px solid #e1c999; border-radius: 8px; background: #fff0ce; color: #94713f; font-size: 11px; font-weight: 700; }
 .card-use-meta span + span { border-color: #c7d3af; background: #edf3e1; color: #6e8156; }
-.card-use-effect { margin: 0; padding: 16px 18px; border: 1px solid #e7c89e; border-radius: 16px; background: linear-gradient(135deg, #fff3d7, #ffeadb); color: #946039; font-size: 16px; font-weight: 700; line-height: 1.8; overflow-wrap: anywhere; }
-.card-use-description { margin: 12px 0 0; color: #847057; font-size: 13px; line-height: 1.8; overflow-wrap: anywhere; }
-.card-use-quote { margin: 14px 0 0; padding-left: 12px; border-left: 3px solid #dcc396; color: #a18b6a; font-size: 12px; line-height: 1.8; overflow-wrap: anywhere; }
+.card-use-effect { margin: 0; padding: 16px 18px; border: 1px solid #e7c89e; border-radius: 16px; background: linear-gradient(135deg, #fff3d7, #ffeadb); color: #946039; font-size: 18px; font-weight: 700; line-height: 1.8; overflow-wrap: anywhere; }
+.card-use-description { margin: 0 0 20px; color: #705338; font-size: 22px; font-weight: 700; line-height: 1.7; overflow-wrap: anywhere; }
+.card-use-quote { margin: 20px 0 0; padding-left: 14px; border-left: 3px solid #dcc396; color: #927650; font-size: 16px; line-height: 1.8; overflow-wrap: anywhere; }
 .card-use-controls > .notice { margin: 0; }
 .card-use-controls .card-action { margin: 0; padding-top: 18px; border-top: 1px dashed #dfcda9; }
 .card-use-controls .card-action > .field:first-child { margin-top: 0; }
@@ -413,7 +413,8 @@
   .card-use-preview .illustrated-card .content-card-heading strong { font-size: 14px; }
   .card-use-controls { gap: 16px; }
   .card-use-meta { margin-bottom: 12px; }
-  .card-use-effect { padding: 12px 14px; font-size: 14px; }
+  .card-use-description { margin-bottom: 16px; font-size: 18px; }
+  .card-use-effect { padding: 12px 14px; font-size: 16px; }
   .modal.chibi-modal.card-use-modal .card-action .button-row > .button { flex: 1; min-width: 0; padding: 10px 12px; }
   .modal.chibi-modal.card-use-modal .card-action .button-row > .button.primary { flex-grow: 1.4; min-width: 0; }
   .card-target-picker { max-height: 280px; }

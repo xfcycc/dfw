@@ -1,0 +1,62 @@
+{
+  "generator": "image_gen",
+  "source": "generated-assets/special-tiles-2026-10-15/_sources/special-tiles.png",
+  "sourceSize": [1254, 1254],
+  "references": [
+    "src/web/public/images/activities/rotation-tile.webp",
+    "src/web/public/images/activities/horse-tile.webp"
+  ],
+  "style": "沿用特殊轮换地块的奶油粉金色、暖光、童话乐园与柔和立体玩具质感，完整场景延伸至四边，无白底留边；主题符号位于中央，名称与规则由页面叠加。",
+  "assets": [
+    {
+      "path": "src/web/public/images/tiles/chance.png",
+      "box": [0, 0, 627, 627],
+      "elements": "发光金色问号、惊喜礼盒、卡牌与星光"
+    },
+    {
+      "path": "src/web/public/images/tiles/fortune.png",
+      "box": [627, 0, 1254, 627],
+      "elements": "金币、金元宝、宝石、宝箱与金库"
+    },
+    {
+      "path": "src/web/public/images/tiles/start.png",
+      "box": [0, 627, 627, 1254],
+      "elements": "出发拱门、棋格旗帜、金色向右箭头与道路"
+    },
+    {
+      "path": "src/web/public/images/tiles/jail.png",
+      "box": [627, 627, 1254, 1254],
+      "elements": "石砌牢房、铁栏牢门、大挂锁与手铐"
+    }
+  ],
+  "propertyBackground": {
+    "generator": "image_gen",
+    "source": "generated-assets/special-tiles-2026-10-15/_sources/property-background.png",
+    "previousSource": "generated-assets/special-tiles-2026-10-15/_sources/property-courtyard.png",
+    "path": "src/web/public/images/board/tile-common.png",
+    "size": [1254, 1254],
+    "references": [
+      "generated-assets/special-tiles-2026-10-15/_sources/property-courtyard.png",
+      "src/web/public/images/board/property-levels.png"
+    ],
+    "elements": "上方为浅蓝天空与淡云，供地名直接叠加；下方为小镇远景、草坡、野花、石块和乡间小路，中央保留供帐篷与房屋叠加的开阔草地，完整场景铺满四边。"
+  },
+  "propertyBuildings": {
+    "generator": "image_gen",
+    "source": "generated-assets/special-tiles-2026-10-15/_sources/property-levels.png",
+    "path": "src/web/public/images/board/property-levels.png",
+    "size": [1254, 1254],
+    "grid": [2, 2],
+    "transparent": true,
+    "references": [
+      "src/web/public/images/board/tile-common.png",
+      "src/web/public/images/tiles/start.png"
+    ],
+    "levels": [
+      { "level": 0, "cell": [0, 0], "render": true, "elements": "粉白条纹帐篷、金色支杆与卷起的睡垫" },
+      { "level": 1, "cell": [1, 0], "elements": "单层小房子、粉色屋顶、奶油白墙与金色饰边" },
+      { "level": 2, "cell": [0, 1], "elements": "两层小楼房、花窗与小阳台" },
+      { "level": 3, "cell": [1, 1], "elements": "宽体大别墅、两侧翼楼、宽台阶与金色露台" }
+    ]
+  }
+}

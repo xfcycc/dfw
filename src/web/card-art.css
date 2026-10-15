@@ -24,16 +24,17 @@
 .keep-card input { z-index: 4; }
 .central-action-panel .keep-card .content-card.illustrated-card { margin: 0; }
 
-/* 揭卡仅覆盖城市新鲜事容器，卡面按容器内的可用尺寸完整展示。 */
-.card-reveal-panel { --reveal-color: #7eaa6a; --card-back-deep: #365e50; position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; align-items: center; padding: 12px; border-radius: inherit; background: radial-gradient(ellipse at 50% 42%, #fffdf0, #e1edcf 75%); color: #705a43; overflow: hidden; isolation: isolate; }
+/* 揭卡覆盖棋盘内圈整个中间区域，卡面按可用宽高等比缩放并完整展示。 */
+.card-reveal-panel { --reveal-color: #7eaa6a; --card-back-deep: #365e50; position: absolute; inset: 0; z-index: 10; border-radius: inherit; background: radial-gradient(ellipse at 50% 42%, #fffdf0, #e1edcf 75%); color: #705a43; overflow: hidden; isolation: isolate; }
+.card-reveal-content { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; padding: 12px; }
 .card-reveal-panel.reveal-SR { --reveal-color: #ab82bf; --card-back-deep: #4d3567; background: radial-gradient(ellipse at 50% 42%, #fff9f2, #e9daf3 75%); }
 .card-reveal-panel.reveal-SSR { --reveal-color: #c99a3e; --card-back-deep: #85541c; background: radial-gradient(ellipse at 50% 42%, #fffdf0, #f6e3ae 75%); }
 .card-reveal-panel.reveal-UR { --reveal-color: #d57663; --card-back-deep: #762c41; background: radial-gradient(ellipse at 50% 42%, #fff6d9, #f3c7b5 75%); }
-.card-reveal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; flex-shrink: 0; z-index: 2; font-size: 11px; }
+.card-reveal-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; width: 100%; flex-shrink: 0; z-index: 2; font-size: 18px; }
 .card-reveal-toolbar .icon-button { width: 28px; height: 28px; border: 2px solid #dcc39a; border-radius: 11px; color: #967650; background: #fff5db; box-shadow: 0 2px 0 #dcc39a70; }
 .card-reveal-heading { text-align: center; z-index: 1; margin: 0; flex-shrink: 0; }
-.card-reveal-heading h3 { font-size: 18px; margin: 2px 0; color: #806344; }
-.card-reveal-heading p { margin: 2px 0; font-size: 11px; color: #968065; }
+.card-reveal-heading h3 { font-size: 30px; margin: 2px 0; color: #806344; }
+.card-reveal-heading p { margin: 2px 0; font-size: 18px; color: #968065; }
 .card-reveal-viewport { display: grid; place-items: center; width: 100%; min-height: 0; flex: 1; margin: 8px 0; }
 .card-reveal-fit { position: relative; }
 .card-reveal-stage { position: absolute; top: 0; left: 0; width: 330px; perspective: 1200px; transform-origin: top left; z-index: 1; }
