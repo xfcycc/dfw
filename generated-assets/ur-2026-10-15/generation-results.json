@@ -1,0 +1,47 @@
+[
+  {
+    "id": "chance_windfall_jackpot",
+    "name": "城市大奖",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-c440730b-ebd0-4571-8e18-03afa64bd661.png"
+  },
+  {
+    "id": "chance_catastrophic_bill",
+    "name": "天价账单",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-3a5ff8a5-56c7-4fc7-929d-a074ca6d521e.png"
+  },
+  {
+    "id": "fortune_fortune_jackpot",
+    "name": "财富暴击",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-a98cf8a5-b78c-48f2-8f79-8932e07b2e8f.png"
+  },
+  {
+    "id": "fortune_fortune_crash",
+    "name": "投资暴雷",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-931a335d-537d-4258-8c07-97beb67d50b8.png"
+  },
+  {
+    "id": "card_fate_coin",
+    "name": "命运硬币",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-04e0a368-dc03-49c8-9878-ca019be85748.png"
+  },
+  {
+    "id": "ur_chance",
+    "name": "UR机会通用卡面",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-e82cd681-0397-486c-8d43-b67bce56ca39.png"
+  },
+  {
+    "id": "card_all_in_ticket",
+    "name": "孤注一掷",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-851e805a-82f1-4503-8668-439539255e61.png"
+  },
+  {
+    "id": "ur_fortune",
+    "name": "UR财富通用卡面",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-caae03e5-3442-4970-a104-1e68efd3a12a.png"
+  },
+  {
+    "id": "ur_card",
+    "name": "UR道具通用卡面",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-8d900f99-41d1-47b8-96e9-6b85b7d88fb2.png"
+  }
+]

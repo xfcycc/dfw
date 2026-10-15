@@ -1,0 +1,112 @@
+{
+  "generatedAt": "2026-10-15",
+  "title": "等级字样与花纹一体卡框",
+  "encoding": {
+    "format": "WebP",
+    "quality": 90,
+    "alphaLossless": true,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "entries": [
+    {
+      "rarity": "R",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-478bb05f-633c-4c4b-837e-93081d9de033.png",
+      "original": "R.png",
+      "webp": "R.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 827993,
+      "webpBytes": 173034,
+      "sourceSha256": "2ad5cc8dd20fd9c044145b1889f1f228e90a541712bff4bcd2a9f89bd8411765",
+      "webpSha256": "d1f5e2c816bd2adea5084e59633f6b4821c6d3236c5116b07f8170d33eb75dfb",
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015174022053.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 173034,
+        "contentMd5": "fVzNb9sG0QW6fd3fwUX3lA=="
+      }
+    },
+    {
+      "rarity": "SR",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-55a17b57-7c4f-4360-84d4-fbac26af9a71.png",
+      "original": "SR.png",
+      "webp": "SR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1179950,
+      "webpBytes": 264220,
+      "sourceSha256": "efcbada4b30c5baa59b504f470887e96aacd682a98f816362da19dd51f6848de",
+      "webpSha256": "241bfc0f5eba324128e8b5f2f97ac58279381f2062008c1e48fd073749efd279",
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015174022055.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 264220,
+        "contentMd5": "k0xq9aKLfXfQMYcoPxWxSQ=="
+      }
+    },
+    {
+      "rarity": "SSR",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-4876c0fd-2a2d-4368-84d5-654fd13b1029.png",
+      "original": "SSR.png",
+      "webp": "SSR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1001404,
+      "webpBytes": 230094,
+      "sourceSha256": "f4bf119c012cff2df0c1920725340cdd973685014b30f2702f99ee870ae9e748",
+      "webpSha256": "61ee8b9b0504ec5769ad8b17a6486104b4ba78094001a0da8e377f4637b85d89",
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015174022056.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 230094,
+        "contentMd5": "Q/kgPM54PRGRh0egU0gtqg=="
+      }
+    },
+    {
+      "rarity": "UR",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-3e54b12a-1582-44b5-8c32-52c7c2ff04d0.png",
+      "original": "UR.png",
+      "webp": "UR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1241931,
+      "webpBytes": 287344,
+      "sourceSha256": "2d9bf69541ef356832307d4a8db2752691438a36f9fa9c0f1b89660152012289",
+      "webpSha256": "2e8ec07b5221f92099b87173f2656dfa95c3026fb6919628e98d0f7a5399c93e",
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015174022057.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 287344,
+        "contentMd5": "cGQFymcx0h2bq//XKGsvig=="
+      }
+    }
+  ],
+  "deploymentStatus": "pending",
+  "runtimeMapping": "src/web/card-frames.json",
+  "rendering": "Single labeled frame image per rarity; proportional full-width top and bottom, stretched side segments only",
+  "verification": {
+    "typecheck": "passed on final run",
+    "diffCheck": "passed",
+    "manualPreview": [
+      "desktop four rarity full cards",
+      "desktop six card hand with full description, effect and aligned quote",
+      "390x844 hand, 164px minimum width, 1px border only above art",
+      "UR draw reveal",
+      "UR play reveal at 390x844 and dismissal",
+      "selection checkbox changes count to 1/6"
+    ],
+    "frontendBuild": "not performed",
+    "unitAndSmokeTests": "not performed",
+    "liveGame": "not performed"
+  }
+}

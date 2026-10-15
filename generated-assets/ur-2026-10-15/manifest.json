@@ -1,0 +1,308 @@
+{
+  "title": "苏暖暖·童话小镇·UR新增插画",
+  "generatedAt": "2026-10-15",
+  "style": "沿用原粉发苏暖暖、暖色童话小镇、柔和3D玩具质感；UR增强玫瑰金、红宝石及珠光",
+  "format": "PNG原图 + WebP运行图",
+  "compression": {
+    "quality": 82,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "entries": [
+    {
+      "id": "chance_windfall_jackpot",
+      "name": "城市大奖",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-c440730b-ebd0-4571-8e18-03afa64bd661.png",
+      "pool": "chance",
+      "original": "chance/chance_windfall_jackpot.png",
+      "webp": "chance/chance_windfall_jackpot.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2531148,
+      "webpBytes": 239428,
+      "sourceSha256": "3ce33cca2c6febbde0823c99a7cc24849a6af3d684b5bae9519ecbf08723816b",
+      "webpSha256": "6e06381538b04128e1b300b182f95506be163ed01de7c652a836c38dd4fd185b",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955933.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 239428,
+        "contentMd5": "Pd1ufjh0lFRcCxik61UzeA=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "chance_windfall_jackpot",
+        "name": "城市大奖",
+        "rarity": "UR",
+        "quote": "这回真轮到我了！",
+        "description": "城市大奖直接到账，这笔收益足以改变接下来的买地计划。",
+        "mechanism": "income",
+        "values": {
+          "amount": 3000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "chance_catastrophic_bill",
+      "name": "天价账单",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-3a5ff8a5-56c7-4fc7-929d-a074ca6d521e.png",
+      "pool": "chance",
+      "original": "chance/chance_catastrophic_bill.png",
+      "webp": "chance/chance_catastrophic_bill.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2343310,
+      "webpBytes": 193944,
+      "sourceSha256": "9dd558be1db4b28f6eb2d7405556b4ef78135b542421bb6ee5b1aefb703b052e",
+      "webpSha256": "91ef004fd3f4f7d5786b1de1b6dcba180ebdd86345d6c775d86cb1038b3e6758",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955934.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 193944,
+        "contentMd5": "ql6ZxtDIVr+k1shKtPwAdw=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "chance_catastrophic_bill",
+        "name": "天价账单",
+        "rarity": "UR",
+        "quote": "这张账单怎么这么长！",
+        "description": "一笔突发的大额银行费用找上门，按正常费用规则选择防御和筹款。",
+        "mechanism": "fee",
+        "values": {
+          "amount": 3000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "fortune_fortune_jackpot",
+      "name": "财富暴击",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-a98cf8a5-b78c-48f2-8f79-8932e07b2e8f.png",
+      "pool": "fortune",
+      "original": "fortune/fortune_fortune_jackpot.png",
+      "webp": "fortune/fortune_fortune_jackpot.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2453594,
+      "webpBytes": 221548,
+      "sourceSha256": "4c6e8398fcbe239fdf9123489086794b0534b166e6177ad52ece1f718632ae5d",
+      "webpSha256": "c04badca3ade7c28d9cd072524c0a299e3c5003f4786e3ee94473ec4fca56033",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955935.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 221548,
+        "contentMd5": "Avg7nW3/0J+RxQ0VPwgtwQ=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "fortune_fortune_jackpot",
+        "name": "财富暴击",
+        "rarity": "UR",
+        "quote": "这波发财了！",
+        "description": "财富格开出大额现金奖励，直接计入本人的现金。",
+        "mechanism": "income",
+        "values": {
+          "amount": 3000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "fortune_fortune_crash",
+      "name": "投资暴雷",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-931a335d-537d-4258-8c07-97beb67d50b8.png",
+      "pool": "fortune",
+      "original": "fortune/fortune_fortune_crash.png",
+      "webp": "fortune/fortune_fortune_crash.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2404673,
+      "webpBytes": 201116,
+      "sourceSha256": "8469745ac31a6de450aa0bb5602ee9f29197584baa22149aae42ce719cb5d691",
+      "webpSha256": "856e2b4e251f0c8497dfff0a274ea89adc5de13ad06eec0c8a2392a8fc0ef023",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955937.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 201116,
+        "contentMd5": "R3R8t9qNgZ8on9qv5XXXMA=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "fortune_fortune_crash",
+        "name": "投资暴雷",
+        "rarity": "UR",
+        "quote": "说好的财富呢！",
+        "description": "这次财富机会变成大额银行费用，仍可按正常规则防御和筹款。",
+        "mechanism": "fee",
+        "values": {
+          "amount": 3000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "card_fate_coin",
+      "name": "命运硬币",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-04e0a368-dc03-49c8-9878-ca019be85748.png",
+      "pool": "card",
+      "original": "card/card_fate_coin.png",
+      "webp": "card/card_fate_coin.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2407626,
+      "webpBytes": 207752,
+      "sourceSha256": "60c6674713e54fcb97413f131e3fc4254e22122ea40e1883a75890afb51110bd",
+      "webpSha256": "46c62966b5f8f96408a2e3349f10cc11bff4e5f73858f0b8117109a3cc53d9c7",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955938.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 207752,
+        "contentMd5": "upJJe91ZgPUskHTTALJBoQ=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "card_fate_coin",
+        "name": "命运硬币",
+        "rarity": "UR",
+        "quote": "这把要么起飞，要么吃土！",
+        "description": "确认后才消费卡牌与主动次数；先扣下注，中奖发放奖金，不另返本金。",
+        "cardType": "主动",
+        "mechanism": "gamble",
+        "values": {
+          "wager": 2000,
+          "probability": 50,
+          "prize": 6000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "ur_chance",
+      "name": "UR机会通用卡面",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-e82cd681-0397-486c-8d43-b67bce56ca39.png",
+      "pool": "fallback",
+      "original": "fallback/ur_chance.png",
+      "webp": "fallback/ur_chance.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2498161,
+      "webpBytes": 220478,
+      "sourceSha256": "0e4dfba4788e5a2124725003da26783057c1fc02cb88b1537a6981968237f3cb",
+      "webpSha256": "001f8c9a7529377895a608b2dd6687990feb0c2326eccd8f853d045150e2de58",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955939.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 220478,
+        "contentMd5": "eZkbALzDQ3oUo9PjDt/l5w=="
+      },
+      "rarity": "UR"
+    },
+    {
+      "id": "card_all_in_ticket",
+      "name": "孤注一掷",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-851e805a-82f1-4503-8668-439539255e61.png",
+      "pool": "card",
+      "original": "card/card_all_in_ticket.png",
+      "webp": "card/card_all_in_ticket.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2401750,
+      "webpBytes": 204396,
+      "sourceSha256": "f2d66cf7fcf264e295f6fb6075a4a26e339965580fc5c100d5a9eb07d71e3a0a",
+      "webpSha256": "4f0a64d2194aeb5c1423e9c440e3feb0ffe32d78da10088d1def6724f2829002",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955940.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 204396,
+        "contentMd5": "iqLJTfbLDvpgj132dMzQ7Q=="
+      },
+      "rarity": "UR",
+      "content": {
+        "id": "card_all_in_ticket",
+        "name": "孤注一掷",
+        "rarity": "UR",
+        "quote": "赢了买地，输了认账！",
+        "description": "这张风险牌和命运硬币效果相同，取消选择保留卡牌，只能用已有现金下注。",
+        "cardType": "主动",
+        "mechanism": "gamble",
+        "values": {
+          "wager": 2000,
+          "probability": 50,
+          "prize": 6000
+        },
+        "enabled": true
+      }
+    },
+    {
+      "id": "ur_fortune",
+      "name": "UR财富通用卡面",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-caae03e5-3442-4970-a104-1e68efd3a12a.png",
+      "pool": "fallback",
+      "original": "fallback/ur_fortune.png",
+      "webp": "fallback/ur_fortune.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2548805,
+      "webpBytes": 241006,
+      "sourceSha256": "3041f97fed5986390de5d95f7c77edd38b6ba9c8e0508048c21f15ec63852dc0",
+      "webpSha256": "a29b46cb99f7b49b746fd49cc306324e574dc10c6fb273faf76b36249cb20250",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955941.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 241006,
+        "contentMd5": "Ezy4nBUMtdFNa58K08rbDw=="
+      },
+      "rarity": "UR"
+    },
+    {
+      "id": "ur_card",
+      "name": "UR道具通用卡面",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-8d900f99-41d1-47b8-96e9-6b85b7d88fb2.png",
+      "pool": "fallback",
+      "original": "fallback/ur_card.png",
+      "webp": "fallback/ur_card.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2507733,
+      "webpBytes": 221248,
+      "sourceSha256": "3c1e975a0c15b8b444c534d4e570cecad64a68dab22d81726e3fe1978da633ee",
+      "webpSha256": "df8db95a1bfb98f55cf487d8e477a631a574dd9dcb1dabc64cfb94d5f3119e9f",
+      "url": "https://pic.caiguoyu.cn/typora/20261015162955942.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 221248,
+        "contentMd5": "KT2Proy9+SRKcIlYWPpzew=="
+      },
+      "rarity": "UR"
+    }
+  ],
+  "deploymentStatus": "pending",
+  "runtimeMapping": "../../src/web/card-illustrations.json",
+  "integrated": true,
+  "validation": {
+    "remoteHeadersVerified": 9,
+    "sourceImagesVisuallyReviewed": 9,
+    "runtimeSkinCoverage": 348,
+    "runtimeMappingEntries": 351,
+    "oldMappingsUnchanged": 342,
+    "uniqueImages": 9,
+    "dimensions": "1254x1254",
+    "typecheck": "passed",
+    "browserPreview": "已查看本地静态卡面预览；不代表联机验收",
+    "frontendBuild": "not run",
+    "tests": "not run"
+  },
+  "sourceBytes": 22096800,
+  "webpBytes": 1950916
+}

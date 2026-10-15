@@ -1,0 +1,125 @@
+{
+  "generatedAt": "2026-10-15",
+  "title": "四档透明花纹卡框",
+  "encoding": {
+    "format": "WebP",
+    "quality": 90,
+    "alphaLossless": true,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "entries": [
+    {
+      "rarity": "R",
+      "name": "翡翠叶纹",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-58eb78ed-4fb1-4084-9668-ed5ceb722d9a.png",
+      "original": "R.png",
+      "webp": "R.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 778776,
+      "webpBytes": 166018,
+      "sourceSha256": "472d7308ec5287d6fe3f911a827cca20021bb098b873df6623b04b9c6d83f3c9",
+      "webpSha256": "58931e2cf9a41d958178f25cc24d4e51a29fbed10a8f09ff649910d4251017c7",
+      "centralMaxAlpha": 1,
+      "slicePercent": 30,
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015172228471.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 166018,
+        "contentMd5": "m1jPTRBfrBfpaBOuKezyxg=="
+      }
+    },
+    {
+      "rarity": "SR",
+      "name": "紫晶月纹",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-1335fef7-f421-4122-b9ee-0657389431a7.png",
+      "original": "SR.png",
+      "webp": "SR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1116737,
+      "webpBytes": 260610,
+      "sourceSha256": "20e863d723232313be507dae0801c4320efb981c347fe0ad7ed29db29807d74d",
+      "webpSha256": "d3d42836cf1153f261ca07c0257c17994fe1108bc7fc49ca7d154f500e366d35",
+      "centralMaxAlpha": 1,
+      "slicePercent": 30,
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015172228473.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 260610,
+        "contentMd5": "CDlIwPdKPX2BC4lrk5hUGg=="
+      }
+    },
+    {
+      "rarity": "SSR",
+      "name": "鎏金星桂",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-24e5464e-5f9d-4a8e-aa16-336bd21de608.png",
+      "original": "SSR.png",
+      "webp": "SSR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 924954,
+      "webpBytes": 212674,
+      "sourceSha256": "feb492d699e4e75bde2d44e1bf23896c4cf433e09d09a9de466ef404eafb3da6",
+      "webpSha256": "dd6a6617bbaa4a36f835496b8b8a93665fc7aede0092066e00e907b5d2a8f833",
+      "centralMaxAlpha": 1,
+      "slicePercent": 30,
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015172228474.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 212674,
+        "contentMd5": "wih/F3JEi/m5JZgVh3bZKA=="
+      }
+    },
+    {
+      "rarity": "UR",
+      "name": "玫瑰金曜冠",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a13e59-8ace-79c0-b489-000b1d9c34cb/exec-ed927600-aa65-4123-8184-417a46d6f5ef.png",
+      "original": "UR.png",
+      "webp": "UR.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1149507,
+      "webpBytes": 263764,
+      "sourceSha256": "867b7ce1681c5dbf5c818e590f44a2b13f2a6e1c5262b11d8c64d7ef358ce9c6",
+      "webpSha256": "18c516dcc15111ae93b2ad424a41cce6e55319858fe09bdac040f151e3fb21e0",
+      "centralMaxAlpha": 1,
+      "slicePercent": 30,
+      "alphaPixelsMatch": true,
+      "url": "https://pic.caiguoyu.cn/typora/20261015172228475.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 263764,
+        "contentMd5": "7puT424EXCU/0yYy35PcWA=="
+      }
+    }
+  ],
+  "deploymentStatus": "pending",
+  "runtimeMapping": "src/web/card-frames.json",
+  "component": "src/web/components/CardFrame.vue",
+  "verification": {
+    "typecheck": "passed",
+    "oss": "4/4 HTTP 200, WebP, length and MD5 matched",
+    "manualPreview": [
+      "four rarity full cards",
+      "six card hand rail",
+      "UR detail modal",
+      "selection checkbox",
+      "UR draw reveal",
+      "UR play reveal at 390x844 and dismissal"
+    ],
+    "liveGame": "not performed",
+    "frontendBuild": "not performed",
+    "unitAndSmokeTests": "not performed"
+  },
+  "supersededBy": "labeled/manifest.json"
+}

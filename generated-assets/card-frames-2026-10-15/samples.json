@@ -1,0 +1,54 @@
+[
+  {
+    "id": "card_mario_coin",
+    "name": "顶金币",
+    "rarity": "R",
+    "quote": "再顶一个，钱不嫌多！",
+    "description": "顶开金币砖获得即时现金，头铁兑换到账，仍占本回合主动次数。",
+    "cardType": "主动",
+    "skinId": "card_mario_coin",
+    "kind": "cash",
+    "pool": "card",
+    "mechanism": "cash",
+    "effect": "获得现金 ¥600"
+  },
+  {
+    "id": "card_delta_africa_star",
+    "name": "非洲之星",
+    "rarity": "SR",
+    "quote": "兄弟们我先撤了",
+    "description": "非洲之星刚塞进背包，你就开始催队友找撤离点。刚才说要陪兄弟打到底的，好像是另外一个人。",
+    "cardType": "主动",
+    "skinId": "card_delta_africa_star",
+    "kind": "move",
+    "pool": "card",
+    "mechanism": "move",
+    "effect": "前进 6 格并结算落点，替代本次掷骰"
+  },
+  {
+    "id": "card_kungfu_buddha_palm",
+    "name": "如来神掌",
+    "rarity": "SSR",
+    "quote": "有没有听过一招从天而降的掌法？",
+    "description": "如来神掌落在对手合法建筑上，精准拆掉一级，无退款，威风不包善后。",
+    "cardType": "主动",
+    "skinId": "card_kungfu_buddha_palm",
+    "kind": "demolish",
+    "pool": "card",
+    "mechanism": "demolish",
+    "effect": "对手的一块地产降低 1 级建筑，无退款"
+  },
+  {
+    "id": "card_fate_coin",
+    "name": "命运硬币",
+    "rarity": "UR",
+    "quote": "这把要么起飞，要么吃土！",
+    "description": "确认后才消费卡牌与主动次数；先扣下注，中奖发放奖金，不另返本金。",
+    "cardType": "主动",
+    "skinId": "card_fate_coin",
+    "kind": "gamble",
+    "pool": "card",
+    "mechanism": "gamble",
+    "effect": "可放弃，或用现有现金下注 ¥4,000；50% 概率获得 ¥12,000（先扣本金，不另返还）"
+  }
+]

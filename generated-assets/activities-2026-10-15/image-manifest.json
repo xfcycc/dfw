@@ -1,0 +1,422 @@
+[
+  {
+    "name": "casino-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      2,
+      2,
+      766,
+      339
+    ],
+    "width": 764,
+    "height": 337,
+    "path": "src/web/public/images/activities/casino-background.webp",
+    "bytes": 60084,
+    "sha256": "2d694f63dcb3b4e7a6b219942483ada50992d344a3ab3b78d9873636d857f2be"
+  },
+  {
+    "name": "horse-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      770,
+      2,
+      1534,
+      339
+    ],
+    "width": 764,
+    "height": 337,
+    "path": "src/web/public/images/activities/horse-background.webp",
+    "bytes": 59562,
+    "sha256": "3f2731c93998c0d2505fc4d63a9bc2c500a8cb978608c0bbf9e8f19185f94a36"
+  },
+  {
+    "name": "roulette-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      2,
+      343,
+      766,
+      681
+    ],
+    "width": 764,
+    "height": 338,
+    "path": "src/web/public/images/activities/roulette-background.webp",
+    "bytes": 60598,
+    "sha256": "29a818a8e2090cd0a3f0c5ab520124ee03f804542b24c283414cef7980096e09"
+  },
+  {
+    "name": "packet-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      770,
+      343,
+      1534,
+      681
+    ],
+    "width": 764,
+    "height": 338,
+    "path": "src/web/public/images/activities/packet-background.webp",
+    "bytes": 68462,
+    "sha256": "bb051dfb1220fcbaa8246e70fd33723ead48740de687bd5e7d8a9b13aa99f0d2"
+  },
+  {
+    "name": "rps-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      2,
+      685,
+      766,
+      1022
+    ],
+    "width": 764,
+    "height": 337,
+    "path": "src/web/public/images/activities/rps-background.webp",
+    "bytes": 66000,
+    "sha256": "ef13c46e1661cee9c9996e5a119154240f43491e408cf95d099d9ccf1834279b"
+  },
+  {
+    "name": "rotation-background",
+    "source": "generated-assets/activities-2026-10-15/_sources/backgrounds.png",
+    "box": [
+      770,
+      685,
+      1534,
+      1022
+    ],
+    "width": 764,
+    "height": 337,
+    "path": "src/web/public/images/activities/rotation-background.webp",
+    "bytes": 64018,
+    "sha256": "61faf9db7b673e2b480f8acb3cd7cecdaeb0801165e60026f4a59e952a0fe58d"
+  },
+  {
+    "name": "casino-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      2,
+      2,
+      416,
+      625
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/casino-tile.webp",
+    "bytes": 57352,
+    "sha256": "767dd56bb397eae8df31a10dce159014921a36a85ce471af46ac52d69d89bfd4"
+  },
+  {
+    "name": "horse-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      420,
+      2,
+      834,
+      625
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/horse-tile.webp",
+    "bytes": 53954,
+    "sha256": "dd2fae3cae3b4029d9c051d4dd76cc192586a469626291a4ca9b73e99d5697a6"
+  },
+  {
+    "name": "roulette-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      838,
+      2,
+      1252,
+      625
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/roulette-tile.webp",
+    "bytes": 57740,
+    "sha256": "f67bdc78ca5d65c323d8f39a16f0ffef493dbdc5e674649ebcdec841ca4f2593"
+  },
+  {
+    "name": "packet-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      2,
+      629,
+      416,
+      1252
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/packet-tile.webp",
+    "bytes": 56606,
+    "sha256": "13456037b3e5a9f5cafaa1d6ad97f410981c0e92ef97a1aad5b16dd7716d665f"
+  },
+  {
+    "name": "rps-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      420,
+      629,
+      834,
+      1252
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/rps-tile.webp",
+    "bytes": 58870,
+    "sha256": "4286c7cc5e22a8bf316c7479c08968517d29356755bc3601d5467f199342d831"
+  },
+  {
+    "name": "rotation-tile",
+    "source": "generated-assets/activities-2026-10-15/_sources/landmarks.png",
+    "box": [
+      838,
+      629,
+      1252,
+      1252
+    ],
+    "width": 414,
+    "height": 623,
+    "path": "src/web/public/images/activities/rotation-tile.webp",
+    "bytes": 55262,
+    "sha256": "4453fedddcca50644f41bd4db6b229dd3607746a87d7de319772ad453d199b3f"
+  },
+  {
+    "name": "horse-1",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      2,
+      2,
+      312,
+      312
+    ],
+    "width": 310,
+    "height": 310,
+    "path": "src/web/public/images/activities/horse-1.webp",
+    "bytes": 12076,
+    "sha256": "c067f8795f78995a93d3c3b0352363bf3db6a1a7a612aa86a8352642c0e04a86"
+  },
+  {
+    "name": "horse-2",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      316,
+      2,
+      625,
+      312
+    ],
+    "width": 309,
+    "height": 310,
+    "path": "src/web/public/images/activities/horse-2.webp",
+    "bytes": 12574,
+    "sha256": "cd5ca266f66101fb4aef39af0d5902a108b3d3b1b5c2b6e40207b92e98b8fce7"
+  },
+  {
+    "name": "horse-3",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      629,
+      2,
+      938,
+      312
+    ],
+    "width": 309,
+    "height": 310,
+    "path": "src/web/public/images/activities/horse-3.webp",
+    "bytes": 12840,
+    "sha256": "22edb40728fea76ededbd7385dbe9dc5da24bc9e419b89306a71896bf62da64d"
+  },
+  {
+    "name": "horse-4",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      942,
+      2,
+      1252,
+      312
+    ],
+    "width": 310,
+    "height": 310,
+    "path": "src/web/public/images/activities/horse-4.webp",
+    "bytes": 11290,
+    "sha256": "d593284b7535fce017167978df92042928cde3877ba9e067743aa34ee0c2d338"
+  },
+  {
+    "name": "horse-5",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      2,
+      316,
+      312,
+      625
+    ],
+    "width": 310,
+    "height": 309,
+    "path": "src/web/public/images/activities/horse-5.webp",
+    "bytes": 11552,
+    "sha256": "9b897eeb7d22bc0a0f85182371f92081512b4add406f42730d3448ee6d5409f9"
+  },
+  {
+    "name": "horse-6",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      316,
+      316,
+      625,
+      625
+    ],
+    "width": 309,
+    "height": 309,
+    "path": "src/web/public/images/activities/horse-6.webp",
+    "bytes": 12558,
+    "sha256": "b4b11bcea386d96081087a1cb39dd33b772c2671f084f20b294ce780977294ab"
+  },
+  {
+    "name": "horse-7",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      629,
+      316,
+      938,
+      625
+    ],
+    "width": 309,
+    "height": 309,
+    "path": "src/web/public/images/activities/horse-7.webp",
+    "bytes": 10758,
+    "sha256": "35b50e45276df2638fa9d587437cbe3d8d95ad6511405a9c7d6178d49f955526"
+  },
+  {
+    "name": "horse-8",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      942,
+      316,
+      1252,
+      625
+    ],
+    "width": 310,
+    "height": 309,
+    "path": "src/web/public/images/activities/horse-8.webp",
+    "bytes": 12668,
+    "sha256": "8f4041852ca46a4ab2cf50d6469a048656c910ad9fc4f0810c787fbb2c90a264"
+  },
+  {
+    "name": "cylinder",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      2,
+      629,
+      312,
+      938
+    ],
+    "width": 310,
+    "height": 309,
+    "path": "src/web/public/images/activities/cylinder.webp",
+    "bytes": 11536,
+    "sha256": "94888861b943561b6f5b77e5c686ea8de447074966f27e34b293555d08e88493"
+  },
+  {
+    "name": "roulette-toy",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      316,
+      629,
+      625,
+      938
+    ],
+    "width": 309,
+    "height": 309,
+    "path": "src/web/public/images/activities/roulette-toy.webp",
+    "bytes": 8818,
+    "sha256": "7751dde905da4776f4354ba5609929f2ae92d4f4c362510678d81be9d483823f"
+  },
+  {
+    "name": "packet-closed",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      629,
+      629,
+      938,
+      938
+    ],
+    "width": 309,
+    "height": 309,
+    "path": "src/web/public/images/activities/packet-closed.webp",
+    "bytes": 9078,
+    "sha256": "2f1d4d714cf7e6fdbc5afca293f5736f6e14eb3f68cec114b2f2929c2b079abc"
+  },
+  {
+    "name": "packet-open",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      942,
+      629,
+      1252,
+      938
+    ],
+    "width": 310,
+    "height": 309,
+    "path": "src/web/public/images/activities/packet-open.webp",
+    "bytes": 13682,
+    "sha256": "359c2a726a66c662a045fb43dfff1c998a362b330ceff7f96d0c6cfa1de4f010"
+  },
+  {
+    "name": "rps-0",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      2,
+      942,
+      312,
+      1252
+    ],
+    "width": 310,
+    "height": 310,
+    "path": "src/web/public/images/activities/rps-0.webp",
+    "bytes": 4894,
+    "sha256": "a13956ca6959741b329926bd5eb086998bde654cdbbf64260e16696264c260a8"
+  },
+  {
+    "name": "rps-1",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      316,
+      942,
+      625,
+      1252
+    ],
+    "width": 309,
+    "height": 310,
+    "path": "src/web/public/images/activities/rps-1.webp",
+    "bytes": 4962,
+    "sha256": "c218a104d53bcb1dcef3a8e216bfd421ea082d27c14e2833950849e28312b891"
+  },
+  {
+    "name": "rps-2",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      629,
+      942,
+      938,
+      1252
+    ],
+    "width": 309,
+    "height": 310,
+    "path": "src/web/public/images/activities/rps-2.webp",
+    "bytes": 5166,
+    "sha256": "764c5f0c6f5be7f250cbfa7ccf956adf5b1a19b7877e80bb6d2cf1a9875c7138"
+  },
+  {
+    "name": "lucky-clover",
+    "source": "generated-assets/activities-2026-10-15/_sources/props.png",
+    "box": [
+      942,
+      942,
+      1252,
+      1252
+    ],
+    "width": 310,
+    "height": 310,
+    "path": "src/web/public/images/activities/lucky-clover.webp",
+    "bytes": 13158,
+    "sha256": "3c327e5470435e46941e316e9c1430d65c71edf210aa178d688aa7e1bf7194d7"
+  }
+]

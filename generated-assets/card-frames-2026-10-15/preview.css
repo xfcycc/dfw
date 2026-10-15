@@ -1,0 +1,14 @@
+body { margin: 0; background: #fbf3e5; color: #624e41; }
+.frame-preview-page { max-width: 1400px; margin: auto; padding: 28px; }
+.frame-preview-page header h1 { margin: 0 0 10px; font-size: 28px; }
+.frame-preview-page header p { margin: 5px 0; font-size: 14px; color: #927964; }
+.frame-preview-toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0; }
+.frame-preview-toolbar button { padding: 9px 16px; border: 1px solid #d4b991; border-radius: 12px; background: #fffaf1; color: #80674e; }
+.frame-preview-toolbar button.active { border-color: #947141; background: #ebd5af; color: #624525; }
+.frame-preview-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-items: start; gap: 16px; }
+.frame-preview-grid .illustrated-card { max-width: none; }
+.modern-room.game-session.frame-preview-hand { height: auto; min-height: 0; padding: 16px; background: #f7efdd; }
+.frame-preview-choice { max-width: 760px; padding: 20px; border-radius: 20px; background: #fff9ec; }
+.frame-preview-reveal { position: relative; width: min(100%, 1000px); height: 680px; border-radius: 20px; overflow: hidden; }
+@media (max-width: 1000px) { .frame-preview-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .frame-preview-page { padding: 16px; } .frame-preview-grid { grid-template-columns: 1fr; } .frame-preview-reveal { height: 620px; } }

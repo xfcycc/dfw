@@ -1,0 +1,82 @@
+{
+  "casino_dice": {
+    "seconds": 0.712,
+    "rate": 44100,
+    "channels": 1
+  },
+  "casino_win": {
+    "seconds": 1.043,
+    "rate": 44100,
+    "channels": 1
+  },
+  "casino_loss": {
+    "seconds": 0.842,
+    "rate": 44100,
+    "channels": 1
+  },
+  "horse_start": {
+    "seconds": 0.944,
+    "rate": 44100,
+    "channels": 1
+  },
+  "horse_run": {
+    "seconds": 0.65,
+    "rate": 44100,
+    "channels": 1
+  },
+  "horse_finish": {
+    "seconds": 1.28,
+    "rate": 44100,
+    "channels": 1
+  },
+  "roulette_spin": {
+    "seconds": 0.743,
+    "rate": 44100,
+    "channels": 1
+  },
+  "roulette_click": {
+    "seconds": 0.361,
+    "rate": 44100,
+    "channels": 1
+  },
+  "roulette_hit": {
+    "seconds": 0.75,
+    "rate": 44100,
+    "channels": 1
+  },
+  "packet_open": {
+    "seconds": 0.885,
+    "rate": 44100,
+    "channels": 1
+  },
+  "packet_lucky": {
+    "seconds": 1.191,
+    "rate": 44100,
+    "channels": 1
+  },
+  "rps_count": {
+    "seconds": 0.947,
+    "rate": 44100,
+    "channels": 1
+  },
+  "rps_reveal": {
+    "seconds": 0.459,
+    "rate": 44100,
+    "channels": 1
+  },
+  "rps_win": {
+    "seconds": 1.152,
+    "rate": 44100,
+    "channels": 1
+  },
+  "rotation_count": {
+    "seconds": 0.575,
+    "rate": 44100,
+    "channels": 1
+  },
+  "rotation_switch": {
+    "seconds": 1.264,
+    "rate": 44100,
+    "channels": 1
+  }
+}

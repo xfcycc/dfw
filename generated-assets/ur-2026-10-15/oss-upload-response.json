@@ -1,0 +1,115 @@
+{
+  "success": true,
+  "result": [
+    "https://pic.caiguoyu.cn/typora/20261015162955933.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955934.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955935.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955937.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955938.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955939.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955940.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955941.webp",
+    "https://pic.caiguoyu.cn/typora/20261015162955942.webp"
+  ],
+  "items": [
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/chance/chance_windfall_jackpot.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955933.webp",
+      "fileName": "20261015162955933.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 239428,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/chance/chance_catastrophic_bill.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955934.webp",
+      "fileName": "20261015162955934.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 193944,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/fortune/fortune_fortune_jackpot.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955935.webp",
+      "fileName": "20261015162955935.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 221548,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/fortune/fortune_fortune_crash.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955937.webp",
+      "fileName": "20261015162955937.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 201116,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/card/card_fate_coin.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955938.webp",
+      "fileName": "20261015162955938.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 207752,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/fallback/ur_chance.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955939.webp",
+      "fileName": "20261015162955939.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 220478,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/card/card_all_in_ticket.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955940.webp",
+      "fileName": "20261015162955940.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 204396,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/fallback/ur_fortune.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955941.webp",
+      "fileName": "20261015162955941.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 241006,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/ur-2026-10-15/fallback/ur_card.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015162955942.webp",
+      "fileName": "20261015162955942.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 221248,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    }
+  ]
+}

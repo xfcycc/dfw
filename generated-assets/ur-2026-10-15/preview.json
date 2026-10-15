@@ -1,0 +1,74 @@
+[
+  {
+    "id": "chance_windfall_jackpot",
+    "name": "城市大奖",
+    "pool": "chance",
+    "description": "城市大奖直接到账，这笔收益足以改变接下来的买地计划。",
+    "quote": "这回真轮到我了！",
+    "image": "chance/chance_windfall_jackpot.png"
+  },
+  {
+    "id": "chance_catastrophic_bill",
+    "name": "天价账单",
+    "pool": "chance",
+    "description": "一笔突发的大额银行费用找上门，按正常费用规则选择防御和筹款。",
+    "quote": "这张账单怎么这么长！",
+    "image": "chance/chance_catastrophic_bill.png"
+  },
+  {
+    "id": "fortune_fortune_jackpot",
+    "name": "财富暴击",
+    "pool": "fortune",
+    "description": "财富格开出大额现金奖励，直接计入本人的现金。",
+    "quote": "这波发财了！",
+    "image": "fortune/fortune_fortune_jackpot.png"
+  },
+  {
+    "id": "fortune_fortune_crash",
+    "name": "投资暴雷",
+    "pool": "fortune",
+    "description": "这次财富机会变成大额银行费用，仍可按正常规则防御和筹款。",
+    "quote": "说好的财富呢！",
+    "image": "fortune/fortune_fortune_crash.png"
+  },
+  {
+    "id": "card_fate_coin",
+    "name": "命运硬币",
+    "pool": "card",
+    "description": "确认后才消费卡牌与主动次数；先扣下注，中奖发放奖金，不另返本金。",
+    "quote": "这把要么起飞，要么吃土！",
+    "image": "card/card_fate_coin.png"
+  },
+  {
+    "id": "ur_chance",
+    "name": "UR机会通用卡面",
+    "pool": "fallback",
+    "description": "缺少独立插画时使用，UR 保持本档人物与玫瑰金风格。",
+    "quote": "",
+    "image": "fallback/ur_chance.png"
+  },
+  {
+    "id": "card_all_in_ticket",
+    "name": "孤注一掷",
+    "pool": "card",
+    "description": "这张风险牌和命运硬币效果相同，取消选择保留卡牌，只能用已有现金下注。",
+    "quote": "赢了买地，输了认账！",
+    "image": "card/card_all_in_ticket.png"
+  },
+  {
+    "id": "ur_fortune",
+    "name": "UR财富通用卡面",
+    "pool": "fallback",
+    "description": "缺少独立插画时使用，UR 保持本档人物与玫瑰金风格。",
+    "quote": "",
+    "image": "fallback/ur_fortune.png"
+  },
+  {
+    "id": "ur_card",
+    "name": "UR道具通用卡面",
+    "pool": "fallback",
+    "description": "缺少独立插画时使用，UR 保持本档人物与玫瑰金风格。",
+    "quote": "",
+    "image": "fallback/ur_card.png"
+  }
+]

@@ -1,0 +1,55 @@
+{
+  "success": true,
+  "result": [
+    "https://pic.caiguoyu.cn/typora/20261015174022053.webp",
+    "https://pic.caiguoyu.cn/typora/20261015174022055.webp",
+    "https://pic.caiguoyu.cn/typora/20261015174022056.webp",
+    "https://pic.caiguoyu.cn/typora/20261015174022057.webp"
+  ],
+  "items": [
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/card-frames-2026-10-15/labeled/R.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015174022053.webp",
+      "fileName": "20261015174022053.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 173034,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/card-frames-2026-10-15/labeled/SR.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015174022055.webp",
+      "fileName": "20261015174022055.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 264220,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/card-frames-2026-10-15/labeled/SSR.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015174022056.webp",
+      "fileName": "20261015174022056.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 230094,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    },
+    {
+      "origin": "/Users/caiguoyu/projects/dfw/generated-assets/card-frames-2026-10-15/labeled/UR.webp",
+      "imgUrl": "https://pic.caiguoyu.cn/typora/20261015174022057.webp",
+      "fileName": "20261015174022057.webp",
+      "type": "aliyun",
+      "contentType": "image/webp",
+      "size": 287344,
+      "width": 1254,
+      "height": 1254,
+      "extname": ".webp"
+    }
+  ]
+}
