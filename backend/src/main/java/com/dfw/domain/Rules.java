@@ -13,7 +13,7 @@ public final class Rules {
     public static long initialCashBase(int count) { return count >= 5 ? 15000 : count >= 3 ? 10000 : INITIAL_CASH; }
     /** 输入开局人数，返回每人初始手牌数量。 */
     public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
-    /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过起点的道具补给数量。 */
+    /** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */
     public static int startCards(int count) { return count >= 3 ? 2 : 1; }
     /** 输入人数及房间大小，返回闭环地图总格数；缺失设置沿用大地图。 */
     public static int mapLength(int count, String size) {

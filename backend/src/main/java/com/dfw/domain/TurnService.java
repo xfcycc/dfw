@@ -77,14 +77,15 @@ public class TurnService {
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.getLast().beforeEvent = effect.content;
         if (effect.message != null) log(room, effect.message);
     }
-    /** 输入房间、玩家和有符号步数，逐格处理路障、起点收入及按本局人数发放的补给，保存结算路径，无返回值。 */
+    /** 输入房间、玩家和有符号步数，处理路障及正反向经过或原地停留的起点奖励，保存结算路径，无返回值。 */
     public void move(Room room, Player player, int steps) {
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = room.movementSequence.isEmpty() && room.phase.equals("pre_roll") ? room.dice : null;
+        if (steps == 0 && player.position == 0) rewardStart(room, player, "在起点原地停留");
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); int cards = Rules.startCards(room.players.size()); player.cash += income; giveCards(room, player, cards); log(room, player.name + " 经过起点，获得 ¥" + income + " 和 " + cards + " 张道具补给"); }
+            if (player.position == 0) rewardStart(room, player, steps > 0 ? "向前经过起点" : "后退经过起点");
             Tile tile = room.board.get(player.position);
             if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
             if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
@@ -92,6 +93,12 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
         content.overflow(room);
+    }
+    /** 输入房间、领奖玩家及触发动作，按本局配置发放起点现金与道具并记录日志，无返回值。 */
+    private void rewardStart(Room room, Player player, String action) {
+        long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); int cards = Rules.startCards(room.players.size());
+        player.cash += income; giveCards(room, player, cards);
+        log(room, player.name + " " + action + "，获得 ¥" + income + " 和 " + cards + " 张道具补给");
     }
     /** 输入房间和落点玩家，结算当前地块；事件移动再次落入事件格时继续抽取，无返回值。 */
     public void settle(Room room, Player player) {

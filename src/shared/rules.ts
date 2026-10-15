@@ -12,7 +12,7 @@ export const RULES = {
 export function initialCashBase(count: number): number { return count >= 5 ? 15000 : count >= 3 ? 10000 : RULES.initialCash; }
 /** 输入开局人数，返回每人初始手牌数量。 */
 export function initialCards(count: number): number { return count >= 3 ? 3 : RULES.initialCards; }
-/** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过起点的道具补给数量。 */
+/** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */
 export function startCards(count: number): number { return count >= 3 ? 2 : 1; }
 export const COLORS = ['#ef6c68', '#4287e5', '#e6ad32', '#47ae88', '#a078d3', '#e982b2'];
 export const DISTRICTS = ['花园社区', '滨海街区', '星光商圈', '旧城风情'];
