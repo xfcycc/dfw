@@ -8,6 +8,12 @@ export const RULES = {
   mortgageRate: 0.5, redeemRate: 0.55, sellLandRate: 0.5,
   maxLevel: 3, rentRate: 0.25, rentMultipliers: [1, 3, 6, 10],
 } as const;
+/** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
+export function initialCashBase(count: number): number { return count >= 5 ? 15000 : count >= 3 ? 10000 : RULES.initialCash; }
+/** 输入开局人数，返回每人初始手牌数量。 */
+export function initialCards(count: number): number { return count >= 3 ? 3 : RULES.initialCards; }
+/** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过起点的道具补给数量。 */
+export function startCards(count: number): number { return count >= 3 ? 2 : 1; }
 export const COLORS = ['#ef6c68', '#4287e5', '#e6ad32', '#47ae88', '#a078d3', '#e982b2'];
 export const DISTRICTS = ['花园社区', '滨海街区', '星光商圈', '旧城风情'];
 export const MAP_SIZES: { value: MapSize; name: string; factor: number }[] = [
@@ -26,6 +32,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   release: { name: '解除监禁／休息', icon: '🔑', description: '限制刚施加时使用，不占主动次数。' },
   steal: { name: '抢夺手牌', icon: '🃏', description: '随机转移未破产对手的一张牌；对方无牌时保留卡与次数。' },
   cash: { name: '即时现金', icon: '💰', description: '获得卡面现金，占本回合主动次数。' },
+  gamble: { name: '命运豪赌', icon: '🪙', description: '使用已有现金下注，按卡面概率大赚或大亏；确认下注才消耗卡牌和主动次数。' },
   remote: { name: '遥控骰子', icon: '🎯', description: '指定 1～6 点，替代本次掷骰。' },
   barrier: { name: '路障', icon: '🚧', description: '在前方六格内任意无路障地块放置路障，首个经过者停下。' },
   stay: { name: '停留', icon: '⚓', description: '替代掷骰，留在当前格重新结算。' },
@@ -53,7 +60,7 @@ function shuffle<T>(input: T[], random: () => number): T[] {
   }
   return values;
 }
-/** 输入人数、种子及同源配置，返回各边五档地价尽量均衡的地图；对局使用服务端棋盘。 */
+/** 输入人数、种子及同源配置，返回各边五档地价尽量均衡、全图地产名称唯一的地图；对局使用服务端棋盘。 */
 export function generateMap(count: number, seed: string, economy: EconomySettings = economyDefaults, regions = regionDefaults.regions, size: MapSize = 'large'): Tile[] {
   if (!Number.isInteger(count) || count < 2 || count > 6) throw new Error('地图人数必须为 2～6 人');
   const random = seededRandom(seed);
@@ -74,8 +81,14 @@ export function generateMap(count: number, seed: string, economy: EconomySetting
     }
   }
   const groups = shuffle(regions, random);
-  const pools = new Map(groups.map(group => [group.id, shuffle(group.names, random)]));
-  const offsets = new Map<string, number>();
+  const pools = new Map<string, string[]>();
+  const reservedNames = new Set(board.filter(tile => tile.type !== 'property').map(tile => tile.name));
+  const availableNames = new Map<string, typeof groups[number]>();
+  for (const group of groups) {
+    const pool = shuffle(group.names, random); pools.set(group.id, pool);
+    for (const name of pool) if (!reservedNames.has(name) && !availableNames.has(name)) availableNames.set(name, group);
+  }
+  if (availableNames.size < board.filter(tile => tile.type === 'property').length) throw new Error('地图不重复地名不足，请补充地区地名配置');
   for (let side = 0; side < 4; side++) {
     const group = groups[side % groups.length];
     board.filter(tile => tile.district === side).forEach(tile => { tile.regionId = group.id; tile.regionName = group.name; });
@@ -84,8 +97,9 @@ export function generateMap(count: number, seed: string, economy: EconomySetting
     const prices = shuffle(properties.map((_, i) => priceTiers[i % priceTiers.length]), random);
     const names = pools.get(group.id)!;
     properties.forEach((tile, i) => {
-      const offset = offsets.get(group.id) ?? 0; offsets.set(group.id, offset + 1);
-      Object.assign(tile, { name: names[offset % names.length] + (offset < names.length ? '' : `·${Math.floor(offset / names.length) + 1}号地段`), price: prices[i] });
+      const name = names.find(value => availableNames.has(value)) ?? availableNames.keys().next().value!;
+      const source = availableNames.get(name)!; availableNames.delete(name);
+      Object.assign(tile, { name, regionId: source.id, regionName: source.name, price: prices[i] });
     });
   }
   return board;

@@ -41,6 +41,10 @@ public class Room {
     public String hostId;
     /** 本局标识。 */
     public String gameId;
+    /** 新局活动轮换快照，旧局为空。 */
+    public ActivityRotation activityRotation;
+    /** 当前独立多人活动，内部秘密状态不得直接公开。 */
+    public CornerActivity activity;
     /** 本局固定棋盘。 */
     public List<Tile> board = new ArrayList<>();
     /** 行动顺序。 */

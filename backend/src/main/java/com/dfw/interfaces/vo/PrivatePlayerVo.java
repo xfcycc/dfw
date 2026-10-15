@@ -9,6 +9,13 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PrivatePlayerVo {
+    /** 本人活动选择，仅本人可见，未提交为空。 */
+    public Integer activitySelection;
+    /** 私人选择对应的活动身份。 */
+    public String activityId;
+    /** 私人选择对应的输入轮次。 */
+    public Integer activityRound;
+
     /** 固定存档码，观战投影没有此字段。 */
     public String archiveCode;
     /** 仅房主可见的待批准角色申请。 */

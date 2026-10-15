@@ -9,7 +9,7 @@ import static com.dfw.domain.GameError.require;
 @Getter
 @Setter
 public class MapRegions {
-    /** 可被分配到整片街区的地区组。 */
+    /** 可被优先分配到街区的地区组。 */
     public List<Region> regions;
     /** 输入无，确认地区标识唯一且地名池非空。 */
     public void validate() {
@@ -19,7 +19,7 @@ public class MapRegions {
             require(region.names != null && !region.names.isEmpty() && region.names.stream().allMatch(n -> n != null && !n.isBlank()) && new HashSet<>(region.names).size() == region.names.size(), "地区地名不能为空或重复");
         }
     }
-    /** 一组地区展示名和地点；地点不足时由生成器添加地段编号。 */
+    /** 一组地区展示名和地点；本组未使用地点不足时由生成器从其他地区补齐。 */
     @Getter
     @Setter
     public static class Region {

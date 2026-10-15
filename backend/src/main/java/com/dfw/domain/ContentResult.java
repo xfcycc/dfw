@@ -22,7 +22,7 @@ public class ContentResult {
     public String skinId;
     /** 卡面名称。 */
     public String name;
-    /** 皮肤稀有度。 */
+    /** 抽取时冻结的实际影响等级：R、SR、SSR 或 UR。 */
     public String rarity;
     /** 素材卡牌类型：主动、防御、持续或即时；具体发动时机另行显示。 */
     public String cardType;

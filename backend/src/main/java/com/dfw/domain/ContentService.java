@@ -119,7 +119,7 @@ public final class ContentService {
         room.pending=pending("choice",owner,null,0,null); room.pending.id=choice.id;
         room.runtime.effectsWaiting=true; return choice;
     }
-    /** 输入当前私人选择及玩家答复，校验身份和全部参数后一次确认，恢复父效果位置。 */
+    /** 输入当前私人选择及玩家答复，校验后一次确认并恢复父位置；UR 风险道具仅在确认下注时消费。 */
     public void decide(Room room,Player owner,Action action) {
         ContentChoice choice=room.runtime.choice;
         require(choice!=null && choice.playerId.equals(owner.id) && choice.id.equals(action.decisionId),"此选择已失效，请同步最新局面");
@@ -149,13 +149,16 @@ public final class ContentService {
             }
             case "gamble" -> {
                 if (Boolean.TRUE.equals(action.accept)) {
-                    long wager=choice.content.parameters.get("wager"); require(owner.cash>=wager,"赌博仅允许使用已有现金"); owner.cash-=wager;
+                    long wager=choice.content.parameters.get("wager"); require(owner.cash>=wager,"赌博仅允许使用已有现金");
+                    if (choice.cardId != null) consume(room,owner,find(owner,choice.cardId),true,action);
+                    owner.cash-=wager;
                     choice.sample=random.nextInt(100); choice.content.sample=choice.sample;
+                    if (choice.cardId != null) room.runtime.playedCard.sample=choice.sample;
                     if(room.runtime.lastContent!=null && room.runtime.lastContent.id.equals(choice.content.id)) room.runtime.lastContent.sample=choice.sample;
                     boolean won=choice.sample<choice.content.parameters.get("probability");
                     if(won) owner.cash=Math.addExact(owner.cash,choice.content.parameters.get("prize"));
                     log(room,owner.name+" 下注 ¥"+wager+(won?"，中奖获得 ¥"+choice.content.parameters.get("prize"):"，本次未中奖"));
-                } else log(room,owner.name+" 放弃本次赌博");
+                } else if (choice.cardId == null) log(room,owner.name+" 放弃本次赌博");
             }
             case "release" -> {
                 if(Boolean.TRUE.equals(action.accept)) {
@@ -167,12 +170,15 @@ public final class ContentService {
         }
         room.pending=choice.returnPending; room.phase=choice.returnPhase; room.runtime.choice=null;
     }
-    /** 输入真实主动卡，先验证完整目标；免费升级延迟消费，无牌抢夺保留卡和次数。 */
+    /** 输入真实主动卡并验证目标；免费升级和风险道具确认后消费，无牌抢夺保留卡和次数。 */
     public void use(Room room,Player owner,Action action) {
         Card card=find(owner,action.cardId); require(card.skinId!=null,"请使用兼容道具路径");
         require(room.phase.equals("pre_roll") && room.pending==null && !room.activeCardUsed && !Set.of("immunity","halfPayment","release").contains(card.kind),"每回合掷骰前最多主动使用一张道具");
         Tile target=tile(room,action.tileId); Player opponent=player(room,action.playerId);
         switch(card.kind) {
+            case "gamble" -> {
+                ContentChoice choice=open(room,owner,"gamble"); choice.cardId=card.id; choice.content=card;
+            }
             case "fixed","move","remote" -> {
                 long steps=card.kind.equals("remote") ? (action.point==null?0:action.point) : card.parameters.get("steps");
                 require(!card.kind.equals("remote") || steps>=1 && steps<=6,"请选择 1～6 点"); consume(room,owner,card,true,action);

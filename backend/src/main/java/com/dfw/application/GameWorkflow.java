@@ -43,10 +43,10 @@ public class GameWorkflow {
             }
         }
     }
-    /** 输入候选房间、规则、玩家及原协议命令，在外层事务内推进一次通用任务。 */
+    /** 输入候选房间、规则、玩家及命令，在外层事务内执行；聊天和改名不完成行动任务。 */
     public void apply(Room room, GameEngine engine, String actorId, Action action) {
-        // 聊天只追加公开记录，不完成等待中的行动任务；外层房间事务仍负责保存与广播。
-        if (action.type.equals("chat")) { requireTransaction(); engine.apply(room, actorId, action); return; }
+        // 聊天和改名不完成等待中的行动任务；外层房间事务仍负责保存与广播。
+        if (action.type.equals("chat") || action.type.equals("setName")) { requireTransaction(); engine.apply(room, actorId, action); return; }
         requireTransaction(); refresh(room, engine);
         if (room.runtime != null && room.status.equals("playing") && !LIFECYCLE.contains(action.type)) {
             complete(room, engine, actorId, action); return;

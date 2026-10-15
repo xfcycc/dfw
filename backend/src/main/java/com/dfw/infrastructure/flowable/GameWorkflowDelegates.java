@@ -17,6 +17,7 @@ public final class GameWorkflowDelegates {
     /** 输入房间，返回包含回合、操作阶段和报价身份的选择上下文。 */
     public static String decisionKey(Room room) {
         if (!room.status.equals("playing")) return room.status;
+        if (room.activity != null && room.pending == null) return "activity:" + room.activity.id + ":" + room.activity.round + ":" + room.activity.stage;
         PendingDecision pending = room.pending;
         String choice = pending == null ? "" : pending.type + ":" + pending.playerId + ":" + pending.tileId + ":" + pending.amount + ":" + pending.creditorId;
         if (pending != null && pending.type.equals("choice")) choice += ":" + pending.id;

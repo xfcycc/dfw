@@ -9,9 +9,10 @@ public class TurnService {
     private final RandomSource random;
     private final EffectResolver effects;
     private final ContentService content;
+    private final ActivityService activities;
     /** 输入经济规则与独立随机源，构造回合服务。 */
-    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content) {
-        this.economy = economy; this.random = random; this.effects = effects; this.content = content;
+    public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content, ActivityService activities) {
+        this.economy = economy; this.random = random; this.effects = effects; this.content = content; this.activities = activities;
         effects.register("DRAW_CARDS", this::drawCards);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", this::moveEffect);
@@ -20,7 +21,7 @@ public class TurnService {
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
         effects.register("DECLARE_BANKRUPTCY", (room, effect) -> {
             Player payer = player(room, effect.playerId); economy.declareBankruptcy(room, payer);
-            if (room.runtime.globalEvent == null) { if (current(room) == payer) advance(room); else checkWinner(room); }
+            if (room.runtime.globalEvent == null && room.activity == null) { if (current(room) == payer) advance(room); else checkWinner(room); }
         });
     }
     /** 输入玩家和数量，增加私人道具，不记录种类与数量。 */
@@ -39,7 +40,7 @@ public class TurnService {
     public boolean checkWinner(Room room) {
         List<Player> alive = room.players.stream().filter(p -> !p.bankrupt).toList();
         if (alive.size() > 1) return false;
-        room.status = "finished"; room.winnerId = alive.isEmpty() ? null : alive.getFirst().id;
+        room.activity = null; room.status = "finished"; room.winnerId = alive.isEmpty() ? null : alive.getFirst().id;
         room.pending = null; room.trade = null; room.pausedReason = null; if(room.runtime!=null) room.runtime.choice=null;
         log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！");
         HistoryTrace.event(room, "game_finished", room.winnerId, "本局结束", null); return true;
@@ -49,6 +50,7 @@ public class TurnService {
         HistoryTrace.event(room, "turn_end", current(room) == null ? null : current(room).id, "行动结束", null);
         StatusService.endTurn(room, current(room));
         if (checkWinner(room)) return;
+        activities.endTurn(room);
         do { room.turnIndex = (room.turnIndex + 1) % room.turnOrder.size(); } while (current(room).bankrupt);
         room.turnNumber++; room.phase = "pre_roll"; room.pending = null; room.dice = null;
         // 房主移出原行动者会终止其父结算；其他玩家的超限牌仍完整保留，由新回合重新开放整理。
@@ -75,14 +77,14 @@ public class TurnService {
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.getLast().beforeEvent = effect.content;
         if (effect.message != null) log(room, effect.message);
     }
-    /** 输入房间、玩家和有符号步数，逐格处理路障及起点收入并保存本次结算路径，无返回值。 */
+    /** 输入房间、玩家和有符号步数，逐格处理路障、起点收入及按本局人数发放的补给，保存结算路径，无返回值。 */
     public void move(Room room, Player player, int steps) {
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = room.movementSequence.isEmpty() && room.phase.equals("pre_roll") ? room.dice : null;
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); player.cash += income; giveCards(room, player, 1); log(room, player.name + " 经过起点，获得 ¥" + income + " 和一张道具补给"); }
+            if (steps > 0 && player.position == 0) { long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); int cards = Rules.startCards(room.players.size()); player.cash += income; giveCards(room, player, cards); log(room, player.name + " 经过起点，获得 ¥" + income + " 和 " + cards + " 张道具补给"); }
             Tile tile = room.board.get(player.position);
             if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
             if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
@@ -91,13 +93,14 @@ public class TurnService {
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
         content.overflow(room);
     }
-    /** 输入落点玩家，处理地产或特殊格，每回合最多抽一次事件。 */
+    /** 输入房间和落点玩家，结算当前地块；事件移动再次落入事件格时继续抽取，无返回值。 */
     public void settle(Room room, Player player) {
         Tile tile = room.board.get(player.position); room.phase = "manage"; room.pending = null;
         switch (tile.type) {
+            case "activity" -> activities.open(room, player, tile);
             case "jail" -> { content.restrict(room, player, 1, true); }
             case "chance", "fortune" -> {
-                if (room.eventDrawn) return; room.eventDrawn = true;
+                room.eventDrawn = true;
                 content.event(room, player, tile.type);
             }
             case "property" -> {
@@ -117,8 +120,10 @@ public class TurnService {
         Player host = player(room, room.hostId);
         if (host == null || !host.online) room.players.stream().filter(p -> p.online).findFirst().ifPresent(p -> room.hostId = p.id);
         if (!room.status.equals("playing")) { room.pausedReason = null; return; }
-        Player actor = room.pending != null ? player(room, room.pending.playerId) : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
+        Player actor = room.pending != null ? player(room, room.pending.playerId) : room.activity != null ? null : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
         Player offline = room.players.stream().filter(p -> !p.online && ((actor != null && p.id.equals(actor.id)) || (room.trade != null && p.id.equals(room.trade.toId)))).findFirst().orElse(null);
+        Player required = activities.offlineRequired(room);
+        if (required != null) offline = required;
         room.pausedReason = offline == null ? null : "等待 " + offline.name + " 重新连接";
         if (room.trade != null) {
             room.trade.remainingMs = 0; room.trade.runningSince = null;

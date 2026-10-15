@@ -11,6 +11,8 @@ public class Tile {
     public int id;
     /** 地块类型。 */
     public String type = "property";
+    /** 活动角当前玩法，普通地块为空。 */
+    public String activityKind;
     /** 地标名称。 */
     public String name = "";
     /** 街区编号。 */

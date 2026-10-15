@@ -6,9 +6,9 @@ import static com.dfw.domain.GameError.require;
 /** 与原 TypeScript 种子算法一致的随机地图生成。 */
 public class MapService {
     private final MapRegions regions;
-    /** 输入独立地区配置，地图内每个街区从同一地区池命名。 */
+    /** 输入独立地区配置，地图内每个街区优先从分配地区取未使用的地名。 */
     public MapService(MapRegions regions) { this.regions = regions; }
-    /** 输入人数、房间大小、种子及本局金额，返回各边五档地价尽量均衡的矩形闭环地图。 */
+    /** 输入人数、房间大小、种子及本局金额，返回各边五档地价尽量均衡、全图地产名称唯一的矩形闭环地图。 */
     public List<Tile> generate(int count, String size, String seed, EconomyRules economy) {
         require(count >= Rules.MIN_PLAYERS && count <= Rules.MAX_PLAYERS, "地图人数必须为 2～6 人");
         SeededRandom random = new SeededRandom(seed);
@@ -16,13 +16,20 @@ public class MapService {
         int[] corners = {0, horizontal, horizontal + vertical, horizontal * 2 + vertical};
         List<Tile> board = new ArrayList<>();
         for (int i = 0; i < length; i++) { Tile tile = new Tile(); tile.id = i; tile.district = i < corners[1] ? 0 : i < corners[2] ? 1 : i < corners[3] ? 2 : 3; board.add(tile); }
-        String[] types = {"start", "chance", "fortune", "jail"}, names = {"起点", "机会", "财富", "监狱"};
+        String[] types = {"start", "activity", "activity", "jail"}, names = {"起点", "活动角", "活动角", "监狱"};
         for (int i = 0; i < 4; i++) { board.get(corners[i]).type = types[i]; board.get(corners[i]).name = names[i]; }
         int specialCount = count <= 3 ? 2 : 3;
-        for (int i = 1; i < specialCount; i++) { addSpecial(board, "chance", "机会", random); addSpecial(board, "fortune", "财富", random); }
+        for (int i = 0; i < specialCount; i++) { addSpecial(board, "chance", "机会", random); addSpecial(board, "fortune", "财富", random); }
         List<MapRegions.Region> groups = new ArrayList<>(regions.regions); shuffle(groups, random);
-        Map<String, Integer> nameOffsets = new HashMap<>(); Map<String, List<String>> namePools = new HashMap<>();
-        for (var group : groups) { List<String> pool = new ArrayList<>(group.names); shuffle(pool, random); namePools.put(group.id, pool); }
+        Map<String, List<String>> namePools = new HashMap<>();
+        Set<String> reservedNames = new HashSet<>();
+        for (Tile tile : board) if (!tile.type.equals("property")) reservedNames.add(tile.name);
+        Map<String, MapRegions.Region> availableNames = new LinkedHashMap<>();
+        for (var group : groups) {
+            List<String> pool = new ArrayList<>(group.names); shuffle(pool, random); namePools.put(group.id, pool);
+            for (String name : pool) if (!reservedNames.contains(name)) availableNames.putIfAbsent(name, group);
+        }
+        require(availableNames.size() >= board.stream().filter(tile -> tile.type.equals("property")).count(), "地图不重复地名不足，请补充地区地名配置");
         for (int side = 0; side < 4; side++) {
             var group = groups.get(side % groups.size()); List<Tile> properties = new ArrayList<>();
             for (Tile tile : board) if (tile.district == side) { tile.regionId = group.id; tile.regionName = group.name; if (tile.type.equals("property")) properties.add(tile); }
@@ -33,9 +40,9 @@ public class MapService {
             for (int i = 0; i < properties.size(); i++) prices.add(priceTiers.get(i % priceTiers.size()));
             shuffle(prices, random); List<String> pool = namePools.get(group.id);
             for (int i = 0; i < properties.size(); i++) {
-                int offset = nameOffsets.getOrDefault(group.id, 0); nameOffsets.put(group.id, offset + 1);
-                properties.get(i).name = pool.get(offset % pool.size()) + (offset < pool.size() ? "" : "·" + (offset / pool.size() + 1) + "号地段");
-                properties.get(i).price = prices.get(i);
+                String name = pool.stream().filter(availableNames::containsKey).findFirst().orElseGet(() -> availableNames.keySet().iterator().next());
+                var source = availableNames.remove(name);
+                Tile tile = properties.get(i); tile.name = name; tile.regionId = source.id; tile.regionName = source.name; tile.price = prices.get(i);
             }
         }
         return board;

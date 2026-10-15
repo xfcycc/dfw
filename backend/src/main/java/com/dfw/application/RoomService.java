@@ -121,11 +121,12 @@ public class RoomService {
                 return receipt.result();
             }
             Room original = room(session.code());
-            if (expectedVersion != original.version) { publisher.sync(connectionId, original); throw new GameError("局面已更新，请查看后重新操作", "STALE_VERSION"); }
+            boolean activityInput = ActivityService.isAction(action.type) && expectedVersion <= original.version;
+            if (expectedVersion != original.version && !activityInput) { publisher.sync(connectionId, original); throw new GameError("局面已更新，请查看后重新操作", "STALE_VERSION"); }
             Room value = json.copy(original, Room.class);
             StoredSession[] assigned = new StoredSession[1];
             CommandResult result = transaction.execute(status -> {
-                if (!action.type.equals("chat")) HistoryTrace.event(value, action.type, session.playerId(), actionText(action.type), action);
+                if (!action.type.equals("chat") && !action.type.equals("setName")) HistoryTrace.event(value, action.type, session.playerId(), actionText(action.type), action);
                 if (action.type.equals("assignSeat")) assigned[0] = assign(value, session.playerId(), action.claimId);
                 else if (action.type.equals("continueRecovery")) {
                     if (!value.recoveryPending || !Objects.equals(value.hostId, session.playerId())) throw new GameError("只有房主可继续恢复对局");
@@ -166,6 +167,15 @@ public class RoomService {
                     if (changed) commit(candidate, null); return null;
                 }); } catch (RuntimeException error) { LOG.error("离线状态恢复保存失败，房间 {}", value.code, error); }
             }
+        }
+    }
+    /** 每250毫秒推进已到期的活动展示；先检查内存，仅到期房间进入独立事务。 */
+    @Scheduled(fixedDelay = 250)
+    public void refreshActivities() {
+        if (closing) return;
+        for (Room value : rooms.values()) if (value.status.equals("playing") && !value.recoveryPending && engine.activities.due(value)) {
+            try { serial(value.code, () -> { Room latest = room(value.code); if (engine.activities.due(latest)) commit(json.copy(latest, Room.class), null); return null; }); }
+            catch (RuntimeException error) { LOG.error("活动展示推进失败，房间 {}", value.code, error); }
         }
     }
     /** 停止新推进，按房间保存离线状态及待处理报价后关闭连接。 */
@@ -273,6 +283,7 @@ public class RoomService {
     /** 输入操作类型，返回不包含手牌与私人报价参数的公开说明。 */
     private String actionText(String type) {
         return switch (type) {
+            case "activityInput" -> "参与角落活动";
             case "ready" -> "更新准备状态"; case "setMapSize" -> "选择地图大小"; case "start" -> "开始对局"; case "newGame" -> "返回大厅，再开一局";
             case "roll" -> "掷骰行动"; case "endTurn" -> "结束行动"; case "card" -> "使用道具"; case "buy" -> "购买地产"; case "upgrade" -> "升级建筑"; case "pass" -> "放弃当前购买或升级";
             case "tradeOffer" -> "发起私人报价"; case "tradeRespond" -> "回应私人报价"; case "tradeCancel" -> "取消私人报价"; case "assignSeat" -> "批准角色申请"; case "continueRecovery" -> "继续恢复对局";

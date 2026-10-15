@@ -27,7 +27,7 @@ public class EconomyRules {
     }
     /** 输入无，校验倍率、基础租金百分比及金额配置，非法配置抛出业务错误。 */
     public void validate() {
-        require(Double.isFinite(moneyMultiplier) && moneyMultiplier > 0 && 6000 * moneyMultiplier <= 9007199254740991L, "经济倍率不可用");
+        require(Double.isFinite(moneyMultiplier) && moneyMultiplier > 0 && Rules.initialCashBase(Rules.MAX_PLAYERS) * moneyMultiplier <= 9007199254740991L, "经济倍率不可用");
         require(rentBasePercent >= 0 && rentBasePercent <= 100, "基础租金百分比须在 0～100 之间");
         require(fixedAmounts != null && fixedAmounts.entrySet().stream().allMatch(e -> e.getKey() != null && !e.getKey().isBlank() && e.getValue() != null && e.getValue() >= 0 && e.getValue() <= 9007199254740991L), "固定金额配置不可用");
         for (int i = 0; i < Rules.PRICES.length; i++) require(money("landPrice." + i, Rules.PRICES[i]) > 0, "地价必须大于零");

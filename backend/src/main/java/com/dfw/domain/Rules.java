@@ -9,6 +9,12 @@ public final class Rules {
     public static final int[] PRICES = {400, 600, 800, 1200, 1600}, RENT_MULTIPLIERS = {1, 3, 6, 10};
     public static final String[] COLORS = {"#ef6c68", "#4287e5", "#e6ad32", "#47ae88", "#a078d3", "#e982b2"};
     public static final String[] ITEMS = {"remote", "barrier", "stay", "immunity", "demolish", "swap"};
+    /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
+    public static long initialCashBase(int count) { return count >= 5 ? 15000 : count >= 3 ? 10000 : INITIAL_CASH; }
+    /** 输入开局人数，返回每人初始手牌数量。 */
+    public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
+    /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过起点的道具补给数量。 */
+    public static int startCards(int count) { return count >= 3 ? 2 : 1; }
     /** 输入人数及房间大小，返回闭环地图总格数；缺失设置沿用大地图。 */
     public static int mapLength(int count, String size) {
         int factor = switch (size == null ? "large" : size) { case "small" -> 4; case "medium" -> 6; case "large" -> 8; default -> throw new GameError("地图大小不可用"); };

@@ -21,14 +21,17 @@ public class GameEngine {
     private final TradeService trades;
     private final RandomSource random;
     private final ContentService content;
+    /** 活动角轮换及多人交互。 */
+    public final ActivityService activities;
     /** 输入随机源、规则集、经济和地区配置，组装无网络或数据库依赖的游戏规则。 */
     public GameEngine(RandomSource random, RuleSet rules, EconomyRules economyRules, MapRegions regions) {
         this.random = random; this.rules = rules; this.economyRules = economyRules; maps = new MapService(regions); economy = new EconomyService(random);
         effects = new EffectResolver(random);
         content = new ContentService(rules.getContent(), effects, random);
-        turns = new TurnService(economy, random, effects, content);
+        activities = new ActivityService(random, economy);
+        turns = new TurnService(economy, random, effects, content, activities);
         new EventService(effects, economy, turns, random, rules);
-        ruleRuntime = new RuleRuntime(rules, effects, turns, random, content);
+        ruleRuntime = new RuleRuntime(rules, effects, turns, random, content, activities);
         items = new ItemService(effects, ruleRuntime, content); trades = new TradeService(economy, random, effects);
     }
     /** 输入房间，返回是否需由通用流程继续配置阶段。 */
@@ -50,24 +53,24 @@ public class GameEngine {
     }
     /** 输入房间号和首位玩家，返回大厅房间。 */
     public Room createRoom(String code, Player player) { Room room = new Room(); room.code = code; room.hostId = player.id; room.players.add(player); room.economy = economyRules.snapshot(); return room; }
-    /** 输入房间，初始化地图、行动顺序、现金及私人手牌。 */
+    /** 输入房间，按开局人数初始化现金及私人手牌，并生成地图和行动顺序。 */
     private void start(Room room) {
         require(room.players.size() >= Rules.MIN_PLAYERS && room.players.size() <= Rules.MAX_PLAYERS, "需要 2～6 名玩家");
         require(room.players.stream().allMatch(p -> p.ready && p.online), "请等待所有玩家连接并准备");
-        room.status = "playing"; refreshRuleDescriptions(room); room.gameId = random.id(); room.seed = random.id(); room.economy = economyRules.snapshot(); freezeMoney(room); room.board = maps.generate(room.players.size(), room.mapSize, room.seed, room.economy);
+        room.status = "playing"; refreshRuleDescriptions(room); room.gameId = random.id(); room.seed = random.id(); room.economy = economyRules.snapshot(); freezeMoney(room); room.board = maps.generate(room.players.size(), room.mapSize, room.seed, room.economy); activities.initialize(room);
         room.turnOrder = new ArrayList<>(room.players.stream().map(p -> p.id).toList());
         for (int i = room.turnOrder.size() - 1; i > 0; i--) Collections.swap(room.turnOrder, i, random.nextInt(i + 1));
         room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
-        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.INITIAL_CASH); turns.giveCards(room, player, Rules.INITIAL_CARDS); }
+        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); turns.giveCards(room, player, Rules.initialCards(room.players.size())); }
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
         HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
         HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
     }
-    /** 输入新局房间，将基础项目及现有规则的现金常量换算为固定金额，重启不重算旧基准。 */
+    /** 输入新局房间，按开局人数换算初始现金并冻结各项金额，重启不重算旧基准。 */
     private void freezeMoney(Room room) {
         content.freeze(room);
-        room.economy.fixedAmounts.put("initialCash", room.economy.money("initialCash", Rules.INITIAL_CASH));
+        room.economy.fixedAmounts.put("initialCash", room.economy.money("initialCash", Rules.initialCashBase(room.players.size())));
         room.economy.fixedAmounts.put("startIncome", room.economy.money("startIncome", Rules.START_INCOME));
         for (int i = 0; i < Rules.PRICES.length; i++) room.economy.fixedAmounts.put("landPrice." + i, room.economy.money("landPrice." + i, Rules.PRICES[i]));
         for (var event : rules.getChanceEvents()) freezeSteps(room, event.id(), event.steps());
@@ -83,7 +86,7 @@ public class GameEngine {
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
     private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; }
-    /** 输入房间和身份操作，在候选房间中应用规则，由应用层持久化。 */
+    /** 输入房间和身份操作，在候选房间中应用规则；改名仅更新本人昵称，由应用层保存并广播。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
         switch (action.type) {
@@ -92,6 +95,16 @@ public class GameEngine {
                 log(room, "chat", player.id, player.name + "：" + action.message.strip()); return;
             }
             case "ready" -> { require(room.status.equals("lobby"), "游戏已开始"); player.ready = action.value; return; }
+            case "setName" -> {
+                require(action.name != null, "请求参数不正确");
+                String name = action.name.strip();
+                if (name.isEmpty()) name = "玩家 " + (Arrays.asList(Rules.COLORS).indexOf(player.color) + 1);
+                if (!name.equals(player.name)) {
+                    String previousName = player.name; player.name = name;
+                    log(room, "log", player.id, previousName + " 将昵称改为 " + name);
+                }
+                return;
+            }
             case "setAvatar" -> { require(action.avatarId != null && PlayerAvatars.IDS.contains(action.avatarId), "请选择内置角色形象"); player.avatarId = action.avatarId; return; }
             case "setMapSize" -> {
                 require(room.hostId.equals(player.id) && room.status.equals("lobby"), "只有房主可在开局前修改地图大小");
@@ -102,7 +115,7 @@ public class GameEngine {
             case "newGame" -> {
                 require(room.hostId.equals(player.id) && room.status.equals("finished"), "只有房主可在结束后再开一局");
                 room.status = "lobby"; room.economy = economyRules.snapshot(); room.chanceEventDescriptions.clear(); room.board.clear(); room.gameId = null; room.turnOrder.clear(); room.turnIndex = 0; room.turnNumber = 0;
-                room.phase = "pre_roll"; room.pending = null; room.trade = null; room.winnerId = null; room.dice = null; room.motion = null; room.logs.clear();
+                room.phase = "pre_roll"; room.pending = null; room.trade = null; room.winnerId = null; room.dice = null; room.motion = null; room.logs.clear(); room.activityRotation = null; room.activity = null;
                 for (Player p : room.players) { reset(p); p.ready = false; } return;
             }
             case "removePlayer" -> {
@@ -112,13 +125,16 @@ public class GameEngine {
                 else {
                     require(!target.bankrupt, "该玩家已退出竞争"); boolean isCurrent = current(room) == target;
                     PendingDecision debt = paymentPending(room) && room.pending.playerId.equals(target.id) ? room.pending : null;
+                    activities.removing(room, target.id);
                     economy.eliminate(room, target, debt == null ? null : debt.creditorId, debt == null ? 0 : debt.amount);
-                    if (room.runtime.globalEvent == null) { if (isCurrent) turns.advance(room); else turns.checkWinner(room); }
+                    if (room.runtime.globalEvent == null && room.activity == null) { if (isCurrent) turns.advance(room); else turns.checkWinner(room); }
                 } return;
             }
             default -> { }
         }
         require(room.status.equals("playing") && !player.bankrupt, "你当前不能进行游戏操作"); require(room.pausedReason == null, room.pausedReason == null ? "游戏已暂停" : room.pausedReason);
+        if (ActivityService.isAction(action.type)) { activities.input(room, player, action); return; }
+        require(room.activity == null || room.activity.stage.equals("payment"), "请先完成当前角落活动");
         if (room.trade != null) { trades.respond(room, player, action); return; }
         require(room.pending == null ? current(room) == player : room.pending.playerId.equals(player.id), "还没有轮到你");
         if (room.runtime.choice != null) {

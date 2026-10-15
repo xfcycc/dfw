@@ -8,7 +8,7 @@ export interface EconomySettings {
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash';
+export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -18,7 +18,7 @@ export interface ContentResult {
   parameterId?: string;
   skinId?: string;
   name?: string;
-  rarity?: 'R' | 'SR' | 'SSR';
+  rarity?: 'R' | 'SR' | 'SSR' | 'UR';
   cardType?: '主动' | '防御' | '持续' | '即时' | null;
   quote?: string;
   description?: string;
@@ -68,10 +68,12 @@ export interface PublicPlayer {
 /** 棋盘格公开状态。 */
 export interface Tile {
   id: number;
-  type: 'start' | 'chance' | 'fortune' | 'jail' | 'property';
+  type: 'start' | 'chance' | 'fortune' | 'jail' | 'property' | 'activity';
+  /** 活动角当前玩法，旧地图缺省。 */
+  activityKind?: ActivityKind | null;
   name: string;
   district: number;
-  /** 同一街区的地区元数据，目前仅参与命名。 */
+  /** 地块名称所属地区的元数据，目前仅参与命名。 */
   regionId?: string | null;
   regionName?: string | null;
   price: number;
@@ -129,6 +131,10 @@ export interface MotionSegment {
 export interface Motion extends MotionSegment { segments?: MotionSegment[] }
 /** 公开房间快照，可安全发送给任意观战者。 */
 export interface PublicRoomState {
+  /** 新局活动轮换，旧局不改图。 */
+  activityRotation?: ActivityRotation | null;
+  /** 已移除秘密字段的活动状态。 */
+  activity?: CornerActivity | null;
   roomId?: string;
   recoveryPending?: boolean;
   recovered?: boolean;
@@ -168,6 +174,9 @@ export interface PublicRoomState {
 }
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState {
+  activityId?: string | null;
+  activityRound?: number | null;
+  activitySelection?: number | null;
   archiveCode?: string;
   seatClaims?: SeatClaim[];
   playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
@@ -194,10 +203,12 @@ export interface CommandResult { ok: boolean; version?: number; error?: string; 
 export interface GameCommand { id: string; expectedVersion: number; action: GameAction }
 /** 所有业务操作的显式输入类型。 */
 export type GameAction =
+  | { type: 'activityInput'; activityId: string; activityRound: number; selection?: number; point?: number; playerId?: string }
   | { type: 'chat'; message: string }
   | { type: 'assignSeat'; claimId: string }
   | { type: 'continueRecovery' }
   | { type: 'ready'; value: boolean }
+  | { type: 'setName'; name: string }
   | { type: 'setAvatar'; avatarId: string }
   | { type: 'setMapSize'; mapSize: MapSize }
   | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
@@ -212,3 +223,20 @@ export type GameAction =
 
 /** 原生 WebSocket 信封；命令回执通过 requestId 关联，状态通过角色分别发送。 */
 export interface RealtimeEnvelope { type: string; requestId?: string; payload?: unknown }
+
+/** 单一活动轮换池的玩法标识。 */
+export type ActivityKind = 'casino' | 'horse' | 'roulette' | 'packet' | 'rps';
+/** 服务端冻结金额及回合轮换信息。 */
+export interface ActivityRotation {
+  period: number; completedTurns: number; revision: number; tileIds: number[];
+  current: ActivityKind[]; next: ActivityKind[]; money: Record<string, number>;
+}
+/** 多人活动安全公开状态，不包含子弹位置、秘密手势或未揭晓赛果。 */
+export interface CornerActivity {
+  id: string; kind: ActivityKind; tileId: number; triggerId: string; stage: string; round: number;
+  participants: string[]; contenders: string[]; submitted: string[];
+  bets: Record<string, number>; revealed: Record<string, number>; wagers: Record<string, number>;
+  payouts: Record<string, number>; packets: Record<string, number>; bonuses: Record<string, number>;
+  currentPlayerId: string | null; opponentId: string | null; lastShooterId: string | null;
+  shots: number; result: number | null; startedAt: number; endsAt: number | null; settled: boolean; summary: string;
+}

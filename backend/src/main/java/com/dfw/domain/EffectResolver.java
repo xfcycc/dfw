@@ -23,13 +23,13 @@ public class EffectResolver {
     /** 输入房间和效果，添加到当前效果之后、其兄弟效果之前，保证联动先完成。 */
     public void submit(Room room, GameEffect effect) {
         Integer index = insertionIndex.get();
-        if (index == null && room.runtime.effectsWaiting && effect.resumesDecision) room.runtime.effects.addFirst(effect);
+        if (index == null && (room.runtime.effectsWaiting || room.activity != null) && effect.resumesDecision) room.runtime.effects.addFirst(effect);
         else if (index == null) room.runtime.effects.add(effect);
         else { room.runtime.effects.add(index, effect); insertionIndex.set(index + 1); }
     }
     /** 输入有序组合，把解决当前选择的整组效果插入暂停组合之前，保持组内顺序。 */
     public void submitAll(Room room, List<GameEffect> effects) {
-        if (insertionIndex.get() == null && room.runtime.effectsWaiting && !effects.isEmpty() && effects.getFirst().resumesDecision) room.runtime.effects.addAll(0, effects);
+        if (insertionIndex.get() == null && (room.runtime.effectsWaiting || room.activity != null) && !effects.isEmpty() && effects.getFirst().resumesDecision) room.runtime.effects.addAll(0, effects);
         else effects.forEach(effect -> submit(room, effect));
     }
     /** 输入房间，结算队列至选择或为空；解决选择的效果先于暂停的后续组合。 */
@@ -41,7 +41,9 @@ public class EffectResolver {
             if (room.runtime.effectsWaiting && room.pending != null && !room.runtime.effects.getFirst().resumesDecision) return;
             if (++count > 256) throw new GameError("效果联动超过本次结算上限");
             int turn = room.turnNumber;
-            GameEffect effect = room.runtime.effects.getFirst(); insertionIndex.set(1);
+            GameEffect effect = room.runtime.effects.getFirst();
+            if (room.activity != null && !effect.resumesDecision) return;
+            insertionIndex.set(1);
             try { handler(effect).accept(room, effect); }
             finally { insertionIndex.remove(); }
             HistoryTrace.event(room, "effect", effect.playerId, "游戏效果已结算", effect);

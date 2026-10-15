@@ -256,15 +256,15 @@
   "content": {
     "mechanisms": [
       {
-        "id": "fixed",
-        "weight": 14,
+        "id": "move",
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "steps-6",
+                "rarity": "SR",
                 "values": {
                   "steps": 6
                 },
@@ -272,7 +272,7 @@
                   {
                     "id": "card_delta_africa_star",
                     "name": "非洲之星",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "兄弟们我先撤了",
                     "description": "非洲之星刚塞进背包，你就开始催队友找撤离点。刚才说要陪兄弟打到底的，好像是另外一个人。",
                     "cardType": "主动"
@@ -280,7 +280,7 @@
                   {
                     "id": "card_journey_kite_cloud",
                     "name": "筋斗云",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "俺老孙去去就来！",
                     "description": "筋斗云的神话行程太远，本局先兑现六格；翻完跟头记得看落点。",
                     "cardType": "主动"
@@ -289,6 +289,7 @@
               },
               {
                 "id": "steps-5",
+                "rarity": "SR",
                 "values": {
                   "steps": 5
                 },
@@ -296,7 +297,7 @@
                   {
                     "id": "card_dora_anywhere_door",
                     "name": "任意门",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "哆啦A梦！救我！",
                     "description": "哆啦A梦刚把门掏出来，你已经挤到最前面。门能开多远看卡面，反正这条路你是一秒也不想走了。",
                     "cardType": "主动"
@@ -313,6 +314,7 @@
               },
               {
                 "id": "steps-0",
+                "rarity": "SR",
                 "values": {
                   "steps": 0
                 },
@@ -320,7 +322,7 @@
                   {
                     "id": "card_jojo_time_stop",
                     "name": "时间停止",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "砸瓦鲁多！都给我停下！",
                     "description": "你摆好姿势喊停了时间，决定在原地再结算一次。房东慢悠悠拿出账单：你演完了吗？",
                     "cardType": "主动"
@@ -328,7 +330,7 @@
                   {
                     "id": "card_moon_box",
                     "name": "月光宝盒",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "般若波罗蜜！诶，怎么还在这儿？",
                     "description": "月光宝盒不倒转账本，只替代掷骰留在原地，再结算一次当前格。",
                     "cardType": "主动"
@@ -337,6 +339,7 @@
               },
               {
                 "id": "steps-4",
+                "rarity": "SR",
                 "values": {
                   "steps": 4
                 },
@@ -344,15 +347,32 @@
                   {
                     "id": "card_dragonball_fly_air",
                     "name": "舞空术",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "我会飞了，你们自己走吧！",
                     "description": "舞空术把你送到前方四格，飞得再高也得回来结算落点，空中不卖免租险。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_delta_extract",
+                    "name": "撤离",
+                    "rarity": "SR",
+                    "quote": "别架了，撤离点都开了！",
+                    "description": "撤离路线锁定前方四格，替代本次掷骰并结算，安全感到站后再评估。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_minecraft_ender_pearl",
+                    "name": "末影珍珠",
+                    "rarity": "SR",
+                    "quote": "珍珠扔了，落点别坑我啊！",
+                    "description": "珍珠一扔前进四格，替代本次掷骰，落点照常结算，瞬移不附送豁免。",
                     "cardType": "主动"
                   }
                 ]
               },
               {
                 "id": "steps-3",
+                "rarity": "SR",
                 "values": {
                   "steps": 3
                 },
@@ -360,7 +380,7 @@
                   {
                     "id": "card_naruto_shunshin",
                     "name": "瞬身术",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "你看清我刚才怎么走的吗？",
                     "description": "瞬身一闪，三格到位；别人还在等骰子，你已开始看落点价目表。",
                     "cardType": "主动"
@@ -368,15 +388,24 @@
                   {
                     "id": "card_dora_takecopter",
                     "name": "竹蜻蜓",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "我就说这小风扇有用吧。",
                     "description": "竹蜻蜓包送三格，落地照常结算；飞行服务很贴心，房东服务另收费。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_meme_shortcut",
+                    "name": "抄近路",
+                    "rarity": "SR",
+                    "quote": "你们慢慢绕，我知道一条近路。",
+                    "description": "小路让你固定前进三格，替代本次掷骰；近路只是近，不保证落点便宜。",
                     "cardType": "主动"
                   }
                 ]
               },
               {
                 "id": "steps-2",
+                "rarity": "SR",
                 "values": {
                   "steps": 2
                 },
@@ -388,6 +417,72 @@
                     "quote": "闪现交了！这波别卖我！",
                     "description": "闪现只交两格，短是短了点，胜在这次位移由你拍板，落点照常结算。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_stardew_mine_cart",
+                    "name": "矿车轨道",
+                    "rarity": "SR",
+                    "quote": "上车，扶好，这车没刹车。",
+                    "description": "矿车把你送往前方两格，替代本次掷骰，到站照常结算，票价没有包房租。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_sekiro_grappling_hook",
+                    "name": "钩绳",
+                    "rarity": "SR",
+                    "quote": "钩到了！我先上去了！",
+                    "description": "钩绳一荡固定前进两格，替代本次掷骰，落点按规则结算。",
+                    "cardType": "主动"
+                  }
+                ]
+              },
+              {
+                "id": "steps--3",
+                "rarity": "SR",
+                "values": {
+                  "steps": -3
+                },
+                "skins": [
+                  {
+                    "id": "card_tactic_retreat_best",
+                    "name": "走为上计",
+                    "rarity": "SR",
+                    "quote": "打不过还不能跑吗？",
+                    "description": "走为上计替代本次掷骰，后退三格再结算落点，退路也可能站着房东。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_meme_run_away",
+                    "name": "开润",
+                    "rarity": "SR",
+                    "quote": "打扰了，我这就润。",
+                    "description": "开润替代本次掷骰，后退三格结算；跑得果断，也要看清后面是谁的地。",
+                    "cardType": "主动"
+                  }
+                ]
+              },
+              {
+                "id": "steps--2",
+                "rarity": "SR",
+                "values": {
+                  "steps": -2
+                },
+                "skins": [
+                  {
+                    "id": "card_meme_reverse_parking",
+                    "name": "倒车入库",
+                    "rarity": "SR",
+                    "quote": "倒，倒，倒！好，停！",
+                    "description": "挂倒挡退两格，替代本次掷骰并结算落点，教练不管落在哪块收费地。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_starcraft_warp",
+                    "name": "折跃",
+                    "rarity": "SR",
+                    "quote": "星灵不跟你硬碰，先撤。",
+                    "description": "星灵回撤两格，替代本次掷骰并结算落点，战略撤退不是账单免疫。",
+                    "cardType": "主动"
                   }
                 ]
               }
@@ -397,20 +492,20 @@
       },
       {
         "id": "barrier",
-        "weight": 8,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_journey_immobilize",
                     "name": "定身法",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "定！你给我站那儿！",
                     "description": "前方六格内任意无路障地块放一个路障，首个受它影响的经过者停下，连施法者也别太大意。",
                     "cardType": "主动"
@@ -418,7 +513,7 @@
                   {
                     "id": "card_lol_teemo_mushroom",
                     "name": "提莫蘑菇",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "团战可以输，这菇你得踩。",
                     "description": "蘑菇埋进合法目标地块，首个受影响的路人停下；提莫不负责认熟人。",
                     "cardType": "主动"
@@ -426,7 +521,7 @@
                   {
                     "id": "card_sgyy_trip_rope",
                     "name": "绊马索",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "马骑挺快？来，刹一下。",
                     "description": "绊马索摆在合法前路，首个受影响的经过者停下，马术优秀也没加分。",
                     "cardType": "主动"
@@ -434,7 +529,7 @@
                   {
                     "id": "card_yugioh_trap_card",
                     "name": "陷阱卡",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "你中我的陷阱卡了！",
                     "description": "盖上一张路障陷阱，首个受影响的经过者停下；翻开的只有牌，不是休息回合。",
                     "cardType": "主动"
@@ -442,7 +537,7 @@
                   {
                     "id": "card_minecraft_dig_hole",
                     "name": "挖坑",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "不好意思，这坑就是给你挖的。",
                     "description": "方块世界施工简单，合法前路挖个坑，首个受影响的经过者现场刹车。",
                     "cardType": "主动"
@@ -458,7 +553,7 @@
                   {
                     "id": "card_meme_concrete_block",
                     "name": "水泥墩",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "前方施工，你先歇会儿。",
                     "description": "水泥墩往合法路口一放，首个受影响的经过者停下；便宜施工也有戏剧效果。",
                     "cardType": "主动"
@@ -466,7 +561,7 @@
                   {
                     "id": "card_monsterhunter_web",
                     "name": "蛛丝",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "别挣扎了，越挣越黏。",
                     "description": "蛛丝铺到合法目标地块，首个受影响的经过者停下，猎人也要小心回头路。",
                     "cardType": "主动"
@@ -474,7 +569,7 @@
                   {
                     "id": "card_starcraft_spider_mine",
                     "name": "蜘蛛雷",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "啊？刚才谁说这里没雷？",
                     "description": "蜘蛛雷在合法前路待命，首个受影响的经过者停下，不负责识别队友情谊。",
                     "cardType": "主动"
@@ -487,14 +582,14 @@
       },
       {
         "id": "demolish",
-        "weight": 8,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
@@ -508,7 +603,7 @@
                   {
                     "id": "card_journey_golden_staff",
                     "name": "金箍棒",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "吃俺老孙一棒！",
                     "description": "金箍棒伸到对手楼上，敲掉一级建筑，无退款；尺寸能变，后果很固定。",
                     "cardType": "主动"
@@ -516,7 +611,7 @@
                   {
                     "id": "card_meme_demolition_crew",
                     "name": "拆迁队",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "师傅，就这栋，别拆错了。",
                     "description": "拆迁队接单上门，对手合法建筑降一级，无退款，这回真没补偿款剧情。",
                     "cardType": "主动"
@@ -524,7 +619,7 @@
                   {
                     "id": "card_starwars_lightsaber",
                     "name": "光剑",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "原力在这儿，屋顶你留不住。",
                     "description": "光剑切掉对手一级建筑，无退款；原力很优雅，装修师傅不这么想。",
                     "cardType": "主动"
@@ -532,7 +627,7 @@
                   {
                     "id": "card_minecraft_tnt",
                     "name": "TNT爆破",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "嘶——轰！你家矮了。",
                     "description": "TNT数量看着吓人，游戏里按规矩只拆对手一级建筑，无退款，别脑补整图清空。",
                     "cardType": "主动"
@@ -548,7 +643,7 @@
                   {
                     "id": "card_wukong_staff_press",
                     "name": "棍势压制",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "蓄满了，这一棒你接好！",
                     "description": "棍势蓄满直奔对手楼顶，拆掉一级建筑，无退款，这棒专打投资回报率。",
                     "cardType": "主动"
@@ -556,7 +651,7 @@
                   {
                     "id": "card_meme_husky_demolish",
                     "name": "拆家二哈",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "拆家还得看我家二哈。",
                     "description": "二哈进了对手家，出来时楼少一级，无退款；拆家天赋终于有了战略价值。",
                     "cardType": "主动"
@@ -564,7 +659,7 @@
                   {
                     "id": "card_civ6_catapult",
                     "name": "投石机",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "先别谈外交，我石头装好了。",
                     "description": "投石机对准对手合法建筑，一轮砸掉一级，无退款，文明交流暂时比较直接。",
                     "cardType": "主动"
@@ -577,20 +672,20 @@
       },
       {
         "id": "swap",
-        "weight": 8,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_tactic_golden_cicada",
                     "name": "金蝉脱壳",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "我先溜了，你替我站会儿。",
                     "description": "金蝉脱壳只换你和合法对手的位置，不顺便换产权；对方暂时不会替你结算落点。",
                     "cardType": "主动"
@@ -598,7 +693,7 @@
                   {
                     "id": "card_tactic_lure_tiger",
                     "name": "调虎离山",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "兄弟，你的位置看着不错。",
                     "description": "调虎离山调的是站位，和合法对手交换后照常掷骰，资产表还是各管各的。",
                     "cardType": "主动"
@@ -614,7 +709,7 @@
                   {
                     "id": "card_hp_apparition",
                     "name": "幻影移形",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "啪！你怎么站我这儿来了？",
                     "description": "幻影移形啪地换掉两人的站位，交换后继续掷骰，钱包没有自动跟着交换。",
                     "cardType": "主动"
@@ -622,7 +717,7 @@
                   {
                     "id": "card_dora_time_machine",
                     "name": "时光机",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "大雄，车借我，我换个位置。",
                     "description": "时光机只提供和合法对手换位的服务，不回档、不改债务，接下来正常掷骰。",
                     "cardType": "主动"
@@ -630,7 +725,7 @@
                   {
                     "id": "card_tactic_swap_pillar",
                     "name": "偷梁换柱",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "别看了，站错位的是你。",
                     "description": "偷梁换柱换的是两个棋子的位置，产权不动，之后照常掷骰。",
                     "cardType": "主动"
@@ -667,20 +762,20 @@
       },
       {
         "id": "immunity",
-        "weight": 12,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_sgyy_empty_city",
                     "name": "空城计",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "城门开着，你进来试试。",
                     "description": "租金待付时摆空城计，本次租金全免，房东收零；摆完不送你免费地产。",
                     "cardType": "防御"
@@ -696,7 +791,7 @@
                   {
                     "id": "card_hp_invisibility_cloak",
                     "name": "隐形衣",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "你看不见我，看不见我。",
                     "description": "隐形衣只让这笔租金找不到你，使用后房东收零，其他费用不在隐身套餐内。",
                     "cardType": "防御"
@@ -704,7 +799,7 @@
                   {
                     "id": "card_meme_hold_on",
                     "name": "苟住",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "稳住，能苟！",
                     "description": "关键时刻苟住，本次租金全免，房东收零；怂得有技术，余额有底气。",
                     "cardType": "防御"
@@ -720,7 +815,7 @@
                   {
                     "id": "card_zelda_shield_parry",
                     "name": "盾反",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "反了！这都给我反到了！",
                     "description": "一记盾反挡掉本次租金，房东收零，没有反弹扣房东钱的附加剧情。",
                     "cardType": "防御"
@@ -728,7 +823,7 @@
                   {
                     "id": "card_lol_zhonya",
                     "name": "中亚秒表",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "金身！金身！别收我租！",
                     "description": "金身亮起，本次租金归零，房东收零；人还在这儿，收费机会已经过去。",
                     "cardType": "防御"
@@ -736,7 +831,7 @@
                   {
                     "id": "card_meme_slack_off",
                     "name": "摸鱼",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "我不在，我今天不在。",
                     "description": "装忙装出了策略价值，本次租金免除，房东收零，其他账单还是得认真看。",
                     "cardType": "防御"
@@ -744,7 +839,7 @@
                   {
                     "id": "card_bullet_flying_play_dumb",
                     "name": "装糊涂",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "你说啥？风太大，我听不见。",
                     "description": "装糊涂装得恰到好处，租金待付时使用，这笔租金全免，房东收零。",
                     "cardType": "防御"
@@ -756,139 +851,15 @@
         ]
       },
       {
-        "id": "move",
-        "weight": 10,
-        "groups": [
-          {
-            "id": "default",
-            "weight": 100,
-            "parameters": [
-              {
-                "id": "steps--3",
-                "values": {
-                  "steps": -3
-                },
-                "skins": [
-                  {
-                    "id": "card_tactic_retreat_best",
-                    "name": "走为上计",
-                    "rarity": "R",
-                    "quote": "打不过还不能跑吗？",
-                    "description": "走为上计替代本次掷骰，后退三格再结算落点，退路也可能站着房东。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_meme_run_away",
-                    "name": "开润",
-                    "rarity": "R",
-                    "quote": "打扰了，我这就润。",
-                    "description": "开润替代本次掷骰，后退三格结算；跑得果断，也要看清后面是谁的地。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
-                "id": "steps--2",
-                "values": {
-                  "steps": -2
-                },
-                "skins": [
-                  {
-                    "id": "card_meme_reverse_parking",
-                    "name": "倒车入库",
-                    "rarity": "R",
-                    "quote": "倒，倒，倒！好，停！",
-                    "description": "挂倒挡退两格，替代本次掷骰并结算落点，教练不管落在哪块收费地。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_starcraft_warp",
-                    "name": "折跃",
-                    "rarity": "SR",
-                    "quote": "星灵不跟你硬碰，先撤。",
-                    "description": "星灵回撤两格，替代本次掷骰并结算落点，战略撤退不是账单免疫。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
-                "id": "steps-3",
-                "values": {
-                  "steps": 3
-                },
-                "skins": [
-                  {
-                    "id": "card_meme_shortcut",
-                    "name": "抄近路",
-                    "rarity": "R",
-                    "quote": "你们慢慢绕，我知道一条近路。",
-                    "description": "小路让你固定前进三格，替代本次掷骰；近路只是近，不保证落点便宜。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
-                "id": "steps-4",
-                "values": {
-                  "steps": 4
-                },
-                "skins": [
-                  {
-                    "id": "card_delta_extract",
-                    "name": "撤离",
-                    "rarity": "SR",
-                    "quote": "别架了，撤离点都开了！",
-                    "description": "撤离路线锁定前方四格，替代本次掷骰并结算，安全感到站后再评估。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_minecraft_ender_pearl",
-                    "name": "末影珍珠",
-                    "rarity": "SR",
-                    "quote": "珍珠扔了，落点别坑我啊！",
-                    "description": "珍珠一扔前进四格，替代本次掷骰，落点照常结算，瞬移不附送豁免。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
-                "id": "steps-2",
-                "values": {
-                  "steps": 2
-                },
-                "skins": [
-                  {
-                    "id": "card_stardew_mine_cart",
-                    "name": "矿车轨道",
-                    "rarity": "R",
-                    "quote": "上车，扶好，这车没刹车。",
-                    "description": "矿车把你送往前方两格，替代本次掷骰，到站照常结算，票价没有包房租。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_sekiro_grappling_hook",
-                    "name": "钩绳",
-                    "rarity": "R",
-                    "quote": "钩到了！我先上去了！",
-                    "description": "钩绳一荡固定前进两格，替代本次掷骰，落点按规则结算。",
-                    "cardType": "主动"
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
         "id": "bonus",
-        "weight": 6,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "steps-3",
+                "rarity": "SR",
                 "values": {
                   "steps": 3
                 },
@@ -896,7 +867,7 @@
                   {
                     "id": "card_cyberpunk_sandevistan",
                     "name": "斯安威斯坦",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "你们看着像慢动作啊。",
                     "description": "义体超频给本回合掷骰加三格，还要正常掷骰，跑得更远未必更便宜。",
                     "cardType": "持续"
@@ -904,7 +875,7 @@
                   {
                     "id": "card_meme_cheat",
                     "name": "开挂",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "不是挂，我这是天赋。",
                     "description": "这挂写在规则里，本回合正常掷骰后多走三格，运气不好也能加速踩坑。",
                     "cardType": "持续"
@@ -912,7 +883,7 @@
                   {
                     "id": "card_aot_odm_gear",
                     "name": "立体机动",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "瓦斯够了，先飞一段！",
                     "description": "立体机动装置让本回合掷骰追加三格，拉得越远，越要看好落点。",
                     "cardType": "持续"
@@ -921,6 +892,7 @@
               },
               {
                 "id": "steps-2",
+                "rarity": "SR",
                 "values": {
                   "steps": 2
                 },
@@ -928,7 +900,7 @@
                   {
                     "id": "card_mario_speed_mushroom",
                     "name": "加速蘑菇",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "蘑菇吃了，谁都别拦我！",
                     "description": "蘑菇给本回合掷骰追加两格，骰子照掷，车速提升，落点照常。",
                     "cardType": "持续"
@@ -953,6 +925,7 @@
               },
               {
                 "id": "steps-1",
+                "rarity": "SR",
                 "values": {
                   "steps": 1
                 },
@@ -960,7 +933,7 @@
                   {
                     "id": "card_lol_swiftness_boots",
                     "name": "疾行之靴",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "鞋买好了，我先跑了。",
                     "description": "新鞋给本回合掷骰加一格，别小看这一格，它能改变房东是谁。",
                     "cardType": "持续"
@@ -968,7 +941,7 @@
                   {
                     "id": "card_wow_sprint",
                     "name": "疾跑",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "疾跑开了，别想追上我。",
                     "description": "疾跑追加本回合掷骰一格，骰子照常掷，移动速度终于有了纸面加成。",
                     "cardType": "持续"
@@ -989,20 +962,20 @@
       },
       {
         "id": "freeUpgrade",
-        "weight": 10,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_civ6_builder",
                     "name": "建造者",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "别睡了，起来盖房！",
                     "description": "建造者听你选合规地产，免费升一级；没有合法目标就保留卡，别白耗次数。",
                     "cardType": "主动"
@@ -1010,7 +983,7 @@
                   {
                     "id": "card_minecraft_enchant_table",
                     "name": "附魔台",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "效率拉满，房子也附个魔。",
                     "description": "给合规地产加一层附魔，免费升一级；没目标时卡留着，桌面工程师别强开。",
                     "cardType": "主动"
@@ -1018,7 +991,7 @@
                   {
                     "id": "card_stardew_greenhouse",
                     "name": "温室",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "温室有了，今晚不怕冻。",
                     "description": "温室装到合规地产，免费升一级，没目标就保留卡，这次种的是资产。",
                     "cardType": "主动"
@@ -1026,7 +999,7 @@
                   {
                     "id": "card_onepiece_shipwright",
                     "name": "船匠",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "船都能造，楼还修不了？",
                     "description": "船匠连夜施工，合规地产免费升一级，没目标则留牌，木工今天不收加班费。",
                     "cardType": "主动"
@@ -1034,7 +1007,7 @@
                   {
                     "id": "card_wow_goblin_engineer",
                     "name": "地精工程师",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "螺丝拧好了，应该不会炸吧。",
                     "description": "地精工程师折腾一阵，合规地产免费升一级；没目标留牌，先别拧螺丝。",
                     "cardType": "主动"
@@ -1042,7 +1015,7 @@
                   {
                     "id": "card_naruto_shadow_clone",
                     "name": "影分身之术",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "分身别摸鱼，砖还没搬完呢！",
                     "description": "影分身分出施工队，合规地产免费升一级，没目标就保留卡，不用让本体加班。",
                     "cardType": "主动"
@@ -1050,7 +1023,7 @@
                   {
                     "id": "card_zhenhuan_promotion",
                     "name": "升位分",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "本宫的房子，也该升一升了。",
                     "description": "恩旨下到合规地产，免费升一级；没合法目标就保留卡，房子晋升也讲资格。",
                     "cardType": "主动"
@@ -1058,7 +1031,7 @@
                   {
                     "id": "card_eldenring_blessing",
                     "name": "赐福",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "赐福有了，房子先亮一下。",
                     "description": "赐福照在合规地产上，免费升一级；没目标保留卡，今晚先不追加受苦项目。",
                     "cardType": "主动"
@@ -1066,7 +1039,7 @@
                   {
                     "id": "card_jojo_gold_experience",
                     "name": "黄金体验",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "黄金体验！这楼给我长！",
                     "description": "黄金体验给合规建筑添一级，费用全免；没目标留牌，不现场强行催生。",
                     "cardType": "主动"
@@ -1079,20 +1052,20 @@
       },
       {
         "id": "halfPayment",
-        "weight": 8,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_bullet_flying_stand_money",
                     "name": "站着把钱挣了",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "我就想站着把钱省了！",
                     "description": "一笔强制费用减半，剩下正常结算，玩家收款也只有减后金额；腰杆直，钱包轻一点。",
                     "cardType": "防御"
@@ -1100,7 +1073,7 @@
                   {
                     "id": "card_meme_groupon",
                     "name": "团购",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "等一下，我有团购券！",
                     "description": "半价券用于这一笔强制费用，减半后再结算，买地购物不参加本活动。",
                     "cardType": "防御"
@@ -1108,7 +1081,7 @@
                   {
                     "id": "card_meme_pdd_cut",
                     "name": "拼多多砍一刀",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "兄弟，帮我再砍最后一刀！",
                     "description": "拉来的助力够砍半笔强制费用，剩余照付，不用再等下一位好友。",
                     "cardType": "防御"
@@ -1132,7 +1105,7 @@
                   {
                     "id": "card_avengers_time_stone",
                     "name": "时间宝石",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "博士，这账单往回拨一点。",
                     "description": "时间宝石让本笔强制费用减半，不回滚旧账，剩下照常结算。",
                     "cardType": "防御"
@@ -1140,7 +1113,7 @@
                   {
                     "id": "card_conan_reasoning",
                     "name": "柯南式推理",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "等等，你这账单有问题！",
                     "description": "推理找出本笔强制费用的折扣空间，减半后结算，别顺手推成全免。",
                     "cardType": "防御"
@@ -1148,7 +1121,7 @@
                   {
                     "id": "card_mi_disguise",
                     "name": "易容术",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "熟客熟客，给个五折吧。",
                     "description": "易容套餐只有这一笔强制费用五折，剩下照付，会员身份用完即止。",
                     "cardType": "防御"
@@ -1169,20 +1142,20 @@
       },
       {
         "id": "release",
-        "weight": 5,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_gintama_break_jail",
                     "name": "踹牢门",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "阿银我，今天不蹲这儿！",
                     "description": "在监禁或休息被施加时响应，银时踹开状态限制，不倒带已经结束的回合。",
                     "cardType": "即时"
@@ -1198,7 +1171,7 @@
                   {
                     "id": "card_pokemon_escape_rope",
                     "name": "逃脱绳",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "绳子抓好了，我先走了。",
                     "description": "逃脱绳在状态施加时派上用场，解除对应监禁或休息，省掉这次被困的麻烦。",
                     "cardType": "即时"
@@ -1214,7 +1187,7 @@
                   {
                     "id": "card_hp_portkey",
                     "name": "门钥匙",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "抓紧了，门钥匙要发动了！",
                     "description": "门钥匙在状态施加时带你脱身，解除对应监禁或休息，不额外送新回合。",
                     "cardType": "即时"
@@ -1222,7 +1195,7 @@
                   {
                     "id": "card_journey_72_changes",
                     "name": "七十二变",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "变！看你还能关住谁。",
                     "description": "七十二变在被施加监禁或休息时响应，解除对应状态，账本不跟着变魔术。",
                     "cardType": "即时"
@@ -1246,7 +1219,7 @@
                   {
                     "id": "card_avengers_hulk_smash",
                     "name": "浩克砸笼",
-                    "rarity": "R",
+                    "rarity": "SR",
                     "quote": "浩克，砸！",
                     "description": "浩克在状态施加时砸开束缚，解除对应监禁或休息，其他地产不在砸笼套餐内。",
                     "cardType": "即时"
@@ -1259,20 +1232,20 @@
       },
       {
         "id": "steal",
-        "weight": 3,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_watermargin_shiqian",
                     "name": "时迁偷甲",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "别捂了，时迁都看见了。",
                     "description": "时迁盯上有手牌的合法对手，顺走一张就收工；没人有牌，就留着这张等下次。",
                     "cardType": "主动"
@@ -1280,7 +1253,7 @@
                   {
                     "id": "card_bullet_flying_rob",
                     "name": "抢黄四郎",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "黄老爷，好东西分我一张。",
                     "description": "选有牌的合法对手，拿一张手牌，不劫现金；没目标就保留卡。",
                     "cardType": "主动"
@@ -1288,7 +1261,7 @@
                   {
                     "id": "card_idiom_empty_hand",
                     "name": "妙手空空",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "诶，你怎么少一张牌啊？",
                     "description": "妙手空空从合法有牌对手处拿走一张牌，空手玩家免打扰，没目标时卡保留。",
                     "cardType": "主动"
@@ -1296,7 +1269,7 @@
                   {
                     "id": "card_idiom_steal_sky",
                     "name": "偷天换日",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "看天上！诶，牌归我了。",
                     "description": "换日之前先换一张手牌，从合法有牌对手处获取，没目标就留牌。",
                     "cardType": "主动"
@@ -1304,7 +1277,7 @@
                   {
                     "id": "card_genshin_paimon_steal",
                     "name": "派蒙偷吃",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "派蒙！那个不能吃！",
                     "description": "派蒙替你从合法有牌对手处随机拿一张，吃的是对手储备，不是你的手牌。",
                     "cardType": "主动"
@@ -1312,7 +1285,7 @@
                   {
                     "id": "card_trisolaris_droplet",
                     "name": "水滴截走",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "虫子，这张我截了。",
                     "description": "水滴截走合法有牌对手的一张手牌，高科技先服务桌面小事，没目标时卡留着。",
                     "cardType": "主动"
@@ -1320,7 +1293,7 @@
                   {
                     "id": "card_onepiece_nami_steal",
                     "name": "娜美偷钱包",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "娜美你别摸了！我真没几张！",
                     "description": "娜美只拿合法有牌对手的一张手牌，钱包只是剧情道具，现金不动。",
                     "cardType": "主动"
@@ -1328,7 +1301,7 @@
                   {
                     "id": "card_stardew_trash_dive",
                     "name": "翻垃圾桶",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "别看我，我只是翻个桶。",
                     "description": "你从合法有牌对手处翻到一张手牌，没人有牌就留卡，不把垃圾桶变银行。",
                     "cardType": "主动"
@@ -1336,7 +1309,7 @@
                   {
                     "id": "card_gintama_yorozuya",
                     "name": "万事屋顺手",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "万事屋的事，你就说成没成吧。",
                     "description": "万事屋接了拿牌委托，拿合法对手一张手牌，没目标就保留卡，现金另算。",
                     "cardType": "主动"
@@ -1349,14 +1322,14 @@
       },
       {
         "id": "cash",
-        "weight": 4,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "amount-800",
+                "rarity": "SR",
                 "values": {
                   "amount": 800
                 },
@@ -1364,7 +1337,7 @@
                   {
                     "id": "card_meme_eu_king",
                     "name": "欧皇附体",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "欧了！这号终于欧了！",
                     "description": "欧气折成即时现金，这张仍算本回合主动卡，发财也要排好使用顺序。",
                     "cardType": "主动"
@@ -1397,6 +1370,7 @@
               },
               {
                 "id": "amount-300",
+                "rarity": "R",
                 "values": {
                   "amount": 300
                 },
@@ -1429,6 +1403,7 @@
               },
               {
                 "id": "amount-500",
+                "rarity": "R",
                 "values": {
                   "amount": 500
                 },
@@ -1444,7 +1419,7 @@
                   {
                     "id": "card_civ6_golden_age",
                     "name": "黄金时代",
-                    "rarity": "SR",
+                    "rarity": "R",
                     "quote": "黄金时代，这把有了！",
                     "description": "黄金时代给你即时现金，国库好看一点，本回合主动次数也用掉一次。",
                     "cardType": "主动"
@@ -1465,22 +1440,60 @@
       },
       {
         "id": "remote",
-        "weight": 4,
+        "enabled": true,
         "groups": [
           {
             "id": "default",
-            "weight": 100,
             "parameters": [
               {
                 "id": "default",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_remote_dice_control",
                     "name": "遥控骰子",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "别掷了，这回点数我说了算！",
                     "description": "你拿出一只遥控器，朝骰子按了两下。桌友还在等它滚停，你已经选好这次要走几格；落点账单照常结算。",
+                    "cardType": "主动"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gamble",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "prize-6000_probability-50_wager-2000",
+                "rarity": "UR",
+                "values": {
+                  "wager": 2000,
+                  "probability": 50,
+                  "prize": 6000
+                },
+                "skins": [
+                  {
+                    "id": "card_fate_coin",
+                    "name": "命运硬币",
+                    "rarity": "UR",
+                    "quote": "这把要么起飞，要么吃土！",
+                    "description": "确认后才消费卡牌与主动次数；先扣下注，中奖发放奖金，不另返本金。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_all_in_ticket",
+                    "name": "孤注一掷",
+                    "rarity": "UR",
+                    "quote": "赢了买地，输了认账！",
+                    "description": "这张风险牌和命运硬币效果相同，取消选择保留卡牌，只能用已有现金下注。",
                     "cardType": "主动"
                   }
                 ]

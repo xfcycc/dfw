@@ -9,6 +9,11 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 新局活动角轮换，旧局为空。 */
+    public ActivityRotationVo activityRotation;
+    /** 当前多人活动的安全公开投影。 */
+    public ActivityVo activity;
+
     /** 永久房间标识。 */
     public String roomId;
     /** 是否等待分配角色后继续。 */

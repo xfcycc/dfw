@@ -4,18 +4,15 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-WEIGHTS = {
-    'chance': dict(income=12, fee=12, forward=8, back=8, skip=5, cards=8, all_income=5, all_fee=5, rich_fee=7, bottom_income=7, gamble=8, self_destroy=3, disaster=3, free_upgrade=5, trap_immunity=2, next_waiver=1, rent_double=1),
-    'fortune': dict(income=60, cards_one=10, cards_two=3, directed=2, free_upgrade=10, all_income=5, next_waiver=5, bottom_bonus=5, extra_action=0),
-    'card': dict(fixed=14, remote=4, barrier=8, demolish=8, swap=8, immunity=12, move=10, bonus=6, freeUpgrade=10, halfPayment=8, release=5, steal=3, cash=4),
-}
+RARITIES = {'R', 'SR', 'SSR', 'UR'}
 
 
 def classify(pool, effect):
     """输入素材池和效果原文，返回已确认机制及完整参数，不改动原效果数值。"""
     nums = [int(n) for n in re.findall(r'\d+', effect)]
     if pool == 'card':
-        if effect.startswith('替代掷骰'): return ('remote', {}) if '自选' in effect else ('fixed', dict(steps=nums[0]))
+        if effect.startswith('赌博'): return 'gamble', dict(wager=nums[0], probability=nums[1], prize=nums[2])
+        if effect.startswith('替代掷骰'): return ('remote', {}) if '自选' in effect else ('move', dict(steps=nums[0]))
         if effect.startswith('主动位移'): return 'move', dict(steps=nums[0] * (-1 if '后退' in effect else 1))
         if effect.startswith('掷骰加码'): return 'bonus', dict(steps=nums[0])
         if effect.startswith('即时现金'): return 'cash', dict(amount=nums[0])
@@ -45,38 +42,52 @@ def classify(pool, effect):
     raise ValueError(f'未识别的效果：{pool} {effect}')
 
 
+def impact_rarity(pool, kind, values):
+    """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
+    if pool == 'card':
+        if kind == 'gamble': return 'UR'
+        if kind in {'remote', 'immunity', 'demolish', 'swap', 'freeUpgrade', 'steal'}: return 'SSR'
+        if kind == 'cash': return 'R' if values['amount'] <= 600 else 'SR'
+        if kind in {'fixed', 'move', 'bonus'}: return 'SR'
+        return 'SR'
+    if kind in {'income', 'fee'}:
+        amount = values['amount']
+        return 'R' if amount <= 600 else 'SR' if amount <= 1300 else 'SSR' if amount < 3000 else 'UR'
+    if kind in {'cards', 'cards_one', 'cards_two'}: return 'R' if values['count'] == 1 else 'SR'
+    if kind in {'forward', 'back', 'skip', 'gamble'}: return 'SR'
+    return 'SSR'
+
+
 def generate(pool, filename):
-    """输入素材文件，去重参数、分配机制及金额档权重，输出对应 JSON 内容段。"""
+    """输入素材文件，按完整效果去重并分配影响等级，输出无机制及金额档权重的运行配置。"""
     mechanisms = {}
     for line in (ROOT / 'docs/content' / filename).read_text().splitlines():
         cells = [c.strip() for c in line.split('|')[1:-1]]
-        if len(cells) != 9 or not cells[0].isdigit() or cells[3] not in ['R', 'SR', 'SSR']: continue
+        if len(cells) != 9 or not cells[0].isdigit() or cells[3] not in RARITIES: continue
         skin_id, name, rarity = cells[1:4]
         quote, description, effect = cells[5:8] if pool == 'card' else cells[4:7]
         kind, values = classify(pool, effect)
-        mechanism = mechanisms.setdefault(kind, {'id': kind, 'weight': WEIGHTS[pool][kind], 'groups': []})
-        tier, weight = 'default', 100
-        if kind in ['income', 'fee']:
-            amount = values['amount']
-            if pool == 'fortune': tier, weight = ('small',70) if amount <= 600 else ('medium',25) if amount <= 1300 else ('large',5)
-            elif pool == 'chance': tier, weight = ('small',80) if amount <= 500 else ('medium',19) if amount <= (1200 if kind == 'income' else 800) else ('large',1)
-        group = next((g for g in mechanism['groups'] if g['id'] == tier), None)
-        if group is None:
-            group = {'id': tier, 'weight': weight, 'parameters': []}; mechanism['groups'].append(group)
+        rarity = impact_rarity(pool, kind, values)
+        if cells[3] != rarity: raise ValueError(f'{pool} {skin_id} 标注 {cells[3]}，实际影响应为 {rarity}')
+        mechanism = mechanisms.setdefault(kind, {'id': kind, 'enabled': kind != 'extra_action', 'groups': [{'id': 'default', 'parameters': []}]})
+        group = mechanism['groups'][0]
         parameter_id = '_'.join(f'{k}-{v}' for k,v in sorted(values.items())) or 'default'
         parameter = next((p for p in group['parameters'] if p['id'] == parameter_id), None)
         if parameter is None:
-            parameter = {'id': parameter_id, 'values': values, 'skins': []}; group['parameters'].append(parameter)
+            parameter = {'id': parameter_id, 'rarity': rarity, 'values': values, 'skins': []}; group['parameters'].append(parameter)
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':121,'fortune':110,'card':111}[pool]
+    expected = {'chance':123,'fortune':112,'card':113}[pool]
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')
     data = json.loads(file.read_text()); data['content'] = {'mechanisms': list(mechanisms.values())}
     file.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')
-    print(f'{pool}: {count} 条素材；启用 {sum(len(p["skins"]) for m in mechanisms.values() if m["weight"] > 0 for g in m["groups"] for p in g["parameters"])} 条')
+    enabled = [p for m in mechanisms.values() if m['enabled'] for g in m['groups'] for p in g['parameters']]
+    counts = {rarity: sum(p['rarity'] == rarity for p in enabled) for rarity in ['R', 'SR', 'SSR', 'UR']}
+    if not all(counts.values()): raise ValueError(f'{pool} 缺少启用等级：{counts}')
+    print(f'{pool}: {count} 条素材；启用 {sum(len(p["skins"]) for p in enabled)} 条；效果组合 {counts}')
 
 
 if __name__ == '__main__':

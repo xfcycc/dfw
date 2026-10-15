@@ -12,9 +12,10 @@ public final class RuleRuntime {
     private final TurnService turns;
     private final RandomSource random;
     private final ContentService content;
+    private final ActivityService activities;
     /** 输入当前规则集、基础结算及随机源，注册替代骰子和公开消息原语。 */
-    public RuleRuntime(RuleSet catalog, EffectResolver effects, TurnService turns, RandomSource random, ContentService content) {
-        this.catalog = catalog; this.effects = effects; this.turns = turns; this.random = random; this.content = content;
+    public RuleRuntime(RuleSet catalog, EffectResolver effects, TurnService turns, RandomSource random, ContentService content, ActivityService activities) {
+        this.catalog = catalog; this.effects = effects; this.turns = turns; this.random = random; this.content = content; this.activities = activities;
         effects.register("REPLACE_ROLL", (room, effect) -> {
             require(effect.amount >= -3 && effect.amount <= 6, "规则骰子点数不可用");
             room.runtime.rollMode = "REPLACE"; room.runtime.movementSteps = (int) effect.amount; room.dice = (int) effect.amount;
@@ -65,6 +66,7 @@ public final class RuleRuntime {
     /** 输入房间，返回连接或系统变更后是否需通过通用流程继续自动阶段。 */
     public boolean needsAdvance(Room room) {
         if (!room.status.equals("playing") || room.pausedReason != null || room.trade != null) return false;
+        if (room.activity != null) return activities.due(room);
         if (content.needsOverflow(room)) return true;
         if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
@@ -73,7 +75,12 @@ public final class RuleRuntime {
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
-            content.overflow(room); effects.drain(room); turns.refresh(room);
+            if (room.activity == null) content.overflow(room);
+            effects.drain(room);
+            boolean hadActivity = room.activity != null; activities.refresh(room);
+            if (hadActivity && room.activity == null) { if (turns.checkWinner(room)) return; if (current(room).bankrupt) turns.advance(room); continue; }
+            turns.refresh(room);
+            if (room.activity != null) return;
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
             switch (stage.handler()) {

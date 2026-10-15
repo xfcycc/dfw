@@ -36,6 +36,7 @@ public final class InputValidation {
         object(value); uuid(value, "id"); number(value.get("expectedVersion"), 0, 9007199254740991L);
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
+            case "activityInput" -> { uuid(action,"activityId"); number(action.get("activityRound"),1,Integer.MAX_VALUE); if(action.has("selection")) number(action.get("selection"),0,8); if(action.has("point")) number(action.get("point"),1,6); if(action.has("playerId")) uuid(action,"playerId"); }
             case "chat" -> check(action.has("message") && action.get("message").isString() && !action.get("message").asString().isBlank() && action.get("message").asString().length() <= 300);
             case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
@@ -44,6 +45,7 @@ public final class InputValidation {
             }
             case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); }
             case "ready" -> bool(action, "value");
+            case "setName" -> check(action.has("name") && action.get("name").isString());
             case "setAvatar" -> check(action.has("avatarId") && action.get("avatarId").isString() && com.dfw.domain.PlayerAvatars.IDS.contains(action.get("avatarId").asString()));
             case "setMapSize" -> check(action.has("mapSize") && action.get("mapSize").isString() && List.of("small", "medium", "large").contains(action.get("mapSize").asString()));
             case "rentDecision" -> bool(action, "useCard");
@@ -55,11 +57,13 @@ public final class InputValidation {
             default -> check(false);
         }
         List<String> fields = switch (type) {
+            case "activityInput" -> List.of("activityId","activityRound","selection","point","playerId");
             case "chat" -> List.of("message");
             case "assignSeat" -> List.of("claimId");
             case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds");
             case "paymentDefense" -> List.of("decisionId","cardId");
             case "ready" -> List.of("value");
+            case "setName" -> List.of("name");
             case "setAvatar" -> List.of("avatarId");
             case "setMapSize" -> List.of("mapSize");
             case "rentDecision" -> List.of("useCard");
