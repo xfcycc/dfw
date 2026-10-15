@@ -1,6 +1,6 @@
 # 苏暖暖 · 童话小镇 · 逐条目插画候选
 
-本目录保留独立生成的原始素材与条目映射，已按后续授权接入前端源码。运行时副本位于 `src/web/public/images/cards/illustrations/`，映射位于 `src/web/card-illustrations.json`，由统一 `ContentCard.vue` 按 `skinId` 使用；旧手牌和未知皮肤继续使用原三张通用卡面。线上发布状态以本轮实际部署结果为准。
+本目录保留独立生成的原始素材与条目映射，已按后续授权接入前端源码。运行时使用压缩后上传的 OSS WebP 图片，映射位于 `src/web/card-illustrations.json`，由统一 `ContentCard.vue` 按 `skinId` 使用；旧手牌和未知皮肤使用同样上传至 OSS 的三张通用卡面。本地 `public` 中的重复运行副本已移出，原图继续保留在本目录。线上发布状态以本轮实际部署结果为准。
 
 图片按当前配置的每个皮肤条目单独制作：道具卡 111 张、机会事件 121 张、财富事件 110 张，共 342 张。财富池中目前权重为零的 `extra_action` 机制共 12 个条目也包含在本批素材中，并在清单和浏览页标记为“停用条目”。
 
@@ -15,6 +15,8 @@
 - `manifest.csv`：便于表格查看的同一映射。
 - `_sources/batch-XX.png`：57 张原始六宫格生成图，每组按从左到右、从上到下对应六个条目。
 - `_sources/rules/`：整理清单时所用运行配置和效果文档的副本，保留本批素材来源。
+- `_sources/fallback-cards/`：三张旧通用卡面的原始 JPG，供恢复和重新压缩使用。
+- `oss-upload.json`：345 张图片的 OSS WebP 地址、原图路径、压缩前后字节数、尺寸、SHA-256 及远端响应核对记录；WebP quality 82、method 6，不缩放尺寸，总体积减少 89.69%。
 - `_prompts/batch-XX.txt`：每组的生成提示词；第 1 组以 `batch-01-actual.txt` 为实际首次生成提示词，第 35、45、46 组另有 `batch-XX-revision.txt` 记录局部修订。
 - `_prompts/batches.json`：每组六张的条目顺序。
 

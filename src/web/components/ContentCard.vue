@@ -15,12 +15,17 @@ const frames = {
   card: { R: [31, 95, 483, 376], SR: [533, 95, 474, 376], SSR: [1020, 95, 483, 376] },
 } as const;
 const illustrations: Record<string, string> = illustrationSources;
+const fallbackSources = {
+  card: 'https://pic.caiguoyu.cn/typora/20261015104009181.webp',
+  chance: 'https://pic.caiguoyu.cn/typora/20261015104009182.webp',
+  fortune: 'https://pic.caiguoyu.cn/typora/20261015104009183.webp',
+} as const;
 /** 读取卡面的皮肤或条目标识，返回独立插画及尺寸；未知标识沿用原通用卡面。 */
 const artwork = computed(() => {
   const source = illustrations[props.content.skinId ?? ''] ?? illustrations[props.content.id];
   if (source) return { source, viewBox: '0 0 512 512', width: 512, height: 512, sourceWidth: 512, sourceHeight: 512, individual: true };
   const frame = frames[pool.value][props.content.rarity ?? 'R'];
-  return { source: `/images/cards/${pool.value}.jpg`, viewBox: frame.join(' '), width: frame[2], height: frame[3], sourceWidth: 1536, sourceHeight: 1024, individual: false };
+  return { source: fallbackSources[pool.value], viewBox: frame.join(' '), width: frame[2], height: frame[3], sourceWidth: 1536, sourceHeight: 1024, individual: false };
 });
 </script>
 <template>
