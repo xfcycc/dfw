@@ -1,5 +1,15 @@
 {
   "moneyMultiplier": 2,
   "rentBasePercent": 25,
-  "fixedAmounts": {}
+  "fixedAmounts": {
+    "content.card.cash.amount-300.amount": 1200,
+    "content.card.cash.amount-500.amount": 1600,
+    "content.card.cash.amount-800.amount": 2400,
+    "content.chance.bottom_income.amount-500.amount": 3000,
+    "content.chance.bottom_income.amount-300.amount": 3000,
+    "content.chance.bottom_income.amount-200.amount": 3000,
+    "content.chance.bottom_income.amount-800.amount": 3000,
+    "content.fortune.bottom_bonus.amount-400_bonus-600.bonus": 3000,
+    "content.fortune.bottom_bonus.amount-400_bonus-800.bonus": 3000
+  }
 }
