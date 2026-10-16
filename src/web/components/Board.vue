@@ -12,14 +12,14 @@ import { activityArt } from '../activity-art';
 import { playSound } from '../audio';
 import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
-const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean }>();
+const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
 const size = ref(700);
 const availableWidth = ref(700);
 const zoom = ref(1);
-const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId);
+const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -44,8 +44,10 @@ const turnsUntilRotation = computed(() => props.room.activityRotation ? props.ro
 /** 输入房间，提取两个活动角当前图案用于翻转中点替换。 */
 function activityKinds(room: PublicRoomState): Record<number, ActivityKind> { return Object.fromEntries(room.board.filter(t => t.activityKind).map(t => [t.id, t.activityKind! ])); }
 watch(() => props.live, live => { if (!live) { rotationBaseline = true; rotating.value = false; clearTimeout(rotationTimer); clearTimeout(artSwapTimer); } });
-watch(() => props.room, (next, previous) => {
+/** 输入房间及本地重置标记，同步时取消旧轮转，其余按轮转版本播放动画，无返回值。 */
+watch([() => props.room, () => props.presentationEpoch], ([next, epoch], [previous, previousEpoch]) => {
   const fresh = activityKinds(next);
+  if (epoch !== previousEpoch) { rotating.value = false; clearTimeout(rotationTimer); clearTimeout(artSwapTimer); displayedActivityKinds.value = fresh; rotationBaseline = !props.live; return; }
   if (rotationBaseline || !previous || !props.live || next.recoveryPending || next.gameId !== previous.gameId || document.hidden) { displayedActivityKinds.value = fresh; rotationBaseline = !props.live; return; }
   if (next.activityRotation?.revision === previous.activityRotation?.revision) { if (!rotating.value) displayedActivityKinds.value = fresh; return; }
   rotating.value = true; playSound('rotation_switch'); clearTimeout(rotationTimer); clearTimeout(artSwapTimer);

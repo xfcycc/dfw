@@ -4,7 +4,7 @@ import type { PublicRoomState } from '../../shared/types';
 import { playSound } from '../audio';
 import AssetStatIcon from './AssetStatIcon.vue';
 
-const props = defineProps<{ room: PublicRoomState; playerId: string; live: boolean }>();
+const props = defineProps<{ room: PublicRoomState; playerId: string; live: boolean; presentationEpoch?: number }>();
 const balance = computed(() => props.room.players.find(player => player.id === props.playerId)?.cash ?? 0);
 const displayed = ref(balance.value);
 const target = ref<HTMLElement>();
@@ -66,11 +66,11 @@ function present(): void {
   frame = requestAnimationFrame(tick);
 }
 
-/** 输入公开快照和连接状态，首次同步只建立余额基线，其余真实收支按顺序展示。 */
-watch([() => props.room, () => props.live, () => props.playerId], ([next, live, id], [previous, wasLive, previousId]) => {
+/** 输入公开快照、连接、玩家及本地重置标记，静默同步直接更新余额，其余真实收支按顺序展示，无返回值。 */
+watch([() => props.room, () => props.live, () => props.playerId, () => props.presentationEpoch], ([next, live, id, epoch], [previous, wasLive, previousId, previousEpoch]) => {
   const player = next.players.find(value => value.id === id);
   const before = previous?.players.find(value => value.id === id);
-  if (!live || !wasLive || id !== previousId || !before || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending || next.status === 'lobby' || document.hidden) { reset(); return; }
+  if (epoch !== previousEpoch || !live || !wasLive || id !== previousId || !before || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending || next.status === 'lobby' || document.hidden) { reset(); return; }
   if (next.version <= previous.version || !player || player.cash === before.cash) return;
   const amount = player.cash - before.cash;
   if (preference.matches) { reset(); playSound(amount > 0 ? 'coin' : 'pay'); return; }

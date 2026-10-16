@@ -193,7 +193,7 @@ watch([eligibleTiles, eligiblePlayers], () => {
 });
 const actionStatus = computed(() => {
   if (game.connection !== 'online') return '正在连接';
-  if (game.settling) return game.settlementRevealing ? '查看事件卡，收起后继续移动' : '移动中，落地后结算';
+  if (game.settling) return game.settlementRevealing ? '查看卡牌，收起后继续移动' : '移动中，落地后结算';
   if (game.room?.pausedReason) return '等待重连';
   if (game.room?.status === 'finished') return '本局结束';
   if (game.room?.tradePending) return '交易中';
@@ -350,7 +350,7 @@ async function resetSession(): Promise<void> {
       <template v-else>
         <div class="game-layout immersive-layout">
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -359,7 +359,7 @@ async function resetSession(): Promise<void> {
               </template>
               <template #summary>
                 <div v-if="showMyTurn" :key="turnIdentity" class="hub-turn-callout" role="status"><ChibiLettering kind="turn" /></div>
-                <dl v-if="game.me && !spectator" class="turn-wallet" aria-label="我的资产概况"><div v-if="game.me.assetRank" class="turn-wallet-rank" :title="`净资产排名：第${game.me.assetRank}名`"><dt class="sr-only">我的排名</dt><dd><ChibiLettering kind="rank" :rank="game.me.assetRank" /></dd></div><div><dt class="sr-only">我的现金</dt><dd><CashBalance :room="game.room" :player-id="game.me.id" :live="game.connection === 'online' && !game.room.recoveryPending" /></dd></div><div class="turn-wallet-worth"><dt class="sr-only">我的净资产</dt><dd><AssetStatIcon kind="worth" /><span>{{ game.me.netWorth === undefined ? '—' : `¥${game.me.netWorth.toLocaleString()}` }}</span></dd></div></dl>
+                <dl v-if="game.me && !spectator" class="turn-wallet" aria-label="我的资产概况"><div v-if="game.me.assetRank" class="turn-wallet-rank" :title="`净资产排名：第${game.me.assetRank}名`"><dt class="sr-only">我的排名</dt><dd><ChibiLettering kind="rank" :rank="game.me.assetRank" /></dd></div><div><dt class="sr-only">我的现金</dt><dd><CashBalance :presentation-epoch="game.presentationEpoch" :room="game.room" :player-id="game.me.id" :live="game.connection === 'online' && !game.room.recoveryPending" /></dd></div><div class="turn-wallet-worth"><dt class="sr-only">我的净资产</dt><dd><AssetStatIcon kind="worth" /><span>{{ game.me.netWorth === undefined ? '—' : `¥${game.me.netWorth.toLocaleString()}` }}</span></dd></div></dl>
               </template>
               <template #controls>
                 <FitPanel>

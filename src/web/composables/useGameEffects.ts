@@ -7,8 +7,8 @@ const DICE_HOLD_MS = 220;
 const MOVE_STEP_MS = 190;
 const LANDING_MS = 500;
 
-/** 输入实时房间、连接状态、路径完成回调及独立现金栏玩家，返回视听状态；首次进入、恢复及重连建立静默基线。 */
-export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined) {
+/** 输入实时房间、连接状态、路径回调、现金栏玩家及本地重置标记，返回视听状态；同步重置时取消旧反馈。 */
+export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0) {
   const money = ref<{ key: string; tileId: number; name: string; amount: number }[]>([]);
   const tiles = ref<{ key: string; tileId: number; kind: 'bought' | 'built' | 'magic' }[]>([]);
   const rolling = ref(false);
@@ -66,7 +66,8 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   function onVisibilityChange(): void { if (document.hidden) clear(); }
   document.addEventListener('visibilitychange', onVisibilityChange);
   watch(live, enabled => { if (!enabled) { baseline = true; clear(); } }, { flush: 'sync' });
-  watch(room, (next, previous) => {
+  watch([room, presentationEpoch], ([next, epoch], [previous, previousEpoch]) => {
+    if (epoch !== previousEpoch) { baseline = false; clear(); return; }
     if (!live()) return;
     if (baseline || !previous || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending) { baseline = false; clear(); return; }
     if (next.version < previous.version || next.version === previous.version && next.motion?.id === previous.motion?.id || next.status === 'lobby') return;
@@ -119,7 +120,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       if (!next.motion || next.turnNumber !== previous.turnNumber || next.status !== previous.status || (actor && next.players.find(player => player.id === actor)?.position !== previousPlayers.get(actor)?.position)) clearMotion();
       feedback();
     }
-  }, { flush: 'sync' });
+  }, { flush: 'pre' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
   return { money, tiles, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs: MOVE_STEP_MS };
 }

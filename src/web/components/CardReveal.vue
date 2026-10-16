@@ -12,9 +12,12 @@ const dismissLabel = computed(() => reveal.value?.mode === 'play' ? '关闭展�
 const viewport = ref<HTMLElement>();
 const stage = ref<HTMLElement>();
 const cardSize = ref({ width: 0, height: 0, scale: 1 });
-/** 输入当前揭卡标识和暂停状态，事件展示六秒后自动关闭；切换或暂停时清除计时，无返回值。 */
+const shownKey = ref('');
+/** 输入揭卡标识和暂停状态，记录已展示卡面；事件与已用道具六秒后关闭，新获道具由玩家收起，无返回值。 */
 watch([() => reveal.value?.key, () => props.paused], ([key, paused], _, onCleanup) => {
-  if (!key || paused || isItem.value) return;
+  if (!key || paused) return;
+  shownKey.value = key;
+  if (isItem.value && reveal.value?.mode === 'draw') return;
   const timer = setTimeout(() => {
     if (reveal.value?.key === key) game.dismissCardReveal();
   }, 6000);
@@ -42,7 +45,7 @@ watch([viewport, stage], ([area, card], _, onCleanup) => {
 }, { flush: 'post' });
 </script>
 <template>
-  <section v-if="reveal && !paused" :key="reveal.key" class="card-reveal-panel" :class="[`reveal-${reveal.content.rarity ?? 'R'}`, { 'card-draw-reveal': reveal.mode === 'draw' }]" :aria-label="`${reveal.actor} · ${title}`" tabindex="-1" @keydown.esc.stop="game.dismissCardReveal">
+  <section v-if="reveal && (shownKey === reveal.key || !paused)" :key="reveal.key" class="card-reveal-panel" :class="[`reveal-${reveal.content.rarity ?? 'R'}`, { 'card-draw-reveal': reveal.mode === 'draw' }]" :style="{ visibility: paused ? 'hidden' : undefined }" :inert="paused" :aria-hidden="paused" :aria-label="`${reveal.actor} · ${title}`" tabindex="-1" @keydown.esc.stop="game.dismissCardReveal">
     <div class="card-reveal-content">
     <div class="card-reveal-toolbar"><span>城市新鲜事 · {{ reveal.actor }}</span><button class="icon-button" :aria-label="dismissLabel" @click="game.dismissCardReveal">✕</button></div>
     <div class="card-reveal-particles" aria-hidden="true"><i v-for="index in 18" :key="index" :style="{ '--x': `${(index * 37) % 100}%`, '--delay': `${(index % 7) * -.4}s` }"></i></div>

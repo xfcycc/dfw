@@ -73,6 +73,7 @@ export const useGameStore = defineStore('game', () => {
   const busy = ref(false);
   const settling = ref(false);
   const settlementRevealing = ref(false);
+  const presentationEpoch = ref(0);
   const message = ref('');
   const fatalError = ref('');
   const cardReveals = ref<CardReveal[]>([]);
@@ -106,12 +107,13 @@ export const useGameStore = defineStore('game', () => {
     if (state.logs.some(entry => entry.type === 'chat' && !seen.has(entry.id) && (!ownName || !entry.text.startsWith(`${ownName}：`)))) playSound('chat');
   }
 
-  /** 输入公开快照，新移动先展示路径再同步结算；跳过路径动画时仍按顺序揭示各段公开事件，无返回值。 */
+  /** 输入公开快照，先揭示用卡再播放路径并同步结算；跳过路径时仍按顺序揭示公开事件，无返回值。 */
   function applyPublicState(state: PublicRoomState, animate = true): void {
     const previous = room.value;
     if (animate && !publicBaseline && previous && state.version > previous.version && state.gameId === previous.gameId && !state.recoveryPending && !previous.recoveryPending && state.motion && state.motion.id !== previous.motion?.id && state.status !== 'lobby' && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       movementResult = state; settling.value = true;
       movementSegments.push(...(state.motion.segments?.length ? state.motion.segments : [state.motion]));
+      if (state.playedCard && state.playedCard.id !== previous.playedCard?.id) enqueueCardReveal(state.playedCard, 'play', state.players.find(player => player.id === state.playedCardPlayerId)?.name ?? '玩家');
       presentMovement();
       return;
     }
@@ -130,11 +132,12 @@ export const useGameStore = defineStore('game', () => {
     }
     publicBaseline = false;
   }
-  /** 无入参，先揭示触发事件再将下一段路径送到棋盘，结算结果继续等待，无返回值。 */
+  /** 无入参，等待已有卡面及触发事件展示完再送出下一段路径，结算结果继续等待，无返回值。 */
   function presentMovement(): void {
     const state = movementResult;
     const segment = movementSegments[0];
     if (!state || !segment || !room.value) return;
+    if (cardReveals.value.length) { settlementRevealing.value = true; return; }
     if (segment.beforeEvent && segment.beforeEvent.id !== room.value.event?.id) {
       room.value = { ...room.value, event: segment.beforeEvent, eventPlayerId: segment.playerId };
       enqueueCardReveal(segment.beforeEvent, 'draw', room.value.players.find(player => player.id === segment.playerId)?.name ?? '玩家');
@@ -164,6 +167,7 @@ export const useGameStore = defineStore('game', () => {
   /** 输入已落地的片段 ID，先揭示落点事件并接续移动，最后释放结果，返回完成状态的异步操作。 */
   async function finishMovement(id: string): Promise<void> {
     if (!movementResult || room.value?.motion?.id !== id) return;
+    const epoch = presentationEpoch.value;
     if (movementSegments.length) {
       const event = room.value.motion.event;
       if (event) {
@@ -181,7 +185,7 @@ export const useGameStore = defineStore('game', () => {
     while (snapshots.length) {
       if (snapshots[0].type === 'public') {
         await nextTick();
-        if (!settling.value) return;
+        if (!settling.value || epoch !== presentationEpoch.value) return;
       }
       const snapshot = snapshots.shift()!;
       if (snapshot.type === 'public') {
@@ -193,6 +197,7 @@ export const useGameStore = defineStore('game', () => {
   }
   /** 无入参，取消积压动画并静默同步最新收包结果，供断线、身份切换或后台使用。 */
   function syncPresentation(): void {
+    presentationEpoch.value++;
     const pending = movementResult; movementResult = null; movementSegments.length = 0; settling.value = false; settlementRevealing.value = false;
     publicBaseline = true; privateBaseline = true;
     if (pending) applyPublicState(pending, false);
@@ -201,6 +206,7 @@ export const useGameStore = defineStore('game', () => {
       if (snapshot.type === 'public') { publicBaseline = true; applyPublicState(snapshot.state, false); }
       else { privateBaseline = true; applyPrivateState(snapshot.state); }
     }
+    publicBaseline = true; privateBaseline = true;
     cardReveals.value = [];
   }
 
@@ -267,6 +273,7 @@ export const useGameStore = defineStore('game', () => {
       notifyChat(state);
       latestVersion = Math.max(latestVersion, state.version);
       if (publicBaseline || state.gameId !== room.value?.gameId || state.recoveryPending) {
+        presentationEpoch.value++;
         movementResult = null; movementSegments.length = 0; snapshots.length = 0; settling.value = false; settlementRevealing.value = false;
         applyPublicState(state, false);
       } else if (settling.value) snapshots.push({ type: 'public', state });
@@ -316,5 +323,5 @@ export const useGameStore = defineStore('game', () => {
     try { await navigator.clipboard.writeText(text); notify('已复制，发给朋友一起玩吧'); }
     catch { notify(`请手动复制：${text}`); }
   }
-  return { room, privateData, session, connection, busy, settling, settlementRevealing, finishMovement, message, fatalError, cardReveals, dismissCardReveal, me, current, isMyTurn, decisionPlayer, canDecide, isHost, canAct, enter, connect, disconnect, act, notify, copy };
+  return { room, privateData, session, connection, busy, settling, settlementRevealing, presentationEpoch, finishMovement, message, fatalError, cardReveals, dismissCardReveal, me, current, isMyTurn, decisionPlayer, canDecide, isHost, canAct, enter, connect, disconnect, act, notify, copy };
 });
