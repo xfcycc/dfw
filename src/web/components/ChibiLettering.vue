@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 import { computed } from 'vue';
 const props = defineProps<{ kind: 'turn' | 'rank'; rank?: number }>();
-const source = `${import.meta.env.BASE_URL}images/actions/turn-ranks.png`;
+const source = imageUrl('/images/actions/turn-ranks.png');
 const ranks = ['240 242 340 260', '956 284 368 230', '228 524 360 234', '950 526 378 232', '234 768 350 214', '952 770 366 220'];
 /** 输入文字用途与 1～6 名排名，返回透明图集中对应文字的展示范围。 */
 const frame = computed(() => props.kind === 'turn' ? '60 38 720 212' : ranks[(props.rank ?? 1) - 1] ?? ranks[0]);

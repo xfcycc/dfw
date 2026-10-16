@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 defineProps<{ level: number; mortgaged?: boolean }>();
-const source = `${import.meta.env.BASE_URL}images/board/property-levels.png`;
+const source = imageUrl('/images/board/property-levels.png');
 </script>
 <template>
   <span class="property-art" :class="[`level-${level}`, { mortgaged }]" :style="{ backgroundImage: `url(${source})` }" aria-hidden="true"></span>

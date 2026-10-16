@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 defineProps<{ kind: 'cash' | 'worth' | 'cards' | 'property' }>();
-const source = `${import.meta.env.BASE_URL}images/actions/asset-stats.png`;
-const worthSource = `${import.meta.env.BASE_URL}images/actions/net-worth.png`;
+const source = imageUrl('/images/actions/asset-stats.png');
+const worthSource = imageUrl('/images/actions/net-worth.png');
 const viewBoxes = { cash: '0 0 724 724', cards: '724 0 724 724', property: '1448 0 724 724' };
 const hints = {
   cash: '现金：当前持有、可用于支付和交易的金额',

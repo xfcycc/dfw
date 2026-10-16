@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 defineProps<{ action: 'trade' | 'roll' | 'endTurn' | 'send' }>();
-const source = `${import.meta.env.BASE_URL}images/actions/game-actions.png`;
+const source = imageUrl('/images/actions/game-actions.png');
 // 按图标范围展示同一张透明图集，保留比例，避免缩小后留白过多。
 const viewBoxes = { trade: '70 120 750 330', roll: '940 0 430 512', endTurn: '200 520 560 504', send: '840 580 610 355' };
 </script>

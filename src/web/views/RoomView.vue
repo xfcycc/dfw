@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ITEMS, mapLength, MAP_SIZES, mortgageValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
@@ -45,7 +46,6 @@ import '../lobby-room.css';
 const props = withDefaults(defineProps<{ spectator?: boolean }>(), { spectator: false });
 const route = useRoute();
 const origin = window.location.origin;
-const baseUrl = import.meta.env.BASE_URL;
 const game = useGameStore();
 const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | null>(null);
 const nickname = ref('');
@@ -302,8 +302,8 @@ async function resetSession(): Promise<void> {
 }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby }" :style="{ '--town-background': `url(${baseUrl}images/board/town-background.png)` }">
-    <img v-if="isLobby" class="lobby-background" :src="`${baseUrl}images/lobby-cottage.png`" alt="" fetchpriority="high" />
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+    <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
       <button class="room-tag" aria-label="复制房间号" @click="game.copy(code)">房间 <strong>{{ code }}</strong></button>
@@ -416,7 +416,7 @@ async function resetSession(): Promise<void> {
                             <template v-if="choice"><p class="muted">{{ choice.content?.name ?? '当前选择' }} · {{ choice.type === 'hand_limit' ? '整理手牌后继续行动' : '请打开窗口处理本次选择' }}</p><button class="button primary small" :disabled="!game.canAct" @click="openWorkbench('choice')">处理当前选择</button></template>
                             <p v-else class="muted">正在同步当前选择…</p>
                           </template>
-                          <template v-else-if="game.room.phase === 'buy' || game.room.phase === 'upgrade'"><div class="landing-info"><span v-if="pendingTile" class="decision-property-art" :class="`level-${pendingTile?.level ?? 0}`" :style="{ backgroundImage: `url(${baseUrl}images/board/property-levels.png)` }" aria-hidden="true"></span><div><strong>{{ pendingTile?.name }}</strong><small>{{ game.room.phase === 'buy' ? '这块地还没有主人' : `你的地产 · 当前 ${pendingTile?.level} 级` }}</small></div></div><p class="decision-price">¥{{ game.room.pending?.amount.toLocaleString() }} <small>{{ game.room.phase === 'buy' ? '购入价格' : '升级费用' }}</small></p><dl v-if="pendingTile && game.me" class="decision-outcome"><div><dt>{{ game.room.phase === 'buy' ? '购买后剩余现金' : '升级后剩余现金' }}</dt><dd>{{ game.me.cash >= (game.room.pending?.amount ?? 0) ? `¥${(game.me.cash - (game.room.pending?.amount ?? 0)).toLocaleString()}` : '现金不足' }}</dd></div><div><dt>{{ game.room.phase === 'buy' ? '当前租金' : '升级后租金' }}</dt><dd>¥{{ rentFor(game.room.phase === 'buy' ? pendingTile : { ...pendingTile, level: pendingTile.level + 1 }, game.room.economy).toLocaleString() }}</dd></div></dl><div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'pass' })">暂时放弃</button><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < (game.room.pending?.amount ?? 0)" @click="game.act({ type: game.room.phase === 'buy' ? 'buy' : 'upgrade' })">{{ game.room.phase === 'buy' ? '买下这块地' : '升级房子' }}</button></div></template>
+                          <template v-else-if="game.room.phase === 'buy' || game.room.phase === 'upgrade'"><div class="landing-info"><span v-if="pendingTile" class="decision-property-art" :class="`level-${pendingTile?.level ?? 0}`" :style="{ backgroundImage: `url(${imageUrl('/images/board/property-levels.png')})` }" aria-hidden="true"></span><div><strong>{{ pendingTile?.name }}</strong><small>{{ game.room.phase === 'buy' ? '这块地还没有主人' : `你的地产 · 当前 ${pendingTile?.level} 级` }}</small></div></div><p class="decision-price">¥{{ game.room.pending?.amount.toLocaleString() }} <small>{{ game.room.phase === 'buy' ? '购入价格' : '升级费用' }}</small></p><dl v-if="pendingTile && game.me" class="decision-outcome"><div><dt>{{ game.room.phase === 'buy' ? '购买后剩余现金' : '升级后剩余现金' }}</dt><dd>{{ game.me.cash >= (game.room.pending?.amount ?? 0) ? `¥${(game.me.cash - (game.room.pending?.amount ?? 0)).toLocaleString()}` : '现金不足' }}</dd></div><div><dt>{{ game.room.phase === 'buy' ? '当前租金' : '升级后租金' }}</dt><dd>¥{{ rentFor(game.room.phase === 'buy' ? pendingTile : { ...pendingTile, level: pendingTile.level + 1 }, game.room.economy).toLocaleString() }}</dd></div></dl><div class="button-row"><button class="button secondary" :disabled="!canPlay" @click="game.act({ type: 'pass' })">暂时放弃</button><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < (game.room.pending?.amount ?? 0)" @click="game.act({ type: game.room.phase === 'buy' ? 'buy' : 'upgrade' })">{{ game.room.phase === 'buy' ? '买下这块地' : '升级房子' }}</button></div></template>
                           <template v-else-if="payment">
                             <p class="muted">{{ payment.type === 'rent' ? `${pendingTile?.name} · 路费` : '本次强制费用' }} → <PlayerText :text="creditorName" />。</p>
                             <p class="decision-price">¥{{ payment.amount.toLocaleString() }} <small>剩余待支付</small></p>
@@ -490,8 +490,8 @@ async function resetSession(): Promise<void> {
     <Modal panel-class="modern-modal tile-detail-modal" v-if="liveSelectedTile" :title="liveSelectedTile.name" @close="selectedTile = null">
       <div class="tile-detail tile-detail-card">
         <div class="tile-detail-hero" :class="`district-${liveSelectedTile.district}`">
-          <div class="tile-detail-art" :class="[liveSelectedTile.type, `level-${liveSelectedTile.level}`, { mortgaged: liveSelectedTile.mortgaged }]" :style="{ '--detail-property-art': `url(${baseUrl}images/board/property-levels.png)` }" aria-hidden="true">
-            <img v-if="liveSelectedTile.type !== 'property'" :src="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind ? activityArt(`${liveSelectedTile.activityKind}-tile`) : `${baseUrl}images/tiles/${liveSelectedTile.type}.png`" alt="" />
+          <div class="tile-detail-art" :class="[liveSelectedTile.type, `level-${liveSelectedTile.level}`, { mortgaged: liveSelectedTile.mortgaged }]" :style="{ '--detail-property-art': `url(${imageUrl('/images/board/property-levels.png')})` }" aria-hidden="true">
+            <img v-if="liveSelectedTile.type !== 'property'" :src="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind ? activityArt(`${liveSelectedTile.activityKind}-tile`) : imageUrl(`/images/tiles/${liveSelectedTile.type}.png`)" alt="" />
           </div>
           <div class="tile-detail-intro">
             <p>{{ liveSelectedTile.name }}</p>

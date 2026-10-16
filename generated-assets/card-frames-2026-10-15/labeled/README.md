@@ -1,5 +1,7 @@
 # 等级字样与花纹一体卡框
 
+> 2026-10-16 云端迁移：本目录图片已压缩并上传 OSS，本地仅保留元数据、提示词和 URL。历史清单中的原路径与原图摘要用于追溯，当前文件地址、大小及摘要以 `generated-assets/cloud-images.json` 为准；下文原图保留位置及本地发布描述属于迁移前记录。
+
 2026-10-15：根据上一版花纹图片生成四张修订图，R／SR／SSR／UR 字样直接嵌入各自顶部花纹，与边框属于同一张图片。沿用原翡翠、紫晶、鎏金和玫瑰金主题。原图、提示词及压缩上传校验均保留在本目录。
 
 四张均为 1254×1254 RGBA PNG，WebP quality 90 / method 6，无裁切、无缩放，透明度逐像素一致。运行 WebP 合计 954,692 字节，OSS HTTP 200、类型、大小与 MD5 四张均核对通过。
@@ -10,9 +12,9 @@
 
 启动原有 Vite 开发服务后，打开 [组件预览](http://127.0.0.1:5173/@fs/Users/caiguoyu/projects/dfw/generated-assets/card-frames-2026-10-15/index.html)。预览不连接对局、不发送游戏命令。
 
-![六张手牌完整内容](preview-hand.jpg)
+![六张手牌完整内容](https://pic.caiguoyu.cn/typora/20261016163656939.webp)
 
-![手机出牌完整卡面](preview-mobile-play.jpg)
+![手机出牌完整卡面](https://pic.caiguoyu.cn/typora/20261016163710077.webp)
 
 ## 验证
 
@@ -25,4 +27,4 @@
 
 ## 外框裁切修订
 
-卡面主图和底色放入独立 `card-surface`，按卡宽内缩裁切，花纹和等级字样保持完整；卡片容器改为透明底，移除外侧矩形边线，阴影沿可见内容轮廓投射。抽卡卡背沿用同一裁切规则。已查看六张手牌、抽卡卡背及 390×844 手机揭卡，截图为 `preview-clipped-hand.jpg` 与 `preview-clipped-mobile.jpg`。
+卡面主图和底色放入独立 `card-surface`，按卡宽内缩裁切，花纹和等级字样保持完整；卡片容器改为透明底，移除外侧矩形边线，阴影沿可见内容轮廓投射。抽卡卡背沿用同一裁切规则。已查看六张手牌、抽卡卡背及 390×844 手机揭卡，截图为 [preview-clipped-hand.jpg](https://pic.caiguoyu.cn/typora/20261016163535330.webp) 与 [preview-clipped-mobile.jpg](https://pic.caiguoyu.cn/typora/20261016163628048.webp)。

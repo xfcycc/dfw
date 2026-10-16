@@ -12,3 +12,16 @@ backend/target/
 # 本机部署密钥，不进入 Git。
 .ssh/
 .agents/
+
+# 图片统一存放云端，仓库只保存 URL 与元数据。
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.svg
+*.avif
+*.ico
+*.bmp
+*.tif
+*.tiff

@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 import { computed } from 'vue';
 const props = withDefaults(defineProps<{ ornament?: 'left' | 'right'; variant?: 'news' | 'chat' | 'ranking' | 'workbench' | 'cards' | 'notice' }>(), { ornament: 'left', variant: 'news' });
-const baseUrl = import.meta.env.BASE_URL;
-const source = `${baseUrl}images/panels/panel-theme-frames.png`;
-const people = `${baseUrl}images/panels/panel-theme-people.png`;
+const source = imageUrl('/images/panels/panel-theme-frames.png');
+const people = imageUrl('/images/panels/panel-theme-people.png');
 const themes = {
   news: { frame: [104, 36, 376, 444], sideY: 104, person: 0 },
   chat: { frame: [590, 34, 374, 446], sideY: 104, person: 1 },

@@ -100,7 +100,7 @@ Java 启动创建缺失表及身份关联列，批量为旧三表中的当前格
 
 偿债与超限手牌等待点由独立库中的临时快照夹具准备，通过正式接口恢复与继续，不代表全部随机事件组合已逐项覆盖。规则兼容性使用临时外部配置，不改仓库默认池。验收只覆盖本节列明场景，未进行生产迁移、生产前端构建或部署。
 
-验收结束后已关闭临时后端、开发前端与页面，删除本轮创建的两个验证库及临时配置、连接资料。桌面和手机截图保留在本机 `artifacts/archive-history-desktop.png`、`artifacts/archive-history-mobile.png`，该目录不纳入 Git。
+验收结束后已关闭临时后端、开发前端与页面，删除本轮创建的两个验证库及临时配置、连接资料。桌面和手机截图保留在本机 [artifacts/archive-history-desktop.png](https://pic.caiguoyu.cn/typora/20261016163701024.webp)、[artifacts/archive-history-mobile.png](https://pic.caiguoyu.cn/typora/20261016163644450.webp)，该目录不纳入 Git。
 
 ## 2026-10-15 上一版规则兼容验证
 

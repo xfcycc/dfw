@@ -1,13 +1,15 @@
 # UR 地产事件卡面
 
+> 2026-10-16 云端迁移：本目录图片已压缩并上传 OSS，本地仅保留元数据、提示词和 URL。历史清单中的原路径与原图摘要用于追溯，当前文件地址、大小及摘要以 `generated-assets/cloud-images.json` 为准；下文原图保留位置及本地发布描述属于迁移前记录。
+
 2026-10-16 新增「爆破狂人」（机会）与「基建狂魔」（财富）。使用现有粉发苏暖暖、暖色童话小镇、柔和 3D 玩具风格，沿用 UR 玫瑰金、珠光及宝石细节。两张都是立即处理的事件，不进入手牌。
 
 | 皮肤 | 插画故事 | 原图 |
 | --- | --- | --- |
-| `chance_demolition_fanatic` | 苏暖暖在烟花告别秀中启动单栋对手建筑的拆除，地基与蓝色业主旗帜保留 | [爆破狂人](chance_demolition_fanatic.png) |
-| `fortune_construction_frenzy` | 苏暖暖喝着奶茶指挥模块吊装，第三层与屋顶即将落位，外卖车刚到现场 | [基建狂魔](fortune_construction_frenzy.png) |
+| `chance_demolition_fanatic` | 苏暖暖在烟花告别秀中启动单栋对手建筑的拆除，地基与蓝色业主旗帜保留 | [爆破狂人](https://pic.caiguoyu.cn/typora/20261016163548126.webp) |
+| `fortune_construction_frenzy` | 苏暖暖喝着奶茶指挥模块吊装，第三层与屋顶即将落位，外卖车刚到现场 | [基建狂魔](https://pic.caiguoyu.cn/typora/20261016163635855.webp) |
 
-- `prompts.json`：生成提示词，人物和渲染参考 `generated-assets/ur-2026-10-15/chance/chance_windfall_jackpot.png`。
+- `prompts.json`：生成提示词，人物和渲染参考 [generated-assets/ur-2026-10-15/chance/chance_windfall_jackpot.png](https://pic.caiguoyu.cn/typora/20261015162955933.webp)。
 - `manifest.json`：皮肤身份、原图与运行图片路径、尺寸、WebP 字节数及 SHA-256。
 - `preview.json`：通过实际规则加载器及 `ContentCatalog.describe` 导出的默认卡面资料。
 - `index.html`：使用真实 `ContentCard.vue`、UR 边框及项目样式的预览；从 Vite 开发服务的 `/@fs/<本文件绝对路径>` 打开。

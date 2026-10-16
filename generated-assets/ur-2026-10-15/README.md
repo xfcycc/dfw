@@ -1,18 +1,20 @@
 # UR 卡面与新增道具插画
 
+> 2026-10-16 云端迁移：本目录图片已压缩并上传 OSS，本地仅保留元数据、提示词和 URL。历史清单中的原路径与原图摘要用于追溯，当前文件地址、大小及摘要以 `generated-assets/cloud-images.json` 为准；下文原图保留位置及本地发布描述属于迁移前记录。
+
 2026-10-15 按现有粉发苏暖暖、暖色童话小镇、柔和 3D 玩具质感生成，共 9 张独立插画：6 张新 UR 具名卡面及 3 类 UR 通用图。UR 使用更丰富的玫瑰金、珠光和红宝石细节；负面事件以表情、账单或流出金币表达。卡名、等级、金额和效果由游戏组件渲染，不烘焙到插画中。
 
 | 类型 | 卡面 | 文件 |
 | --- | --- | --- |
-| chance | 城市大奖 | [chance_windfall_jackpot](chance/chance_windfall_jackpot.png) |
-| chance | 天价账单 | [chance_catastrophic_bill](chance/chance_catastrophic_bill.png) |
-| fortune | 财富暴击 | [fortune_fortune_jackpot](fortune/fortune_fortune_jackpot.png) |
-| fortune | 投资暴雷 | [fortune_fortune_crash](fortune/fortune_fortune_crash.png) |
-| card | 命运硬币 | [card_fate_coin](card/card_fate_coin.png) |
-| fallback | UR机会通用卡面 | [ur_chance](fallback/ur_chance.png) |
-| card | 孤注一掷 | [card_all_in_ticket](card/card_all_in_ticket.png) |
-| fallback | UR财富通用卡面 | [ur_fortune](fallback/ur_fortune.png) |
-| fallback | UR道具通用卡面 | [ur_card](fallback/ur_card.png) |
+| chance | 城市大奖 | [chance_windfall_jackpot](https://pic.caiguoyu.cn/typora/20261015162955933.webp) |
+| chance | 天价账单 | [chance_catastrophic_bill](https://pic.caiguoyu.cn/typora/20261015162955934.webp) |
+| fortune | 财富暴击 | [fortune_fortune_jackpot](https://pic.caiguoyu.cn/typora/20261015162955935.webp) |
+| fortune | 投资暴雷 | [fortune_fortune_crash](https://pic.caiguoyu.cn/typora/20261015162955937.webp) |
+| card | 命运硬币 | [card_fate_coin](https://pic.caiguoyu.cn/typora/20261015162955938.webp) |
+| fallback | UR机会通用卡面 | [ur_chance](https://pic.caiguoyu.cn/typora/20261015162955939.webp) |
+| card | 孤注一掷 | [card_all_in_ticket](https://pic.caiguoyu.cn/typora/20261015162955940.webp) |
+| fallback | UR财富通用卡面 | [ur_fortune](https://pic.caiguoyu.cn/typora/20261015162955941.webp) |
+| fallback | UR道具通用卡面 | [ur_card](https://pic.caiguoyu.cn/typora/20261015162955942.webp) |
 
 ## 文件与接入
 

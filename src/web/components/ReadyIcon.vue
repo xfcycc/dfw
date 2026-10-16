@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 import { computed } from 'vue';
 const props = defineProps<{ ready: boolean; offline?: boolean }>();
-const source = `${import.meta.env.BASE_URL}images/actions/ready-status.png`;
+const source = imageUrl('/images/actions/ready-status.png');
 const label = computed(() => props.offline ? '暂时离线' : props.ready ? '已准备' : '未准备');
 const viewBox = computed(() => props.ready && !props.offline ? '120 130 744 655' : '998 130 664 655');
 </script>

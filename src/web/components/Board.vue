@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import { boardDimensions, DISTRICTS, districtName, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
 import type { ActivityKind, PublicPlayer, PublicRoomState, Tile } from '../../shared/types';
@@ -29,7 +30,6 @@ const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile 
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
 const dimensions = computed(() => boardDimensions(props.room.board.length));
 const height = computed(() => { const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
-const baseUrl = import.meta.env.BASE_URL;
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
 const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
@@ -127,7 +127,7 @@ onMounted(() => {
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); emit('animating', false); });
 </script>
 <template>
-  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch }" :style="{ '--town-background': `url(${baseUrl}images/board/town-background.png)`, '--tile-background': `url(${baseUrl}images/board/tile-common.png)`, '--property-levels': `url(${baseUrl}images/board/property-levels.png)`, '--turn-arrow': `url(${baseUrl}images/board/turn-arrow.svg)` }">
+  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
     <div v-if="!stretch" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" @click="fitBoard">全图</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
     <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
@@ -139,7 +139,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
             <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
             <span v-if="tile.barrier" class="barrier-marker" title="路障">🚧</span>
-            <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : `${baseUrl}images/tiles/${tile.type}.png`" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
+            <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
             <strong><span class="tile-name">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
