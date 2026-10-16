@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
+const props = defineProps<{ disabled?: boolean }>();
 const area = ref<HTMLElement>();
 const content = ref<HTMLElement>();
 const scale = ref(1);
 // 输入容器与自然内容元素，适配高度时补偿布局宽度，始终铺满中间可用区域。
-watch([area, content], ([viewport, body], _, onCleanup) => {
+watch([area, content, () => props.disabled], ([viewport, body, disabled], _, onCleanup) => {
   if (!viewport || !body) return;
+  if (disabled) { scale.value = 1; body.style.width = ''; body.style.height = ''; return; }
   let frame = 0;
   /** 无入参，在完整显示内容的前提下确定最大比例；补偿缩放产生的左右空白。 */
   function fit(): void {
@@ -42,9 +44,11 @@ watch([area, content], ([viewport, body], _, onCleanup) => {
 }, { flush: 'post' });
 </script>
 <template>
-  <div ref="area" class="fit-panel"><div ref="content" class="fit-panel-content" :style="{ transform: `scale(${scale})` }"><slot /></div></div>
+  <div ref="area" class="fit-panel" :class="{ 'natural-panel': disabled }"><div ref="content" class="fit-panel-content" :style="{ transform: `scale(${scale})` }"><slot /></div></div>
 </template>
 <style scoped>
 .fit-panel { position: relative; flex: 1; min-width: 0; min-height: 0; overflow: clip; }
 .fit-panel-content { display: flex; flex-direction: column; width: 100%; height: 100%; min-height: min-content; transform-origin: top left; }
+.natural-panel { flex: none; overflow: visible; }
+.natural-panel .fit-panel-content { height: auto; }
 </style>

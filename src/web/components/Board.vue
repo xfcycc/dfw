@@ -13,13 +13,15 @@ import { activityArt } from '../activity-art';
 import { playSound } from '../audio';
 import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
-const props = defineProps<{ room: PublicRoomState; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
+const props = defineProps<{ room: PublicRoomState; dashboardTarget?: string; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
 const size = ref(700);
 const availableWidth = ref(700);
+const availableViewportHeight = ref(0);
 const zoom = ref(1);
+const fullMap = ref(false);
 const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
@@ -29,7 +31,7 @@ let lastViewportHeight = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
 const dimensions = computed(() => boardDimensions(props.room.board.length));
-const height = computed(() => { const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
+const height = computed(() => { if (props.spectator && props.compact && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
 const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
@@ -88,47 +90,70 @@ function pawnStyle(player: PublicPlayer) {
   const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
   return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color };
 }
-/** 输入容器与地图规模，按相同格距展开棋盘；房间默认不压缩，历史预览沿用原限制。 */
+/** 无入参，读取地图可用尺寸，观战适配全图，手机游玩保留可读格距，无返回值。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   const availableHeight = viewport.value?.clientHeight ?? 0;
   if (width <= 0) return;
-  if (width === lastWidth && (!props.bounded || availableHeight === lastViewportHeight) && window.innerHeight === lastHeight && props.room.board.length === lastLength) return;
+  if (width === lastWidth && availableHeight === lastViewportHeight && window.innerHeight === lastHeight && props.room.board.length === lastLength) return;
   availableWidth.value = width;
+  availableViewportHeight.value = availableHeight;
   lastWidth = width; lastHeight = window.innerHeight; lastLength = props.room.board.length;
   lastViewportHeight = availableHeight;
-  if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
+  if (props.spectator && props.compact) size.value = Math.max(1, width - 6);
+  else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  if (props.stretch) expandBoard();
-  else fitBoard();
+  if (props.spectator || fullMap.value || !props.stretch) fitBoard();
+  else expandBoard();
 }
-/** 无入参，恢复方格可读尺寸，并将窄屏视野对准地图中央操作区。 */
+/** 无入参，恢复可读格距；手机对准本人附近，桌面沿用内圈视野，无返回值。 */
 function expandBoard(): void {
-  zoom.value = 1;
-  void nextTick(() => { if (viewport.value) viewport.value.scrollLeft = Math.max(0, (size.value - availableWidth.value) / 2); });
+  fullMap.value = false; zoom.value = 1;
+  void nextTick(() => {
+    if (props.dashboardTarget) locatePlayer(props.room.players.find(player => player.id === props.meId) ?? current.value);
+    else if (viewport.value) viewport.value.scrollLeft = Math.max(0, (size.value - availableWidth.value) / 2);
+  });
 }
-/** 无入参，将滚动视野移到当前行动者；只改变本地棋盘视野。 */
-function locateCurrent(): void {
-  if (!current.value || !viewport.value) return;
-  const cell = tileCoordinates(current.value.position, props.room.board.length);
-  viewport.value.scrollTo({ left: (cell.column - 0.5) * size.value * zoom.value / dimensions.value.columns - viewport.value.clientWidth / 2, top: (cell.row - 0.5) * height.value * zoom.value / dimensions.value.rows - viewport.value.clientHeight / 2, behavior: 'smooth' });
+/** 输入待定位的玩家与是否平滑滚动，将本地地图视野移到其动画位置，无返回值。 */
+function locatePlayer(player?: PublicPlayer, smooth = false): void {
+  if (!player || !viewport.value) return;
+  const position = animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position;
+  const cell = tileCoordinates(position, props.room.board.length);
+  const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
+  viewport.value.scrollTo({ left: (inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value - viewport.value.clientWidth / 2, top: (inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value - viewport.value.clientHeight / 2, behavior: smooth ? 'smooth' : 'instant' });
 }
-/** 无入参，恢复能容纳整张棋盘的默认比例。 */
+/** 无入参，将视野平滑移到当前行动者，无返回值。 */
+function locateCurrent(): void { locatePlayer(current.value, true); }
+/** 无入参，恢复局部地图并定位本人附近，无返回值。 */
+function locateMe(): void { expandBoard(); }
+/** 无入参，按地图视窗的宽高完整展示棋盘，无返回值。 */
 function fitBoard(): void {
-  const heightLimit = props.stretch ? Math.max(240, window.innerHeight - Math.max(0, container.value?.getBoundingClientRect().top ?? 0) - 24) / height.value : props.bounded && viewport.value?.clientHeight ? (viewport.value.clientHeight - 10) / height.value : 1;
-  zoom.value = Math.max(props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
+  fullMap.value = true;
+  const detached = !!props.dashboardTarget || !!props.spectator && !!props.compact;
+  const heightLimit = detached || props.bounded ? Math.max(1, (viewport.value?.clientHeight ?? height.value) - 10) / height.value : props.stretch ? Math.max(240, window.innerHeight - Math.max(0, container.value?.getBoundingClientRect().top ?? 0) - 24) / height.value : 1;
+  zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
+  void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
 }
+// 输入布局与地图规模变化，重新测量可用区域；本人与移动棋子的变化仅在手机局部视图跟随。
+watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length], async () => {
+  fullMap.value = false; lastWidth = 0;
+  await nextTick(); resizeBoard();
+}, { flush: 'post' });
+watch([() => props.room.players.find(player => player.id === props.meId)?.position, () => animatedPosition.value?.position, () => props.room.turnIndex], () => {
+  if (!props.dashboardTarget || props.spectator || fullMap.value) return;
+  locatePlayer(motion.value ? motionPlayer.value : props.room.players.find(player => player.id === props.meId) ?? current.value);
+}, { flush: 'post' });
 onMounted(() => {
   observer = new ResizeObserver(resizeBoard);
   if (container.value) observer.observe(container.value);
-  if (props.bounded && viewport.value) observer.observe(viewport.value);
+  if (viewport.value) observer.observe(viewport.value);
   window.addEventListener('resize', resizeBoard);
 });
 onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); emit('animating', false); });
 </script>
 <template>
-  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
-    <div v-if="!stretch" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" @click="fitBoard">全图</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label>缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
+  <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch, 'detached-board': !!dashboardTarget }" :style="{ '--map-zoom': zoom, '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
+    <div v-if="!stretch || dashboardTarget || spectator" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
     <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
@@ -156,7 +181,8 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
         </div>
         <div v-if="rotating" class="activity-rotation-glow" aria-hidden="true"></div>
         <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
-        <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="centerStyle">
+        <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
+        <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
           <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
           <City />
@@ -166,6 +192,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
           <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }"><PlayerText :text="room.players.find(p => p.id === id)?.name ?? '玩家'" :players="room.players" /></span></div>
           <slot name="center-overlay" />
         </div>
+        </Teleport>
       </div>
     </div>
     <Teleport to="body">
