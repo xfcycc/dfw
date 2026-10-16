@@ -38,10 +38,10 @@ public class GameEngine {
     public boolean needsAdvance(Room room) { return room.runtime != null && ruleRuntime.needsAdvance(room); }
     /** 输入房间，统一按当前配置及已保存效果推进到下一等待点。 */
     public void advanceUntilWait(Room room) { ruleRuntime.advanceUntilWait(room); }
-    /** 输入房间，刷新公开扩展说明及大厅的新局金额预览，进行中金额不重算。 */
+    /** 输入房间，刷新传送、振奋和 UR 地产事件规则及大厅金额，进行中金额不重算。 */
     public void refreshRuleDescriptions(Room room) {
         if (room.status.equals("lobby")) room.economy = economyRules.snapshot();
-        room.chanceEventDescriptions = room.status.equals("lobby") ? new ArrayList<>() : new ArrayList<>(List.of("排名事件按净资产锁定目标，并列随机选择", "免费升级可选择或放弃，确实无合法地产时改给现金", "赌博可放弃，仅使用已有现金；下注后按卡面概率开奖", "灾害按实际建筑损失，以 30% 概率补偿 50%；抵押地产也可能受损"));
+        room.chanceEventDescriptions = room.status.equals("lobby") ? new ArrayList<>() : new ArrayList<>(List.of("排名事件按净资产锁定目标，并列随机选择", "免费升级可选择或放弃，确实无合法地产时改给现金", "UR基建狂魔可选自己的合法地产免费直升3级，计入本回合升级", "爆破鬼才可指定自己直接传送，此次落点不结算；塔塔开下次移动翻倍，传送和换位不消耗", "人才引进发实际生活费5000与两张道具，无地只跳过领地；龙卷风全图建筑各降一级，逐地补偿原租金10%", "UR爆破狂人可选对手有建筑地产全部拆除，保留产权，无目标则结束", "赌博可放弃，仅使用已有现金；下注后按卡面概率开奖", "全毁灾害有实际建筑损毁时，以50%概率补偿受损业主摧毁前单次租金的50%；抵押地产租金及补偿为0"));
     }
     /** 输入同格式已恢复房间，保留基线版本已经进入筹款或协商的债务，不允许按余额再次减免。 */
     public void restoreContentState(Room room) {

@@ -14,6 +14,8 @@ public class MotionSegment {
     public String playerId;
     /** 本段起始位置。 */
     public int from;
+    /** 直接传送片段，不触发沿途或落点效果。 */
+    public boolean teleport;
     /** 本段实际经过路径，包含路障截停后的终点。 */
     public List<Integer> path = new ArrayList<>();
     /** 仅掷骰产生的第一段填写点数，事件移动为空。 */

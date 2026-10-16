@@ -25,6 +25,8 @@ public class DisasterResult {
     public int destroyedLevels;
     /** 按建筑成本计算的实际损失。 */
     public long loss;
+    /** 摧毁前的单次租金；旧存档缺失时为空，待结算补偿沿用原损失基数。 */
+    public Long rent;
     /** 首条订阅的 0～99 样本；尚未判定时为空。 */
     public Integer sample;
     /** 实际补偿金额。 */

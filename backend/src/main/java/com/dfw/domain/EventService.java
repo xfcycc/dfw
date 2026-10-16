@@ -22,6 +22,24 @@ public final class EventService {
         effects.register("DESTROY_BUILDINGS", this::destroy);
         effects.register("RANDOM_COMPENSATION", this::compensate);
         effects.register("GRANT_MONEY", this::grant);
+        effects.register("LOWER_ALL_BUILDINGS", this::lowerAll);
+    }
+    /** 输入全图降级及补偿比例，逐地产降低一级并按降级前租金赔付；同段提交，不触发全毁订阅。 */
+    private void lowerAll(Room room, GameEffect effect) {
+        require(effect.compensationPercent>=0 && effect.compensationPercent<=100,"补偿比例不可用");
+        var owners=new java.util.HashMap<String,Player>();
+        for (Player owner : room.players) if (!owner.bankrupt) owners.put(owner.id,owner);
+        int affected=0;
+        for (Tile target : room.board) {
+            Player owner=owners.get(target.ownerId);
+            if (!target.type.equals("property") || target.level<=0 || owner==null) continue;
+            int previousLevel=target.level; long rent=Rules.rent(room,target);
+            long compensation=Math.multiplyExact(rent,effect.compensationPercent)/100;
+            target.level--; owner.cash=Math.addExact(owner.cash,compensation); affected++;
+            log(room,"log",owner.id,target.name+"（"+target.id+"号）建筑从 "+previousLevel+" 级降至 "+target.level+" 级，"+owner.name+" 获得租金补偿 ¥"+compensation);
+            HistoryTrace.event(room,"building_downgrade",owner.id,"龙卷风降级与补偿已结算",java.util.Map.of("effectId",effect.id,"tileId",target.id,"previousLevel",previousLevel,"level",target.level,"rent",rent,"compensation",compensation));
+        }
+        log(room,"龙卷风摧毁停车场：共 "+affected+" 块地产建筑降低一级");
     }
     /** 输入全体费用效果，固定座位目标并展开子效果，原 pending 之外保存返回位置。 */
     private void chargeAll(Room room, GameEffect effect) {
@@ -48,7 +66,7 @@ public final class EventService {
         room.phase = frame.returnPhase; room.runtime.globalEvent = null;
         if (!turns.checkWinner(room) && current(room).bankrupt) turns.advance(room);
     }
-    /** 输入指定或随机地块，保存实际损失后触发当前配置订阅，空目标无事实。 */
+    /** 输入指定或随机地块，保存实际损失及摧毁前租金后触发补偿订阅，空目标无事实。 */
     private void destroy(Room room, GameEffect effect) {
         Tile target = tile(room, effect.tileId);
         if ("RANDOM_BUILT_PROPERTY".equals(effect.selector)) {
@@ -61,28 +79,29 @@ public final class EventService {
         if (target.level == 0 || owner == null || owner.bankrupt) { log(room, target.name + " 没有实际建筑损失，不触发补偿"); return; }
         DisasterResult result = new DisasterResult(); result.effectId = effect.id; result.tileId = target.id; result.ownerId = owner.id;
         result.destroyedLevels = target.level; result.loss = Math.multiplyExact(Rules.buildCost(room, target), target.level);
+        result.rent = Rules.rent(room, target);
         target.level = 0; result.eventId = random.id(); room.runtime.lastDisaster = result;
         log(room, target.name + " 的 " + result.destroyedLevels + " 级建筑被摧毁，" + owner.name + " 损失 " + result.loss);
         publishDestroyed(room, result, owner);
         HistoryTrace.event(room, "disaster", owner.id, "建筑灾害结果已确定", result);
     }
-    /** 输入实际损失快照，按当前规则顺序保存匹配明细并插入子效果；不接受客户端伪造事实。 */
+    /** 输入实际损失与租金快照，按当前规则保存匹配明细并插入以租金为基数的补偿效果。 */
     private void publishDestroyed(Room room, DisasterResult result, Player owner) {
         for (var rule : rules.getPassiveRules()) {
             if (!rule.trigger().equals(result.type) || !rule.tag().equals(result.tag) || result.loss <= 0) continue;
             CompensationResult matched = new CompensationResult(); matched.ruleId = rule.id(); result.compensations.add(matched);
             GameEffect check = effects.effect("RANDOM_COMPENSATION", owner); check.sourceEventId = result.eventId; check.passiveRuleId = rule.id();
-            check.amount = result.loss; check.probability = rule.probability(); check.compensationPercent = rule.compensationPercent();
+            check.amount = result.rent; check.probability = rule.probability(); check.compensationPercent = rule.compensationPercent();
             effects.submit(room, check);
         }
     }
-    /** 输入已匹配订阅，按损失快照抽样一次，保存判定并将奖励插在后续兄弟效果之前。 */
+    /** 输入已匹配订阅，复核租金快照后抽样一次并插入奖励；旧待结算效果保留原损失基数。 */
     private void compensate(Room room, GameEffect effect) {
         DisasterResult event = sourceEvent(room, effect); CompensationResult result = compensation(event, effect.passiveRuleId);
         if (result.sample != null) return;
         Player owner = player(room, effect.playerId);
         if (owner == null || owner.bankrupt) return;
-        require(event.ownerId.equals(owner.id) && event.loss == effect.amount, "补偿损失快照不一致");
+        require(event.ownerId.equals(owner.id) && (event.rent == null ? event.loss : event.rent) == effect.amount, "补偿基数快照不一致");
         result.sample = random.nextInt(100);
         HistoryTrace.event(room, "compensation", owner.id, "灾害补偿判定已完成", result);
         if (event.compensations.getFirst() == result) event.sample = result.sample;

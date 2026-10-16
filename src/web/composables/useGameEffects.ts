@@ -34,7 +34,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     motion.value = null; animatedPosition.value = null; rolling.value = false;
     moving.value = false; landing.value = false; step.value = 0; diceResult.value = null;
   }
-  /** 输入服务端快照、是否掷骰及落点反馈，依次展示换面、逐格移动和落地，无返回值。 */
+  /** 输入快照、掷骰标识及落点反馈，展示走格或直接传送动画，无返回值。 */
   function animateMotion(next: PublicRoomState, roll: boolean, feedback: () => void): void {
     clearMotion();
     const movement = next.motion!;
@@ -52,7 +52,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       later(delay + index * MOVE_STEP_MS, () => {
         moving.value = true; step.value = index + 1;
         animatedPosition.value = { id: movement.playerId, position };
-        playSound('step');
+        playSound(movement.teleport ? 'magic' : 'step');
       }, motionTimers);
     });
     later(delay + movement.path.length * MOVE_STEP_MS, () => {
@@ -112,7 +112,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       if (cashSound) playSound(cashSound);
     };
     if (next.motion && next.motion.id !== previous.motion?.id) {
-      const roll = next.motion.dice !== undefined ? next.motion.dice !== null && next.motion.dice > 0 : next.dice !== null && next.dice > 0 && (next.dice !== previous.dice || next.turnNumber !== previous.turnNumber || previous.phase === 'pre_roll');
+      const roll = !next.motion.teleport && (next.motion.dice !== undefined ? next.motion.dice !== null && next.motion.dice > 0 : next.dice !== null && next.dice > 0 && (next.dice !== previous.dice || next.turnNumber !== previous.turnNumber || previous.phase === 'pre_roll'));
       animateMotion(next, roll, feedback);
     } else {
       const actor = motion.value?.playerId;

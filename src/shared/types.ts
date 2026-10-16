@@ -8,7 +8,7 @@ export interface EconomySettings {
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
+export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -31,7 +31,7 @@ export interface Card extends ContentResult { kind: ItemKind }
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: 'free_upgrade' | 'self_destroy' | 'gamble' | 'release' | 'hand_limit';
+  type: 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit';
   tileIds: number[];
   cards: Card[];
   cardId: string | null;
@@ -64,6 +64,8 @@ export interface PublicPlayer {
   trapImmunityTurns?: number;
   nextPaymentWaiver?: boolean;
   nextRentDouble?: boolean;
+  /** 塔塔开：下次移动翻倍；旧快照缺省为无。 */
+  nextMoveDouble?: boolean;
 }
 /** 棋盘格公开状态。 */
 export interface Tile {
@@ -120,6 +122,8 @@ export interface PublicLog { type?: string; mentions?: PlayerMention[]; id: stri
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   id: string; playerId: string; from: number; path: number[];
+  /** 直接传送，路径只含目的地，不表示走过沿途地块。 */
+  teleport?: boolean;
   /** 本段掷骰结果；事件移动为空，旧协议可缺省。 */
   dice?: number | null;
   /** 触发本段移动的公开事件，恢复后也先揭卡再移动。 */

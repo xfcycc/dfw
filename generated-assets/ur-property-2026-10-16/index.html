@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UR 地产事件 · 基建狂魔与爆破狂人</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 20px 48px; background: #fbf1e4; color: #705442; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+    header { max-width: 790px; margin: 0 auto 24px; }
+    h1 { font-size: 26px; margin: 0 0 12px; }
+    p { line-height: 1.8; }
+    main { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; max-width: 790px; margin: auto; align-items: start; }
+    .event-pool { display: block; text-align: center; margin: 0 0 10px; font-size: 14px; font-weight: 700; color: #a35561; }
+    @media (max-width: 600px) { main { grid-template-columns: 1fr; max-width: 380px; } h1 { font-size: 22px; } }
+  </style>
+</head>
+<body>
+  <header><h1>基建狂魔 × 爆破狂人</h1><p>两张 UR 事件：抽到即选地处理，不进入手牌。以下使用实际 ContentCard 组件及服务端生成的默认效果文案。</p></header>
+  <div id="cards"></div>
+  <script type="module" src="./preview.js"></script>
+</body>
+</html>

@@ -15,8 +15,11 @@ public final class ContentService {
         this.catalog = catalog; this.effects = effects; this.random = random;
         effects.register("CONTENT_EVENT", this::resolveEvent);
         effects.register("FREE_UPGRADE", this::freeUpgrade);
+        effects.register("FULL_UPGRADE", this::freeUpgrade);
         effects.register("SELF_DESTROY", this::selfDestroy);
+        effects.register("OPPONENT_DESTROY", this::selfDestroy);
         effects.register("GAMBLE", this::gamble);
+        effects.register("GRANT_RANDOM_LAND", this::grantLand);
     }
     /** 输入新局房间，将全部内容现金常量冻结到其经济快照。 */
     public void freeze(Room room) { catalog.freeze(room); }
@@ -80,27 +83,47 @@ public final class ContentService {
             case "rich_fee" -> submit(room,"PAY_FEE",player(room,r.targetId),p.get("amount"));
             case "bottom_income" -> submit(room,"GRANT_MONEY",player(room,r.targetId),p.get("amount"));
             case "bottom_bonus" -> { submit(room,"GRANT_MONEY",owner,p.get("amount")); submit(room,"GRANT_MONEY",player(room,r.targetId),p.get("bonus")); }
-            case "free_upgrade","gamble","self_destroy" -> { GameEffect e=effects.effect(switch(r.mechanism){case "free_upgrade"->"FREE_UPGRADE";case "gamble"->"GAMBLE";default->"SELF_DESTROY";},owner); e.content=r; effects.submit(room,e); }
+            case "free_upgrade","full_upgrade","gamble","self_destroy","opponent_destroy" -> { GameEffect e=effects.effect(switch(r.mechanism){case "free_upgrade"->"FREE_UPGRADE";case "full_upgrade"->"FULL_UPGRADE";case "gamble"->"GAMBLE";case "opponent_destroy"->"OPPONENT_DESTROY";default->"SELF_DESTROY";},owner); e.content=r; effects.submit(room,e); }
             case "disaster" -> { GameEffect e=effects.effect("DESTROY_BUILDINGS",owner); e.selector="RANDOM_BUILT_PROPERTY"; effects.submit(room,e); }
+            case "all_morale" -> {
+                for (Player target : room.players) if (!target.bankrupt) { GameEffect e=effects.effect("ADD_STATUS",target); e.statusId="NEXT_MOVE_DOUBLE"; e.amount=1; effects.submit(room,e); }
+            }
+            case "talent" -> { submit(room,"GRANT_RANDOM_LAND",owner,0); submit(room,"GRANT_MONEY",owner,p.get("amount")); submit(room,"DRAW_CARDS",owner,p.get("count")); }
+            case "global_demolition" -> { GameEffect e=effects.effect("LOWER_ALL_BUILDINGS",owner); e.compensationPercent=p.get("compensationPercent").intValue(); effects.submit(room,e); }
             case "trap_immunity","next_waiver","rent_double" -> { GameEffect e=effects.effect("ADD_STATUS",owner); e.statusId=switch(r.mechanism){case "trap_immunity"->"TRAP_IMMUNITY";case "next_waiver"->"NEXT_PAYMENT_WAIVER";default->"NEXT_RENT_DOUBLE";}; e.amount=r.mechanism.equals("trap_immunity")?3:1; effects.submit(room,e); }
             default -> throw new GameError("内容机制不可用");
         }
     }
     /** 输入类型、作用人和已换算数值，追加具体效果，无返回值。 */
     private void submit(Room room,String type,Player owner,long amount) { GameEffect e=effects.effect(type,owner); e.amount=amount; effects.submit(room,e); }
+    /** 输入人才引进领地效果，随机授予一块无主地产；无目标只跳过领地，不阻断后续现金与补给。 */
+    private void grantLand(Room room, GameEffect effect) {
+        Player owner=player(room,effect.playerId);
+        List<Tile> targets=room.board.stream().filter(t -> t.type.equals("property") && t.ownerId==null).toList();
+        if(targets.isEmpty()) { log(room,"人才引进：当前没有无主地产，生活费和道具照常发放"); return; }
+        Tile target=targets.get(random.nextInt(targets.size())); target.ownerId=owner.id;
+        log(room,"log",owner.id,owner.name+" 通过人才引进免费获得 "+target.name+"（"+target.id+"号）");
+        HistoryTrace.event(room,"land_granted",owner.id,"人才引进地产已确定",target);
+    }
     /** 输入作用人，返回其本回合尚未升级的未抵押、未满级地产。 */
     private static List<Integer> upgradeTargets(Room room, Player owner) { return room.board.stream().filter(t -> t.type.equals("property") && Objects.equals(t.ownerId,owner.id) && !t.mortgaged && t.level<Rules.MAX_LEVEL && !room.upgradedTiles.contains(t.id)).map(t -> t.id).toList(); }
-    /** 输入免费升级事件，无目标才给固定替代现金，否则保存可放弃选择。 */
+    /** 输入普通或满级升级事件，无目标才给固定替代现金，否则保存可放弃的合法地产选择。 */
     private void freeUpgrade(Room room,GameEffect effect) {
         Player owner=player(room,effect.playerId); List<Integer> targets=upgradeTargets(room,owner);
         if (targets.isEmpty()) { submit(room,"GRANT_MONEY",owner,effect.content.parameters.get("fallback")); return; }
-        ContentChoice choice=open(room,owner,"free_upgrade"); choice.tileIds.addAll(targets); choice.content=effect.content;
+        ContentChoice choice=open(room,owner,effect.content.mechanism.equals("full_upgrade") ? "full_upgrade" : "free_upgrade"); choice.tileIds.addAll(targets); choice.content=effect.content;
     }
-    /** 输入自家毁楼事件，有楼时要求选地；无目标直接完成，不生成损失或补偿。 */
+    /** 输入房间、选择者及是否攻击对手，返回对应未破产业主的有建筑地产。 */
+    private static List<Integer> destroyTargets(Room room, Player owner, boolean opponent) {
+        Set<String> owners = new HashSet<>();
+        for (Player candidate : room.players) if (!candidate.bankrupt && (opponent ? !candidate.id.equals(owner.id) : candidate.id.equals(owner.id))) owners.add(candidate.id);
+        return room.board.stream().filter(t -> t.type.equals("property") && t.level>0 && owners.contains(t.ownerId)).map(t -> t.id).toList();
+    }
+    /** 输入自家或对手全毁事件，有楼时保存选地窗口；无目标直接完成，不生成损失或补偿。 */
     private void selfDestroy(Room room,GameEffect effect) {
-        Player owner=player(room,effect.playerId); List<Integer> targets=room.board.stream().filter(t -> Objects.equals(t.ownerId,owner.id) && t.level>0).map(t -> t.id).toList();
-        if(targets.isEmpty()) { log(room,owner.name+" 没有可摧毁的自家建筑"); return; }
-        ContentChoice choice=open(room,owner,"self_destroy"); choice.tileIds.addAll(targets); choice.content=effect.content;
+        Player owner=player(room,effect.playerId); boolean opponent=effect.content.mechanism.equals("opponent_destroy"); List<Integer> targets=destroyTargets(room,owner,opponent);
+        if(targets.isEmpty()) { log(room,owner.name+(opponent ? " 没有可摧毁的对手建筑" : " 没有可摧毁的自家建筑")); return; }
+        ContentChoice choice=open(room,owner,opponent ? "opponent_destroy" : "self_destroy"); choice.tileIds.addAll(targets); choice.content=effect.content;
     }
     /** 输入完整赌博参数，保存可参加或放弃窗口，不允许在该窗口抵押筹款。 */
     private void gamble(Room room,GameEffect effect) { ContentChoice choice=open(room,player(room,effect.playerId),"gamble"); choice.content=effect.content; }
@@ -119,11 +142,11 @@ public final class ContentService {
         room.pending=pending("choice",owner,null,0,null); room.pending.id=choice.id;
         room.runtime.effectsWaiting=true; return choice;
     }
-    /** 输入当前私人选择及玩家答复，校验后一次确认并恢复父位置；UR 风险道具仅在确认下注时消费。 */
+    /** 输入选择身份及答复，复核目标后结算升级或入队灾害并恢复父位置；UR 风险道具确认下注才消费。 */
     public void decide(Room room,Player owner,Action action) {
         ContentChoice choice=room.runtime.choice;
         require(choice!=null && choice.playerId.equals(owner.id) && choice.id.equals(action.decisionId),"此选择已失效，请同步最新局面");
-        if(Set.of("free_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
+        if(Set.of("free_upgrade","full_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
         switch(choice.type) {
             case "hand_limit" -> {
                 require(!Boolean.FALSE.equals(action.accept),"请确认保留六张道具");
@@ -133,18 +156,18 @@ public final class ContentService {
                 owner.cash=Math.addExact(owner.cash,Math.multiplyExact(choice.cards.size()-6,choice.discardCash));
                 log(room,owner.name+" 已整理私人补给");
             }
-            case "free_upgrade" -> {
+            case "free_upgrade","full_upgrade" -> {
                 if (Boolean.TRUE.equals(action.accept)) {
                     require(choice.tileIds.contains(action.tileId) && upgradeTargets(room,owner).contains(action.tileId),"请选择合法的自家地产");
                     Tile target=tile(room,action.tileId);
                     if(choice.cardId!=null) consume(room,owner,find(owner,choice.cardId),true,action);
-                    target.level++; room.upgradedTiles.add(target.id); log(room,"log",owner.id,owner.name+" 免费升级 "+target.name+"（"+target.id+"号），建筑从 "+(target.level-1)+" 级升至 "+target.level+" 级，费用 ¥0，现金余额 ¥"+String.format("%,d",owner.cash));
+                    int previousLevel=target.level; target.level=choice.type.equals("full_upgrade") ? Rules.MAX_LEVEL : target.level+1;
+                    room.upgradedTiles.add(target.id); log(room,"log",owner.id,owner.name+" 免费升级 "+target.name+"（"+target.id+"号），建筑从 "+previousLevel+" 级升至 "+target.level+" 级，费用 ¥0，现金余额 ¥"+String.format("%,d",owner.cash));
                 }
             }
-            case "self_destroy" -> {
+            case "self_destroy","opponent_destroy" -> {
                 require(!Boolean.FALSE.equals(action.accept),"请选择目标并确认摧毁建筑");
-                require(choice.tileIds.contains(action.tileId),"请选择自己的有建筑地产"); Tile target=tile(room,action.tileId);
-                require(target!=null && Objects.equals(target.ownerId,owner.id) && target.level>0,"该建筑已不可用");
+                require(choice.tileIds.contains(action.tileId) && destroyTargets(room,owner,choice.type.equals("opponent_destroy")).contains(action.tileId),"请选择合法的有建筑地产"); Tile target=tile(room,action.tileId);
                 GameEffect e=effects.effect("DESTROY_BUILDINGS",owner); e.tileId=target.id; e.resumesDecision=true; effects.submit(room,e);
             }
             case "gamble" -> {
@@ -196,6 +219,10 @@ public final class ContentService {
             case "swap" -> {
                 require(opponent!=null && !opponent.bankrupt && !opponent.id.equals(owner.id) && !opponent.jailed,"请选择未服刑的对手"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("SWAP_POSITION",owner); e.targetId=opponent.id; effects.submit(room,e);
+            }
+            case "blast" -> {
+                require(opponent!=null && !opponent.bankrupt,"请选择一名未破产玩家，可选择自己"); consume(room,owner,card,true,action);
+                GameEffect e=effects.effect("RANDOM_TELEPORT",owner); e.targetId=opponent.id; effects.submit(room,e);
             }
             case "bonus" -> { consume(room,owner,card,true,action); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); }
             case "cash" -> { consume(room,owner,card,true,action); submit(room,"GRANT_MONEY",owner,card.parameters.get("amount")); }

@@ -11,6 +11,7 @@ def classify(pool, effect):
     """输入素材池和效果原文，返回已确认机制及完整参数，不改动原效果数值。"""
     nums = [int(n) for n in re.findall(r'\d+', effect)]
     if pool == 'card':
+        if effect.startswith('随机传送'): return 'blast', {}
         if effect.startswith('赌博'): return 'gamble', dict(wager=nums[0], probability=nums[1], prize=nums[2])
         if effect.startswith('替代掷骰'): return ('remote', {}) if '自选' in effect else ('move', dict(steps=nums[0]))
         if effect.startswith('主动位移'): return 'move', dict(steps=nums[0] * (-1 if '后退' in effect else 1))
@@ -19,6 +20,9 @@ def classify(pool, effect):
         for prefix, kind in [('路障','barrier'),('拆房','demolish'),('换位','swap'),('免租','immunity'),('免费升级','freeUpgrade'),('付款减免','halfPayment'),('解除监禁','release'),('抢夺手牌','steal')]:
             if effect.startswith(prefix): return kind, {}
     else:
+        if effect.startswith('全员振奋'): return 'all_morale', {}
+        if effect.startswith('人才引进'): return 'talent', dict(amount=nums[0], count=nums[1])
+        if effect.startswith('全图建筑'): return 'global_demolition', dict(compensationPercent=nums[0])
         if effect.startswith('获得现金'): return 'income', dict(amount=nums[0])
         if effect.startswith('支付现金'): return 'fee', dict(amount=nums[0])
         if effect.startswith('前进'): return 'forward', dict(steps=nums[0])
@@ -32,7 +36,9 @@ def classify(pool, effect):
         if effect.startswith('净资产最低'): return 'bottom_income', dict(amount=nums[0])
         if effect.startswith('赌博'): return 'gamble', dict(wager=nums[0], probability=nums[1], prize=nums[2])
         if effect.startswith('摧毁自己'): return 'self_destroy', {}
+        if effect.startswith('指定对手'): return 'opponent_destroy', {}
         if effect.startswith('随机摧毁'): return 'disaster', {}
+        if effect.startswith('直升满级'): return 'full_upgrade', dict(fallback=400)
         if effect.startswith('免费升级'): return 'free_upgrade', dict(fallback=400)
         if '陷阱免疫' in effect: return 'trap_immunity', dict(count=3)
         if '翻倍' in effect: return 'rent_double', {}
@@ -46,13 +52,14 @@ def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
     if pool == 'card':
         if kind == 'gamble': return 'UR'
-        if kind in {'remote', 'immunity', 'demolish', 'swap', 'freeUpgrade', 'steal'}: return 'SSR'
+        if kind in {'remote', 'immunity', 'demolish', 'swap', 'blast', 'freeUpgrade', 'steal'}: return 'SSR'
         if kind == 'cash': return 'R' if values['amount'] <= 600 else 'SR'
         if kind in {'fixed', 'move', 'bonus'}: return 'SR'
         return 'SR'
     if kind in {'income', 'fee'}:
         amount = values['amount']
         return 'R' if amount <= 600 else 'SR' if amount <= 1300 else 'SSR' if amount < 3000 else 'UR'
+    if kind in {'opponent_destroy', 'full_upgrade', 'talent', 'global_demolition'}: return 'UR'
     if kind in {'cards', 'cards_one', 'cards_two'}: return 'R' if values['count'] == 1 else 'SR'
     if kind in {'forward', 'back', 'skip', 'gamble'}: return 'SR'
     return 'SSR'
@@ -78,7 +85,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':123,'fortune':112,'card':113}[pool]
+    expected = {'chance':125,'fortune':115,'card':114}[pool]
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')

@@ -1,0 +1,37 @@
+[ {
+  "cardType" : null,
+  "description" : "你替对手的楼订了一场告别演出。烟花升空，房主还在举着手机录像。倒计时归零，整栋楼跟着谢幕，他这才发现节目单最后一项叫定向爆破。",
+  "effect" : "选择对手一块有建筑的地产，摧毁全部建筑并保留产权；有 50% 概率向受损业主补偿摧毁前单次租金的 50%（向下取整，抵押地产租金为 0）；无合法目标则结束",
+  "id" : "chance_demolition_fanatic",
+  "kind" : null,
+  "mechanism" : "opponent_destroy",
+  "name" : "爆破狂人",
+  "parameterId" : "default",
+  "parameters" : { },
+  "pool" : "chance",
+  "privateSupply" : false,
+  "quote" : "烟花是送你的，楼也是送走的。",
+  "rarity" : "UR",
+  "sample" : null,
+  "skinId" : "chance_demolition_fanatic",
+  "targetId" : null
+}, {
+  "cardType" : null,
+  "description" : "你在自家地块旁点了份外卖，顺手签收了一车楼房模块。吊车一趟接一趟，门窗连着墙一起落位。骑手赶到时看了看导航，打来电话问：刚才这里不是还没这么高吗？",
+  "effect" : "选择自己的未抵押、未满级且本回合未升级地产，免费直升 3 级，计入本回合升级；可放弃，无合法目标时获得 ¥800",
+  "id" : "fortune_construction_frenzy",
+  "kind" : null,
+  "mechanism" : "full_upgrade",
+  "name" : "基建狂魔",
+  "parameterId" : "fallback-400",
+  "parameters" : {
+    "fallback" : 800
+  },
+  "pool" : "fortune",
+  "privateSupply" : false,
+  "quote" : "你外卖还没到，我这边已经封顶了。",
+  "rarity" : "UR",
+  "sample" : null,
+  "skinId" : "fortune_construction_frenzy",
+  "targetId" : null
+} ]

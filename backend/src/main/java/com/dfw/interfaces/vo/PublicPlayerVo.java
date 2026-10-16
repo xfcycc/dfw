@@ -11,6 +11,8 @@ public class PublicPlayerVo {
     public boolean nextPaymentWaiver;
     /** 已持有的下一次正租金翻倍状态。 */
     public boolean nextRentDouble;
+    /** 塔塔开：下一次最终移动距离翻倍，传送或换位不消耗。 */
+    public boolean nextMoveDouble;
     /** 玩家唯一标识。 */
     public String id;
     /** 公开昵称。 */

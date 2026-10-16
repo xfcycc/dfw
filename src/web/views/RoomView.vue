@@ -129,17 +129,17 @@ const selectedTileOwner = computed(() => game.room?.players.find(player => playe
 const turnIdentity = computed(() => `${game.room?.roomId ?? code.value}:${game.room?.gameId}:${game.room?.turnNumber}`);
 const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && !game.privateData?.activeCardUsed);
 const drafting = computed(() => !!selectedCard.value && selectedCardActive.value);
-const mapChoice = computed(() => choice.value && ['free_upgrade', 'self_destroy'].includes(choice.value.type) ? choice.value : null);
-const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && ['barrier', 'demolish'].includes(selectedCard.value!.kind) ? 'tile' : drafting.value && ['swap', 'steal'].includes(selectedCard.value!.kind) ? 'player' : null);
+const mapChoice = computed(() => choice.value && ['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.value.type) ? choice.value : null);
+const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && ['barrier', 'demolish'].includes(selectedCard.value!.kind) ? 'tile' : drafting.value && ['swap', 'steal', 'blast'].includes(selectedCard.value!.kind) ? 'player' : null);
 const targeting = computed(() => targetKind.value !== null && (modal.value === 'card' || modal.value === 'choice'));
 const eligibleTiles = computed(() => targetKind.value === 'tile' ? game.room?.board.filter(tile => !tileReason(tile)).map(tile => tile.id) ?? [] : []);
-const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => !player.bankrupt && player.id !== game.me?.id && (selectedCard.value?.kind !== 'swap' || !player.jailed)).map(player => player.id) ?? [] : []);
+const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => !player.bankrupt && (selectedCard.value?.kind === 'blast' || player.id !== game.me?.id) && (selectedCard.value?.kind !== 'swap' || !player.jailed)).map(player => player.id) ?? [] : []);
 const targetTileId = computed(() => targetKind.value === 'tile' && selectedTarget.value !== '' ? Number(selectedTarget.value) : null);
 const targetLabel = computed(() => targetKind.value === 'tile' && targetTileId.value != null ? `${game.room?.board[targetTileId.value]?.name} · ${targetTileId.value}号` : game.room?.players.find(player => player.id === selectedTarget.value)?.name ?? '');
 const targetHint = computed(() => {
-  if (mapChoice.value) return mapChoice.value.type === 'free_upgrade' ? '选择自己的未抵押、未满级且本回合未升级地产。' : '选择自己的有建筑地产，确认后摧毁全部建筑。';
+  if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules = { barrier: '选择前方 1～6 格内任意无路障地块。', demolish: '选择对手有建筑的地产。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。' };
+  const rules = { barrier: '选择前方 1～6 格内任意无路障地块。', demolish: '选择对手有建筑的地产。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。' };
   return rules[selectedCard.value!.kind as keyof typeof rules];
 });
 /** 输入房间地块与玩家，返回按可选性排序的目标选项；地块携带原始价格和建筑插画信息。 */
@@ -289,7 +289,7 @@ function selectTile(tile: Tile): void {
 /** 输入排行榜玩家身份，选择合法玩家；不点击即出牌。 */
 function selectPlayer(id: string): void {
   if (targetKind.value !== 'player') return;
-  if (!eligiblePlayers.value.includes(id)) { game.notify(selectedCard.value?.kind === 'swap' ? '请选择未破产、未服刑的其他玩家。' : '请选择未破产的其他玩家。'); return; }
+  if (!eligiblePlayers.value.includes(id)) { game.notify(selectedCard.value?.kind === 'blast' ? '请选择未破产玩家，可以选择自己。' : selectedCard.value?.kind === 'swap' ? '请选择未破产、未服刑的其他玩家。' : '请选择未破产的其他玩家。'); return; }
   if (game.canAct) selectedTarget.value = id;
 }
 /** 输入地图规模，通过原命令通道保存房主设置，选中状态由服务端快照更新。 */

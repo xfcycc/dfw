@@ -115,7 +115,7 @@
     },
     {
       "id": "tornado",
-      "description": "随机一块有建筑地产的全部建筑被摧毁，产权保留；业主有 30% 概率获得建筑成本损失的 50% 补偿。无建筑则无损失、无补偿。",
+      "description": "随机一块有建筑地产的全部建筑被摧毁，产权保留；业主有 50% 概率获得摧毁前单次租金的 50% 补偿，向下取整，抵押地产租金为 0。无建筑则无损失、无补偿。",
       "steps": [
         {
           "op": "APPLY_EFFECT",
@@ -132,7 +132,7 @@
       "id": "government_disaster_compensation",
       "trigger": "BUILDINGS_DESTROYED",
       "tag": "DISASTER",
-      "probability": 30,
+      "probability": 50,
       "compensationPercent": 50
     }
   ],
@@ -1626,6 +1626,56 @@
                     "rarity": "SSR",
                     "quote": "定我就定我，怎么租还翻倍？",
                     "description": "定身术突然落下，你保持着掏钱包的姿势僵住。房东见你迟迟不动，以为在故意拖延，抱着账本越等脸色越难看。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "opponent_destroy",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_demolition_fanatic",
+                    "name": "爆破狂人",
+                    "rarity": "UR",
+                    "quote": "烟花是送你的，楼也是送走的。",
+                    "description": "你替对手的楼订了一场告别演出。烟花升空，房主还在举着手机录像。倒计时归零，整栋楼跟着谢幕，他这才发现节目单最后一项叫定向爆破。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "all_morale",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_tatakae",
+                    "name": "塔塔开",
+                    "rarity": "SSR",
+                    "quote": "塔塔开！塔塔开！",
+                    "description": "艾伦站在镜子前，一遍遍低声重复着那个词。门外的人停下脚步，原本准备好的劝说忽然不知从何说起。远处传来集合的号角，有人重新系紧披风，有人握住刀柄，沉默的走廊里终于响起了脚步声。"
                   }
                 ]
               }

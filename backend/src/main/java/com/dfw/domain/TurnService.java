@@ -10,12 +10,13 @@ public class TurnService {
     private final EffectResolver effects;
     private final ContentService content;
     private final ActivityService activities;
-    /** 输入经济规则与独立随机源，构造回合服务。 */
+    /** 输入经济规则、随机源与结算服务，注册回合、移动和不结算落点的传送效果。 */
     public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content, ActivityService activities) {
         this.economy = economy; this.random = random; this.effects = effects; this.content = content; this.activities = activities;
         effects.register("DRAW_CARDS", this::drawCards);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", this::moveEffect);
+        effects.register("RANDOM_TELEPORT", this::teleport);
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
         effects.register("PAY_FEE", (room, effect) -> economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId));
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
@@ -77,8 +78,9 @@ public class TurnService {
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.getLast().beforeEvent = effect.content;
         if (effect.message != null) log(room, effect.message);
     }
-    /** 输入房间、玩家和有符号步数，处理路障及正反向经过或原地停留的起点奖励，保存结算路径，无返回值。 */
+    /** 输入房间、玩家及最终有符号步数，消费塔塔开后翻倍，再处理路障、起点奖励和路径，无返回值。 */
     public void move(Room room, Player player, int steps) {
+        if (StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = room.movementSequence.isEmpty() && room.phase.equals("pre_roll") ? room.dice : null;
@@ -93,6 +95,16 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
         content.overflow(room);
+    }
+    /** 输入已校验的传送目标玩家，随机直达任意地块并保存动画；不走路径、不结算落点或消费振奋。 */
+    private void teleport(Room room, GameEffect effect) {
+        Player target=player(room,effect.targetId);
+        GameError.require(target!=null && !target.bankrupt,"传送目标不可用");
+        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
+        target.position=random.nextInt(room.board.size()); motion.path.add(target.position);
+        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=target.id; segment.from=motion.from; segment.path=motion.path; segment.teleport=true;
+        room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
+        log(room,"log",target.id,target.name+" 被爆破鬼才传送至 "+room.board.get(target.position).name+"（"+target.position+"号），此次落点不结算");
     }
     /** 输入房间、领奖玩家及触发动作，按本局配置发放起点现金与道具并记录日志，无返回值。 */
     private void rewardStart(Room room, Player player, String action) {

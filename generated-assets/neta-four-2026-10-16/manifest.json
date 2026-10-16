@@ -1,0 +1,50 @@
+[
+  {
+    "skinId": "card_ziggs_blast",
+    "name": "爆破鬼才",
+    "rarity": "SSR",
+    "png": "generated-assets/neta-four-2026-10-16/card_ziggs_blast.png",
+    "webp": "src/web/public/images/cards/card_ziggs_blast.webp",
+    "url": "/images/cards/card_ziggs_blast.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 203796,
+    "sha256": "7f76a5b7bcadf60283da71e08d305ec2953bb003e0c2424b501fb19129bffa54"
+  },
+  {
+    "skinId": "chance_tatakae",
+    "name": "塔塔开",
+    "rarity": "SSR",
+    "png": "generated-assets/neta-four-2026-10-16/chance_tatakae.png",
+    "webp": "src/web/public/images/cards/chance_tatakae.webp",
+    "url": "/images/cards/chance_tatakae.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 176852,
+    "sha256": "692b8fa1fc9d0f2c321812fddbcbd78ab37f37a6811b62e449c8f1f505d83fb6"
+  },
+  {
+    "skinId": "fortune_talent_recruitment",
+    "name": "人才引进",
+    "rarity": "UR",
+    "png": "generated-assets/neta-four-2026-10-16/fortune_talent_recruitment.png",
+    "webp": "src/web/public/images/cards/fortune_talent_recruitment.webp",
+    "url": "/images/cards/fortune_talent_recruitment.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 185666,
+    "sha256": "dd1abf0d94a52e9d62217869e4b34e8e935aba5fa62fc8ef59949338364a38d1"
+  },
+  {
+    "skinId": "fortune_parking_tornado",
+    "name": "龙卷风摧毁停车场",
+    "rarity": "UR",
+    "png": "generated-assets/neta-four-2026-10-16/fortune_parking_tornado.png",
+    "webp": "src/web/public/images/cards/fortune_parking_tornado.webp",
+    "url": "/images/cards/fortune_parking_tornado.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 187950,
+    "sha256": "516f0078af6e141c67c9c3eb8a706a770256e90364ef8887e4ccdc0f167e8f70"
+  }
+]

@@ -1501,6 +1501,32 @@
             ]
           }
         ]
+      },
+      {
+        "id": "blast",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_ziggs_blast",
+                    "name": "爆破鬼才",
+                    "rarity": "SSR",
+                    "quote": "我算过了，应该只会炸一点点。",
+                    "description": "吉格斯戴好护目镜，把新作品摆上工作台，郑重宣布这次实验绝对可控。助手刚翻开记录本，整扇窗户就从眼前飞了出去。烟尘里，他兴奋地竖起一根手指：很好，现在我们知道窗户不够结实了。",
+                    "cardType": "主动"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

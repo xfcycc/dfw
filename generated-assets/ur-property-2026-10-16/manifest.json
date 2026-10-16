@@ -1,0 +1,28 @@
+[
+  {
+    "skinId": "chance_demolition_fanatic",
+    "name": "爆破狂人",
+    "pool": "chance",
+    "rarity": "UR",
+    "png": "generated-assets/ur-property-2026-10-16/chance_demolition_fanatic.png",
+    "webp": "src/web/public/images/cards/chance_demolition_fanatic.webp",
+    "url": "/images/cards/chance_demolition_fanatic.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 264894,
+    "sha256": "7b3cf6da06b98ac278285f5908619b5f05aa4414be364b7ec43d55960f61e0ea"
+  },
+  {
+    "skinId": "fortune_construction_frenzy",
+    "name": "基建狂魔",
+    "pool": "fortune",
+    "rarity": "UR",
+    "png": "generated-assets/ur-property-2026-10-16/fortune_construction_frenzy.png",
+    "webp": "src/web/public/images/cards/fortune_construction_frenzy.webp",
+    "url": "/images/cards/fortune_construction_frenzy.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 258646,
+    "sha256": "4b7b33acf427fed340103c95d69f19da1e29db94563bcb92b0e58c08b775bef8"
+  }
+]

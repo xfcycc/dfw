@@ -29,7 +29,7 @@ public class GameEffect {
     public String selector;
     /** 补偿成功概率的整数百分比。 */
     public int probability;
-    /** 按实际建筑成本损失赔付的整数百分比。 */
+    /** 按摧毁前租金快照赔付的整数百分比，旧待结算效果保留原基数。 */
     public int compensationPercent;
     /** 事实触发的子效果所关联的实际损失事件标识。 */
     public String sourceEventId;

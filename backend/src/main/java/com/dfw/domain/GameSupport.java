@@ -17,7 +17,7 @@ public final class GameSupport {
         room.logs.add(0, entry); if (room.logs.size() > 100) room.logs.removeLast();
         HistoryTrace.event(room, type, actorId, text, Map.of("logId", entry.id, "mentions", entry.mentions));
     }
-    /** 输入实际发动的手牌、目标和效果，公开已使用道具，不公开剩余手牌或抢夺结果卡面。 */
+    /** 输入已使用手牌及目标，保留皮肤身份和效果供公开揭卡，不公开剩余手牌或抢夺结果。 */
     public static void cardLog(Room room, Player owner, Card card, Action action) {
         Player opponent = player(room, action.playerId); Tile target = tile(room, action.tileId);
         String aim = opponent != null ? opponent.name : target != null ? target.name + "（" + target.id + "号）" : owner.name;
@@ -34,6 +34,7 @@ public final class GameSupport {
         if (card.kind.equals("barrier")) effect = "在前方六格内地块设置一次路障，首个受影响者截停并正常结算落点";
         if (card.kind.equals("remote")) effect = "指定 " + action.point + " 点移动，替代本次掷骰";
         ContentResult played = new ContentResult(); played.id = card.id; played.pool = "card"; played.kind = card.kind;
+        played.skinId = card.skinId;
         played.name = card.name; played.rarity = card.rarity; played.cardType = card.cardType;
         played.quote = card.quote; played.description = card.description; played.effect = effect;
         room.runtime.playedCard = played; room.runtime.playedCardPlayerId = owner.id;

@@ -39,6 +39,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   immunity: { name: '免租', icon: '🛡️', description: '支付路费前使用，免除本次全部租金。' },
   demolish: { name: '拆房', icon: '🔨', description: '让另一玩家的一块地产降一级，无退款。' },
   swap: { name: '换位', icon: '🔄', description: '与未服刑的对手交换位置，然后正常掷骰。' },
+  blast: { name: '爆破鬼才', icon: '💥', description: '指定一名未破产玩家（可选自己），随机直接传送，此次落点不结算。' },
 };
 /** 输入地图种子，返回只用于地图配置的确定性随机数函数。 */
 function seededRandom(seed: string): () => number {

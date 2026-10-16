@@ -71,7 +71,7 @@ public class RuleDefinition {
         public String tag;
         /** 每次实际损失事件的成功概率，整数百分比。 */
         public Integer probability;
-        /** 按损失快照补偿的整数百分比。 */
+        /** 按摧毁前租金快照补偿的整数百分比。 */
         public Integer compensationPercent;
     }
 

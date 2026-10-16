@@ -5,15 +5,15 @@ import static com.dfw.domain.GameError.require;
 
 /** 首期持续状态生命周期；陷阱免疫只作用于 TRAP，不影响租金或灾害。 */
 public final class StatusService {
-    /** 输入房间和已解析效果，立即赋予或刷新三个后续个人回合的陷阱免疫。 */
+    /** 输入房间与状态效果，赋予或刷新陷阱免疫、一次性费用或塔塔开状态，重复不叠加。 */
     public static void add(Room room, GameEffect effect) {
-        require(("TRAP_IMMUNITY".equals(effect.statusId) && effect.amount == 3) || (java.util.Set.of("NEXT_PAYMENT_WAIVER","NEXT_RENT_DOUBLE").contains(effect.statusId) && effect.amount == 1), "持续状态参数不可用");
+        require(("TRAP_IMMUNITY".equals(effect.statusId) && effect.amount == 3) || (java.util.Set.of("NEXT_PAYMENT_WAIVER","NEXT_RENT_DOUBLE","NEXT_MOVE_DOUBLE").contains(effect.statusId) && effect.amount == 1), "持续状态参数不可用");
         Player owner = player(room, effect.playerId);
         if (owner == null || owner.bankrupt) return;
         PlayerStatus status = owner.statuses.stream().filter(value -> value.type.equals(effect.statusId)).findFirst().orElse(null);
         if (status == null) { status = new PlayerStatus(); status.type = effect.statusId; owner.statuses.add(status); }
         status.sourceEffectId = effect.id; status.appliedTurn = room.turnNumber; status.remainingTurns = (int)effect.amount;
-        log(room, owner.name + switch(effect.statusId) { case "TRAP_IMMUNITY" -> " 获得陷阱免疫，持续三个后续个人回合，休息也计数"; case "NEXT_PAYMENT_WAIVER" -> " 获得下次强制费用免单，不叠加"; default -> " 下次正租金翻倍，不叠加"; });
+        log(room, owner.name + switch(effect.statusId) { case "TRAP_IMMUNITY" -> " 获得陷阱免疫，持续三个后续个人回合，休息也计数"; case "NEXT_PAYMENT_WAIVER" -> " 获得下次强制费用免单，不叠加"; case "NEXT_MOVE_DOUBLE" -> " 获得塔塔开，下次最终移动距离翻倍，不叠加，传送与换位不消耗"; default -> " 下次正租金翻倍，不叠加"; });
     }
     /** 输入玩家和效果标签，返回有效状态是否免疫该标签。 */
     public static boolean immune(Player player, String tag) {

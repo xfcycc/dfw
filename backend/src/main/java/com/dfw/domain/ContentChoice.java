@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ContentChoice {
     /** 唯一选择身份。 */
     public String id;
-    /** free_upgrade、self_destroy、gamble、release 或 hand_limit。 */
+    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release 或 hand_limit。 */
     public String type;
     /** 实际做选择的玩家。 */
     public String playerId;

@@ -1177,6 +1177,88 @@
             ]
           }
         ]
+      },
+      {
+        "id": "full_upgrade",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "fallback-400",
+                "rarity": "UR",
+                "values": {
+                  "fallback": 400
+                },
+                "skins": [
+                  {
+                    "id": "fortune_construction_frenzy",
+                    "name": "基建狂魔",
+                    "rarity": "UR",
+                    "quote": "你外卖还没到，我这边已经封顶了。",
+                    "description": "你在自家地块旁点了份外卖，顺手签收了一车楼房模块。吊车一趟接一趟，门窗连着墙一起落位。骑手赶到时看了看导航，打来电话问：刚才这里不是还没这么高吗？"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "talent",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "amount-5000_count-2",
+                "rarity": "UR",
+                "values": {
+                  "amount": 5000,
+                  "count": 2
+                },
+                "skins": [
+                  {
+                    "id": "fortune_talent_recruitment",
+                    "name": "人才引进",
+                    "rarity": "UR",
+                    "quote": "您好，请问现在改志愿还来得及吗？",
+                    "description": "你本来只是陪朋友参加招聘会，路过展台时顺手拿了份宣传册。工作人员看了一眼你的简历，立刻拉开椅子，递上热茶，连刚才还在循环播放的宣传片都替你暂停了。朋友回头找你时，你已经坐在桌前认真研究那句来了就是自己人。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "global_demolition",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "compensationPercent-10",
+                "rarity": "UR",
+                "values": {
+                  "compensationPercent": 10
+                },
+                "skins": [
+                  {
+                    "id": "fortune_parking_tornado",
+                    "name": "龙卷风摧毁停车场",
+                    "rarity": "UR",
+                    "quote": "龙卷风摧毁停车场！",
+                    "description": "阿福拦在成龙面前，先报了一串谁也没听过的招式名。成龙刚躲过一记飞踢，身后又响起更响亮的一声龙卷风摧毁停车场。小玉探头看了看空荡荡的巷口，忍不住问：龙叔，他是不是得先找个停车场？"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }
