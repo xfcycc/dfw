@@ -96,6 +96,9 @@ function chatEnter(event: KeyboardEvent): void {
   event.preventDefault(); void sendChat();
 }
 const boardAnimating = ref(false);
+const awaitingJoin = ref(false);
+const joining = ref(false);
+const entryName = ref(localStorage.getItem('dfw:nickname') || '');
 let entryGeneration = 0;
 const code = computed(() => String(route.params.code));
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
@@ -203,16 +206,30 @@ const actionStatus = computed(() => {
   return labels[game.room?.phase ?? 'pre_roll'] ?? '等待行动';
 });
 
-/** 输入当前房间路由，恢复本地身份或申请新的玩家/观战会话。 */
+/** 输入当前房间路由，恢复已有身份；新玩家等待主动加入，观战直接申请会话。 */
 async function enter(): Promise<void> {
   const generation = ++entryGeneration;
+  awaitingJoin.value = false; joining.value = false;
   clearCard(); selectedTile.value = null; recordMode.value = 'live'; chatMessage.value = '';
   game.disconnect();
   try {
     const saved = readSession(code.value, props.spectator);
-    const value = saved ?? await game.enter(props.spectator ? 'spectate' : 'join', code.value, localStorage.getItem('dfw:nickname') || '');
+    if (!saved && !props.spectator) { awaitingJoin.value = true; return; }
+    const value = saved ?? await game.enter('spectate', code.value);
     if (generation === entryGeneration) game.connect(value);
   } catch (error) { if (generation === entryGeneration) game.fatalError = error instanceof Error ? error.message : '无法进入房间'; }
+}
+/** 无入参，主动提交昵称并加入当前邀请房间；提交期间忽略重复操作，无返回值。 */
+async function joinInvitation(): Promise<void> {
+  if (joining.value || !awaitingJoin.value || props.spectator) return;
+  const generation = ++entryGeneration;
+  joining.value = true; game.fatalError = '';
+  try {
+    localStorage.setItem('dfw:nickname', entryName.value);
+    const value = readSession(code.value) ?? await game.enter('join', code.value, entryName.value);
+    if (generation === entryGeneration) { awaitingJoin.value = false; game.connect(value); }
+  } catch (error) { if (generation === entryGeneration) game.fatalError = error instanceof Error ? error.message : '无法进入房间'; }
+  finally { if (generation === entryGeneration) joining.value = false; }
 }
 watch([code, () => props.spectator], enter, { immediate: true });
 watch(() => payment.value?.id, () => { selectedDefense.value = ''; if (modal.value === 'bankruptcy') modal.value = null; });
@@ -299,7 +316,15 @@ async function resetSession(): Promise<void> {
         </button>
       </div>
     </header>
-    <main v-if="!game.room" class="loading-page"><div class="entry-icon">🎲</div><h2>{{ game.fatalError ? '暂时无法进入房间' : '正在打开你的城市…' }}</h2><p class="muted" role="status">{{ game.fatalError || '连接房间，恢复最新的棋盘和玩家信息。' }}</p><div v-if="game.fatalError" class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink v-if="!spectator" class="button primary" :to="`/watch/${code}`">进入观战</RouterLink><button class="button ghost" @click="resetSession">重新加入</button></div></main>
+    <main v-if="awaitingJoin" class="loading-page">
+      <div class="entry-icon">🎲</div><h2>加入好友房间</h2><p class="muted">朋友邀请你加入房间 {{ code }}，一起开启财富派对。</p>
+      <form class="panel" :aria-busy="joining" @submit.prevent="joinInvitation">
+        <label class="field">你的昵称 <span class="optional">选填</span><input v-model="entryName" placeholder="今天的财富新星" autocomplete="nickname" :disabled="joining" /></label>
+        <p v-if="game.fatalError" class="error-text" role="alert">{{ game.fatalError }}</p>
+        <div class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink class="button secondary" :to="`/watch/${code}`">进入观战</RouterLink><button type="submit" class="button primary" :disabled="joining">{{ joining ? '正在加入…' : '加入房间' }}</button></div>
+      </form>
+    </main>
+    <main v-else-if="!game.room" class="loading-page"><div class="entry-icon">🎲</div><h2>{{ game.fatalError ? '暂时无法进入房间' : '正在打开你的城市…' }}</h2><p class="muted" role="status">{{ game.fatalError || '连接房间，恢复最新的棋盘和玩家信息。' }}</p><div v-if="game.fatalError" class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink v-if="!spectator" class="button primary" :to="`/watch/${code}`">进入观战</RouterLink><button class="button ghost" @click="resetSession">重新加入</button></div></main>
     <main v-else>
       <div v-if="game.connection !== 'online'" class="notice warning connection-notice">{{ game.fatalError || '网络连接已断开，正在自动重连。当前显示最后同步的局面。' }}<button v-if="game.connection === 'replaced'" class="button small secondary" @click="enter">在此页重新连接</button></div>
       <div v-if="game.room.pausedReason" class="notice warning connection-notice">Ⅱ <PlayerText :text="game.room.pausedReason" />。对局已保存，恢复后继续当前步骤。</div>
