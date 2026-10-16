@@ -18,8 +18,9 @@ let resizeObserver: ResizeObserver | undefined;
 let generation = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let queued = false;
+/** 合并存档和实时动态，时间相同时按历史序号及快照原始顺序展示，返回正序记录。 */
 const rows = computed(() => {
-  const history = [...stored.value.values()].filter(entry => entry.version <= props.room.version);
+  const history = [...stored.value.values()].filter(entry => entry.version <= props.room.version).sort((a, b) => a.sequence - b.sequence);
   const ids = new Set(history.map(entry => entry.logId).filter(Boolean));
   const legacy = new Set(history.filter(entry => !entry.logId).map(entry => `${entry.at}:${entry.text}`));
   const live = [...streamed.value.values()].filter(entry => !ids.has(entry.id) && !legacy.has(`${entry.at}:${entry.text}`));
@@ -47,11 +48,11 @@ async function load(more = false): Promise<void> {
 }
 watch([() => props.room.roomId ?? props.room.code, () => props.room.gameId, () => props.token], () => {
   generation++; loading.value = false; loadingEarlier = false; following.value = true; queued = false; stored.value.clear(); streamed.value.clear(); cursor.value = null;
-  for (const entry of props.room.logs) streamed.value.set(entry.id, entry);
+  for (const entry of [...props.room.logs].reverse()) streamed.value.set(entry.id, entry);
   void load();
 }, { immediate: true });
 watch(() => props.room.logs, logs => {
-  for (const entry of logs) streamed.value.set(entry.id, entry);
+  for (const entry of [...logs].reverse()) streamed.value.set(entry.id, entry);
   clearTimeout(timer); timer = setTimeout(() => { void load(); }, 200);
 });
 /** 滚动到最新动态，只作用于记录区域，不改变页面或棋盘位置。 */
