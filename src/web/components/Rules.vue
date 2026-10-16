@@ -44,7 +44,7 @@ const example = computed(() => {
         <li><strong>玩家交易</strong><p>现金和地产可以互换，价格双方商量，对方接受才成交。建筑和抵押状态随地产转移；欠玩家的钱，也可协商用地产抵债。</p></li>
         <li><strong>抵押赎回</strong><p>土地和建筑可整体抵押换现金，建筑保留，但暂停收租、建房，不能单独卖房。有钱后可付费赎回，恢复收租。</p></li>
         <li><strong>使用道具</strong><p>掷骰前每回合最多用一张主动道具，可控制移动、升级、赚钱或影响对手。免租、付款减半和解控在对应提示时使用，不占主动次数。</p></li>
-        <li><strong>事件与休息</strong><p>机会 / 财富格触发奖励、费用或其他事件，按卡面提示处理。落入监狱会休息一次，有解控卡可当场解除。</p></li>
+        <li><strong>事件与休息</strong><p>机会 / 财富格触发奖励、费用或其他事件，按卡面提示处理。入狱会跳过下一次个人行动，服刑期间不收租，其他小游戏正常参加；普通休息仍可收租。有解控卡可当场解除限制。</p></li>
       </ol>
       <div class="rules-reminder">
         <h3>钱不够时，先筹钱</h3>
@@ -62,7 +62,7 @@ const example = computed(() => {
       </section>
       <section>
         <h3>2. 买地、建房和收路费</h3>
-        <ul class="rules-list"><li><strong>买地：</strong>停在无主地产时，可支付地价购买，也可放弃。本次买下后不立即建房。</li><li><strong>普通建房：</strong>停在自己的未抵押地产时，可付费升一级，最高 3 级。每块地产每回合最多升级一次，免费升级也计入。</li><li><strong>免费升级：</strong>道具或事件可选择合法的自家地产，无需停在该地块；已抵押、满级或本回合已升级的地产不可选。</li><li><strong>收路费：</strong>别人停在你的未抵押地产时付费。基础路费为地价的 {{ economy?.rentBasePercent ?? 10 }}%（向下取整），0～3 级依次乘以 1、3、6、10；本局若配置了固定路费，以固定金额为准。</li><li><strong>建房费用：</strong>每级默认为地价的一半；免费建成的房屋也按正常建设成本计入资产。</li></ul>
+        <ul class="rules-list"><li><strong>买地：</strong>停在无主地产时，可支付地价购买，也可放弃。本次买下后不立即建房。</li><li><strong>普通建房：</strong>停在自己的未抵押地产时，可付费升一级，最高 3 级。每块地产每回合最多升级一次，免费升级也计入。</li><li><strong>免费升级：</strong>道具或事件可选择合法的自家地产，无需停在该地块；已抵押、满级或本回合已升级的地产不可选。</li><li><strong>收路费：</strong>别人停在你的未抵押地产时付费。基础路费为地价的 {{ economy?.rentBasePercent ?? 10 }}%（向下取整），0～3 级依次乘以 1、3、6、10；本局若配置了固定路费，以固定金额为准。房东服刑期间免收租金，出狱后恢复；普通休息不影响收租，也不改变地产原有租金基数。</li><li><strong>建房费用：</strong>每级默认为地价的一半；免费建成的房屋也按正常建设成本计入资产。</li></ul>
         <div class="rules-example">
           <p><strong>本局示例：</strong>地价 ¥{{ example.price.toLocaleString() }}，每升一级花 ¥{{ example.build.toLocaleString() }}。</p>
           <table><caption>这块示例地产的各级路费</caption><thead><tr><th scope="col">等级</th><th scope="col">0 级</th><th scope="col">1 级</th><th scope="col">2 级</th><th scope="col">3 级</th></tr></thead><tbody><tr><th scope="row">路费</th><td v-for="(rent, level) in example.rents" :key="level">¥{{ rent.toLocaleString() }}</td></tr></tbody></table>
@@ -86,6 +86,7 @@ const example = computed(() => {
       <section>
         <h3>6. 道具什么时候用</h3>
         <ul class="rules-list"><li><strong>主动道具：</strong>自己每回合掷骰前最多使用一张。固定步数、主动位移、遥控骰子会替代掷骰；加码与骰子合成一次移动，只结算最终落点。换位后仍正常掷骰。</li><li><strong>防御 / 解控：</strong>免租、付款减半在费用提示时使用；解控在监禁或休息刚施加时使用。它们都不占主动次数，也不能补回已跳过的行动。</li><li><strong>取消与无目标：</strong>免费升级卡在确认前取消，会保留卡和主动次数；没有合法升级目标，或抢夺的对手没有手牌时，也保留对应卡与次数。</li><li><strong>手牌上限：</strong>最多保留 6 张。超过时由本人从原牌和全部补给中选留 6 张，其余每张折现 ¥{{ ruleMoney(economy, 'handDiscard', 200).toLocaleString() }}。具体卡面仅本人可见。</li></ul>
+        <p>SSR「谕示裁定」道具可指定一名未破产玩家（可选自己）直接入狱；SSR「水神的审判」机会事件由抽到者自己入狱。两者均跳过下一次个人行动，服刑期间暂停收租，其他小游戏照常参与。直接入狱不领取沿途奖励、不消耗塔塔开，道具对自己使用会替代本次掷骰。解控卡可当场解除休息与停租，已完成的传送不撤销。</p>
         <template v-if="!spectator"><h4>道具速查</h4><div v-for="item in availableItems" :key="item.name" class="rule-item"><span aria-hidden="true">{{ item.icon }}</span><p><strong>{{ item.name }}</strong> · {{ item.description }}</p></div></template>
       </section>
       <section>

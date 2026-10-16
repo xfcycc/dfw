@@ -13,7 +13,7 @@ const enabled = computed(() => game.canAct && game.canDecide && !game.room?.trad
 const wager = computed(() => props.choice.content?.parameters?.wager ?? 0);
 const upgrading = computed(() => ['free_upgrade', 'full_upgrade'].includes(props.choice.type));
 watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; }, { immediate: true });
-/** 输入是否确认，提交已保存选择的身份及地产等选项，失败保留输入。 */
+/** 输入是否确认，提交已保存选择的身份及地产或解控卡，失败保留输入。 */
 async function decide(accept: boolean): Promise<void> {
   const action: Extract<GameAction, { type: 'contentDecision' }> = { type: 'contentDecision', decisionId: props.choice.id, accept };
   if (props.choice.type === 'hand_limit') action.keepCardIds = keep.value;
@@ -47,6 +47,7 @@ async function decide(accept: boolean): Promise<void> {
     </template>
     <template v-else-if="choice.type === 'release'">
       <p class="notice warning">即将{{ choice.jailed ? '被监禁' : '休息' }}，跳过后续 {{ choice.skipTurns }} 次行动。现在可使用解控卡。</p>
+      <p v-if="choice.jailed" class="muted">接受监禁后暂停收租，服刑结束后恢复；其他小游戏正常参加。解控只解除休息和停租，不撤销已完成的入狱传送。</p>
       <label class="field">选择解控卡<select v-model="releaseCard"><option disabled value="">请选择道具</option><option v-for="card in releaseCards" :key="card.id" :value="card.id">{{ card.name ?? '解除监禁／休息' }} · {{ card.rarity ?? 'R' }}</option></select></label>
       <ContentCard v-if="releaseCards.find(c => c.id === releaseCard)" :content="releaseCards.find(c => c.id === releaseCard)!" />
       <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">接受本次限制</button><button class="button primary" :disabled="!enabled || !releaseCard" @click="decide(true)">使用解控卡</button></div>

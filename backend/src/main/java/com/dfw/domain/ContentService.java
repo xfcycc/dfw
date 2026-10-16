@@ -65,7 +65,7 @@ public final class ContentService {
         else { log(room,owner.name+" 触发「"+result.name+"」："+result.effect); if (result.targetId!=null) log(room,"本次排名目标已锁定为 "+player(room,result.targetId).name+"，并列时随机选择"); }
         GameEffect effect=effects.effect("CONTENT_EVENT",owner); effect.content=result; effects.submit(room,effect);
     }
-    /** 输入房间和已保存事件效果，展开确定的原子效果并保存移动来源，选择只暂停后续步骤，无返回值。 */
+    /** 输入房间和已保存事件效果，展开原子效果并保存移动来源；入狱事件直接作用于抽到者，无返回值。 */
     private void resolveEvent(Room room, GameEffect source) {
         ContentResult r=source.content; Player owner=player(room,source.playerId); var p=r.parameters;
         switch (r.mechanism) {
@@ -76,6 +76,7 @@ public final class ContentService {
                 effects.submit(room, movement); submit(room,"SETTLE_TILE",owner,0);
             }
             case "skip" -> restrict(room,owner,p.get("count").intValue(),false);
+            case "jail" -> effects.submit(room,effects.effect("SEND_TO_JAIL",owner));
             case "cards","cards_one","cards_two" -> { giveCards(room,owner,p.get("count").intValue(),null); overflow(room); }
             case "directed" -> { giveCards(room,owner,1,List.of("immunity","freeUpgrade","remote").get(p.get("cardType").intValue())); overflow(room); }
             case "all_income" -> { for (Player target:room.players) if (!target.bankrupt) submit(room,"GRANT_MONEY",target,p.get("amount")); }
@@ -132,8 +133,8 @@ public final class ContentService {
         if (owner.hand.stream().anyMatch(c -> c.kind.equals("release"))) { ContentChoice choice=open(room,owner,"release"); choice.skipTurns=count; choice.jailed=jailed; return; }
         applyRestriction(room,owner,count,jailed);
     }
-    /** 输入确定限制参数，保存后续跳过次数，不补走已跳过回合。 */
-    private static void applyRestriction(Room room,Player owner,int count,boolean jailed) { owner.skipTurns=count; owner.jailed=jailed; log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"); }
+    /** 输入确定限制参数，保存后续跳过次数；监禁立即暂停收租，普通休息仍可收租，无返回值。 */
+    private static void applyRestriction(Room room,Player owner,int count,boolean jailed) { owner.skipTurns=count; owner.jailed=jailed; log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"+(jailed?"；服刑期间暂停收租，其他小游戏正常参与":"")); }
     /** 输入选择拥有者和类型，保存父事项并开放唯一私人选择，返回可填写参数的选择帧。 */
     private ContentChoice open(Room room,Player owner,String type) {
         require(room.runtime.choice==null && room.trade==null,"请先处理已有选择");
@@ -193,7 +194,7 @@ public final class ContentService {
         }
         room.pending=choice.returnPending; room.phase=choice.returnPhase; room.runtime.choice=null;
     }
-    /** 输入真实主动卡并验证目标；免费升级和风险道具确认后消费，无牌抢夺保留卡和次数。 */
+    /** 输入真实主动卡并验证地产或玩家目标；指定入狱可选自己，免费升级和风险道具确认后消费。 */
     public void use(Room room,Player owner,Action action) {
         Card card=find(owner,action.cardId); require(card.skinId!=null,"请使用兼容道具路径");
         require(room.phase.equals("pre_roll") && room.pending==null && !room.activeCardUsed && !Set.of("immunity","halfPayment","release").contains(card.kind),"每回合掷骰前最多主动使用一张道具");
@@ -223,6 +224,10 @@ public final class ContentService {
             case "blast" -> {
                 require(opponent!=null && !opponent.bankrupt,"请选择一名未破产玩家，可选择自己"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("RANDOM_TELEPORT",owner); e.targetId=opponent.id; effects.submit(room,e);
+            }
+            case "jail" -> {
+                require(opponent!=null && !opponent.bankrupt,"请选择一名未破产玩家，可选择自己"); consume(room,owner,card,true,action);
+                effects.submit(room,effects.effect("SEND_TO_JAIL",opponent));
             }
             case "bonus" -> { consume(room,owner,card,true,action); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); }
             case "cash" -> { consume(room,owner,card,true,action); submit(room,"GRANT_MONEY",owner,card.parameters.get("amount")); }

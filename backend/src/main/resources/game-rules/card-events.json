@@ -1527,6 +1527,32 @@
             ]
           }
         ]
+      },
+      {
+        "id": "jail",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_oratrice_verdict",
+                    "name": "谕示裁定",
+                    "rarity": "SSR",
+                    "quote": "我魔神芙卡洛斯，就连这世间的诸神都可以审判！",
+                    "description": "欧庇克莱歌剧院的灯光亮起，芙宁娜站在高处，张开双臂向满座观众宣告自己的神名。聚光灯随她的手势转向被告席，方才还喧闹的剧场骤然安静。她得意地抬起下巴，仿佛下一场审判的主角，已经由她亲手选定。",
+                    "cardType": "主动"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

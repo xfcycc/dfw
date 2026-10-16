@@ -1682,6 +1682,31 @@
             ]
           }
         ]
+      },
+      {
+        "id": "jail",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_meropide_day_trip",
+                    "name": "水神的审判",
+                    "rarity": "SSR",
+                    "quote": "我可是水神芙宁娜！你们竟然要审判我？",
+                    "description": "熟悉的聚光灯再次亮起，这一次却没有照向芙宁娜的专座。她被请上被告席，仍试着用夸张的笑声把这一切说成一场演出。那维莱特敲下法槌，观众席的议论渐渐停息，她终于发现：这一次，台上等候判决的人是自己。"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
       }
     ]
   }

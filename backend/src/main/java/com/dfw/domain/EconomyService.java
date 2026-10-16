@@ -35,10 +35,14 @@ public class EconomyService {
         if (room.pending != null && Objects.equals(room.pending.creditorId, player.id)) { room.pending.creditorId = null; room.trade = null; }
         log(room, player.name + " 已清算并退出竞争");
     }
-    /** 输入强制费用及付款人，保存支付选择；零费用直接完成，不自动扣款或判破产。 */
+    /** 输入强制费用及付款人，保存支付选择；零费用或房东服刑期间的租金直接完成，不消耗防御状态。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
+        Player landlord = player(room, creditorId);
+        if (tileId != null && landlord != null && landlord.jailed && landlord.skipTurns > 0) {
+            log(room, "log", player.id, landlord.name + " 正在服刑，" + player.name + " 本次免付 " + tile(room, tileId).name + " 的租金"); return;
+        }
         if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
         PendingDecision payment = pending(type, player, tileId, amount, creditorId);

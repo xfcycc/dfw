@@ -10,6 +10,7 @@ RARITIES = {'R', 'SR', 'SSR', 'UR'}
 def classify(pool, effect):
     """输入素材池和效果原文，返回已确认机制及完整参数，不改动原效果数值。"""
     nums = [int(n) for n in re.findall(r'\d+', effect)]
+    if effect.startswith(('指定入狱', '自身入狱')): return 'jail', {}
     if pool == 'card':
         if effect.startswith('随机传送'): return 'blast', {}
         if effect.startswith('赌博'): return 'gamble', dict(wager=nums[0], probability=nums[1], prize=nums[2])
@@ -52,7 +53,7 @@ def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
     if pool == 'card':
         if kind == 'gamble': return 'UR'
-        if kind in {'remote', 'immunity', 'demolish', 'swap', 'blast', 'freeUpgrade', 'steal'}: return 'SSR'
+        if kind in {'remote', 'immunity', 'demolish', 'swap', 'blast', 'jail', 'freeUpgrade', 'steal'}: return 'SSR'
         if kind == 'cash': return 'R' if values['amount'] <= 600 else 'SR'
         if kind in {'fixed', 'move', 'bonus'}: return 'SR'
         return 'SR'
@@ -85,7 +86,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':125,'fortune':115,'card':114}[pool]
+    expected = {'chance':126,'fortune':115,'card':115}[pool]
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')

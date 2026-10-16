@@ -71,7 +71,7 @@ public final class RuleRuntime {
         if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
     }
-    /** 输入候选房间，逐阶段结算至行动窗口、落点选择、交易等待或终局。 */
+    /** 输入候选房间，逐阶段推进至等待或终局；掷骰前自行入狱时跳过本次骰子、移动与重复落点。 */
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
@@ -83,6 +83,7 @@ public final class RuleRuntime {
             if (room.activity != null) return;
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
+            if ("JAIL".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
                     if (stage.hook().equals("TURN_START") && turns.skipCurrentTurn(room)) continue;

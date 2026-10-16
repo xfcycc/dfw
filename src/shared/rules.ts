@@ -40,6 +40,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   demolish: { name: '拆房', icon: '🔨', description: '让另一玩家的一块地产降一级，无退款。' },
   swap: { name: '换位', icon: '🔄', description: '与未服刑的对手交换位置，然后正常掷骰。' },
   blast: { name: '爆破鬼才', icon: '💥', description: '指定一名未破产玩家（可选自己），随机直接传送，此次落点不结算。' },
+  jail: { name: '谕示裁定', icon: '⚖️', description: '指定未破产玩家（可选自己）直接入狱，跳过下一次个人行动；服刑期间不收租，其他小游戏照常参与。可当场用解控卡解除限制，对自己使用替代本次掷骰。' },
 };
 /** 输入地图种子，返回只用于地图配置的确定性随机数函数。 */
 function seededRandom(seed: string): () => number {

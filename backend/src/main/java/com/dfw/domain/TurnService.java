@@ -10,13 +10,14 @@ public class TurnService {
     private final EffectResolver effects;
     private final ContentService content;
     private final ActivityService activities;
-    /** 输入经济规则、随机源与结算服务，注册回合、移动和不结算落点的传送效果。 */
+    /** 输入经济规则、随机源与结算服务，注册回合、移动、传送及指定入狱效果。 */
     public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content, ActivityService activities) {
         this.economy = economy; this.random = random; this.effects = effects; this.content = content; this.activities = activities;
         effects.register("DRAW_CARDS", this::drawCards);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", this::moveEffect);
         effects.register("RANDOM_TELEPORT", this::teleport);
+        effects.register("SEND_TO_JAIL", this::sendToJail);
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
         effects.register("PAY_FEE", (room, effect) -> economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId));
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
@@ -106,6 +107,19 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
         log(room,"log",target.id,target.name+" 被爆破鬼才传送至 "+room.board.get(target.position).name+"（"+target.position+"号），此次落点不结算");
     }
+    /** 输入目标玩家及入狱效果，直达监狱后开放解控；本人掷骰前入狱替代本次移动，无返回值。 */
+    private void sendToJail(Room room, GameEffect effect) {
+        Player target=player(room,effect.playerId);
+        GameError.require(target!=null && !target.bankrupt,"请选择一名未破产玩家，可选择自己");
+        Tile jail=room.board.stream().filter(t -> t.type.equals("jail")).findFirst().orElseThrow();
+        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
+        target.position=jail.id; motion.path.add(jail.id);
+        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=target.id; segment.from=motion.from; segment.path=motion.path; segment.teleport=true;
+        room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
+        if (target==current(room) && room.phase.equals("pre_roll")) { room.runtime.rollMode="JAIL"; room.runtime.windowExit="replace_roll"; }
+        log(room,"log",target.id,target.name+" 被直接送至监狱，不触发沿途奖励或重复落点结算");
+        content.restrict(room,target,1,true);
+    }
     /** 输入房间、领奖玩家及触发动作，按本局配置发放起点现金与道具并记录日志，无返回值。 */
     private void rewardStart(Room room, Player player, String action) {
         long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); int cards = Rules.startCards(room.players.size());
@@ -148,10 +162,11 @@ public class TurnService {
             room.trade.remainingMs = 0; room.trade.runningSince = null;
         }
     }
-    /** 输入配置对局，在 TURN_START 按原规则跳过在线玩家的一次休息回合。 */
+    /** 输入配置对局，在 TURN_START 跳过在线玩家的一次休息回合，服刑结束后恢复收租并返回真。 */
     public boolean skipCurrentTurn(Room room) {
         Player actor = current(room);
         if (actor == null || !actor.online || actor.skipTurns == 0 || room.trade != null) return false;
-        actor.skipTurns--; actor.jailed = false; log(room, actor.name + " 休息一回合"); advance(room); return true;
+        boolean jailed=actor.jailed; actor.skipTurns--; if (actor.skipTurns==0) actor.jailed=false;
+        log(room, actor.name + (jailed ? actor.jailed ? " 服刑休息一回合，继续暂停收租" : " 服刑休息一回合，现已出狱并恢复收租" : " 休息一回合")); advance(room); return true;
     }
 }

@@ -8,7 +8,7 @@ export interface EconomySettings {
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
+export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;

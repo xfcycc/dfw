@@ -10,8 +10,8 @@ public final class ContentCatalog {
     private static final List<String> RARITIES = List.of("R","SR","SSR","UR");
     private static final Map<String, Integer> RARITY = Map.of("R",40,"SR",30,"SSR",25,"UR",5);
     private static final Set<String> CASH = Set.of("amount","wager","prize","bonus","fallback");
-    private static final Set<String> CARD = Set.of("fixed","remote","barrier","demolish","swap","blast","immunity","move","bonus","freeUpgrade","halfPayment","release","steal","cash","gamble");
-    private static final Set<String> EVENT = Set.of("income","fee","forward","back","skip","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition");
+    private static final Set<String> CARD = Set.of("fixed","remote","barrier","demolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","halfPayment","release","steal","cash","gamble");
+    private static final Set<String> EVENT = Set.of("income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition");
     private final Map<String, ContentDefinition> pools;
     /** 一个去重后的机制与完整参数组合，名称和插画不增加其概率。 */
     private record Candidate(String mechanism, ContentDefinition.Parameter parameter) {}
@@ -59,7 +59,7 @@ public final class ContentCatalog {
         String key=moneyKey(pool,mechanism,parameter,field);
         return mechanism.equals("talent") ? Rules.economy(room).derived(key,base) : Rules.economy(room).money(key,base);
     }
-    /** 输入内容结果，返回由实际金额及规则生成的最终卡面效果。 */
+    /** 输入内容结果，返回由实际金额及规则生成的卡面效果，区分道具指定入狱和事件自身入狱。 */
     public static String describe(ContentResult r) {
         var p = r.parameters; long amount = p.getOrDefault("amount",0L), steps = p.getOrDefault("steps",0L);
         return switch (r.mechanism) {
@@ -73,6 +73,7 @@ public final class ContentCatalog {
             case "demolish" -> "对手的一块地产降低 1 级建筑，无退款";
             case "swap" -> "与未服刑的对手交换位置，随后正常掷骰";
             case "blast" -> "指定一名未破产玩家（可选自己），直接传送至地图随机地块；不触发沿途奖励或此次落点，不消耗塔塔开";
+            case "jail" -> (r.pool.equals("card")?"指定一名未破产玩家（可选自己）直接入狱":"抽到此事件的玩家自己直接入狱")+"，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可在施加时用解控卡解除限制。直接入狱不触发沿途奖励、不消耗塔塔开"+(r.pool.equals("card")?"；对自己使用替代本次掷骰":"");
             case "immunity" -> "免除本笔租金，不占主动次数";
             case "freeUpgrade" -> "自己的合法地产免费升 1 级；确认前取消保留卡";
             case "halfPayment" -> "本笔强制费用减免 50%（减免额向下取整），不占主动次数";

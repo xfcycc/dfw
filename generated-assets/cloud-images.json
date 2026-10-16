@@ -10,10 +10,10 @@
     "preserveAlpha": true,
     "reuseExistingWebp": true
   },
-  "count": 602,
-  "uniqueUrls": 583,
-  "sourceBytes": 489085599,
-  "compressedBytes": 61397232,
+  "count": 604,
+  "uniqueUrls": 585,
+  "sourceBytes": 493732919,
+  "compressedBytes": 61753114,
   "entries": [
     {
       "path": "artifacts/activity-acceptance-20261016/bridge-round.png",
@@ -10843,6 +10843,44 @@
         "contentLength": 78606,
         "contentMd5": "cR8xe0w9fqSw1dhaaYdUBA==",
         "sha256": "41a3eddb032d8877fd36b6088a2aca94e6df15ba91933f09763bf6c36258f192"
+      }
+    },
+    {
+      "path": "src/web/public/images/cards/card_oratrice_verdict.webp",
+      "sourceBytes": 2395674,
+      "sourceSha256": "94232278657efacb217b1cb64d9614e12449e5eaacd46b0bf1f85611ce36f400",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 183442,
+      "sha256": "bab70dc09bcab32283880be7185ee4b11d994b0fdcbc0322f97172af3186bffc",
+      "format": "webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016200432240.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 183442,
+        "contentMd5": "xsQJ3fWbQGetcENEwkkRrg==",
+        "sha256": "bab70dc09bcab32283880be7185ee4b11d994b0fdcbc0322f97172af3186bffc",
+        "dimensionsPreserved": true
+      }
+    },
+    {
+      "path": "src/web/public/images/cards/chance_meropide_day_trip.webp",
+      "sourceBytes": 2251646,
+      "sourceSha256": "17cb505d0e6ad907c0c47bff136ed316fcac3a730e4545d3341e284698806fcb",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 172440,
+      "sha256": "5fa5b7411b6e9789c95c16850faadb88d1ef48c5fc54f3f374b002e3ccc7696b",
+      "format": "webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016200432241.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 172440,
+        "contentMd5": "4IWljcaJ4x8NWYhgxILHQQ==",
+        "sha256": "5fa5b7411b6e9789c95c16850faadb88d1ef48c5fc54f3f374b002e3ccc7696b",
+        "dimensionsPreserved": true
       }
     }
   ]

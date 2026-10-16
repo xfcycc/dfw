@@ -11,11 +11,12 @@ const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?
 </script>
 <template>
   <p v-if="payment" class="asset-payment-note">变现后请确认支付；玩家债务可协商抵债。</p>
+  <p v-if="game.me?.jailed && game.me.skipTurns > 0" class="notice warning">服刑期间全部地产暂停收租，出狱后恢复；其他小游戏正常参与。</p>
   <div v-if="!owned.length" class="asset-empty">暂无地产，停在无主地块时可购买。</div>
   <div class="asset-portfolio">
     <article v-for="tile in owned" :key="tile.id" class="portfolio-card">
       <div class="portfolio-heading"><PropertyArt :level="tile.level" :mortgaged="tile.mortgaged" /><div><strong>{{ tile.name }}</strong><PropertyGrade :level="tile.level" /><small>{{ tile.id }} 号地块</small></div><span class="portfolio-status" :class="{ mortgaged: tile.mortgaged }">{{ tile.mortgaged ? '已抵押' : '持有中' }}</span></div>
-      <dl class="portfolio-metrics"><div><dt>地价</dt><dd>¥{{ tile.price.toLocaleString() }}</dd></div><div><dt>{{ tile.mortgaged ? '赎回费用' : '当前租金' }}</dt><dd>¥{{ (tile.mortgaged ? redeemCost(tile) : rentFor(tile, game.room?.economy)).toLocaleString() }}</dd></div></dl>
+      <dl class="portfolio-metrics"><div><dt>地价</dt><dd>¥{{ tile.price.toLocaleString() }}</dd></div><div><dt>{{ tile.mortgaged ? '赎回费用' : '当前租金' }}</dt><dd>¥{{ (tile.mortgaged ? redeemCost(tile) : game.me?.jailed && game.me.skipTurns > 0 ? 0 : rentFor(tile, game.room?.economy)).toLocaleString() }}</dd></div></dl>
       <div class="portfolio-actions">
         <button v-if="tile.level > 0" class="button small secondary" :disabled="!allowed || tile.mortgaged" @click="game.act({ type: 'sellBuilding', tileId: tile.id })">卖一级房 +{{ sellBuildingValue(tile, game.room?.economy) }}</button>
         <button v-if="!tile.mortgaged" class="button small secondary" :disabled="!allowed" @click="game.act({ type: 'mortgage', tileId: tile.id })">抵押 +{{ mortgageValue(tile, game.room?.economy) }}</button>

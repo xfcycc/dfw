@@ -15,7 +15,7 @@ public class GameRuntime {
     public int stageIndex;
     /** 行动窗口已接受的退出结果。 */
     public String windowExit;
-    /** 当前移动来源，RANDOM 或 REPLACE。 */
+    /** 当前移动来源，RANDOM、REPLACE 或直接入狱后跳过移动的 JAIL。 */
     public String rollMode;
     /** 已确定但尚未执行的移动步数。 */
     public Integer movementSteps;

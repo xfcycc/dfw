@@ -1,0 +1,62 @@
+{
+  "date": "2026-10-16",
+  "source": "image_gen",
+  "compression": {
+    "quality": 82,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "styleReferences": [
+    "https://pic.caiguoyu.cn/typora/20261016163624445.webp",
+    "https://pic.caiguoyu.cn/typora/20261015103823820.webp"
+  ],
+  "entries": [
+    {
+      "skinId": "card_oratrice_verdict",
+      "name": "谕示裁定",
+      "rarity": "SSR",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a143cc-4987-7fe3-a35c-bfbab41df0d4/exec-e7825b59-4a94-4983-b2e8-b2d40d16dc25.png",
+      "sourceBytes": 2395674,
+      "sourceSha256": "94232278657efacb217b1cb64d9614e12449e5eaacd46b0bf1f85611ce36f400",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 183442,
+      "sha256": "bab70dc09bcab32283880be7185ee4b11d994b0fdcbc0322f97172af3186bffc",
+      "path": "src/web/public/images/cards/card_oratrice_verdict.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016200432240.webp",
+      "format": "webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 183442,
+        "contentMd5": "xsQJ3fWbQGetcENEwkkRrg==",
+        "sha256": "bab70dc09bcab32283880be7185ee4b11d994b0fdcbc0322f97172af3186bffc",
+        "dimensionsPreserved": true
+      }
+    },
+    {
+      "skinId": "chance_meropide_day_trip",
+      "name": "水神的审判",
+      "rarity": "SSR",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a143cc-4987-7fe3-a35c-bfbab41df0d4/exec-7f2ba6e4-189a-415e-b6bb-25eb797d494b.png",
+      "sourceBytes": 2251646,
+      "sourceSha256": "17cb505d0e6ad907c0c47bff136ed316fcac3a730e4545d3341e284698806fcb",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 172440,
+      "sha256": "5fa5b7411b6e9789c95c16850faadb88d1ef48c5fc54f3f374b002e3ccc7696b",
+      "path": "src/web/public/images/cards/chance_meropide_day_trip.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016200432241.webp",
+      "format": "webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 172440,
+        "contentMd5": "4IWljcaJ4x8NWYhgxILHQQ==",
+        "sha256": "5fa5b7411b6e9789c95c16850faadb88d1ef48c5fc54f3f374b002e3ccc7696b",
+        "dimensionsPreserved": true
+      }
+    }
+  ]
+}
