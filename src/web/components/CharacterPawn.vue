@@ -3,7 +3,7 @@ import { imageUrl } from '../image-assets';
 import { computed } from 'vue';
 import { AVATARS } from '../../shared/avatars';
 const props = withDefaults(defineProps<{ avatarId?: string; color?: string; moving?: boolean; landing?: boolean; variant?: 'avatar' | 'pawn' }>(), { avatarId: 'explorer', color: '#58896a', variant: 'avatar' });
-/** 输入公开角色标识，返回内置头像；旧存档缺失或未知标识沿用探险家。 */
+/** 输入公开角色标识，返回内置头像；旧存档缺失或未知标识沿用阿洛。 */
 const avatar = computed(() => AVATARS.find(avatar => avatar.id === props.avatarId) ?? AVATARS[0]);
 </script>
 <template>

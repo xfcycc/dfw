@@ -1,0 +1,96 @@
+{
+  "date": "2026-10-16",
+  "entries": [
+    {
+      "id": "pikachu",
+      "path": "src/web/public/images/avatars/pikachu.png",
+      "source": "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/025.png",
+      "url": "https://pic.caiguoyu.cn/typora/20261016164018327.webp",
+      "width": 475,
+      "height": 475,
+      "sourceBytes": 118057,
+      "sourceSha256": "759ceafdb4b8d637dfcfe673cf672bc3c472354a3b2e7e0835d9cdcacd8d195d",
+      "webpBytes": 22182,
+      "webpSha256": "90c1e02ac32bd69b1aafd54b31b06d49bb71d5e491dd22f20f42ef85f968397d",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 22182,
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "eevee",
+      "path": "src/web/public/images/avatars/eevee.png",
+      "source": "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png",
+      "url": "https://pic.caiguoyu.cn/typora/20261016164018326.webp",
+      "width": 475,
+      "height": 475,
+      "sourceBytes": 142266,
+      "sourceSha256": "33ea993d3478ee920062b0bf27792a045b3a2f75d941bdb8cb3912ef50b1fb44",
+      "webpBytes": 25456,
+      "webpSha256": "05e58409fe48feb4646e0e012811b2ad388334427de4ba9678a840288547943c",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 25456,
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "ninja",
+      "path": "src/web/public/images/avatars/ninja.png",
+      "source": "image_gen",
+      "description": "An original friendly male ninja named 影丸, black tousled hair, black cloth forehead band with a simple plain silver plate (no Naruto symbols), black face mask over nose and mouth, lively emerald green eyes, dark navy and black ninja outfit, deep red scarf and a little katana hilt behind one shoulder. No weapons in hands. Emphasize cute face and eyes.",
+      "url": "https://pic.caiguoyu.cn/typora/20261016163912557.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 2235411,
+      "sourceSha256": "c51bed890d91c60e7575bf844ca25f41a1bdb8898bb7d4bda04aa8879419e86e",
+      "webpBytes": 345010,
+      "webpSha256": "2a87670e61fc42cd76dc60f70b9de6bff1894a0658de87ad37f23dbad68e969d",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 345010,
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "caixukun",
+      "path": "src/web/public/images/avatars/caixukun.png",
+      "source": "image_gen",
+      "description": "A recognizable cute chibi caricature portrait of the adult Chinese singer Cai Xukun 蔡徐坤, iconic silver-grey center-parted hair, slim handsome face, large expressive dark eyes, confident playful warm smile, black shirt with pale gray suspender straps, holding a small orange basketball at chest level. Clearly stylized fan-art cartoon, not a photograph.",
+      "url": "https://pic.caiguoyu.cn/typora/20261016163912556.webp",
+      "width": 1254,
+      "height": 1254,
+      "sourceBytes": 1943496,
+      "sourceSha256": "3e903cbab9cde505fa81cb81187c61332e407d37121f88189bb69032e3898c98",
+      "webpBytes": 303770,
+      "webpSha256": "2e52eba41ad91235fb705b8b14098ba53af37066e38350af557ce3bcbbc002e1",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 303770,
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    }
+  ],
+  "provider": "aliyun",
+  "compression": {
+    "resize": false,
+    "crop": false,
+    "quality": 82,
+    "transparentQuality": 90,
+    "preserveAlpha": true,
+    "reuseExistingWebp": true
+  }
+}
