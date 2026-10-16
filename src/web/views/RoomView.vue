@@ -354,7 +354,8 @@ async function resetSession(): Promise<void> {
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
-                  <div v-else class="turn-action-status" :class="{ 'needs-confirmation': hasCentralDecision, 'is-waiting': game.connection !== 'online' || !!game.room.pausedReason || game.room.status === 'finished' || !game.isMyTurn && !game.canDecide }" role="status"><strong>当前行动：{{ actionStatus }}</strong></div>
+                  <button v-else-if="hasCentralDecision" type="button" class="turn-action-status turn-action-link needs-confirmation" :disabled="!!game.cardReveals.length" aria-haspopup="dialog" :aria-expanded="modal === 'decision' || modal === 'choice' || modal === 'defense'" title="点击处理当前事项" @click="openDecision"><strong>当前行动：{{ actionStatus }}</strong><span aria-hidden="true">↗</span></button>
+                  <div v-else class="turn-action-status" :class="{ 'is-waiting': game.connection !== 'online' || !!game.room.pausedReason || game.room.status === 'finished' || !game.isMyTurn && !game.canDecide }" role="status"><strong>当前行动：{{ actionStatus }}</strong></div>
                 </template>
               </template>
               <template #summary>
@@ -382,7 +383,6 @@ async function resetSession(): Promise<void> {
                       <aside class="dashboard-ranking workspace-panel"><PanelFrame variant="ranking" ornament="right" /><div class="workspace-heading"><div><h2>资产排行</h2></div><span class="workspace-count">{{ game.room.players.filter(p => !p.bankrupt).length }} 人</span></div><PublicLeaderboard compact :room="game.room" :me-id="game.me?.id" :can-remove="game.isHost && !spectator" :busy="game.busy" @select="selectTile" @remove="game.act({ type: 'removePlayer', playerId: $event })" /></aside>
                       <section v-if="game.me && !spectator" class="dashboard-workbench workspace-panel" aria-label="工作台">
                         <PanelFrame variant="workbench" ornament="right" />
-                        <div v-if="hasCentralDecision && !drafting" class="workbench-status"><button type="button" :disabled="!!game.cardReveals.length" class="button primary small" @click="openDecision">处理当前事项</button></div>
                         <button v-if="tradeReminder" type="button" class="workbench-todo" @click="modal = 'trade'"><PlayerText :text="tradeReminder" /><span>查看报价 →</span></button>
                         <div class="workbench-actions">
                           <button type="button" class="button workbench-action" :aria-label="`我的资产，${owned.length} 处地产`" :title="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><WorkbenchActionArt action="assets" /></button>

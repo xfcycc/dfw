@@ -264,7 +264,6 @@
 .modern-room .turn-wallet .asset-stat-icon { width: 24px; height: 24px; }
 .modern-room .turn-wallet-worth dd { color: #94702e; }
 .modern-room .turn-wallet-rank .chibi-lettering { width: 48px; height: 32px; }
-.modern-room .workbench-status { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
 .modern-room .workbench-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .modern-room .workbench-actions .workbench-action { display: block; min-width: 0; min-height: 0; width: 100%; aspect-ratio: 748 / 464; padding: 0; border: 0; border-radius: 14px; background: transparent; box-shadow: none; overflow: hidden; }
 .modern-room .workbench-action:hover:not(:disabled) { filter: brightness(1.06); transform: translateY(-1px); }

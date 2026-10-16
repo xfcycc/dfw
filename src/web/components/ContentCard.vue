@@ -4,6 +4,7 @@ import type { ContentResult } from '../../shared/types';
 import { ITEMS } from '../../shared/rules';
 import illustrationSources from '../card-illustrations.json';
 import CardFrame from './CardFrame.vue';
+import { cardSummary } from '../card-summary';
 const props = defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean }>();
 const kind = computed(() => props.content.kind ?? null);
 const fallback = computed(() => kind.value ? ITEMS[kind.value] : null);
@@ -36,7 +37,8 @@ const artwork = computed(() => {
       <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
       <div class="card-copy">
         <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
-        <template v-if="!preview">
+        <p v-if="thumbnail" class="card-summary">{{ cardSummary(content) }}</p>
+        <template v-else-if="!preview">
           <p class="card-description">{{ content.description ?? fallback?.description }}</p>
           <p class="content-effect">{{ kind === 'barrier' ? fallback?.description : content.effect ?? fallback?.description }}</p>
           <blockquote v-if="content.quote">“{{ content.quote }}”</blockquote>
@@ -45,3 +47,7 @@ const artwork = computed(() => {
     </div>
   </article>
 </template>
+
+<style scoped>
+.card-summary { margin: 0; color: #634e39; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
+</style>

@@ -47,7 +47,7 @@ watch([viewport, stage], ([area, card], _, onCleanup) => {
 <template>
   <section v-if="reveal && (shownKey === reveal.key || !paused)" :key="reveal.key" class="card-reveal-panel" :class="[`reveal-${reveal.content.rarity ?? 'R'}`, { 'card-draw-reveal': reveal.mode === 'draw' }]" :style="{ visibility: paused ? 'hidden' : undefined }" :inert="paused" :aria-hidden="paused" :aria-label="`${reveal.actor} · ${title}`" tabindex="-1" @keydown.esc.stop="game.dismissCardReveal">
     <div class="card-reveal-content">
-    <div class="card-reveal-toolbar"><span>城市新鲜事 · {{ reveal.actor }}</span><button class="icon-button" :aria-label="dismissLabel" @click="game.dismissCardReveal">✕</button></div>
+    <button class="icon-button card-reveal-close" :aria-label="dismissLabel" @click="game.dismissCardReveal">✕</button>
     <div class="card-reveal-particles" aria-hidden="true"><i v-for="index in 18" :key="index" :style="{ '--x': `${(index * 37) % 100}%`, '--delay': `${(index % 7) * -.4}s` }"></i></div>
     <div class="card-reveal-heading"><h3>{{ title }}</h3><p>{{ reveal.actor }}{{ reveal.mode === 'play' ? ' 使用了这张道具' : ' 抽到了这张卡' }}</p></div>
     <div ref="viewport" class="card-reveal-viewport"><div class="card-reveal-fit" :style="{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }"><div ref="stage" class="card-reveal-stage" :style="{ transform: `scale(${cardSize.scale})` }"><div v-if="reveal.mode === 'draw'" class="card-draw-back" aria-hidden="true"><CardFrame :rarity="reveal.content.rarity" /><div class="card-surface"><span class="card-back-label">{{ isItem ? '道具卡' : reveal.content.pool === 'chance' ? '机会卡' : '财富卡' }}</span></div></div><ContentCard :content="reveal.content" /></div></div></div>
