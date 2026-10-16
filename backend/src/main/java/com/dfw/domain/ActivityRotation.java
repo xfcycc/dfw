@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ActivityRotation {
+    /** 新局启用同类别趣味变体，旧快照缺省为关闭。 */
+    public boolean variantsEnabled;
     /** 开局人数乘五的固定周期。 */
     public int period;
     /** 已完整结束的全局回合数。 */

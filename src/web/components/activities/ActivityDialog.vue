@@ -10,16 +10,24 @@ import HorseScene from './HorseScene.vue';
 import RouletteScene from './RouletteScene.vue';
 import PacketScene from './PacketScene.vue';
 import RpsScene from './RpsScene.vue';
+import TreasureScene from './TreasureScene.vue';
+import BridgeScene from './BridgeScene.vue';
+import MinorityScene from './MinorityScene.vue';
+import BlindBoxScene from './BlindBoxScene.vue';
+import ActivityRewards from './ActivityRewards.vue';
 import '../../activities.css';
 const props = defineProps<{ paused?: boolean; spectator?: boolean }>();
 const game = useGameStore(); const open = ref(true);
 const activity = computed(() => game.room?.activity);
-const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene };
+const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene, treasure: TreasureScene, bridge: BridgeScene, minority: MinorityScene, blindbox: BlindBoxScene };
+const newActivity = computed(() => !!activity.value && ['treasure', 'bridge', 'minority', 'blindbox'].includes(activity.value.kind));
 const ownSelection = computed(() => game.privateData?.activityId === activity.value?.id && game.privateData?.activityRound === activity.value?.round ? game.privateData?.activitySelection : null);
 const enabled = computed(() => {
   const a = activity.value, id = game.me?.id;
   if (!a || !id || props.spectator || !game.canAct || game.room?.recoveryPending || a.endsAt || !a.participants.includes(id)) return false;
   if (a.kind === 'roulette') return id === (a.stage === 'select' ? a.triggerId : a.currentPlayerId);
+  if (a.kind === 'treasure') return id === a.triggerId && ['select', 'treasure_choice'].includes(a.stage);
+  if (a.kind === 'bridge' && a.stage === 'bridge_select') return a.contenders.includes(id) && !a.submitted.includes(id);
   return a.stage === 'select' && !a.submitted.includes(id) && (a.kind !== 'rps' || a.contenders.includes(id));
 });
 const progress = computed(() => {
@@ -27,6 +35,10 @@ const progress = computed(() => {
   if (game.room?.pausedReason) return game.room.pausedReason;
   if (a.kind === 'roulette') return a.stage === 'select' ? '等待发起者选择对手' : a.stage === 'payment' ? '正在处理对决费用' : `已开枪 ${a.shots} / 6 次`;
   if (a.settled) return a.summary;
+  if (a.kind === 'packet') return `${a.submitted.length} / ${a.participants.length} 人已拆红包 · 选中立即到账`;
+  if (a.kind === 'blindbox') return `${a.submitted.length} / ${a.participants.length} 人已领取 · 20 个盲盒每人选一个`;
+  if (a.kind === 'treasure') return a.endsAt ? '正在开箱…' : `已通过 ${a.level ?? 0} 层 · 等待落点玩家${a.stage === 'select' ? '选箱' : '收手或继续'}`;
+  if (a.kind === 'bridge' && a.stage !== 'select') return a.endsAt ? '正在揭晓桥面…' : `第 ${a.level} 关 · ${a.submitted.length} / ${a.contenders.length} 人已选边`;
   if (a.endsAt) return '正在揭晓，请稍候…';
   return `${a.submitted.length} / ${a.kind === 'rps' ? a.contenders.length : a.participants.length} 人已提交${ownSelection.value != null ? ' · 你的选择已锁定' : ''}`;
 });
@@ -52,11 +64,15 @@ watch(() => `${activity.value?.id}:${activity.value?.round}:${activity.value?.st
   else if (a.stage === 'opening') sound = 'packet_open';
   else if (a.stage === 'revealing') sound = 'rps_count';
   else if (a.stage === 'round_result') sound = 'rps_reveal';
+  else if (a.stage === 'treasure_open') sound = 'packet_open';
+  else if (a.stage === 'treasure_choice') sound = 'casino_win';
+  else if (a.stage === 'bridge_reveal' || a.stage === 'minority_reveal') sound = 'rps_count';
+  else if (a.stage === 'bridge_round') sound = 'rps_reveal';
   else if (a.stage === 'result') {
     if (a.kind === 'casino' && Object.keys(a.wagers).length) sound = Object.keys(a.payouts).length ? 'casino_win' : 'casino_loss';
     else if (a.kind === 'horse' && Object.keys(a.wagers).length) sound = 'horse_finish';
-    else if (a.kind === 'packet') sound = Object.values(a.bonuses).some(n => n > 0) ? 'packet_lucky' : 'coin';
     else if (a.kind === 'rps') sound = 'rps_win';
+    else if (a.kind === 'treasure' || a.kind === 'bridge' || a.kind === 'minority') sound = Object.keys(a.payouts).length ? 'victory' : 'casino_loss';
   }
   if (sound) playSound(sound);
 }, { immediate: true });
@@ -68,8 +84,9 @@ onBeforeUnmount(() => { clearInterval(hoof); });
     <div class="activity-scene" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" :style="{ '--activity-background': `url(${activityArt(`${activity.kind}-background`)})` }">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div>
       <div class="activity-content"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" />
-        <div v-if="activity.stage === 'result'" class="activity-result" role="status"><strong>{{ activity.summary }}</strong><div v-for="(amount, id) in activity.payouts" :key="id" class="activity-payout">{{ game.room?.players.find(p => p.id === id)?.name }} <b>+¥{{ amount.toLocaleString() }}</b></div></div>
-        <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select'" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
+        <ActivityRewards v-if="activity.stage === 'result' && newActivity" :activity="activity" />
+        <div v-else-if="activity.stage === 'result' && activity.kind !== 'packet'" class="activity-result" role="status"><strong>{{ activity.summary }}</strong><div v-for="(amount, id) in activity.payouts" :key="id" class="activity-payout">{{ game.room?.players.find(p => p.id === id)?.name }} <b>+¥{{ amount.toLocaleString() }}</b></div></div>
+        <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
       </div>
     </div>
   </Modal>

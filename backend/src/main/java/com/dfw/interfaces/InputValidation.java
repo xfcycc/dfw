@@ -36,7 +36,7 @@ public final class InputValidation {
         object(value); uuid(value, "id"); number(value.get("expectedVersion"), 0, 9007199254740991L);
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
-            case "activityInput" -> { uuid(action,"activityId"); number(action.get("activityRound"),1,Integer.MAX_VALUE); if(action.has("selection")) number(action.get("selection"),0,8); if(action.has("point")) number(action.get("point"),1,6); if(action.has("playerId")) uuid(action,"playerId"); }
+            case "activityInput" -> { uuid(action,"activityId"); number(action.get("activityRound"),1,Integer.MAX_VALUE); if(action.has("selection")) number(action.get("selection"),0,20); if(action.has("point")) number(action.get("point"),1,6); if(action.has("playerId")) uuid(action,"playerId"); }
             case "chat" -> check(action.has("message") && action.get("message").isString() && !action.get("message").asString().isBlank() && action.get("message").asString().length() <= 300);
             case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");

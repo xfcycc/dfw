@@ -10,7 +10,7 @@ import lombok.Setter;
 public class CornerActivity {
     /** 永不复用的活动身份。 */
     public String id;
-    /** casino、horse、roulette、packet 或 rps。 */
+    /** 原五类玩法或 treasure、bridge、minority、blindbox 趣味变体。 */
     public String kind;
     /** 实际触发地块。 */
     public int tileId;
@@ -28,11 +28,13 @@ public class CornerActivity {
     public List<String> contenders = new ArrayList<>();
     /** 已提交的选择，猜拳揭晓前只对本人公开。 */
     public Map<String, Integer> choices = new LinkedHashMap<>();
+    /** 红包领取者与选中序号，一至参与人数；旧活动为空。 */
+    public Map<String, Integer> packetSelections = new LinkedHashMap<>();
     /** 本场已经扣除的自愿下注。 */
     public Map<String, Long> wagers = new LinkedHashMap<>();
-    /** 已确定的基础红包，不提前公开。 */
+    /** 按参与者顺序索引的隐藏红包基础金额，领取前不公开。 */
     public Map<String, Long> packets = new LinkedHashMap<>();
-    /** 已确定的幸运加奖，不提前公开。 */
+    /** 同一红包索引对应的幸运加奖，领取前不公开。 */
     public Map<String, Long> bonuses = new LinkedHashMap<>();
     /** 已实际发放的总到账金额。 */
     public Map<String, Long> payouts = new LinkedHashMap<>();
@@ -40,6 +42,14 @@ public class CornerActivity {
     public Map<String, Integer> revealed = new LinkedHashMap<>();
     /** 骰子或赛马的服务端随机结果。 */
     public int sample;
+    /** 宝箱已通过层数或玻璃桥当前关数，初始为零。 */
+    public int level;
+    /** 已揭晓的逐层安全方向，未揭晓方向不公开。 */
+    public List<Integer> safePaths = new ArrayList<>();
+    /** 二十个盲盒的隐藏款序号，仅服务端保存。 */
+    public int hiddenBox;
+    /** 本场隐藏款是否升级限定款，仅领取隐藏款时揭晓。 */
+    public boolean limitedBox;
     /** 内部子弹位置，范围零到五。 */
     public int bullet;
     /** 已经开枪的次数。 */
@@ -52,7 +62,7 @@ public class CornerActivity {
     public String lastShooterId;
     /** 最近一次是否命中，揭晓前不公开。 */
     public boolean hit;
-    /** 已完成奖励或已产生债务，不能退款重结。 */
+    /** 活动奖励已全部结算或已产生债务，不能退款重结。 */
     public boolean settled;
     /** 当前展示阶段服务端开始时间。 */
     public long startedAt;

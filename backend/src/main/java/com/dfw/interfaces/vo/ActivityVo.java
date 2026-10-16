@@ -28,6 +28,8 @@ public class ActivityVo {
     public List<String> submitted;
     /** 已公开的赛马选择。 */
     public Map<String, Integer> bets = new LinkedHashMap<>();
+    /** 红包领取者与已选序号，不包含未领取红包的金额。 */
+    public Map<String, Integer> packetSelections = new LinkedHashMap<>();
     /** 上一轮已揭晓手势。 */
     public Map<String, Integer> revealed = new LinkedHashMap<>();
     /** 下注本金。 */
@@ -48,6 +50,10 @@ public class ActivityVo {
     public int shots;
     /** 已揭晓骰子或冠军编号。 */
     public Integer result;
+    /** 宝箱已通过层数或玻璃桥当前关数。 */
+    public int level;
+    /** 已揭晓的安全方向，不含下一层答案。 */
+    public List<Integer> safePaths = new ArrayList<>();
     /** 展示开始时间。 */
     public long startedAt;
     /** 自动展示截止时间。 */

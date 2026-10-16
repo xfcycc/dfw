@@ -224,8 +224,8 @@ export type GameAction =
 /** 原生 WebSocket 信封；命令回执通过 requestId 关联，状态通过角色分别发送。 */
 export interface RealtimeEnvelope { type: string; requestId?: string; payload?: unknown }
 
-/** 单一活动轮换池的玩法标识。 */
-export type ActivityKind = 'casino' | 'horse' | 'roulette' | 'packet' | 'rps';
+/** 五类轮换活动及类别内部趣味变体。 */
+export type ActivityKind = 'casino' | 'horse' | 'roulette' | 'packet' | 'rps' | 'treasure' | 'bridge' | 'minority' | 'blindbox';
 /** 服务端冻结金额及回合轮换信息。 */
 export interface ActivityRotation {
   period: number; completedTurns: number; revision: number; tileIds: number[];
@@ -237,6 +237,10 @@ export interface CornerActivity {
   participants: string[]; contenders: string[]; submitted: string[];
   bets: Record<string, number>; revealed: Record<string, number>; wagers: Record<string, number>;
   payouts: Record<string, number>; packets: Record<string, number>; bonuses: Record<string, number>;
+  /** 红包领取者与已选序号，未领取红包不公开金额。 */
+  packetSelections: Record<string, number>;
+  /** 新玩法的公开进度及已揭晓安全方向，旧快照缺省。 */
+  level?: number; safePaths?: number[];
   currentPlayerId: string | null; opponentId: string | null; lastShooterId: string | null;
   shots: number; result: number | null; startedAt: number; endsAt: number | null; settled: boolean; summary: string;
 }

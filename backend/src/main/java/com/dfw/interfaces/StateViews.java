@@ -58,8 +58,21 @@ public final class StateViews {
         ActivityVo v=new ActivityVo(); v.id=a.id; v.kind=a.kind; v.tileId=a.tileId; v.triggerId=a.triggerId; v.stage=a.stage; v.round=a.round; v.participants=a.participants; v.contenders=a.contenders; v.submitted=new java.util.ArrayList<>(a.choices.keySet());
         if(a.kind.equals("horse")) v.bets=a.choices;
         v.revealed=a.revealed; v.wagers=a.wagers; v.payouts=a.payouts; v.currentPlayerId=a.currentPlayerId; v.opponentId=a.opponentId; v.lastShooterId=a.lastShooterId; v.shots=a.shots;
+        v.level=a.level; v.safePaths=a.safePaths;
         v.startedAt=a.startedAt; v.endsAt=a.endsAt; v.settled=a.settled; v.summary=a.summary;
-        if(a.settled) { if(a.kind.equals("casino") || a.kind.equals("horse")) v.result=a.sample; if(a.kind.equals("packet")) { v.packets=a.packets; v.bonuses=a.bonuses; } }
+        if(a.settled && (a.kind.equals("casino") || a.kind.equals("horse"))) v.result=a.sample;
+        if(a.kind.equals("packet")) {
+            v.packetSelections.putAll(a.packetSelections);
+            if(v.packetSelections.isEmpty()) for(String id:a.choices.keySet()) v.packetSelections.put(id,a.participants.indexOf(id)+1);
+            for(var claim:v.packetSelections.entrySet()) if(a.payouts.containsKey(claim.getKey())) {
+                String slot=a.participants.get(claim.getValue()-1);
+                v.packets.put(claim.getKey(),a.packets.get(slot)); v.bonuses.put(claim.getKey(),a.bonuses.get(slot));
+            }
+        }
+        if(a.kind.equals("blindbox")) {
+            v.packetSelections.putAll(a.packetSelections);
+            for(String id:a.payouts.keySet()) { v.packets.put(id,a.packets.get(id)); v.bonuses.put(id,a.bonuses.get(id)); }
+        }
         return v;
     }
 }
