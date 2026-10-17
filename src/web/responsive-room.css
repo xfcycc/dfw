@@ -1,26 +1,80 @@
-/* 手机操作区移至地图下方，通过 Teleport 保留交互状态。 */
-.modern-room.game-session.detached-dashboard .immersive-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
-.modern-room.game-session .room-dashboard { min-width: 0; overflow: clip; border-radius: 20px; }
-.modern-room .room-dashboard .fit-panel { width: 100%; min-width: 0; }
-.modern-room.game-session .room-dashboard .workbench-center { position: relative; width: 100%; padding: 12px; overflow: visible; background: #fffdf5c9; border: 1px solid #e5dfce; border-radius: 20px; }
-.modern-room.game-session .room-dashboard .workbench-center .board-center-controls { width: 100%; margin-top: 12px; }
-.modern-room .room-dashboard .dashboard-scroll { padding: 4px; }
-.modern-room .detached-board .board-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
-.modern-room .detached-board .board-controls { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
-.modern-room .detached-board .board-control { min-height: 36px; padding: 6px 10px; font-size: 12px; }
+/* 手机主屏依次为行动摘要、局部地图、新鲜事与聊天、工作台入口。 */
+.modern-room.game-session.detached-dashboard { height: 100dvh; min-height: 560px; display: flex; flex-direction: column; }
+.modern-room.detached-dashboard .room-header { flex-shrink: 0; }
+.modern-room.game-session.detached-dashboard > main { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 0 8px max(6px, env(safe-area-inset-bottom)); }
+.modern-room.detached-dashboard .connection-notice { flex-shrink: 0; font-size: 11px; padding: 5px 8px; margin: 4px 0; }
+.modern-room.game-session.detached-dashboard .immersive-layout { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(145px, .9fr) minmax(165px, 1.1fr) auto; gap: 6px; }
+.modern-room.detached-dashboard .mobile-turn { min-width: 0; }
+.modern-room.game-session.detached-dashboard .mobile-turn .workbench-center { background: transparent; border: 0; border-radius: 12px; padding: 0; box-shadow: none; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; width: 100%; min-width: 0; padding: 8px 12px; gap: 4px 8px; border-radius: 12px; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display > .character-pawn { width: 28px; height: 28px; grid-row: 1; grid-column: 1; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display > .turn-identity { grid-row: 1; grid-column: 2; gap: 4px; min-width: 0; max-width: none; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display .turn-identity strong { font-size: 13px; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display .turn-identity small { font-size: 10px; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display > .turn-action-status { grid-column: 1 / -1; grid-row: 2; padding: 4px 7px; border-radius: 7px; }
+.modern-room.game-session .mobile-turn .workbench-center .turn-display .turn-action-status strong { font-size: 13px; white-space: normal; }
+.modern-room .mobile-turn .turn-wallet { grid-row: 1; grid-column: 3; margin: 0; padding: 0; border: 0; }
+.modern-room .mobile-turn .turn-wallet dd { font-size: 15px; }
+.modern-room .mobile-turn .turn-wallet .asset-stat-icon { width: 18px; height: 18px; }
+.modern-room .mobile-turn :is(.turn-wallet-rank, .turn-wallet-worth, .hub-turn-callout, .turn-display > .die) { display: none; }
+.modern-room.game-session.detached-dashboard .map-panel { min-height: 0; }
+.modern-room.game-session.detached-dashboard .immersive-layout .board-view { display: flex; height: 100%; min-height: 0; padding: 6px; border-radius: 12px; }
+.modern-room.game-session.detached-dashboard .board-container { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.modern-room .detached-board .board-tools { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px; margin-bottom: 4px; }
+.modern-room .detached-board .board-controls { display: flex; gap: 4px; align-items: center; }
+.modern-room .detached-board .board-control { min-height: 32px; padding: 4px 7px; font-size: 11px; }
 .modern-room .detached-board .board-control[aria-pressed="true"] { background: #e8efd9; border-color: #9eb47e; color: #48613b; }
-.modern-room.game-session .detached-board .board-viewport { height: clamp(240px, 42dvh, 420px); display: block; overscroll-behavior: contain; }
-.modern-room .room-dashboard .ranking-header { width: 100%; }
-.modern-room .room-dashboard .ranking-stats { min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); justify-content: stretch; }
-.modern-room .room-dashboard .ranking-stat { min-width: 0; font-size: 15px; }
-.modern-room .room-dashboard .ranking-stat b { overflow: hidden; text-overflow: ellipsis; }
-.modern-room .room-dashboard .turn-display { min-width: 0; flex-wrap: wrap; }
-.modern-room.game-session .room-dashboard .workbench-center.has-decision > .turn-display { display: flex; }
-.modern-room .room-dashboard .turn-display .turn-identity { flex: 1; }
-.modern-room .room-dashboard .turn-display > .turn-action-status { flex: 1 0 100%; }
-.modern-room .room-dashboard .turn-wallet { flex-wrap: wrap; }
-/* 揭卡在独立舞台展示，手机滚动到任意区域都能处理并继续游戏。 */
-.modern-room .room-dashboard .card-reveal-panel { position: fixed; top: 50%; left: 50%; width: min(560px, calc(100% - 24px)); height: min(760px, calc(100dvh - 24px)); transform: translate(-50%, -50%); z-index: 80; border: 2px solid #d4bf91; border-radius: 20px; box-shadow: 0 0 0 100vmax #35422d66; }
+.modern-room .detached-board .board-tools label { display: none; }
+.modern-room.game-session .detached-board .board-viewport { flex: 1; height: 0; min-height: 0; display: block; overscroll-behavior: contain; }
+.modern-room.game-session .room-dashboard { min-width: 0; min-height: 0; overflow: clip; border-radius: 12px; }
+.modern-room.game-session .room-dashboard .workbench-center { position: relative; height: 100%; width: 100%; padding: 0; overflow: hidden; background: transparent; border: 0; border-radius: 12px; box-shadow: none; }
+.modern-room.game-session .room-dashboard .workbench-center .board-center-controls { width: 100%; height: 100%; min-height: 0; margin: 0; }
+.modern-room .room-dashboard :is(.fit-panel, .fit-panel-content, .dashboard-scroll, .dashboard-records) { flex: 1; width: 100%; height: 100%; min-width: 0; min-height: 0; }
+.modern-room .room-dashboard .fit-panel-content { min-height: 0; }
+.modern-room .room-dashboard .dashboard-scroll { padding: 0; gap: 0; }
+.modern-room .room-dashboard :is(.dashboard-grid, .dashboard-sidebar) { display: contents; }
+.modern-room .room-dashboard .workbench-center .city-feed-panel { flex: 1; min-height: 0; padding: 12px 16px; border-radius: 12px; }
+.modern-room .room-dashboard .workspace-heading { gap: 6px; margin-bottom: 6px; }
+.modern-room .room-dashboard .workspace-heading h2 { font-size: 15px; white-space: nowrap; }
+.modern-room .room-dashboard .record-switch button { min-height: 28px; padding: 4px 8px; font-size: 11px; }
+.modern-room .room-dashboard .records-scroll :is(.live-record-row, .history-entry) { padding: 6px; margin: 3px 0; }
+.modern-room .room-dashboard .records-scroll :is(.live-record-row, .history-entry) p { margin-top: 3px; font-size: 13px; line-height: 1.6; }
+.modern-room .room-dashboard .records-scroll :is(.live-record-row, .history-entry) time { font-size: 10px; }
+.modern-room .room-dashboard .workbench-center .room-chat { flex-shrink: 0; gap: 0; margin-top: 6px; padding: 6px 12px; border-radius: 12px; }
+.modern-room .room-dashboard .chat-heading { display: none; }
+.modern-room .room-dashboard .room-chat textarea { min-height: 36px; padding: 6px 0; font-size: 16px; }
+.modern-room .room-dashboard .chat-composer-actions .button.game-action-button { width: 36px; height: 36px; min-height: 36px; flex-basis: 36px; padding: 3px; }
+.modern-room .room-dashboard .chat-send small { display: none; }
+.modern-room .room-dashboard .panel-frame-person, .modern-room .mobile-turn .panel-frame-person { display: none; }
+.modern-room .mobile-city-reveal { position: absolute; inset: 0; z-index: 5; pointer-events: none; }
+.modern-room .mobile-city-reveal .card-reveal-panel { position: absolute; inset: 0; width: 100%; height: 100%; transform: none; border-radius: 12px; box-shadow: none; pointer-events: auto; }
+.modern-room .mobile-city-reveal .card-reveal-content { padding: 6px 10px; }
+.modern-room .mobile-city-reveal .card-reveal-heading h3 { font-size: 15px; margin: 0; }
+.modern-room .mobile-city-reveal .card-reveal-heading p { font-size: 10px; margin: 0; }
+.modern-room .mobile-city-reveal .card-reveal-viewport { margin: 4px 0; }
+.modern-room .mobile-city-reveal .card-reveal-footer .button { min-height: 28px; padding: 3px 10px; font-size: 11px; }
+.modern-room .mobile-workbench-bar { display: grid; grid-template-columns: 1fr 1.2fr 1fr; align-items: end; gap: 8px; min-width: 0; height: 90px; padding: 0 2px; }
+.mobile-image-button { position: relative; display: block; min-width: 0; min-height: 44px; width: 100%; padding: 0; border: 0; border-radius: 22px; background: transparent; box-shadow: none; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; transition: transform .15s ease, filter .15s ease; }
+.modern-room .mobile-workbench-bar .mobile-image-button { height: 76px; }
+.modern-room .mobile-workbench-bar .mobile-roll-button { height: 90px; }
+.mobile-image-button:hover:not(:disabled) { filter: brightness(1.04); }
+.mobile-image-button:active:not(:disabled) { transform: translateY(3px) scale(.97); }
+.mobile-image-button:focus-visible { outline: 3px solid #ba9857; outline-offset: 2px; }
+.mobile-image-button:disabled { filter: grayscale(.8); opacity: .58; cursor: default; }
+.mobile-action-badge { position: absolute; top: 3px; right: 4px; display: grid; place-items: center; min-width: 23px; height: 23px; padding: 0 6px; border: 2px solid #fff4d5; border-radius: 16px; background: #aa6144; color: #fff8e9; font-size: 11px; font-weight: 800; box-shadow: 0 2px 4px #61432d26; pointer-events: none; }
+.mobile-more-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: center; gap: 16px 10px; }
+.mobile-more-grid .mobile-image-button { aspect-ratio: 1.16; }
+.mobile-more-back { margin-bottom: 14px; }
+@media (prefers-reduced-motion: reduce) { .mobile-image-button { transition: none; } }
+.mobile-workbench-content .workbench-center { padding: 0; overflow: visible; }
+.modern-room.mobile-workbench-content .workbench-center :is(.dashboard-workbench, .dashboard-cards, .dashboard-ranking) { padding: 16px; }
+.modern-room.mobile-workbench-content .dashboard-card-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.modern-room.mobile-workbench-content .empty-hand-slot { display: none; }
+.modern-room.mobile-workbench-content .dashboard-ranking .leaderboard-panel { flex: none; contain: none; overflow: visible; }
+.modern-room.mobile-workbench-content .ranking-stats { min-width: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.modern-room.mobile-workbench-content .ranking-stat { min-width: 0; font-size: 14px; }
+.modern-room.mobile-workbench-content .ranking-stat b { overflow: hidden; text-overflow: ellipsis; }
+.modern-room.mobile-workbench-content .panel-frame-person { display: none; }
 
 /* 观战：完整地图围绕中央公开信息，随窗口和全屏尺寸重新铺满。 */
 .modern-room.game-session.spectator-page { display: flex; flex-direction: column; height: 100dvh; min-height: 0; overflow: hidden; }
@@ -53,28 +107,3 @@
 .modern-room.spectator-page .tile-owner-label .character-pawn { width: 16px; height: 16px; }
 .modern-room.spectator-page .tile-owner-label.is-unowned { font-size: 10px; }
 .modern-room.spectator-page .game-board .tile:not(.property) > small { bottom: 4px; font-size: 10px; }
-
-@media (max-width: 800px), (max-width: 1000px) and (max-height: 500px) {
-  .modern-room.game-session.detached-dashboard > main { padding: 0 8px max(16px, env(safe-area-inset-bottom)); }
-  .modern-room.game-session.detached-dashboard .immersive-layout .board-view { padding: 8px; }
-  .modern-room.game-session .room-dashboard .workbench-center { padding: 10px; }
-  .modern-room .room-dashboard .dashboard-grid,
-  .modern-room .room-dashboard .dashboard-sidebar { display: contents; }
-  .modern-room .room-dashboard .dashboard-workbench { order: 0; }
-  .modern-room .room-dashboard .dashboard-cards { order: 1; }
-  .modern-room .room-dashboard .dashboard-records { order: 2; }
-  .modern-room .room-dashboard .dashboard-ranking { order: 3; }
-  .modern-room .room-dashboard .dashboard-scroll { gap: 16px; }
-  .modern-room .room-dashboard .workbench-center :is(.city-feed-panel, .room-chat, .dashboard-ranking, .dashboard-workbench, .dashboard-cards) { padding: 20px; }
-  .modern-room .room-dashboard .dashboard-card-rail { display: flex; overflow-x: auto; gap: 12px; padding: 4px 4px 12px; scroll-snap-type: x proximity; }
-  .modern-room .room-dashboard :is(.dashboard-hand-card, .empty-hand-slot) { flex: 0 0 154px; scroll-snap-align: start; }
-  .modern-room .room-dashboard .empty-hand-slot { display: none; }
-  .modern-room .room-dashboard .dashboard-card-rail:empty::after { content: '暂无手牌'; padding: 16px; color: #96839d; font-size: 13px; }
-  .modern-room .room-dashboard .city-feed-panel { height: 360px; flex: none; }
-  .modern-room .room-dashboard .dashboard-ranking { flex: none; min-height: 0; }
-  .modern-room .room-dashboard .dashboard-ranking .leaderboard-panel { flex: none; contain: none; overflow: visible; }
-  .modern-room .room-dashboard .record-switch button { min-height: 36px; padding: 7px 12px; font-size: 12px; }
-  .modern-room .room-dashboard .room-chat textarea { font-size: 16px; }
-  .modern-room .room-dashboard .workspace-heading h2 { font-size: 18px; }
-  .modern-room .room-dashboard .turn-display .hub-turn-callout { flex-basis: 100px; }
-}

@@ -10,6 +10,7 @@ import { playSound } from '../audio';
 import AudioSettings from '../components/AudioSettings.vue';
 import ActionIcon from '../components/ActionIcon.vue';
 import WorkbenchActionArt from '../components/WorkbenchActionArt.vue';
+import MobileActionArt from '../components/MobileActionArt.vue';
 import AssetStatIcon from '../components/AssetStatIcon.vue';
 import CashBalance from '../components/CashBalance.vue';
 import ChibiLettering from '../components/ChibiLettering.vue';
@@ -48,7 +49,7 @@ const props = withDefaults(defineProps<{ spectator?: boolean }>(), { spectator: 
 const route = useRoute();
 const origin = window.location.origin;
 const game = useGameStore();
-const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | null>(null);
+const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | 'more' | 'workbench' | null>(null);
 const nickname = ref('');
 const canRename = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.settling && !game.room?.recoveryPending);
 /** 无入参，使用本人当前昵称打开改名弹窗，无返回值。 */
@@ -84,6 +85,10 @@ const dashboardView = ref<HTMLElement>();
 const mobileQuery = window.matchMedia('(max-width: 800px), (max-width: 1000px) and (max-height: 500px)');
 const mobileViewport = ref(mobileQuery.matches);
 const detachedDashboard = computed(() => !props.spectator && mobileViewport.value);
+const workbenchTab = ref<'cards' | 'ranking'>('cards');
+/** 输入手牌或排行区域，打开手机更多菜单对应的详情，无返回值。 */
+function openMobileWorkbench(section: 'cards' | 'ranking'): void { workbenchTab.value = section; modal.value = 'workbench'; }
+watch(detachedDashboard, mobile => { if (!mobile && (modal.value === 'workbench' || modal.value === 'more')) modal.value = null; });
 /** 输入屏幕匹配结果，更新手机布局；横竖屏切换沿用同一份游戏面板，无返回值。 */
 function updateMobileViewport(event: MediaQueryListEvent): void { mobileViewport.value = event.matches; }
 mobileQuery.addEventListener('change', updateMobileViewport);
@@ -364,8 +369,9 @@ async function resetSession(): Promise<void> {
       </section>
       <template v-else>
         <div class="game-layout immersive-layout">
+          <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -388,6 +394,7 @@ async function resetSession(): Promise<void> {
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>{{ spectator ? '房间聊天' : '城市新鲜事' }}</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
                       <div class="records-scroll"><LiveRecords compact journal :chat-only="spectator" :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
+                      <div v-if="detachedDashboard" id="mobile-city-reveal" class="mobile-city-reveal"></div>
                       </div>
                       <form v-if="!spectator" class="room-chat" @submit.prevent="sendChat"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3></div><div class="chat-composer">
                         <label class="sr-only" for="room-chat-message">房间聊天</label><textarea id="room-chat-message" v-model="chatMessage" maxlength="300" rows="1" :disabled="!canChat" :placeholder="spectator || !game.me ? '观战中，可以查看房间对话' : game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊…'" @keydown.enter="chatEnter" />
@@ -395,8 +402,10 @@ async function resetSession(): Promise<void> {
                       </div></form>
                     </section>
                     <aside class="dashboard-sidebar">
+                      <Teleport :to="detachedDashboard ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard" defer>
                       <aside class="dashboard-ranking workspace-panel"><PanelFrame variant="ranking" ornament="right" /><div class="workspace-heading"><div><h2>资产排行</h2></div><span class="workspace-count">{{ game.room.players.filter(p => !p.bankrupt).length }} 人</span></div><PublicLeaderboard compact :room="game.room" :me-id="game.me?.id" :can-remove="game.isHost && !spectator" :busy="game.busy" @select="selectTile" @remove="game.act({ type: 'removePlayer', playerId: $event })" /></aside>
-                      <section v-if="game.me && !spectator" class="dashboard-workbench workspace-panel" aria-label="工作台">
+                      </Teleport>
+                      <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
                         <PanelFrame variant="workbench" ornament="right" />
                         <button v-if="tradeReminder" type="button" class="workbench-todo" @click="modal = 'trade'"><PlayerText :text="tradeReminder" /><span>查看报价 →</span></button>
                         <div class="workbench-actions">
@@ -411,21 +420,45 @@ async function resetSession(): Promise<void> {
 
                     </aside>
                   </div>
+                  <Teleport :to="detachedDashboard ? '#mobile-workbench-cards' : 'body'" :disabled="!detachedDashboard" defer>
                   <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><span v-for="slot in Math.max(0, 6 - handCount)" :key="`empty-${slot}`" class="empty-hand-slot" aria-hidden="true"><span>＋</span>空位</span></div></template>
-                      <p v-else class="workspace-caption">手牌仅本人可见</p></section>
+                      <p v-else class="workspace-caption">手牌仅本人可见</p><p v-if="detachedDashboard && !handCount" class="workspace-caption">暂无手牌</p></section>
+                  </Teleport>
 
                 </div>
                 </FitPanel>
               </template>
               <template #center-overlay>
-                <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
+                <Teleport :to="detachedDashboard ? '#mobile-city-reveal' : 'body'" :disabled="!detachedDashboard" defer>
+                  <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
+                </Teleport>
               </template>
             </Board>
           </div></section>
-          <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" :aria-label="spectator ? '观战信息栏' : '游戏操作与信息'"></aside>
+          <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" aria-label="城市新鲜事与聊天"></aside>
+          <nav v-if="detachedDashboard" class="mobile-workbench-bar" aria-label="手机游戏操作">
+            <button type="button" class="mobile-image-button mobile-more-button" aria-label="更多" aria-haspopup="dialog" :aria-expanded="modal === 'more'" @click="modal = 'more'"><MobileActionArt action="more" /><span v-if="tradeReminder" class="mobile-action-badge">有报价</span></button>
+            <button type="button" class="mobile-image-button mobile-roll-button" :disabled="!canRoll" aria-label="掷骰子" @click="game.act({ type: 'roll' })"><MobileActionArt action="roll" /></button>
+            <button type="button" class="mobile-image-button mobile-end-button" :disabled="!canEndTurn" aria-label="结束行动" @click="game.act({ type: 'endTurn' })"><MobileActionArt action="endTurn" /></button>
+          </nav>
         </div>
       </template>
     </main>
+    <Modal v-if="detachedDashboard && game.room" :open="modal === 'more'" panel-class="modern-modal mobile-more-modal" title="更多" @close="modal = null">
+      <div class="mobile-more-grid">
+        <button type="button" class="mobile-image-button" :disabled="!game.me" :aria-label="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><MobileActionArt action="assets" /></button>
+        <button type="button" class="mobile-image-button" aria-label="资产排行" @click="openMobileWorkbench('ranking')"><MobileActionArt action="ranking" /></button>
+        <button type="button" class="mobile-image-button" :disabled="!game.me || game.me.bankrupt || game.room.status !== 'playing' || !canTrade && !game.privateData?.trade" aria-label="交易" @click="modal = 'trade'"><MobileActionArt action="trade" /><span v-if="tradeReminder" class="mobile-action-badge">有报价</span></button>
+        <button type="button" class="mobile-image-button" :aria-label="`手牌 ${handCount}`" @click="openMobileWorkbench('cards')"><MobileActionArt action="cards" /><span class="mobile-action-badge">{{ handCount }}</span></button>
+      </div>
+    </Modal>
+    <Modal v-if="game.room && !isLobby" :open="detachedDashboard && modal === 'workbench'" panel-class="modern-modal mobile-workbench-modal" :title="workbenchTab === 'cards' ? '我的手牌' : '资产排行'" @close="modal = null">
+      <button type="button" class="button secondary small mobile-more-back" @click="modal = 'more'">← 返回更多</button>
+      <div class="modern-room game-board immersive-board mobile-workbench-content"><div class="workbench-center">
+        <div id="mobile-workbench-cards" v-show="workbenchTab === 'cards'" role="region" aria-label="我的手牌"></div>
+        <div id="mobile-workbench-ranking" v-show="workbenchTab === 'ranking'" role="region" aria-label="资产排行"></div>
+      </div></div>
+    </Modal>
     <Modal panel-class="modern-modal decision-modal" v-if="modal === 'decision' && game.room && hasCentralDecision && !game.cardReveals.length" :title="decisionTitle"  @close="modal = null"><div class="action-details">
                         <template v-if="game.canDecide">
                           <template v-if="game.room.pending?.type === 'choice'">

@@ -1,0 +1,35 @@
+{
+  "date": "2026-10-17",
+  "source": "image_gen",
+  "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a1453b-1b0f-7920-b45e-7ab10b07b09d/exec-efc0740e-0ba8-4185-9fe9-32c53929ee41.png",
+  "sourceSha256": "53b26b5c93ad2e20229daa9885d57e835b2c54f72ef639abc184bf19a90d0de7",
+  "sourceBytes": 2036565,
+  "width": 1536,
+  "height": 1024,
+  "bytes": 254702,
+  "sha256": "4dc1ec9446e0525cb7b6f10e39292f02a0caa90b960c821a5a85ca439a20dd35",
+  "compression": {
+    "format": "webp",
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "alphaPreserved": true
+  },
+  "sprites": {
+    "more": "18 140 390 330",
+    "roll": "406 136 410 340",
+    "endTurn": "816 148 380 324",
+    "assets": "10 532 394 346",
+    "ranking": "404 532 386 346",
+    "trade": "788 568 372 310",
+    "cards": "1158 560 378 320"
+  },
+  "url": "https://pic.caiguoyu.cn/typora/20261017184914633.webp",
+  "verification": {
+    "status": 200,
+    "contentType": "image/webp",
+    "contentLength": 254702,
+    "contentMd5": "ItCZPk55T84dfdNE5FWs9A=="
+  }
+}

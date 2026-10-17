@@ -1,0 +1,17 @@
+{
+  "generator": "image_gen",
+  "transparentBackground": true,
+  "canvas": [1536, 1024],
+  "requestedLayout": "4 columns by 2 rows. Top row: 更多, 掷骰子, 结束行动, empty. Bottom row: 我的资产, 资产排行, 交易, 手牌.",
+  "style": "Warm illustrated chibi mobile Monopoly UI. Raised cream rims, pastel enamel, readable integrated Chinese labels and distinct pictograms. No device mockup or grid lines.",
+  "buttons": {
+    "more": "Sage green, travel satchel and three cream dots, label 更多.",
+    "roll": "Primary honey-gold button, two ivory dice and star sparks, label 掷骰子.",
+    "endTurn": "Peach coral, checkered flag and hourglass, label 结束行动.",
+    "assets": "Sage turquoise, cottage, key and coins, label 我的资产.",
+    "ranking": "Golden cream, trophy and podium, label 资产排行.",
+    "trade": "Muted peach, hands exchanging a coin and contract, label 交易.",
+    "cards": "Pastel lavender, three fanned magic cards, label 手牌."
+  },
+  "integration": "The generated positions differ from the requested grid. Use the actual sprite bounds recorded in manifest.json and SVG clipping; do not resize or crop the source image."
+}
