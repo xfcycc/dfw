@@ -1,0 +1,158 @@
+{
+  "date": "2026-10-18",
+  "source": "image_gen",
+  "reference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "assets": [
+    {
+      "key": "variant-scenes",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-14342e7d-1bed-490d-99dd-88a41fcf69d3.png",
+      "sourceSha256": "cdef2388d8394acb60df5d8ea260b66adac3a3bbfaa4579d2a5f37d25b43d3fc",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 292080,
+      "sha256": "ea6a7e5e632bfaec529dd4ea82962077964138ca7f2134083053318db10f08c2",
+      "md5Base64": "19qyBBCvbwA+zfGXGaBNVg==",
+      "compression": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": false
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018011347288.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 292080,
+        "contentMd5": "19qyBBCvbwA+zfGXGaBNVg=="
+      }
+    },
+    {
+      "key": "variant-props",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-2f7476b4-9d76-4a63-a087-ba3f73e3555b.png",
+      "sourceSha256": "76394c6f15bd3f26b545c21ef42c9973afeaa0639030bf86a4722af9d7d8d1bd",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 458900,
+      "sha256": "45784436aa87c0b8db760637f1e95eb7c6d08490fae5f8fff1ae254c8eaa9132",
+      "md5Base64": "jFWLZUB2U9BeEuo0CkMHgw==",
+      "compression": {
+        "format": "webp",
+        "quality": 90,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": true
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018011347290.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 458900,
+        "contentMd5": "jFWLZUB2U9BeEuo0CkMHgw=="
+      }
+    }
+  ],
+  "viewBoxes": {
+    "bridge-scene": {
+      "sheet": "variant-scenes",
+      "bounds": [
+        0,
+        0,
+        768,
+        512
+      ]
+    },
+    "treasure-scene": {
+      "sheet": "variant-scenes",
+      "bounds": [
+        768,
+        0,
+        768,
+        512
+      ]
+    },
+    "market-scene": {
+      "sheet": "variant-scenes",
+      "bounds": [
+        0,
+        512,
+        768,
+        512
+      ]
+    },
+    "glass": {
+      "sheet": "variant-props",
+      "bounds": [
+        4,
+        152,
+        376,
+        216
+      ]
+    },
+    "glass-safe": {
+      "sheet": "variant-props",
+      "bounds": [
+        388,
+        152,
+        376,
+        216
+      ]
+    },
+    "glass-broken": {
+      "sheet": "variant-props",
+      "bounds": [
+        772,
+        152,
+        376,
+        216
+      ]
+    },
+    "chest-closed": {
+      "sheet": "variant-props",
+      "bounds": [
+        1152,
+        0,
+        384,
+        416
+      ]
+    },
+    "chest-gold": {
+      "sheet": "variant-props",
+      "bounds": [
+        0,
+        544,
+        384,
+        416
+      ]
+    },
+    "chest-trap": {
+      "sheet": "variant-props",
+      "bounds": [
+        384,
+        544,
+        384,
+        416
+      ]
+    },
+    "hotpot": {
+      "sheet": "variant-props",
+      "bounds": [
+        768,
+        449,
+        384,
+        548
+      ]
+    },
+    "barbecue": {
+      "sheet": "variant-props",
+      "bounds": [
+        1152,
+        449,
+        384,
+        548
+      ]
+    }
+  }
+}

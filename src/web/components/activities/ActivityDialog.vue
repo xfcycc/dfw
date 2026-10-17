@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
-import { ACTIVITY_NAMES, activityArt, type ActivityInput } from '../../activity-art';
+import { ACTIVITY_NAMES, type ActivityInput } from '../../activity-art';
 import type { Sound } from '../../audio';
 import { playSound } from '../../audio';
 import { useGameStore } from '../../stores/game';
@@ -14,13 +14,13 @@ import TreasureScene from './TreasureScene.vue';
 import BridgeScene from './BridgeScene.vue';
 import MinorityScene from './MinorityScene.vue';
 import BlindBoxScene from './BlindBoxScene.vue';
-import ActivityRewards from './ActivityRewards.vue';
+import ActivityPresentation from './ActivityPresentation.vue';
 import '../../activities.css';
 const props = defineProps<{ paused?: boolean; spectator?: boolean }>();
 const game = useGameStore(); const open = ref(true);
+const blindboxRevealing = ref(false);
 const activity = computed(() => game.room?.activity);
 const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene, treasure: TreasureScene, bridge: BridgeScene, minority: MinorityScene, blindbox: BlindBoxScene };
-const newActivity = computed(() => !!activity.value && ['treasure', 'bridge', 'minority', 'blindbox'].includes(activity.value.kind));
 const ownSelection = computed(() => game.privateData?.activityId === activity.value?.id && game.privateData?.activityRound === activity.value?.round ? game.privateData?.activitySelection : null);
 const enabled = computed(() => {
   const a = activity.value, id = game.me?.id;
@@ -81,11 +81,9 @@ onBeforeUnmount(() => { clearInterval(hoof); });
 <template>
   <div v-if="activity" class="activity-entry"><div><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div><button v-if="activity.stage !== 'payment'" class="button primary small" :disabled="paused" @click="open = true">进入活动</button><small v-else>请先处理工作台的费用待办</small></div>
   <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="open = false">
-    <div class="activity-scene" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" :style="{ '--activity-background': `url(${activityArt(`${activity.kind}-background`)})` }">
+    <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div>
-      <div class="activity-content"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" />
-        <ActivityRewards v-if="activity.stage === 'result' && newActivity" :activity="activity" />
-        <div v-else-if="activity.stage === 'result' && activity.kind !== 'packet'" class="activity-result" role="status"><strong>{{ activity.summary }}</strong><div v-for="(amount, id) in activity.payouts" :key="id" class="activity-payout">{{ game.room?.players.find(p => p.id === id)?.name }} <b>+¥{{ amount.toLocaleString() }}</b></div></div>
+      <div class="activity-content"><ActivityPresentation :activity="activity" :revealing="blindboxRevealing"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" @revealing="blindboxRevealing = $event" /></ActivityPresentation>
         <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
       </div>
     </div>

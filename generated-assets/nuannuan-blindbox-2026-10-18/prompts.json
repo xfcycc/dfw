@@ -1,0 +1,24 @@
+{
+  "generator": "image_gen",
+  "transparentBackground": true,
+  "reference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "canvas": [
+    1536,
+    1024
+  ],
+  "character": "Su Nuannuan human girl: long pink curls, pink bow, brown eyes, pink white outfit, cream shoulder bag; front facing seated PVC/resin collectible figure.",
+  "dolls": {
+    "layout": "4 columns x 2 rows, 384x512 per cell",
+    "common": "Six daily outfits with simple small props: milk tea, gardening, baking, pajamas, raincoat, sailor dress and book.",
+    "hidden": "Rose Garden princess; layered lace skirt, rose gold filigree throne base, sculpted roses, tiara and butterfly wings.",
+    "limited": "Starlight Moon princess; elaborate translucent multilayer dress, gold constellation embroidery, crystal crown, iridescent crescent moon base and sculpted stars."
+  },
+  "boxes": {
+    "layout": "2 columns x 1 row, 768x1024 per cell",
+    "style": "Realistic printed matte paper blind box, cream blush macaron colors, pink-haired Nuannuan illustration, NUANNUAN and Sweet Little Moments branding, decorative border, side silhouette lineup and barcode.",
+    "states": [
+      "closed packaging at three-quarter angle",
+      "same packaging with open flaps and opaque inner foil bag"
+    ]
+  }
+}

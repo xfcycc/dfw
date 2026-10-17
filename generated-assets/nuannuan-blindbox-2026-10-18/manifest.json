@@ -1,0 +1,79 @@
+{
+  "date": "2026-10-18",
+  "source": "image_gen",
+  "characterReference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "styles": [
+    "午后奶茶",
+    "薄荷花园",
+    "香草烘焙",
+    "晚安好梦",
+    "蜜桃雨季",
+    "海盐书屋",
+    "蔷薇花园",
+    "星月礼赞"
+  ],
+  "assets": [
+    {
+      "key": "nuannuan-dolls",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-6faae01d-9ab5-41a4-8404-2462b6ad66a2.png",
+      "sourceSha256": "1c47cb2db2caa06a36d049e92079fc7b17f734e023d3e9170c244d4a0720f178",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 500182,
+      "sha256": "24e6f61ba4208c84317ba77b71c7f8d48b76354b133d2d851215841ee856c8dc",
+      "md5Base64": "0dxSOWOMti3ue4g5gPnHbQ==",
+      "compression": {
+        "format": "webp",
+        "quality": 90,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": true
+      },
+      "grid": {
+        "columns": 4,
+        "rows": 2,
+        "cellWidth": 384,
+        "cellHeight": 512
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018005744488.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 500182,
+        "contentMd5": "0dxSOWOMti3ue4g5gPnHbQ=="
+      }
+    },
+    {
+      "key": "nuannuan-boxes",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-c35d77e0-ddc8-4aa3-8f46-fe708dfad81f.png",
+      "sourceSha256": "eb51b7d3f9e09ada1480f2654620f74b03412077999d88d44fda77288aed5a95",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 297628,
+      "sha256": "e5a83fc0d3595ee32cfc2477cbb1ebf41c78a71ae76333a3f91958b3cd191d8b",
+      "md5Base64": "09Z76Zf4jv7I3YsLaZ5j/w==",
+      "compression": {
+        "format": "webp",
+        "quality": 90,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": true
+      },
+      "grid": {
+        "columns": 2,
+        "rows": 1,
+        "cellWidth": 768,
+        "cellHeight": 1024
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018005823227.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 297628,
+        "contentMd5": "09Z76Zf4jv7I3YsLaZ5j/w=="
+      }
+    }
+  ]
+}

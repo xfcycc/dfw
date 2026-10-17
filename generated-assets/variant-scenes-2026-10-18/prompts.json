@@ -1,0 +1,43 @@
+{
+  "generator": "image_gen",
+  "reference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "style": "Match existing Su Nuannuan: refined 3D chibi resin fairytale miniature, warm cream pastel colors and detailed physical materials.",
+  "scenes": {
+    "canvas": [
+      1536,
+      1024
+    ],
+    "transparent": false,
+    "layout": "2 columns x 2 rows, 768x512 cells",
+    "panels": [
+      "misty jade canyon and fairytale observation balconies, empty center without bridge or stepping tiles",
+      "golden stone underground vault, arch columns and treasure at edges, empty center without chests",
+      "warm lantern night market plaza, stalls only at edges, empty center",
+      "alternative calm night market plaza, not used by runtime"
+    ]
+  },
+  "props": {
+    "canvas": [
+      1536,
+      1024
+    ],
+    "transparent": true,
+    "layout": "4 columns x 2 rows; runtime viewBoxes follow actual object silhouettes",
+    "objects": [
+      "intact aqua glass platform in ornate cream gold rim",
+      "same safe glowing mint glass platform",
+      "same broken platform with transparent hole and jagged perimeter",
+      "closed coral walnut treasure chest with ornate gold frame and heart lock",
+      "same open chest with coins and gems",
+      "same open chest with purple clockwork trap",
+      "coral cream hotpot food stall with tiny pink-haired Nuannuan shopkeeper",
+      "mint cream barbecue stall with tiny matching Nuannuan shopkeeper"
+    ]
+  },
+  "constraints": [
+    "no labels, numbers, arrows or preset outcomes",
+    "unrevealed left and right choices use same prop",
+    "only public state selects safe or trap sprites",
+    "all text and player avatars remain live UI"
+  ]
+}

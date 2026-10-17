@@ -1,0 +1,176 @@
+{
+  "date": "2026-10-18",
+  "source": "image_gen",
+  "reference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "assets": [
+    {
+      "key": "classic-scenes",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-7b58092d-f8ef-497c-8907-413e97c5fdda.png",
+      "sourceSha256": "5e03d8c8343d6f0a2b781701042ed814087ef07c912ed8528c85d7ef72fc16e2",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 353782,
+      "sha256": "3115058519b8ad0264d684d42969674b97360bba046b2777bbda79ef8d66336c",
+      "md5Base64": "/WrMGH4ZILD186J4r8sykA==",
+      "compression": {
+        "format": "webp",
+        "quality": 82,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": false
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018014042158.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 353782,
+        "contentMd5": "/WrMGH4ZILD186J4r8sykA=="
+      }
+    },
+    {
+      "key": "classic-props",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14ab1-6910-7b51-814a-1be6324eadd6/exec-a2c91b59-157d-4d7c-a45d-0b2d3c43b8b8.png",
+      "sourceSha256": "d1371d817265ca6a12b628674d4b0a613428c3330bf7bf17aec299081a823864",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 379994,
+      "sha256": "2a57824d9000e71d42c61b728b941958caa2eb1e78ef24c3aa2e9a8fa43fc9fb",
+      "md5Base64": "udRVROHkV7gwNUOX/bJFsw==",
+      "compression": {
+        "format": "webp",
+        "quality": 90,
+        "method": 6,
+        "resize": false,
+        "crop": false,
+        "alphaPreserved": true
+      },
+      "url": "https://pic.caiguoyu.cn/typora/20261018014042159.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 379994,
+        "contentMd5": "udRVROHkV7gwNUOX/bJFsw=="
+      }
+    }
+  ],
+  "viewBoxes": {
+    "casino-scene": {
+      "sheet": "classic-scenes",
+      "bounds": [
+        0,
+        0,
+        512,
+        512
+      ]
+    },
+    "horse-scene": {
+      "sheet": "classic-scenes",
+      "bounds": [
+        512,
+        0,
+        512,
+        512
+      ]
+    },
+    "roulette-scene": {
+      "sheet": "classic-scenes",
+      "bounds": [
+        1024,
+        0,
+        512,
+        512
+      ]
+    },
+    "packet-scene": {
+      "sheet": "classic-scenes",
+      "bounds": [
+        0,
+        512,
+        512,
+        512
+      ]
+    },
+    "rps-scene": {
+      "sheet": "classic-scenes",
+      "bounds": [
+        512,
+        512,
+        512,
+        512
+      ]
+    },
+    "casino-table": {
+      "sheet": "classic-props",
+      "bounds": [
+        18,
+        58,
+        405,
+        437
+      ]
+    },
+    "cylinder": {
+      "sheet": "classic-props",
+      "bounds": [
+        427,
+        113,
+        363,
+        370
+      ]
+    },
+    "packet-closed": {
+      "sheet": "classic-props",
+      "bounds": [
+        803,
+        46,
+        335,
+        459
+      ]
+    },
+    "packet-open": {
+      "sheet": "classic-props",
+      "bounds": [
+        1176,
+        46,
+        336,
+        459
+      ]
+    },
+    "packet-lucky": {
+      "sheet": "classic-props",
+      "bounds": [
+        26,
+        519,
+        422,
+        461
+      ]
+    },
+    "rps-rock": {
+      "sheet": "classic-props",
+      "bounds": [
+        448,
+        552,
+        330,
+        414
+      ]
+    },
+    "rps-scissors": {
+      "sheet": "classic-props",
+      "bounds": [
+        788,
+        552,
+        330,
+        414
+      ]
+    },
+    "rps-paper": {
+      "sheet": "classic-props",
+      "bounds": [
+        1170,
+        552,
+        330,
+        414
+      ]
+    }
+  }
+}

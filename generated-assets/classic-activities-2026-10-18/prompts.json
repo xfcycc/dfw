@@ -1,0 +1,44 @@
+{
+  "generator": "image_gen",
+  "reference": "/Users/caiguoyu/.codex/generated_images/01a13bbd-1d53-7652-b20c-0ddf5288a708/exec-5160dd9b-72f1-48f8-81ed-aaac303de8b0.png",
+  "style": "Existing pink-haired Su Nuannuan fairytale world, refined warm 3D toy materials, cream pastel colors and golden light.",
+  "scenes": {
+    "canvas": [
+      1536,
+      1024
+    ],
+    "transparent": false,
+    "layout": "3 columns x 2 rows, 512x512 cells",
+    "panels": [
+      "emerald cream gold dice lounge with open center",
+      "sunny flower-decorated pony festival stadium without horses",
+      "rose gold amber duel saloon without weapons",
+      "festive red and gold envelope pavilion",
+      "lavender pink rock paper scissors championship stage",
+      "reserve calm fairytale festival hall, not used"
+    ]
+  },
+  "props": {
+    "canvas": [
+      1536,
+      1024
+    ],
+    "transparent": true,
+    "objects": [
+      "empty green velvet dice table with Nuannuan dealer, no dice or printed result",
+      "front facing circular cylinder with exactly six identical empty holes, no bullet or marked outcome",
+      "closed red envelope with embossed Nuannuan cameo and gold heart seal",
+      "same opened envelope with coins",
+      "richer lucky envelope with golden heart and pink gold glow",
+      "ivory plush glove closed rock fist",
+      "same glove scissors with two raised fingers",
+      "same glove open paper with five fingers"
+    ],
+    "revision": "Preserve object design, increase spacing so table, dealer, envelopes, tassels and hands are fully contained. Runtime viewBoxes use actual silhouettes.",
+    "constraints": [
+      "no dynamic text, numbers or random results",
+      "all amounts and avatars rendered by actual components",
+      "sealed envelopes do not expose amount or bonus"
+    ]
+  }
+}
