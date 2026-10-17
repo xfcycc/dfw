@@ -3,7 +3,7 @@ import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { ITEMS, mapLength, MAP_SIZES, mortgageValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
-import type { Card, MapSize, Tile } from '../../shared/types';
+import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
 import { forgetSession, readSession, useGameStore } from '../stores/game';
 import { useTurnSound } from '../composables/useTurnSound';
 import { playSound } from '../audio';
@@ -20,6 +20,7 @@ import Board from '../components/Board.vue';
 import PanelFrame from '../components/PanelFrame.vue';
 import FitPanel from '../components/FitPanel.vue';
 import Modal from '../components/Modal.vue';
+import MatchSettlement from '../components/MatchSettlement.vue';
 import Assets from '../components/Assets.vue';
 import CardAction from '../components/CardAction.vue';
 import CardTargetPicker from '../components/CardTargetPicker.vue';
@@ -34,6 +35,7 @@ import SaveArchive from '../components/SaveArchive.vue';
 import RecoverySeats from '../components/RecoverySeats.vue';
 import PublicLeaderboard from '../components/PublicLeaderboard.vue';
 import RoomHistory from '../components/RoomHistory.vue';
+import ChatComposer from '../components/ChatComposer.vue';
 import LiveRecords from '../components/LiveRecords.vue';
 import PlayerText from '../components/PlayerText.vue';
 import CharacterPawn from '../components/CharacterPawn.vue';
@@ -51,6 +53,14 @@ const origin = window.location.origin;
 const game = useGameStore();
 const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | 'more' | 'workbench' | null>(null);
 const nickname = ref('');
+const botDifficulty = ref<BotDifficulty>('normal');
+const botLevels = [{ value: 'easy', label: '简单' }, { value: 'normal', label: '普通' }, { value: 'hard', label: '困难' }] as const;
+/** 输入机器人席位与选择事件，通过已有命令更新大厅难度，无返回值。 */
+async function changeBotDifficulty(playerId: string, event: Event): Promise<void> {
+  const select = event.target as HTMLSelectElement;
+  const level = select.value as BotDifficulty;
+  if (!await game.act({ type: 'setBotDifficulty', playerId, botDifficulty: level })) select.value = game.room?.players.find(player => player.id === playerId)?.botDifficulty ?? level;
+}
 const canRename = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.settling && !game.room?.recoveryPending);
 /** 无入参，使用本人当前昵称打开改名弹窗，无返回值。 */
 function openRename(): void {
@@ -76,6 +86,7 @@ const selectedCardCopy = computed(() => {
   return { description: card.description ?? fallback, effect: card.kind === 'barrier' ? fallback : card.effect ?? fallback };
 });
 const tradeEditorVersion = ref(0);
+const tradeEditor = ref<InstanceType<typeof TradeEditor>>();
 const submittingCard = ref(false);
 const selectedTarget = ref('');
 const selectedCardActive = ref(false);
@@ -98,19 +109,17 @@ onBeforeUnmount(() => mobileQuery.removeEventListener('change', updateMobileView
 const selectedDefense = ref('');
 const selectedTile = ref<Tile | null>(null);
 const recordMode = ref<'live' | 'history'>('live');
-const chatMessage = ref('');
+const board = ref<InstanceType<typeof Board>>();
 const canChat = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.room?.recoveryPending);
-/** 提交输入框的公开聊天，成功后清空正文并显示实时记录；失败保留输入。 */
-async function sendChat(): Promise<void> {
-  const message = chatMessage.value.trim();
-  if (!canChat.value || !message) return;
-  if (await game.act({ type: 'chat', message })) { chatMessage.value = ''; recordMode.value = 'live'; }
+/** 输入公开聊天正文与已选引用，成功切换实时记录，返回是否发送成功。 */
+async function sendChat(message: string, references: ChatReference[]): Promise<boolean> {
+  if (!canChat.value || !message.trim()) return false;
+  const sent = await game.act({ type: 'chat', message, references });
+  if (sent) recordMode.value = 'live';
+  return sent;
 }
-/** 输入回车事件，中文输入法选词时保留回车，Shift+Enter 换行。 */
-function chatEnter(event: KeyboardEvent): void {
-  if (event.isComposing || event.shiftKey) return;
-  event.preventDefault(); void sendChat();
-}
+/** 输入被引用的地块编号，电脑强调地块，手机将地图视野定位到该处，无返回值。 */
+function locateChatTile(id: number): void { board.value?.referenceTile(id, mobileViewport.value); }
 const boardAnimating = ref(false);
 const awaitingJoin = ref(false);
 const joining = ref(false);
@@ -142,6 +151,13 @@ const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals
 const handCount = computed(() => game.privateData?.hand.length ?? 0);
 const liveSelectedTile = computed(() => selectedTile.value ? game.room?.board[selectedTile.value.id] : null);
 const selectedTileOwner = computed(() => game.room?.players.find(player => player.id === liveSelectedTile.value?.ownerId));
+/** 根据详情地产及当前付款状态，返回本人是否可抵押或赎回；沿用资产页的归属、时机和现金限制。 */
+const canManageSelectedProperty = computed(() => {
+  const tile = liveSelectedTile.value;
+  return canPlay.value && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved)
+    && tile?.type === 'property' && tile.ownerId === game.me?.id
+    && (!tile.mortgaged || !payment.value && (game.me?.cash ?? 0) >= redeemCost(tile));
+});
 const turnIdentity = computed(() => `${game.room?.roomId ?? code.value}:${game.room?.gameId}:${game.room?.turnNumber}`);
 const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && !game.privateData?.activeCardUsed);
 const drafting = computed(() => !!selectedCard.value && selectedCardActive.value);
@@ -151,7 +167,14 @@ const targeting = computed(() => targetKind.value !== null && (modal.value === '
 const eligibleTiles = computed(() => targetKind.value === 'tile' ? game.room?.board.filter(tile => !tileReason(tile)).map(tile => tile.id) ?? [] : []);
 const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => !player.bankrupt && (['blast', 'jail'].includes(selectedCard.value?.kind ?? '') || player.id !== game.me?.id) && (selectedCard.value?.kind !== 'swap' || !player.jailed)).map(player => player.id) ?? [] : []);
 const targetTileId = computed(() => targetKind.value === 'tile' && selectedTarget.value !== '' ? Number(selectedTarget.value) : null);
-const targetLabel = computed(() => targetKind.value === 'tile' && targetTileId.value != null ? `${game.room?.board[targetTileId.value]?.name} · ${targetTileId.value}号` : game.room?.players.find(player => player.id === selectedTarget.value)?.name ?? '');
+/** 输入当前目标及房间状态，返回玩家昵称或包含地块编号、当前归属的土地名称。 */
+const targetLabel = computed(() => {
+  if (targetKind.value !== 'tile') return game.room?.players.find(player => player.id === selectedTarget.value)?.name ?? '';
+  const tile = targetTileId.value == null ? null : game.room?.board[targetTileId.value];
+  if (!tile) return '';
+  const owner = game.room?.players.find(player => player.id === tile.ownerId)?.name ?? (tile.type === 'property' ? '无主地产' : '公共地块');
+  return `${tile.name} · ${tile.id}号 · 归属：${owner}`;
+});
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
@@ -161,7 +184,7 @@ const targetHint = computed(() => {
 /** 输入房间地块与玩家，返回按可选性排序的目标选项；地块携带原始价格和建筑插画信息。 */
 const dialogTargets = computed(() => {
   if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: player.name, detail: `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.id === game.me?.id ? '不能选择自己' : player.bankrupt ? '该玩家已破产' : '该玩家正在服刑' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
-  if (targetKind.value === 'tile') return (game.room?.board ?? []).map(tile => ({ id: String(tile.id), name: `${tile.name} · ${tile.id}号`, detail: tile.type === 'property' ? `${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '特殊地块', tile, reason: tileReason(tile) })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'tile') return (game.room?.board ?? []).map(tile => ({ id: String(tile.id), name: `${tile.name} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile, reason: tileReason(tile) })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
   return [];
 });
 const canEndTurn = computed(() => !drafting.value && canPlay.value && game.room?.phase === 'manage' && !game.room.pending);
@@ -228,7 +251,7 @@ const actionStatus = computed(() => {
 async function enter(): Promise<void> {
   const generation = ++entryGeneration;
   awaitingJoin.value = false; joining.value = false;
-  clearCard(); selectedTile.value = null; recordMode.value = 'live'; chatMessage.value = '';
+  clearCard(); selectedTile.value = null; recordMode.value = 'live';
   game.disconnect();
   try {
     const saved = readSession(code.value, props.spectator);
@@ -273,6 +296,20 @@ async function openWorkbench(section: 'assets' | 'trade' | 'choice' | 'history')
   if (section === 'history') recordMode.value = 'history';
   await nextTick();
   (detachedDashboard.value ? dashboardView.value : mapView.value)?.querySelector('.dashboard-records')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+/** 无入参，按详情中地产的最新归属打开交易并勾选该房产；不可交易时保留详情，无返回值。 */
+function tradeSelectedProperty(): void {
+  if (!canTrade.value || !liveSelectedTile.value || !tradeEditor.value?.selectProperty(liveSelectedTile.value.id)) return;
+  selectedTile.value = null;
+  modal.value = 'trade';
+}
+
+/** 无入参，按详情地产的最新抵押状态执行抵押或赎回；保留详情并由房间快照更新金额，无返回值。 */
+async function manageSelectedProperty(): Promise<void> {
+  const tile = liveSelectedTile.value;
+  if (!tile || !canManageSelectedProperty.value) return;
+  await game.act({ type: tile.mortgaged ? 'redeem' : 'mortgage', tileId: tile.id });
 }
 
 const fullscreenActive = ref(!!document.fullscreenElement);
@@ -378,13 +415,15 @@ async function resetSession(): Promise<void> {
           <div class="lobby-seats">
             <div v-for="player in game.room.players" :key="player.id" class="lobby-seat" :class="{ 'is-me': player.id === game.me?.id, offline: !player.online }">
               <CharacterPawn :avatar-id="player.avatarId" :color="player.color" />
-              <div class="seat-identity"><strong :style="{ color: player.color }" :title="player.name">{{ player.name }}</strong><small>{{ player.id === game.room.hostId ? '房主' : player.id === game.me?.id ? '我' : '玩家' }}{{ player.id === game.room.hostId && player.id === game.me?.id ? ' · 我' : '' }}</small></div>
+              <div class="seat-identity"><strong :style="{ color: player.color }" :title="player.name">{{ player.name }}</strong><small>{{ player.botDifficulty ? `机器人 · ${botLevels.find(level => level.value === player.botDifficulty)?.label}` : player.id === game.room.hostId ? '房主' : player.id === game.me?.id ? '我' : '玩家' }}{{ player.id === game.room.hostId && player.id === game.me?.id ? ' · 我' : '' }}</small></div>
+              <select v-if="game.isHost && player.botDifficulty" class="bot-level-select" :aria-label="`${player.name}的难度`" :value="player.botDifficulty" :disabled="game.busy || !game.canAct" @change="changeBotDifficulty(player.id, $event)"><option v-for="level in botLevels" :key="level.value" :value="level.value">{{ level.label }}</option></select>
               <ReadyIcon class="seat-ready" :ready="player.ready" :offline="!player.online" />
-              <button v-if="game.isHost && !player.online && player.id !== game.me?.id" class="seat-remove" :disabled="game.busy" :aria-label="`移出 ${player.name}`" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出</button>
+              <button v-if="game.isHost && (!player.online || player.botDifficulty) && player.id !== game.me?.id" class="seat-remove" :disabled="game.busy" :aria-label="`移出 ${player.name}`" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出</button>
             </div>
             <div v-for="seat in 6 - game.room.players.length" :key="`empty-${seat}`" class="lobby-seat empty"><span class="empty-seat-mark" aria-hidden="true">＋</span><span>待加入</span></div>
           </div>
           <div class="cottage-map"><span>地图</span><div class="map-size-options" role="group" aria-label="地图大小"><button v-for="size in MAP_SIZES" :key="size.value" type="button" :class="{ selected: (game.room.mapSize ?? 'large') === size.value }" :aria-pressed="(game.room.mapSize ?? 'large') === size.value" :disabled="spectator || !game.isHost || !game.canAct" @click="changeMapSize(size.value)">{{ size.name }}<small>{{ mapLength(previewPlayers, size.value) }} 格</small></button></div></div>
+          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<select v-model="botDifficulty" :disabled="!game.canAct"><option v-for="level in botLevels" :key="level.value" :value="level.value">{{ level.label }}</option></select></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；开局前可调整难度。</p></div>
           <section v-if="game.me && !spectator" class="lobby-avatar-picker"><div class="lobby-avatar-heading"><h2>选择头像</h2><button type="button" class="button secondary small lobby-rename" :disabled="!canRename" @click="openRename">改名</button></div><AvatarPicker /></section>
           <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : allReady ? game.isHost ? '大家都准备好了' : '等待房主开局' : '等待所有玩家准备' }}</p></div>
           <p v-else class="lobby-hint">观战中 · 等待开局</p>
@@ -394,10 +433,11 @@ async function resetSession(): Promise<void> {
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board ref="board" :desktop-dice="!mobileViewport" dice-target="#mobile-city-reveal" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
+                  <button v-else-if="tradeReminder" type="button" class="turn-action-status turn-action-link needs-confirmation" aria-haspopup="dialog" :aria-expanded="modal === 'trade'" title="点击查看报价" @click="modal = 'trade'"><strong>当前行动：<PlayerText :text="tradeReminder" /></strong><span aria-hidden="true">↗</span></button>
                   <button v-else-if="hasCentralDecision" type="button" class="turn-action-status turn-action-link needs-confirmation" :disabled="!!game.cardReveals.length" aria-haspopup="dialog" :aria-expanded="modal === 'decision' || modal === 'choice' || modal === 'defense'" title="点击处理当前事项" @click="openDecision"><strong>当前行动：{{ actionStatus }}</strong><span aria-hidden="true">↗</span></button>
                   <div v-else class="turn-action-status" :class="{ 'is-waiting': game.connection !== 'online' || !!game.room.pausedReason || game.room.status === 'finished' || !game.isMyTurn && !game.canDecide }" role="status"><strong>当前行动：{{ actionStatus }}</strong></div>
                 </template>
@@ -410,19 +450,19 @@ async function resetSession(): Promise<void> {
                 <FitPanel :disabled="detachedDashboard || spectator">
                 <div class="dashboard-scroll">
                   <ActivityDialog :paused="boardAnimating || game.settling || !!game.cardReveals.length" :spectator="spectator" />
-                  <div v-if="game.room.status === 'finished'" class="hub-finish"><p>淘汰顺序：<PlayerText :text="elimination.map(player => player.name).join(' → ') || '—'" /></p><button v-if="game.isHost && !spectator" class="button primary small" :disabled="!game.canAct" @click="game.act({ type: 'newGame' })">再来一局</button></div>
+                  <div v-if="game.room.status === 'finished' || game.me?.bankrupt" class="hub-finish">
+                    <p v-if="game.room.status === 'finished'">淘汰顺序：<PlayerText :text="elimination.map(player => player.name).join(' → ') || '—'" /></p>
+                    <MatchSettlement :key="`${game.room.gameId}:${spectator ? 'watch' : game.me?.id}`" :room="game.room" :me-id="spectator ? undefined : game.me?.id" :paused="boardAnimating || game.settling || !!game.cardReveals.length || !!game.room.activity || !!game.room.recoveryPending" :can-restart="game.isHost && !spectator" :busy="!game.canAct" @opened="modal = null; selectedTile = null" @restart="game.act({ type: 'newGame' })" />
+                  </div>
                   <div class="dashboard-grid">
                     <section class="dashboard-records workspace-panel">
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <div class="records-scroll"><LiveRecords compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
-                      <div v-if="detachedDashboard || spectator" id="mobile-city-reveal" class="mobile-city-reveal"></div>
+                      <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
+                      <div id="mobile-city-reveal" class="mobile-city-reveal city-effects-reveal"></div>
                       </div>
-                      <form v-if="!spectator" class="room-chat" @submit.prevent="sendChat"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3></div><div class="chat-composer">
-                        <label class="sr-only" for="room-chat-message">房间聊天</label><textarea id="room-chat-message" v-model="chatMessage" maxlength="300" rows="1" :disabled="!canChat" :placeholder="spectator || !game.me ? '观战中，可以查看房间对话' : game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊…'" @keydown.enter="chatEnter" />
-                        <div class="chat-composer-actions"><button type="submit" class="button primary chat-send game-action-button" :disabled="!canChat || !chatMessage.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
-                      </div></form>
+                      <ChatComposer v-if="!spectator" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊，输入 @ 提及玩家或地块…'" />
                     </section>
                     <aside class="dashboard-sidebar">
                       <Teleport :to="detachedDashboard && !spectator ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard || spectator" defer>
@@ -430,12 +470,11 @@ async function resetSession(): Promise<void> {
                       </Teleport>
                       <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
                         <PanelFrame variant="workbench" ornament="right" />
-                        <button v-if="tradeReminder" type="button" class="workbench-todo" @click="modal = 'trade'"><PlayerText :text="tradeReminder" /><span>查看报价 →</span></button>
                         <div class="workbench-actions">
                           <button type="button" class="button workbench-action" :aria-label="`我的资产，${owned.length} 处地产`" :title="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><WorkbenchActionArt action="assets" /></button>
                           <template v-if="!game.me.bankrupt && game.room.status === 'playing'">
                             <button type="button" class="button workbench-action" :disabled="!canTrade && !game.privateData?.trade" aria-label="交易" title="交易" @click="modal = 'trade'"><WorkbenchActionArt action="trade" /></button>
-                            <button type="button" class="button workbench-action" :disabled="!canRoll" aria-label="掷骰" title="掷骰" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
+                            <button type="button" class="button workbench-action" data-dice-roll :disabled="!canRoll" aria-label="掷骰" title="掷骰" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
                             <button type="button" class="button workbench-action" :disabled="!canEndTurn" aria-label="结束行动" title="结束行动" @click="game.act({ type: 'endTurn' })"><WorkbenchActionArt action="endTurn" /></button>
                           </template>
                         </div>
@@ -452,7 +491,7 @@ async function resetSession(): Promise<void> {
                 </FitPanel>
               </template>
               <template #center-overlay>
-                <Teleport :to="detachedDashboard || spectator ? '#mobile-city-reveal' : 'body'" :disabled="!detachedDashboard && !spectator" defer>
+                <Teleport to="#mobile-city-reveal" defer>
                   <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
                 </Teleport>
               </template>
@@ -522,7 +561,7 @@ async function resetSession(): Promise<void> {
         </div>
       </div>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length" :title="choice.content?.name ?? '处理当前选择'" wide @close="modal = null"><p v-if="mapChoice" class="muted">{{ targetHint }}</p><CardTargetPicker v-if="mapChoice" :options="dialogTargets" :selected="selectedTarget" :disabled="!game.canAct" @select="selectDialogTarget" /><p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p><ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :compact="!!mapChoice" dialog @done="modal = null" /></Modal>
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length" :title="choice.content?.name ?? '处理当前选择'" wide @close="modal = null"><p v-if="mapChoice" class="muted">{{ targetHint }}</p><CardTargetPicker v-if="mapChoice" :options="dialogTargets" :selected="selectedTarget" :disabled="!game.canAct" @select="selectDialogTarget" /><p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p><ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" :compact="!!mapChoice" dialog @done="modal = null" /></Modal>
     <Modal :panel-class="['modern-modal', 'defense-use-modal']" v-if="payment" :open="modal === 'defense' && !game.settling && !game.cardReveals.length" title="本次付款防御" @close="modal = null"><p class="defense-amount">待支付 ¥{{ payment.amount.toLocaleString() }} → <PlayerText :text="creditorName" /></p><label class="field">选择防御卡<select v-model="selectedDefense"><option value="">不使用道具</option><option v-for="card in defenseCards" :key="card.id" :value="card.id">{{ card.name ?? ITEMS[card.kind].name }}</option></select></label><ContentCard v-if="defenseCards.find(card => card.id === selectedDefense)" :content="defenseCards.find(card => card.id === selectedDefense)!" /><p class="muted">本笔至多使用一张防御卡，不占主动次数。</p><button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'paymentDefense', ...(payment.id ? { decisionId: payment.id } : {}), ...(selectedDefense ? { cardId: selectedDefense } : {}) })">{{ selectedDefense ? '确认使用防御卡' : '不使用道具，继续付款' }}</button></Modal>
     <Modal panel-class="modern-modal game-tools-modal" v-if="isGameSession && modal === 'tools'" title="小镇工具箱" @close="modal = null">
       <div class="game-tools-grid">
@@ -541,7 +580,7 @@ async function resetSession(): Promise<void> {
 
 
 
-    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null"><TradeEditor :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; tradeEditorVersion++" /></Modal>
+    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null; tradeEditorVersion++"><TradeEditor ref="tradeEditor" :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; if ($event) tradeEditorVersion++" /></Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'avatar' && game.me && !spectator" title="选择角色形象" @close="modal = null"><AvatarPicker /></Modal>
     <Modal panel-class="modern-modal nickname-modal" v-if="modal === 'rename' && game.me && !spectator" title="修改昵称" :close-disabled="game.busy" @close="modal = null">
       <form class="nickname-form" @submit.prevent="saveNickname">
@@ -584,6 +623,10 @@ async function resetSession(): Promise<void> {
           <dl class="tile-detail-facts">
             <div><dt>抵押状态</dt><dd :class="{ 'tile-detail-mortgaged': liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? `已抵押 · 赎回 ¥${redeemCost(liveSelectedTile).toLocaleString()}` : '未抵押' }}</dd></div>
           </dl>
+          <div v-if="!spectator && game.me && selectedTileOwner" class="tile-detail-actions">
+            <button v-if="liveSelectedTile.ownerId !== game.me.id" type="button" class="button primary" :disabled="!canTrade || selectedTileOwner.bankrupt" @click="tradeSelectedProperty">交易此房产</button>
+            <button v-else type="button" class="button primary" :disabled="!canManageSelectedProperty" @click="manageSelectedProperty">{{ liveSelectedTile.mortgaged ? `赎回此房产 −¥${redeemCost(liveSelectedTile).toLocaleString()}` : `抵押此房产 +¥${mortgageValue(liveSelectedTile, game.room?.economy).toLocaleString()}` }}</button>
+          </div>
         </template>
         <p v-else-if="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind" class="tile-detail-description">{{ ACTIVITY_HINTS[liveSelectedTile.activityKind] }}。停在这里触发活动，经过不触发。</p>
         <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `经过或停留在起点，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()} 和 ${startCards(game.room?.players.length ?? 2)} 张道具补给。` : '停在此处，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可当场用解控卡解除限制。' }}</p>
@@ -593,3 +636,8 @@ async function resetSession(): Promise<void> {
     <footer v-if="!isLobby" class="room-footer">小小棋盘，大大野心。<span>好运和朋友，都在这里。</span></footer>
   </div>
 </template>
+
+<style scoped>
+.tile-detail-actions { margin-top: 12px; }
+.tile-detail-actions > .button { width: 100%; }
+</style>

@@ -1,6 +1,6 @@
 import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 
-export type Sound = 'click' | 'turn' | 'chat' | 'dice' | 'step' | 'coin' | 'pay' | 'buy' | 'build' | 'card' | 'magic' | 'error' | 'victory' | 'casino_dice' | 'casino_win' | 'casino_loss' | 'horse_start' | 'horse_run' | 'horse_finish' | 'roulette_spin' | 'roulette_click' | 'roulette_hit' | 'packet_open' | 'packet_lucky' | 'rps_count' | 'rps_reveal' | 'rps_win' | 'rotation_count' | 'rotation_switch';
+export type Sound = 'click' | 'turn' | 'chat' | 'mention' | 'dice' | 'step' | 'coin' | 'pay' | 'buy' | 'build' | 'card' | 'magic' | 'error' | 'victory' | 'casino_dice' | 'casino_win' | 'casino_loss' | 'horse_start' | 'horse_run' | 'horse_finish' | 'roulette_spin' | 'roulette_click' | 'roulette_hit' | 'packet_open' | 'packet_lucky' | 'rps_count' | 'rps_reveal' | 'rps_win' | 'rotation_count' | 'rotation_switch';
 type MusicScene = 'lobby' | 'game' | null;
 const tracks = { lobby: '/audio/nikki-bianzhi-yuanjing.m4a', game: '/audio/nikki-bianzhi-yuanjing.m4a' };
 /** 输入本机音量存储键和默认值，返回 0～1 的有效音量。 */
@@ -29,7 +29,7 @@ const voices = new Set<AudioBufferSourceNode>();
 const soundBuffers = new Map<Sound, Promise<AudioBuffer | null>>();
 let soundGeneration = 0;
 const lastPlayed = new Map<Sound, number>();
-const sounds: Sound[] = ['click', 'turn', 'chat', 'dice', 'step', 'coin', 'pay', 'buy', 'build', 'card', 'magic', 'error', 'victory', 'casino_dice', 'casino_win', 'casino_loss', 'horse_start', 'horse_run', 'horse_finish', 'roulette_spin', 'roulette_click', 'roulette_hit', 'packet_open', 'packet_lucky', 'rps_count', 'rps_reveal', 'rps_win', 'rotation_count', 'rotation_switch'];
+const sounds: Sound[] = ['click', 'turn', 'chat', 'mention', 'dice', 'step', 'coin', 'pay', 'buy', 'build', 'card', 'magic', 'error', 'victory', 'casino_dice', 'casino_win', 'casino_loss', 'horse_start', 'horse_run', 'horse_finish', 'roulette_spin', 'roulette_click', 'roulette_hit', 'packet_open', 'packet_lucky', 'rps_count', 'rps_reveal', 'rps_win', 'rotation_count', 'rotation_switch'];
 
 /** 输入效果名及音频设备，返回缓存的原创 WAV；加载失败记录日志并允许下次重试。 */
 function loadSound(sound: Sound, device: AudioContext): Promise<AudioBuffer | null> {
@@ -47,7 +47,7 @@ function loadSound(sound: Sound, device: AudioContext): Promise<AudioBuffer | nu
 export function playSound(sound: Sound): void {
   if (!audioPreferences.sound || !context || context.state !== 'running' || document.hidden) return;
   const now = performance.now();
-  if (now - (lastPlayed.get(sound) ?? -Infinity) < (sound === 'step' ? 80 : sound === 'chat' ? 350 : 60)) return;
+  if (now - (lastPlayed.get(sound) ?? -Infinity) < (sound === 'step' ? 80 : (sound === 'chat' || sound === 'mention') ? 350 : 60)) return;
   lastPlayed.set(sound, now);
   const device = context;
   const generation = soundGeneration;

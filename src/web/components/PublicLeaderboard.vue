@@ -52,7 +52,7 @@ function selectProperty(tile: Tile): void {
           <span class="ranking-stat property" :aria-label="`地产 ${tiles.length}处`" title="地产"><AssetStatIcon kind="property" /><b>{{ tiles.length }}</b></span>
         </div>
       </div>
-      <div class="ranking-status"><span v-if="player.trapImmunityTurns" class="buff">免疫 {{ player.trapImmunityTurns }} 回合</span><span v-if="player.nextPaymentWaiver" class="buff">下次免单</span><span v-if="player.nextRentDouble" class="buff">租金翻倍</span><span v-if="player.nextMoveDouble" class="buff" title="下一次最终移动距离×2，传送与换位不消耗">塔塔开 · 移动×2</span><span v-if="player.skipTurns || player.jailed" class="debuff">{{ player.jailed ? '监禁' : '休息' }} {{ player.skipTurns }} 次{{ player.jailed && player.skipTurns > 0 ? ' · 停租' : '' }}</span></div>
+      <div class="ranking-status"><span v-if="player.botDifficulty" class="buff">机器人 · {{ player.botDifficulty === 'easy' ? '简单' : player.botDifficulty === 'hard' ? '困难' : '普通' }}</span><span v-if="player.trapImmunityTurns" class="buff">免疫 {{ player.trapImmunityTurns }} 回合</span><span v-if="player.nextPaymentWaiver" class="buff">下次免单</span><span v-if="player.nextRentDouble" class="buff">租金翻倍</span><span v-if="player.nextMoveDouble" class="buff" title="下一次最终移动距离×2，传送与换位不消耗">塔塔开 · 移动×2</span><span v-if="player.skipTurns || player.jailed" class="debuff">{{ player.jailed ? '监禁' : '休息' }} {{ player.skipTurns }} 次{{ player.jailed && player.skipTurns > 0 ? ' · 停租' : '' }}</span></div>
     </article>
   </section>
   <Modal v-if="propertyStanding" panel-class="modern-modal player-properties-modal" :title="`${propertyStanding.player.name} 的地产`" @close="propertyPlayerId = null">

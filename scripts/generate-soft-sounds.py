@@ -82,12 +82,13 @@ def sequence(notes, spacing, color='pluck', gain=.32, duration=.38):
 
 
 def main():
-    """无入参，生成十三类游戏音效和一份带间隔的试听串。"""
+    """无入参，生成十四类游戏音效和一份带间隔的试听串。"""
     OUTPUT.mkdir(parents=True, exist_ok=True)
     sounds = {
         'click': mix([(0, 84, .16, 'wood', .2)], space=.03),
         'turn': mix(sequence([81, 88], .15, 'bell', .3, .55)),
         'chat': mix(sequence([84, 88], .085, 'bell', .18, .28), space=.06),
+        'mention': mix(sequence([79, 84], .17, 'bell', .36, .42), space=.08),
         'dice': mix(sequence([57, 62, 64, 60, 57], .055, 'wood', .22, .1), space=.02),
         'step': mix([(0, 57, .13, 'wood', .19)], space=.02),
         'coin': mix(sequence([88, 93, 96], .075, 'bell', .23, .52), space=.1),

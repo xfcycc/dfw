@@ -6,11 +6,12 @@ import CharacterPawn from './CharacterPawn.vue';
 import { redeemCost } from '../../shared/rules';
 const props = defineProps<{ offerDisabled?: boolean }>();
 const game = useGameStore();
-const emit = defineEmits<{ done: [] }>();
+const emit = defineEmits<{ done: [completed: boolean] }>();
 const toId = ref('');
 const giveCash = ref(0); const wantCash = ref(0);
 const debtCredit = ref(0);
 const giveTiles = ref<number[]>([]); const wantTiles = ref<number[]>([]);
+let cancelledTradeId = '';
 const trade = computed(() => game.privateData?.trade);
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
 const toCreditor = computed(() => !!payment.value?.creditorId && toId.value === payment.value.creditorId);
@@ -44,13 +45,46 @@ const outcomes = computed(() => {
   ].sort((a, b) => Number(b.player.id === game.me?.id) - Number(a.player.id === game.me?.id));
 });
 watch(partners, values => { if (!values.some(value => value.id === toId.value)) toId.value = values.find(value => value.id === payment.value?.creditorId)?.id ?? values[0]?.id ?? ''; }, { immediate: true });
-watch(toId, () => { wantTiles.value = []; wantCash.value = 0; debtCredit.value = 0; });
+// 切换对象时同步清空对方报价，保证详情入口随后勾选的地产不会被异步清掉。
+watch(toId, () => { wantTiles.value = []; wantCash.value = 0; debtCredit.value = 0; }, { flush: 'sync' });
+// 输入前后交易状态，仅本人报价成交后清空草稿；拒绝、取消和断线均保留原内容。
+watch(trade, (current, previous) => {
+  if (current || !previous || !game.privateData || previous.fromId !== game.me?.id || game.privateData.tradeRejection || previous.id === cancelledTradeId) return;
+  giveCash.value = 0; wantCash.value = 0; debtCredit.value = 0;
+  giveTiles.value = []; wantTiles.value = [];
+});
+/** 输入详情地产编号，按当前归属选择交易对象并勾选地产；返回是否成功，保留同一对象的其他草稿内容。 */
+function selectProperty(tileId: number): boolean {
+  if (!canOffer.value || trade.value) return false;
+  const tile = game.room?.board[tileId];
+  if (tile?.type !== 'property' || !tile.ownerId) return false;
+  if (tile.ownerId === game.me?.id) {
+    if (!giveTiles.value.includes(tileId)) giveTiles.value.push(tileId);
+  } else {
+    if (!partners.value.some(player => player.id === tile.ownerId)) return false;
+    toId.value = tile.ownerId;
+    if (!wantTiles.value.includes(tileId)) wantTiles.value.push(tileId);
+  }
+  return true;
+}
+defineExpose({ selectProperty });
+/** 输入当前报价、增加金额及持有现金，返回累加后不超过持有现金的报价；空输入按零处理。 */
+function increaseCash(current: number, amount: number, limit = 0): number {
+  return Math.min(Math.max(0, Number(current) || 0) + amount, Math.max(0, limit));
+}
 /** 输入玩家 ID，返回交易中的公开昵称及本人标记。 */
 function name(id: string): string { return `${game.room?.players.find(player => player.id === id)?.name ?? '玩家'}${id === game.me?.id ? '（我）' : ''}`; }
-/** 输入地产索引列表，返回地块编号、建筑及固定赎回费用。 */
-function tileNames(ids: number[]): string { return ids.map(id => { const tile = game.room?.board[id]; return tile ? `${tile.name} · ${tile.id}号（${tile.level}级${tile.mortgaged ? `，已抵押，赎回 ¥${redeemCost(tile).toLocaleString()}` : ''}）` : ''; }).join('、') || '无'; }
-/** 输入交易回应，成功才通知父面板；接受前确保预览有效。 */
-async function respond(accept: boolean): Promise<void> { if (accept && previewError.value) return; if (await game.act({ type: 'tradeRespond', accept })) emit('done'); }
+/** 输入地产索引列表，返回地块编号、地价、建筑及固定赎回费用。 */
+function tileNames(ids: number[]): string { return ids.map(id => { const tile = game.room?.board[id]; return tile ? `${tile.name} · ${tile.id}号（地价 ¥${tile.price.toLocaleString()}，${tile.level}级${tile.mortgaged ? `，已抵押，赎回 ¥${redeemCost(tile).toLocaleString()}` : ''}）` : ''; }).join('、') || '无'; }
+/** 输入是否接受报价，操作成功后通知父面板是否成交；拒绝时保留原草稿。 */
+async function respond(accept: boolean): Promise<void> { if (accept && previewError.value) return; if (await game.act({ type: 'tradeRespond', accept })) emit('done', accept); }
+/** 无入参，取消本人报价并保留草稿；取消失败时恢复该报价的成交监听，无返回值。 */
+async function cancel(): Promise<void> {
+  if (!trade.value) return;
+  cancelledTradeId = trade.value.id;
+  if (await game.act({ type: 'tradeCancel' })) emit('done', false);
+  else cancelledTradeId = '';
+}
 /** 无入参，将有效报价发送给所选对手，双方及报价明细同步公开记录。 */
 async function submit(): Promise<void> {
   if (!canOffer.value || previewError.value || trade.value) return;
@@ -72,8 +106,8 @@ async function submit(): Promise<void> {
       <p v-if="payment?.creditorId" class="notice"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId)} 尚需支付 ¥${payment.amount.toLocaleString()}。`" />可向债权人提出资产抵债，或向其他玩家出售资产筹款。</p>
       <label class="field">交易对象<select v-model="toId"><option v-for="player in partners" :key="player.id" :value="player.id">{{ player.name }}{{ player.id === payment?.creditorId ? '（债权人）' : '' }}{{ player.online ? '' : '（离线）' }}</option></select></label>
       <div class="trade-columns">
-        <section class="trade-side"><h3><PlayerText :text="`${game.me?.name}（我）提供`" /></h3><label class="field">现金 <small>持有 ¥{{ game.me?.cash }}</small><input v-model.number="giveCash" type="number" min="0" :max="game.me?.cash" step="1" /></label><label v-for="tile in own" :key="tile.id" class="checkbox-row"><input v-model="giveTiles" type="checkbox" :value="tile.id" /><span>{{ tile.name }} · {{ tile.id }}号<small>{{ tile.level }}级{{ tile.mortgaged ? ` · 已抵押，赎回 ¥${redeemCost(tile)}` : '' }}</small></span></label><p v-if="!own.length" class="muted">暂无地产</p></section>
-        <section class="trade-side"><h3><PlayerText :text="`${partner?.name ?? '对方'} 提供`" /></h3><label class="field">现金 <small>持有 ¥{{ partner?.cash }}</small><input v-model.number="wantCash" type="number" min="0" :max="partner?.cash" step="1" /></label><label v-if="toCreditor" class="field">协商抵扣债务 <small>余额 ¥{{ payment?.amount }}，无需对方付现金</small><input v-model.number="debtCredit" type="number" min="0" :max="payment?.amount" step="1" /></label><label v-for="tile in theirs" :key="tile.id" class="checkbox-row"><input v-model="wantTiles" type="checkbox" :value="tile.id" /><span>{{ tile.name }} · {{ tile.id }}号<small>{{ tile.level }}级{{ tile.mortgaged ? ` · 已抵押，赎回 ¥${redeemCost(tile)}` : '' }}</small></span></label><p v-if="!theirs.length" class="muted">暂无地产</p></section>
+        <section class="trade-side"><h3><PlayerText :text="`${game.me?.name}（我）提供`" /></h3><div class="field"><label>现金 <small>持有 ¥{{ game.me?.cash }}</small><input v-model.number="giveCash" type="number" min="0" :max="game.me?.cash" step="1" /></label><div class="button-row trade-cash-actions"><button v-for="amount in [1000, 100]" :key="amount" type="button" class="button secondary small" :disabled="giveCash >= (game.me?.cash ?? 0)" @click="giveCash = increaseCash(giveCash, amount, game.me?.cash)">+{{ amount }}</button></div></div><label v-for="tile in own" :key="tile.id" class="checkbox-row"><input v-model="giveTiles" type="checkbox" :value="tile.id" /><span>{{ tile.name }} · {{ tile.id }}号<small>地价 ¥{{ tile.price.toLocaleString() }} · {{ tile.level }}级{{ tile.mortgaged ? ` · 已抵押，赎回 ¥${redeemCost(tile)}` : '' }}</small></span></label><p v-if="!own.length" class="muted">暂无地产</p></section>
+        <section class="trade-side"><h3><PlayerText :text="`${partner?.name ?? '对方'} 提供`" /></h3><div class="field"><label>现金 <small>持有 ¥{{ partner?.cash }}</small><input v-model.number="wantCash" type="number" min="0" :max="partner?.cash" step="1" /></label><div class="button-row trade-cash-actions"><button v-for="amount in [1000, 100]" :key="amount" type="button" class="button secondary small" :disabled="wantCash >= (partner?.cash ?? 0)" @click="wantCash = increaseCash(wantCash, amount, partner?.cash)">+{{ amount }}</button></div></div><label v-if="toCreditor" class="field">协商抵扣债务 <small>余额 ¥{{ payment?.amount }}，无需对方付现金</small><input v-model.number="debtCredit" type="number" min="0" :max="payment?.amount" step="1" /></label><label v-for="tile in theirs" :key="tile.id" class="checkbox-row"><input v-model="wantTiles" type="checkbox" :value="tile.id" /><span>{{ tile.name }} · {{ tile.id }}号<small>地价 ¥{{ tile.price.toLocaleString() }} · {{ tile.level }}级{{ tile.mortgaged ? ` · 已抵押，赎回 ¥${redeemCost(tile)}` : '' }}</small></span></label><p v-if="!theirs.length" class="muted">暂无地产</p></section>
       </div>
     </template>
     <section class="trade-preview" aria-label="成交后结果预览" aria-live="polite">
@@ -89,7 +123,7 @@ async function submit(): Promise<void> {
     </section>
     <template v-if="trade">
       <div v-if="trade.toId === game.me?.id" class="button-row trade-actions"><button type="button" class="button secondary" :disabled="!game.canAct" @click="respond(false)"><PlayerText :text="`拒绝 ${counterparty?.name ?? '玩家'} 的报价`" /></button><button type="button" class="button primary" :disabled="!game.canAct || !!previewError" @click="respond(true)"><PlayerText :text="`接受与 ${counterparty?.name ?? '玩家'} 的交易`" /></button></div>
-      <div v-else class="button-row trade-actions"><button type="button" class="button secondary" :disabled="!game.canAct" @click="game.act({ type: 'tradeCancel' }).then(ok => { if (ok) emit('done'); })"><PlayerText :text="`取消向 ${counterparty?.name ?? '玩家'} 的报价`" /></button></div>
+      <div v-else class="button-row trade-actions"><button type="button" class="button secondary" :disabled="!game.canAct" @click="cancel"><PlayerText :text="`取消向 ${counterparty?.name ?? '玩家'} 的报价`" /></button></div>
     </template>
     <template v-else>
       <p class="muted">对方接受后一次性完成交换。报价内容、同意、拒绝及取消均进入公开记录，观众可查看。抵债报价须提供地产，金额由双方协商；部分抵债后继续处理余额。报价期间暂停其他操作，手牌不参与交易。</p>
@@ -99,6 +133,7 @@ async function submit(): Promise<void> {
 </template>
 <style scoped>
 .trade-identity .character-pawn { width: 30px; height: 30px; border-radius: 9px; }
+.trade-cash-actions { margin-top: 8px; }
 .trade-actions { justify-content: flex-end; flex-wrap: wrap; }
 .trade-actions > .button { flex: 0 1 auto; width: auto; max-width: 100%; }
 </style>

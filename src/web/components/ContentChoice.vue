@@ -3,7 +3,8 @@ import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
 import ContentCard from './ContentCard.vue';
-const props = defineProps<{ choice: ContentChoice; tileId?: number | null; compact?: boolean; dialog?: boolean }>();
+import PlayerText from './PlayerText.vue';
+const props = defineProps<{ choice: ContentChoice; tileId?: number | null; targetLabel: string; compact?: boolean; dialog?: boolean }>();
 const emit = defineEmits<{ done: [] }>();
 const game = useGameStore();
 const keep = ref<string[]>([]);
@@ -35,7 +36,7 @@ async function decide(accept: boolean): Promise<void> {
       <button class="button primary full" :disabled="!enabled || keep.length !== 6" @click="decide(true)">确认保留六张并折现其余道具</button>
     </template>
     <template v-else-if="['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.type)">
-      <p class="target-current">{{ tileId == null ? dialog ? '请在上方选择地产，再确认' : '请点击地图高亮地产选择目标' : `已选目标：${game.room?.board[tileId]?.name} · ${tileId}号 · ${game.room?.board[tileId]?.level}级` }}</p>
+      <p class="target-current"><PlayerText :text="tileId == null ? dialog ? '请在上方选择地产，再确认' : '请点击地图高亮地产选择目标' : `已选目标：${targetLabel} · ${game.room?.board[tileId]?.level}级`" /></p>
       <p v-if="upgrading" class="muted">{{ choice.cardId ? '取消会保留这张卡和主动次数。' : '放弃本次升级不会获得替代现金。' }}</p>
       <p v-if="choice.type === 'full_upgrade'" class="muted">所选地产将直接升至 3 级，计入本回合该地产的升级次数。</p>
       <div class="button-row"><button v-if="upgrading" class="button secondary small" :disabled="!enabled" @click="decide(false)">{{ choice.cardId ? '取消并保留卡' : '放弃升级' }}</button><button class="button primary small" :disabled="!enabled || tileId == null || !choice.tileIds.includes(tileId)" @click="decide(true)">{{ choice.type === 'full_upgrade' ? '确认免费直升满级' : choice.type === 'free_upgrade' ? '确认免费升一级' : '确认摧毁全部建筑' }}</button></div>

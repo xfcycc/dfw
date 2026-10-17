@@ -34,6 +34,8 @@
 .modern-room .game-board .tile.owned { border: 2px solid var(--owner); box-shadow: inset 0 0 0 1px var(--owner); }
 .modern-room .game-board .tile.owned.level-2 { box-shadow: inset 0 0 0 2px var(--owner); }
 .modern-room .game-board .tile.owned.level-3 { box-shadow: inset 0 0 0 3px var(--owner), inset 0 0 0 5px #e5ebf5; }
+/* 产权描边叠在插画上方且不占布局空间，选地时让操作轮廓优先显示。 */
+.modern-room .game-board .tile.owned:not(.target-eligible):not(.target-selected) .owner-strip { display: block; inset: 0; height: auto; border: 3px solid var(--owner); border-radius: inherit; background: transparent; box-shadow: inset 0 0 0 1px #fffdf5; pointer-events: none; z-index: 1; }
 .modern-room .game-board .tile.mortgaged { background: repeating-linear-gradient(135deg, #fff, #fff 8px, #f4f6fa 8px, #f4f6fa 16px) !important; }
 .modern-room .game-board .tile.my-position { outline-color: #5874e7; }
 .modern-room .game-board .tile > strong { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: center; gap: 4px; max-width: none; padding: 5px 4px; color: #53341f; white-space: nowrap; overflow: visible; text-overflow: clip; font-size: 16px; line-height: 1.4; font-weight: 800; text-align: center; letter-spacing: 0; z-index: 1; text-shadow: none; }
@@ -45,6 +47,7 @@
 .modern-room .game-board .tile > strong .property-grade { padding: 2px 3px; border-radius: 4px; font-size: 10px; }
 .modern-room .immersive-board .tile > small { left: 50%; right: auto; bottom: 5px; transform: translateX(-50%); max-width: calc(100% - 12px); padding: 3px 10px; border: 1px solid #d6ad60; border-radius: 7px; background: linear-gradient(#fff8df, #ffe8ae); color: #80501e; font-size: 16px; line-height: 1.2; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; text-shadow: none; box-shadow: 0 2px 0 #b7893d30; }
 .modern-room .game-board .tile-owner-label { position: absolute; left: 3px; right: 3px; bottom: 4px; display: flex; align-items: center; gap: 3px; min-width: 0; height: 28px; padding: 2px 3px 2px 2px; border: 1px solid color-mix(in srgb, var(--owner, #8490a4) 65%, white); border-left: 4px solid var(--owner, #a7ad9c); border-radius: 8px; background: color-mix(in srgb, var(--owner, #8490a4) 18%, #fffdf5); color: #354a3d; font-size: 12px; font-weight: 800; line-height: 1.2; white-space: nowrap; box-shadow: 0 2px 4px #354a3d1a; z-index: 2; }
+.modern-room .game-board .tile-owner-label:not(.is-unowned) { border-color: var(--owner); background: var(--owner); color: var(--owner-ink); }
 .modern-room .tile-owner-label .character-pawn { width: 22px; height: 22px; border-width: 1px; border-radius: 6px; box-shadow: none; }
 .modern-room .tile-owner-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 .modern-room .tile-owner-self { flex-shrink: 0; padding: 2px; border-radius: 4px; background: #fffdf5cc; color: #465b3f; font-size: 10px; }
@@ -115,6 +118,12 @@
 .modern-room .target-map-hint { background: #f1f5ff; border-color: #dce5ff; color: #526ad4; }
 .modern-room .game-board .tile.target-eligible { outline-color: #9eb0f8; }
 .modern-room .game-board .tile.target-selected { outline-color: #5874e7; background: #f1f5ff !important; }
+.modern-room .game-board .tile.chat-referenced { outline: 5px solid #ed9b25; outline-offset: 3px; box-shadow: 0 0 0 9px #ffe39ac9, 0 0 26px 8px #f1ad4370; z-index: 5; }
+.modern-room .game-board .tile.chat-referenced > strong { background: #ffe39a; border-radius: 7px 7px 0 0; color: #744310; }
+.chat-reference-glow { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 4; pointer-events: none; overflow: visible; filter: drop-shadow(0 0 3px #ffbd36); }
+.chat-reference-glow rect { fill: none; stroke: #fff8cf; stroke-width: 3; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-dasharray: 22 78; animation: chat-reference-flow 1.8s linear infinite; }
+@keyframes chat-reference-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -100; } }
+@media (prefers-reduced-motion: reduce) { .chat-reference-glow rect { animation: none; stroke-dasharray: none; } }
 .modal.modern-modal { background: #fff; border-color: #e1e7f0; color: #33415b; }
 .modern-modal .trade-identity { background: #f5f7ff; border-color: #dce5ff; }
 .modern-modal .trade-side { background: #fff; border-color: #e1e7f0; }

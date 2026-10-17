@@ -7,8 +7,8 @@ const DICE_HOLD_MS = 220;
 const MOVE_STEP_MS = 190;
 const LANDING_MS = 500;
 
-/** 输入实时房间、连接状态、路径回调、现金栏玩家及本地重置标记，返回视听状态；同步重置时取消旧反馈。 */
-export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0) {
+/** 输入实时房间、连接状态、路径回调、现金栏玩家、重置标记及桌面掷骰模式，返回视听状态；同步重置时取消旧反馈。 */
+export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0, desktopDice: () => boolean = () => false) {
   const money = ref<{ key: string; tileId: number; name: string; amount: number }[]>([]);
   const tiles = ref<{ key: string; tileId: number; kind: 'bought' | 'built' | 'magic' }[]>([]);
   const rolling = ref(false);
@@ -20,6 +20,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   const step = ref(0);
   const diceFace = ref(1);
   const diceResult = ref<number | null>(null);
+  const diceRollMs = ref(DICE_ROLL_MS);
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const motionTimers = new Set<ReturnType<typeof setTimeout>>();
   let baseline = false;
@@ -43,10 +44,12 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     motion.value = movement; diceResult.value = roll ? movement.dice ?? next.dice : null;
     animatedPosition.value = { id: movement.playerId, position: movement.from };
     rolling.value = roll; diceFace.value = 1;
-    const delay = roll ? DICE_ROLL_MS + DICE_HOLD_MS : 0;
+    diceRollMs.value = desktopDice() ? 1400 : DICE_ROLL_MS;
+    const holdMs = desktopDice() ? 650 : DICE_HOLD_MS;
+    const delay = roll ? diceRollMs.value + holdMs : 0;
     if (roll) {
-      for (let at = 80; at < DICE_ROLL_MS; at += 80) later(at, () => { diceFace.value = diceFace.value % 6 + 1; }, motionTimers);
-      later(DICE_ROLL_MS, () => { rolling.value = false; diceFace.value = diceResult.value!; }, motionTimers);
+      for (let at = 80; at < diceRollMs.value; at += 80) later(at, () => { diceFace.value = diceFace.value % 6 + 1; }, motionTimers);
+      later(diceRollMs.value, () => { rolling.value = false; diceFace.value = diceResult.value!; }, motionTimers);
     }
     movement.path.forEach((position, index) => {
       later(delay + index * MOVE_STEP_MS, () => {
@@ -122,5 +125,5 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     }
   }, { flush: 'pre' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
-  return { money, tiles, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs: MOVE_STEP_MS };
+  return { money, tiles, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
 }

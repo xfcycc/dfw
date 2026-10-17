@@ -87,3 +87,9 @@
   .lobby-room .avatar-option { flex-direction: row; justify-content: center; gap: 5px; font-size: 9px; }
   .lobby-room .avatar-option .character-pawn { width: 32px; height: 32px; }
 }
+
+/* 机器人管理复用大厅表单和按钮，窄屏允许换行。 */
+.lobby-bot-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+.lobby-bot-controls .field { margin: 0; flex: 1 1 100px; }
+.lobby-bot-controls p { flex-basis: 100%; margin: 0; }
+.cottage-lobby .bot-level-select { width: 68px; flex: 0 0 auto; min-height: 32px; border: 1px solid #d7b88b; border-radius: 8px; background: #fff7e8; color: #69442c; font: inherit; font-size: 12px; }
