@@ -19,7 +19,10 @@ public class TurnService {
         effects.register("RANDOM_TELEPORT", this::teleport);
         effects.register("SEND_TO_JAIL", this::sendToJail);
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
-        effects.register("PAY_FEE", (room, effect) -> economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId));
+        effects.register("PAY_FEE", (room, effect) -> {
+            economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId);
+            if (paymentPending(room) && room.pending.playerId.equals(effect.playerId) && effect.content != null) room.pending.sourceName = effect.content.name;
+        });
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
         effects.register("DECLARE_BANKRUPTCY", (room, effect) -> {
             Player payer = player(room, effect.playerId); economy.declareBankruptcy(room, payer);
@@ -42,6 +45,7 @@ public class TurnService {
     public boolean checkWinner(Room room) {
         List<Player> alive = room.players.stream().filter(p -> !p.bankrupt).toList();
         if (alive.size() > 1) return false;
+        SettlementService.winner(room, alive.isEmpty() ? null : alive.getFirst());
         room.activity = null; room.status = "finished"; room.winnerId = alive.isEmpty() ? null : alive.getFirst().id;
         room.pending = null; room.trade = null; room.pausedReason = null; if(room.runtime!=null) room.runtime.choice=null;
         log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！");
@@ -58,6 +62,7 @@ public class TurnService {
         // 房主移出原行动者会终止其父结算；其他玩家的超限牌仍完整保留，由新回合重新开放整理。
         if(room.runtime!=null) room.runtime.choice=null;
         room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
+        SettlementService.observe(room);
         HistoryTrace.event(room, "turn_start", current(room).id, "新行动开始", null);
     }
     /** 输入费用参数，打开可管理资产和协商抵债的支付选择。 */
@@ -147,11 +152,12 @@ public class TurnService {
             default -> { }
         }
     }
-    /** 输入房间，更新房主和断线暂停，清除旧报价计时数据但保留待处理报价。 */
+    /** 输入房间，维持机器人在线、仅向真人交接房主并更新断线暂停，保留待处理报价。 */
     public void refresh(Room room) {
+        room.players.stream().filter(p -> p.botDifficulty != null).forEach(p -> p.online = true);
         if (room.recoveryPending) { room.pausedReason = "等待房主分配角色并继续对局"; return; }
         Player host = player(room, room.hostId);
-        if (host == null || !host.online) room.players.stream().filter(p -> p.online).findFirst().ifPresent(p -> room.hostId = p.id);
+        if (host == null || !host.online || host.botDifficulty != null) room.players.stream().filter(p -> p.online && p.botDifficulty == null).findFirst().ifPresent(p -> room.hostId = p.id);
         if (!room.status.equals("playing")) { room.pausedReason = null; return; }
         Player actor = room.pending != null ? player(room, room.pending.playerId) : room.activity != null ? null : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
         Player offline = room.players.stream().filter(p -> !p.online && ((actor != null && p.id.equals(actor.id)) || (room.trade != null && p.id.equals(room.trade.toId)))).findFirst().orElse(null);

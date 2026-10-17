@@ -46,6 +46,7 @@ public class EffectResolver {
             insertionIndex.set(1);
             try { handler(effect).accept(room, effect); }
             finally { insertionIndex.remove(); }
+            SettlementService.observe(room);
             HistoryTrace.event(room, "effect", effect.playerId, "游戏效果已结算", effect);
             room.runtime.effects.removeFirst(); room.runtime.settledEffects++;
             // 全体扣款在批次完成前不换人；真正换回合后取消原行动者的剩余步骤。

@@ -45,6 +45,7 @@ public class GameEngine {
     }
     /** 输入同格式已恢复房间，保留基线版本已经进入筹款或协商的债务，不允许按余额再次减免。 */
     public void restoreContentState(Room room) {
+        SettlementService.observe(room);
         if(paymentPending(room) && room.pending.originalAmount==0) { room.pending.originalAmount=room.pending.amount; room.pending.defenseResolved=true; }
     }
     /** 输入昵称和颜色索引，返回新的大厅玩家。 */
@@ -62,7 +63,7 @@ public class GameEngine {
         for (int i = room.turnOrder.size() - 1; i > 0; i--) Collections.swap(room.turnOrder, i, random.nextInt(i + 1));
         room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
-        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); turns.giveCards(room, player, Rules.initialCards(room.players.size())); }
+        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); }
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
         HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
         HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
@@ -85,14 +86,31 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; }
-    /** 输入房间和身份操作，在候选房间中应用规则；改名仅更新本人昵称，由应用层保存并广播。 */
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
+        SettlementService.observe(room);
         switch (action.type) {
             case "chat" -> {
                 require(action.message != null && !action.message.isBlank() && action.message.length() <= 300, "请输入 1～300 字的聊天内容");
-                log(room, "chat", player.id, player.name + "：" + action.message.strip()); return;
+                chatLog(room, player, action); return;
+            }
+            case "addBot", "setBotDifficulty" -> {
+                require(room.hostId.equals(player.id) && room.status.equals("lobby"), "只有房主可在大厅管理机器人");
+                require(action.botDifficulty != null && Set.of("easy", "normal", "hard").contains(action.botDifficulty), "请选择简单、普通或困难");
+                if (action.type.equals("addBot")) {
+                    require(room.players.size() < Rules.MAX_PLAYERS, "房间已满，最多六名玩家");
+                    Set<String> colors = new HashSet<>(); room.players.forEach(p -> colors.add(p.color)); int index = 0;
+                    while (colors.contains(Rules.COLORS[index])) index++;
+                    List<String> avatars = PlayerAvatars.IDS.stream().filter(id -> room.players.stream().noneMatch(p -> id.equals(p.avatarId == null ? PlayerAvatars.DEFAULT : p.avatarId))).toList();
+                    String avatarId = avatars.get(random.nextInt(avatars.size()));
+                    Player bot = createPlayer(PlayerAvatars.NAMES.get(avatarId) + "(机器人)", index); bot.avatarId = avatarId; bot.botDifficulty = action.botDifficulty; bot.ready = true; bot.online = true;
+                    room.players.add(bot); log(room, player.name + " 添加了 " + bot.name);
+                } else {
+                    Player bot = player(room, action.playerId); require(bot != null && bot.botDifficulty != null, "请选择机器人"); bot.botDifficulty = action.botDifficulty;
+                }
+                return;
             }
             case "ready" -> { require(room.status.equals("lobby"), "游戏已开始"); player.ready = action.value; return; }
             case "setName" -> {
@@ -116,17 +134,17 @@ public class GameEngine {
                 require(room.hostId.equals(player.id) && room.status.equals("finished"), "只有房主可在结束后再开一局");
                 room.status = "lobby"; room.economy = economyRules.snapshot(); room.chanceEventDescriptions.clear(); room.board.clear(); room.gameId = null; room.turnOrder.clear(); room.turnIndex = 0; room.turnNumber = 0;
                 room.phase = "pre_roll"; room.pending = null; room.trade = null; room.winnerId = null; room.dice = null; room.motion = null; room.logs.clear(); room.activityRotation = null; room.activity = null;
-                for (Player p : room.players) { reset(p); p.ready = false; } return;
+                for (Player p : room.players) { reset(p); p.ready = p.botDifficulty != null; } return;
             }
             case "removePlayer" -> {
                 require(room.hostId.equals(player.id), "只有房主可移出玩家"); require(!room.status.equals("finished"), "请先返回大厅，再管理已结束对局的席位");
-                Player target = player(room, action.playerId); require(target != null && !target.id.equals(player.id) && !target.online, "只能移出其他离线玩家");
+                Player target = player(room, action.playerId); require(target != null && !target.id.equals(player.id) && (!target.online || target.botDifficulty != null && room.status.equals("lobby")), "只能移出离线玩家或大厅机器人");
                 if (room.status.equals("lobby")) room.players.remove(target);
                 else {
                     require(!target.bankrupt, "该玩家已退出竞争"); boolean isCurrent = current(room) == target;
                     PendingDecision debt = paymentPending(room) && room.pending.playerId.equals(target.id) ? room.pending : null;
                     activities.removing(room, target.id);
-                    economy.eliminate(room, target, debt == null ? null : debt.creditorId, debt == null ? 0 : debt.amount);
+                    economy.eliminate(room, target, debt == null ? null : debt.creditorId, debt == null ? 0 : debt.amount, true);
                     if (room.runtime.globalEvent == null && room.activity == null) { if (isCurrent) turns.advance(room); else turns.checkWinner(room); }
                 } return;
             }
@@ -155,7 +173,7 @@ public class GameEngine {
                 require(player.cash >= cost, "现金不足，可先管理资产或放弃");
                 String result;
                 if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
-                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
+                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; player.matchStats.builtLevels++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
                 player.cash -= cost;
                 log(room, "log", player.id, player.name + result + "，支付银行 ¥" + String.format("%,d", cost) + "，现金余额 ¥" + String.format("%,d", player.cash));
                 room.phase = "manage"; room.pending = null;

@@ -12,10 +12,34 @@ public final class GameSupport {
     public static void log(Room room, String text) { log(room, "log", null, text); }
     /** 输入公开事实类型、作用玩家及文案，保存日志身份便于实时记录去重。 */
     public static void log(Room room, String type, String actorId, String text) {
+        log(room, type, actorId, text, List.of());
+    }
+    /** 输入公开文案及已校验引用，同时保存快照与历史；引用偏移相对于完整文案，无返回值。 */
+    private static void log(Room room, String type, String actorId, String text, List<ChatReference> references) {
+        SettlementService.observe(room);
         PublicLog entry = new PublicLog(); entry.id = UUID.randomUUID().toString(); entry.type = type; entry.text = text; entry.at = System.currentTimeMillis();
+        entry.actorId = actorId; entry.references = references;
         for (Player player : room.players) if (text.contains(player.name)) { PlayerMention mention = new PlayerMention(); mention.id = player.id; mention.name = player.name; mention.color = player.color; entry.mentions.add(mention); }
         room.logs.add(0, entry); if (room.logs.size() > 100) room.logs.removeLast();
-        HistoryTrace.event(room, type, actorId, text, Map.of("logId", entry.id, "mentions", entry.mentions));
+        HistoryTrace.event(room, type, actorId, text, Map.of("logId", entry.id, "mentions", entry.mentions, "references", entry.references));
+    }
+    /** 输入发送者及聊天参数，冻结有效目标和正文位置；失效或已被编辑的引用按普通文字保存，无返回值。 */
+    public static void chatLog(Room room, Player actor, Action action) {
+        String body = action.message.strip(); String prefix = actor.name + "：";
+        int removed = action.message.length() - action.message.stripLeading().length();
+        List<ChatReference> references = new ArrayList<>(); int previousEnd = 0;
+        for (ChatReference input : action.references == null ? List.<ChatReference>of() : action.references) {
+            int start = input.start - removed; int end = input.end - removed;
+            if (start < previousEnd || start < 0 || end <= start || end > body.length()) continue;
+            Player target = input.playerId == null ? null : player(room, input.playerId);
+            Tile tile = input.tileId == null ? null : tile(room, input.tileId);
+            String label = target != null && input.tileId == null ? "@" + target.name : tile != null && input.playerId == null ? "@" + tile.name + "（" + tile.id + "号）" : null;
+            if (!body.substring(start, end).equals(label)) continue;
+            ChatReference reference = new ChatReference(); reference.start = prefix.length() + start; reference.end = prefix.length() + end;
+            reference.playerId = target == null ? null : target.id; reference.tileId = tile == null ? null : tile.id; reference.color = target == null ? null : target.color;
+            references.add(reference); previousEnd = end;
+        }
+        log(room, "chat", actor.id, prefix + body, references);
     }
     /** 输入已使用手牌及目标，保留皮肤身份和效果供公开揭卡，不公开剩余手牌或抢夺结果。 */
     public static void cardLog(Room room, Player owner, Card card, Action action) {

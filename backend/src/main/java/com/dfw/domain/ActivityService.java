@@ -7,7 +7,7 @@ import static com.dfw.domain.GameSupport.*;
 /** 活动角轮换、多人输入和固定随机结果；调用方负责房间串行事务与广播。 */
 public final class ActivityService {
     public static final List<String> KINDS = List.of("casino", "horse", "roulette", "packet", "rps");
-    public static final Map<String, String> NAMES = Map.of("casino", "暖暖赌场", "horse", "小镇赛马", "roulette", "轮盘对决", "packet", "拼手气红包", "rps", "猜拳擂台", "treasure", "贪心宝箱", "bridge", "三关玻璃桥", "minority", "少数派夜市", "blindbox", "丰收盲盒");
+    public static final Map<String, String> NAMES = Map.of("casino", "暖暖赌场", "horse", "小镇赛马", "roulette", "轮盘对决", "packet", "拼手气红包", "rps", "猜拳擂台", "treasure", "贪心宝箱", "bridge", "三关玻璃桥", "minority", "少数派夜市", "blindbox", "暖暖潮玩盲盒");
     private static final Map<String, String> VARIANTS = Map.of("casino", "treasure", "horse", "bridge", "rps", "minority", "packet", "blindbox");
     private static final Map<String, Long> BASE = Map.ofEntries(Map.entry("casinoSmallStake",250L), Map.entry("casinoSmallPrize",500L), Map.entry("casinoPointStake",250L), Map.entry("casinoPointPrize",1500L), Map.entry("horseStake",250L), Map.entry("horsePrize",2500L), Map.entry("rouletteDebt",1000L), Map.entry("packetBase",500L), Map.entry("packetPerPlayer",500L), Map.entry("rpsPrize",1500L), Map.entry("treasureStake",250L), Map.entry("blindboxRegular",250L), Map.entry("blindboxHiddenBase",500L), Map.entry("blindboxHiddenPerPlayer",250L));
     private final RandomSource random;
@@ -156,7 +156,7 @@ public final class ActivityService {
         a.revealed.put(actor.id, hidden ? bonus > 0 ? 2 : 1 : 0);
         grant(room, a, actor.id, Math.addExact(base, bonus));
         log(room, actor.name + " 打开 " + selection + " 号盲盒：" + (hidden ? bonus > 0 ? "限定款，隐藏奖励翻倍" : "隐藏款" : "普通款") + "，到账 ¥" + (base + bonus));
-        if (a.choices.size() == a.participants.size()) result(room, a, "丰收盲盒已全部领取，未选中的盲盒不发放");
+        if (a.choices.size() == a.participants.size()) result(room, a, "暖暖潮玩盲盒已全部领取，未选中的盲盒不发放");
     }
     /** 输入房间、活动、领取人和红包序号，独占领取后立即结算；全部领取后播放结果三秒，再保留五秒。 */
     private void claimPacket(Room room, CornerActivity a, Player actor, int selection) {
@@ -201,7 +201,7 @@ public final class ActivityService {
         }
     }
     /** 输入下注人及金额键，使用当前现金一次扣款并记录，无返回值。 */
-    private void stake(Room room, CornerActivity a, Player actor, String key) { long amount = money(room,key); require(actor.cash >= amount,"现金不足，仅可用已有现金下注"); actor.cash -= amount; a.wagers.put(actor.id,amount); log(room,actor.name + " 支付活动本金 ¥" + amount); }
+    private void stake(Room room, CornerActivity a, Player actor, String key) { long amount = money(room,key); require(actor.cash >= amount,"现金不足，仅可用已有现金下注"); actor.cash -= amount; SettlementService.activityCash(room, actor, -amount); a.wagers.put(actor.id,amount); log(room,actor.name + " 支付活动本金 ¥" + amount); }
     /** 输入活动与展示阶段时长，保存服务端截止时间并使旧输入失效。 */
     private void timed(CornerActivity a, String stage, long duration) { a.stage = stage; a.round++; a.startedAt = System.currentTimeMillis(); a.endsAt = a.startedAt + duration; }
     /** 输入活动取消说明，生成无需经济结算的结束展示。 */
@@ -223,10 +223,10 @@ public final class ActivityService {
             case "round_result" -> { a.choices.clear(); a.stage="select"; a.round++; a.endsAt=null; }
             case "loading" -> { a.stage="duel"; a.round++; a.endsAt=null; }
             case "shot" -> {
-                if(a.hit) { String winner=a.participants.stream().filter(id -> !id.equals(a.lastShooterId)).findFirst().orElseThrow(); a.settled=true; a.stage="payment"; a.round++; a.endsAt=null; a.summary=player(room,a.lastShooterId).name + " 轮盘判负，对 " + player(room,winner).name + " 产生待处理费用 ¥" + money(room,"rouletteDebt"); log(room,a.summary); economy.charge(room,player(room,a.lastShooterId),money(room,"rouletteDebt"),winner,null); }
+                if(a.hit) { String winner=a.participants.stream().filter(id -> !id.equals(a.lastShooterId)).findFirst().orElseThrow(); a.settled=true; a.stage="payment"; a.round++; a.endsAt=null; a.summary=player(room,a.lastShooterId).name + " 轮盘判负，对 " + player(room,winner).name + " 产生待处理费用 ¥" + money(room,"rouletteDebt"); log(room,a.summary); economy.charge(room,player(room,a.lastShooterId),money(room,"rouletteDebt"),winner,null); if (paymentPending(room)) { room.pending.activityPayment=true; room.pending.sourceName="轮盘对决"; } }
                 else { log(room,player(room,a.lastShooterId).name + " 第 " + a.shots + " 次开枪为空响"); a.currentPlayerId=a.participants.stream().filter(id -> !id.equals(a.lastShooterId)).findFirst().orElseThrow(); a.stage="duel"; a.round++; a.endsAt=null; }
             }
-            case "payment" -> timed(a,"result",1500);
+            case "payment" -> timed(a,"result",8000);
             case "result" -> { room.activity=null; room.phase=a.returnPhase; }
             default -> throw new GameError("活动展示阶段不可用");
         }
@@ -271,13 +271,13 @@ public final class ActivityService {
         else { a.summary=moves.size()==2 ? "本轮胜出 " + a.contenders.size() + " 人，继续争夺冠军" : "本轮平局，重新出拳"; log(room,a.summary); timed(a,"round_result",1800); }
     }
     /** 输入收款人及总到账金额，增加现金并记录活动奖励。 */
-    private void grant(Room room, CornerActivity a, String id, long amount) { Player p=player(room,id); require(p!=null && !p.bankrupt,"活动收款人已退出"); p.cash=Math.addExact(p.cash,amount); a.payouts.put(id,amount); log(room,p.name + " 获得「" + NAMES.get(a.kind) + "」奖励 ¥" + amount); }
-    /** 输入活动结果，标记经济结算完成并开启结果展示。 */
-    private void result(Room room, CornerActivity a, String summary) { a.settled=true; a.summary=summary; log(room,summary); timed(a,"result",VARIANTS.containsValue(a.kind) ? 8000 : 1800); }
+    private void grant(Room room, CornerActivity a, String id, long amount) { Player p=player(room,id); require(p!=null && !p.bankrupt,"活动收款人已退出"); p.cash=Math.addExact(p.cash,amount); SettlementService.activityCash(room, p, amount); a.payouts.put(id,amount); log(room,p.name + " 获得「" + NAMES.get(a.kind) + "」奖励 ¥" + amount); }
+    /** 输入房间、活动与结果说明，标记结算完成并保留八秒供揭晓、庆祝及结果阅读，无返回值。 */
+    private void result(Room room, CornerActivity a, String summary) { a.settled=true; a.summary=summary; log(room,summary); timed(a,"result",8000); }
     /** 输入将被房主移出的玩家，未结算活动退款中止；既有费用继续保留。 */
     public void removing(Room room, String playerId) {
         CornerActivity a=room.activity; if(a==null || !a.participants.contains(playerId)) return;
-        if(!a.settled) { a.wagers.forEach((id,amount) -> { Player p=player(room,id); if(p!=null && !p.bankrupt) { p.cash=Math.addExact(p.cash,amount); log(room,p.name + " 收回中止活动本金 ¥" + amount); } }); room.activity=null; room.phase=a.returnPhase; log(room,"参与者被移出，未结算活动中止"); }
+        if(!a.settled) { a.wagers.forEach((id,amount) -> { Player p=player(room,id); if(p!=null && !p.bankrupt) { p.cash=Math.addExact(p.cash,amount); SettlementService.activityCash(room, p, amount); log(room,p.name + " 收回中止活动本金 ¥" + amount); } }); room.activity=null; room.phase=a.returnPhase; log(room,"参与者被移出，未结算活动中止"); }
     }
     /** 输入房间，返回尚未回应且离线的必需参与者；观战者不影响活动。 */
     public Player offlineRequired(Room room) {

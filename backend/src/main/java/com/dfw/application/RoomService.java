@@ -3,6 +3,7 @@ package com.dfw.application;
 import com.dfw.domain.*;
 import com.dfw.domain.rules.RuleSet;
 import com.dfw.interfaces.vo.*;
+import com.dfw.interfaces.StateViews;
 import com.dfw.infrastructure.JsonCodec;
 import com.dfw.infrastructure.SessionTokens;
 import com.dfw.application.RoomRepository.*;
@@ -35,8 +36,10 @@ public class RoomService {
     private final TransactionTemplate transaction;
     private final Map<String, Room> rooms = new ConcurrentHashMap<>();
     private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
+    /** 各机器人失败的等待点；聊天或连接更新不清除保守兜底。 */
+    private final Map<String, String> botFallbackDecisions = new ConcurrentHashMap<>();
     private volatile boolean closing;
-    /** 输入持久化与联机端口，批量恢复房间并重置连接状态。 */
+    /** 输入持久化与联机端口，批量恢复房间；真人等待重连，机器人恢复服务端在线状态。 */
     public RoomService(RoomRepository repository, StatePublisher publisher, JsonCodec json, SessionTokens tokens, RandomSource random,
             GameWorkflow workflow, TransactionTemplate transaction, RuleSet rules, EconomyRules economyRules, MapRegions regions, ArchiveRepository archives) {
         this.repository = repository; this.publisher = publisher; this.json = json; this.tokens = tokens; this.random = random;
@@ -45,7 +48,7 @@ public class RoomService {
         List<Room> restored = repository.loadRooms(); workflow.verifyRecovery(restored); archives.initialize(restored);
         for (Room room : restored) {
             engine.restoreContentState(room); engine.refreshRuleDescriptions(room);
-            for (Player player : room.players) player.online = false;
+            for (Player player : room.players) player.online = player.botDifficulty != null;
             engine.turns.refresh(room); rooms.put(room.code, room);
         }
     }
@@ -150,20 +153,20 @@ public class RoomService {
             if (!closing) serial(session.code(), () -> {
                 if (session.playerId() != null && publisher.active(connectionId, session)) {
                     Room value = json.copy(room(session.code()), Room.class); Player player = GameSupport.player(value, session.playerId());
-                    if (player != null) { player.online = false; HistoryTrace.event(value, "disconnected", player.id, "角色已断线", null); commit(value, null); }
+                    if (player != null) { player.online = player.botDifficulty != null; HistoryTrace.event(value, "disconnected", player.id, "角色已断线", null); commit(value, null); }
                 } return null;
             });
         } finally { publisher.remove(connectionId); }
     }
-    /** 每秒按有效连接注册修复断线保存失败的在线标记，保留玩家尚未回应的报价。 */
+    /** 每秒按有效连接修复真人在线标记，机器人无需浏览器连接，保留尚未回应的报价。 */
     @Scheduled(fixedDelay = 1000)
     public void refreshDisconnectedPlayers() {
         if (closing) return;
         for (Room value : rooms.values()) {
-            if (value.players.stream().anyMatch(p -> p.online && !publisher.online(value.roomId, p.id))) {
+            if (value.players.stream().anyMatch(p -> p.botDifficulty == null && p.online && !publisher.online(value.roomId, p.id))) {
                 try { serial(value.code, () -> {
                     Room candidate = json.copy(room(value.code), Room.class); boolean changed = false;
-                    for (Player p : candidate.players) if (p.online && !publisher.online(candidate.roomId, p.id)) { p.online = false; changed = true; HistoryTrace.event(candidate, "disconnected", p.id, "连接状态已修复为离线", null); }
+                    for (Player p : candidate.players) if (p.botDifficulty == null && p.online && !publisher.online(candidate.roomId, p.id)) { p.online = false; changed = true; HistoryTrace.event(candidate, "disconnected", p.id, "连接状态已修复为离线", null); }
                     if (changed) commit(candidate, null); return null;
                 }); } catch (RuntimeException error) { LOG.error("离线状态恢复保存失败，房间 {}", value.code, error); }
             }
@@ -177,6 +180,61 @@ public class RoomService {
             try { serial(value.code, () -> { Room latest = room(value.code); if (engine.activities.due(latest)) commit(json.copy(latest, Room.class), null); return null; }); }
             catch (RuntimeException error) { LOG.error("活动展示推进失败，房间 {}", value.code, error); }
         }
+    }
+    /** 每八百毫秒按房间选择一个机器人意图，复用流程事务与规则；等待真人时保持原等待规则。 */
+    @Scheduled(fixedDelay = 800)
+    public void advanceBots() {
+        if (closing) return;
+        for (Room snapshot : rooms.values()) {
+            if (!snapshot.status.equals("playing") || snapshot.recoveryPending || snapshot.pausedReason != null || snapshot.players.stream().noneMatch(p -> p.botDifficulty != null && !p.bankrupt)) continue;
+            try { serial(snapshot.code, () -> {
+                Room latest = room(snapshot.code);
+                if (closing || !latest.status.equals("playing") || latest.recoveryPending || latest.pausedReason != null) return null;
+                if (latest.activity != null && latest.activity.endsAt != null && latest.pending == null) return null;
+                String required = latest.trade != null ? latest.trade.toId : latest.pending != null ? latest.pending.playerId : latest.activity == null ? GameSupport.current(latest).id : null;
+                PublicRoomVo visible = StateViews.publicRoom(latest);
+                for (Player bot : latest.players) if (bot.botDifficulty != null && !bot.bankrupt && (required == null || required.equals(bot.id))) {
+                    String decision = latest.gameId + ":" + latest.runtime.decisionKey;
+                    boolean conservative = Objects.equals(botFallbackDecisions.get(bot.id), decision);
+                    Action action;
+                    try {
+                        BotPlanner planner = new BotPlanner(visible, StateViews.privatePlayer(latest, bot.id), bot.botTradeQuotes, conservative);
+                        long alive = latest.players.stream().filter(p -> !p.bankrupt).count();
+                        action = planner.next(bot.botTradeTurn >= 0 && latest.turnNumber - bot.botTradeTurn <= alive);
+                    } catch (RuntimeException error) {
+                        botFallbackDecisions.put(bot.id, decision);
+                        LOG.error("机器人规划失败，下一次使用保守操作，房间 {}，玩家 {}", latest.code, bot.id, error);
+                        break;
+                    }
+                    if (action == null) continue;
+                    try { applyBot(latest, bot.id, action); botFallbackDecisions.remove(bot.id); }
+                    catch (GameError error) {
+                        // 失败事务的事实随本轮 capture 丢弃，下一轮再提交兜底，避免历史混入未发生操作。
+                        botFallbackDecisions.put(bot.id, decision);
+                        LOG.warn("机器人操作被规则拒绝，房间 {}，玩家 {}，操作 {}：{}", latest.code, bot.id, action.type, error.getMessage());
+                    }
+                    break;
+                }
+                return null;
+            }); } catch (RuntimeException error) { LOG.error("机器人推进失败，房间 {}", snapshot.code, error); }
+        }
+    }
+    /** 输入最新房间、机器人身份与意图，在房间锁内提交单步行动，失败不替换正式快照。 */
+    private void applyBot(Room latest, String actorId, Action action) {
+        Room value = json.copy(latest, Room.class);
+        String quote = action.type.equals("tradeOffer") ? BotPlanner.quoteKey(StateViews.publicRoom(latest), action) : null;
+        transaction.executeWithoutResult(status -> {
+            HistoryTrace.event(value, action.type, actorId, actionText(action.type), action);
+            workflow.apply(value, engine, actorId, action);
+            if (quote != null) {
+                Player bot = GameSupport.player(value, actorId); bot.botTradeTurn = value.turnNumber;
+                bot.botTradeQuotes.put(quote, value.turnNumber);
+                if (bot.botTradeQuotes.size() > 32) bot.botTradeQuotes.remove(bot.botTradeQuotes.keySet().iterator().next());
+            }
+            workflow.refresh(value, engine); value.version++;
+            repository.save(value, null, null);
+        });
+        rooms.put(value.code, value); publisher.broadcast(value);
     }
     /** 停止新推进，按房间保存离线状态及待处理报价后关闭连接。 */
     @PreDestroy
@@ -239,7 +297,7 @@ public class RoomService {
             value.gameId = value.gameId == null ? null : random.id(); value.version = 1; value.recoveryPending = true; value.recovered = true; value.seatClaims.clear();
             value.players.forEach(player -> player.online = false);
             String playerId = input.playerId == null ? value.hostId : input.playerId;
-            if (GameSupport.player(value, playerId) == null) throw new GameError("请选择保存点中的角色", "INVALID_INPUT");
+            if (GameSupport.player(value, playerId) == null || GameSupport.player(value, playerId).botDifficulty != null) throw new GameError("请选择保存点中的角色", "INVALID_INPUT");
             value.hostId = playerId; engine.turns.refresh(value); SessionVo session = issue(value, playerId);
             session.token = tokens.restored(sourceArchiveCode, input.requestId, value.roomId);
             HistoryTrace.event(value, "restored", playerId, "从保存点创建恢复房间，等待分配角色", Map.of("sourceRoomId", sourceRoomId, "sourceSnapshotId", saved.snapshotId()));
@@ -258,7 +316,7 @@ public class RoomService {
             verifySession(session);
             Room value = json.copy(room(session.code()), Room.class);
             if (!value.recovered || session.playerId() != null) throw new GameError("请使用访客身份申请恢复房间角色");
-            if (GameSupport.player(value, input.playerId) == null) throw new GameError("请选择房间中的保存角色", "INVALID_INPUT");
+            if (GameSupport.player(value, input.playerId) == null || GameSupport.player(value, input.playerId).botDifficulty != null) throw new GameError("请选择房间中的保存角色", "INVALID_INPUT");
             SeatClaim existingClaim = value.seatClaims.stream().filter(c -> c.tokenHash.equals(session.tokenHash()) && c.playerId.equals(input.playerId)).findFirst().orElse(null);
             if (existingClaim != null) return claimView(existingClaim);
             value.seatClaims.removeIf(c -> c.tokenHash.equals(session.tokenHash())); SeatClaim claim = new SeatClaim(); claim.id = random.id(); claim.tokenHash = session.tokenHash(); claim.playerId = input.playerId; claim.name = input.name == null || input.name.isBlank() ? "访客" : input.name.trim(); claim.at = System.currentTimeMillis(); value.seatClaims.add(claim);
@@ -275,7 +333,7 @@ public class RoomService {
         SeatClaim claim = room.seatClaims.stream().filter(c -> c.id.equals(claimId)).findFirst().orElse(null);
         if (claim == null) throw new GameError("此申请已处理，请查看最新申请");
         StoredSession visitor = repository.session(claim.tokenHash); Player target = GameSupport.player(room, claim.playerId);
-        if (visitor == null || visitor.playerId() != null || !Objects.equals(visitor.roomId(), room.roomId) || target == null) throw new GameError("申请身份或角色已失效");
+        if (visitor == null || visitor.playerId() != null || !Objects.equals(visitor.roomId(), room.roomId) || target == null || target.botDifficulty != null) throw new GameError("申请身份或角色已失效");
         repository.assignSeat(room, claim.tokenHash, claim.playerId); room.seatClaims.removeIf(c -> c.tokenHash.equals(claim.tokenHash)); target.online = publisher.connected(claim.tokenHash);
         HistoryTrace.event(room, "seat_assigned", target.id, "房主将角色分配给 " + claim.name, null);
         return new StoredSession(claim.tokenHash, room.code, target.id, room.roomId);
@@ -283,6 +341,7 @@ public class RoomService {
     /** 输入操作类型，返回不包含手牌与私人报价参数的公开说明。 */
     private String actionText(String type) {
         return switch (type) {
+            case "addBot" -> "添加机器人"; case "setBotDifficulty" -> "调整机器人难度";
             case "activityInput" -> "参与角落活动";
             case "ready" -> "更新准备状态"; case "setMapSize" -> "选择地图大小"; case "start" -> "开始对局"; case "newGame" -> "返回大厅，再开一局";
             case "roll" -> "掷骰行动"; case "endTurn" -> "结束行动"; case "card" -> "使用道具"; case "buy" -> "购买地产"; case "upgrade" -> "升级建筑"; case "pass" -> "放弃当前购买或升级";

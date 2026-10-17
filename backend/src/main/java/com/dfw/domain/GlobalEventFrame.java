@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GlobalEventFrame {
+    /** 产生全体费用的公开事件名称，旧待结算批次可为空。 */
+    public String sourceName;
     /** 发动效果标识。 */
     public String effectId;
     /** 发动时按座位固定的未破产玩家。 */

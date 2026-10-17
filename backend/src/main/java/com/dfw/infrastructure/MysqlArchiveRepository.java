@@ -143,6 +143,7 @@ public class MysqlArchiveRepository implements ArchiveRepository {
             if (detail != null && Set.of("log", "card_used", "chat").contains(entry.type)) {
                 Map<?, ?> publicDetail = json.read(detail, Map.class); Object id = publicDetail.get("logId"); if (id instanceof String logId) entry.logId = logId;
                 if (publicDetail.get("mentions") instanceof List<?> mentions) entry.mentions = List.of(json.read(json.write(mentions), PlayerMention[].class));
+                if (publicDetail.get("references") instanceof List<?> references) entry.references = List.of(json.read(json.write(references), ChatReference[].class));
             }
             return entry;
         }, params.toArray());

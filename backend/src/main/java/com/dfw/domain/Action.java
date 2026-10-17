@@ -12,6 +12,8 @@ public class Action {
     public String name;
     /** 玩家发送的公开聊天正文。 */
     public String message;
+    /** 聊天正文中选中的玩家和地块引用，旧客户端可省略。 */
+    public List<ChatReference> references;
     /** 房主批准的角色申请标识。 */
     public String claimId;
     /** 待选身份，防止恢复后提交旧选择。 */
@@ -26,6 +28,8 @@ public class Action {
     public Integer activityRound;
     /** 玩法选择或手势编码。 */
     public Integer selection;
+    /** 房主选择的机器人难度，easy、normal、hard。 */
+    public String botDifficulty;
     /** 操作类型。 */
     public String type;
     /** 大厅地图设置，small、medium 或 large。 */

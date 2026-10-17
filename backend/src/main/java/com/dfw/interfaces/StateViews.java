@@ -22,7 +22,8 @@ public final class StateViews {
             PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position;
             p.cardCount = player.hand.size();
             p.netWorth = assets.get(player.id); p.assetRank = player.bankrupt ? null : 1 + (int) room.players.stream().filter(other -> !other.bankrupt && assets.get(other.id) > p.netWorth).count();
-            p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
+            p.settlement = settlement(player.matchStats);
+            p.botDifficulty = player.botDifficulty; p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
             p.nextPaymentWaiver=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_PAYMENT_WAIVER"));
             p.nextRentDouble=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_RENT_DOUBLE"));
             p.nextMoveDouble=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_MOVE_DOUBLE") && s.remainingTurns>0);
@@ -30,7 +31,17 @@ public final class StateViews {
         }
         return value;
     }
-    /** 输入内部房间和本人标识，返回本人手牌及参与的报价。 */
+    /** 输入内部统计，显式投影已冻结的公开战报；未结算及旧存档返回空。 */
+    private static PlayerSettlementVo settlement(MatchStats s) {
+        if (s == null || !s.settled) return null;
+        PlayerSettlementVo v = new PlayerSettlementVo();
+        v.complete = s.complete; v.removed = s.removed; v.peakNetWorth = s.peakNetWorth; v.peakProperties = s.peakProperties;
+        v.turns = s.turns; v.rentReceived = s.rentReceived; v.rentPaid = s.rentPaid; v.activityNet = s.activityNet;
+        v.builtLevels = s.builtLevels; v.trades = s.trades; v.jailCount = s.jailCount; v.finalNetWorth = s.finalNetWorth;
+        v.title = s.title; v.titleQuote = s.titleQuote; v.cause = s.cause; v.causeQuote = s.causeQuote;
+        v.highlight = s.highlight; v.highlightQuote = s.highlightQuote; return v;
+    }
+    /** 输入内部房间和本人标识，返回本人手牌、当前合法候选及参与的报价。 */
     public static PrivatePlayerVo privatePlayer(Room room, String id) {
         PrivatePlayerVo value = new PrivatePlayerVo(); value.playerId = id; value.hand = player(room, id).hand;
         value.archiveCode = room.archiveCode;
@@ -41,7 +52,7 @@ public final class StateViews {
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
             ContentChoice choice=room.runtime.choice;
             if(choice!=null && choice.playerId.equals(id)) {
-                ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=choice.tileIds; v.cards=choice.cards; v.cardId=choice.cardId;
+                ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=ContentService.choiceTargets(room,choice); v.cards=choice.cards; v.cardId=choice.cardId;
                 v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; value.choice=v;
             }
         }

@@ -5,6 +5,8 @@ export interface EconomySettings {
   rentBasePercent?: number;
   fixedAmounts: Record<string, number>;
 }
+/** 机器人难度；未设置的席位为真人。 */
+export type BotDifficulty = 'easy' | 'normal' | 'hard';
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
@@ -40,8 +42,33 @@ export interface ContentChoice {
   jailed: boolean;
   discardCash: number;
 }
+/** 随对局冻结的公开个人战报；旧存档不补造缺失数据。 */
+export interface PlayerSettlement {
+  complete: boolean;
+  removed: boolean;
+  peakNetWorth: number;
+  peakProperties: number;
+  turns: number;
+  rentReceived: number;
+  rentPaid: number;
+  activityNet: number;
+  builtLevels: number;
+  trades: number;
+  jailCount: number;
+  finalNetWorth: number;
+  title: string;
+  titleQuote: string;
+  cause: string | null;
+  causeQuote: string | null;
+  highlight: string | null;
+  highlightQuote: string | null;
+}
 /** 公开玩家信息，不包含身份令牌或手牌。 */
 export interface PublicPlayer {
+  /** 已冻结的个人战报；旧存档和进行中的玩家可为空。 */
+  settlement?: PlayerSettlement | null;
+  /** 机器人难度，旧快照缺省为真人。 */
+  botDifficulty?: BotDifficulty | null;
   id: string;
   name: string;
   color: string;
@@ -118,7 +145,9 @@ export interface Trade {
 }
 /** 公开玩家引用与动态，不包含未使用手牌或内部报价对象；已发起报价的明细通过公开日志展示。 */
 export interface PlayerMention { id?: string; name: string; color: string }
-export interface PublicLog { type?: string; mentions?: PlayerMention[]; id: string; text: string; at: number }
+/** 显式 @ 引用；UTF-16 偏移对应消息正文，发送后对应含发送者前缀的公开文案。 */
+export interface ChatReference { start: number; end: number; playerId?: string; tileId?: number; color?: string }
+export interface PublicLog { type?: string; actorId?: string; references?: ChatReference[]; mentions?: PlayerMention[]; id: string; text: string; at: number }
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   id: string; playerId: string; from: number; path: number[];
@@ -199,7 +228,7 @@ export interface SeatClaim { id: string; playerId: string; name: string; at: num
 export interface ArchiveSnapshot { snapshotId: string; gameId: string | null; version: number; turnNumber: number; at: number; status: string; manual: boolean; label: string | null; restorable: boolean; restoreError: string | null; state: PublicRoomState | null }
 export interface ArchiveGame { gameId: string | null; firstAt: number; lastAt: number; turnNumber: number; snapshots: number }
 export interface RoomArchive { roomId: string; archiveCode: string; code: string; sourceArchiveCode: string | null; sourceSnapshotId: string | null; latest: ArchiveSnapshot; games: ArchiveGame[]; bookmarks: ArchiveSnapshot[]; nextCursor: number | null }
-export interface HistoryEntry { mentions?: PlayerMention[]; logId?: string | null; sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
+export interface HistoryEntry { references?: ChatReference[]; mentions?: PlayerMention[]; logId?: string | null; sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
 export interface HistoryPage { entries: HistoryEntry[]; nextCursor: number | null }
 /** 服务端操作结果。 */
 export interface CommandResult { ok: boolean; version?: number; error?: string; code?: string }
@@ -207,8 +236,10 @@ export interface CommandResult { ok: boolean; version?: number; error?: string; 
 export interface GameCommand { id: string; expectedVersion: number; action: GameAction }
 /** 所有业务操作的显式输入类型。 */
 export type GameAction =
+  | { type: 'addBot'; botDifficulty: BotDifficulty }
+  | { type: 'setBotDifficulty'; playerId: string; botDifficulty: BotDifficulty }
   | { type: 'activityInput'; activityId: string; activityRound: number; selection?: number; point?: number; playerId?: string }
-  | { type: 'chat'; message: string }
+  | { type: 'chat'; message: string; references?: ChatReference[] }
   | { type: 'assignSeat'; claimId: string }
   | { type: 'continueRecovery' }
   | { type: 'ready'; value: boolean }

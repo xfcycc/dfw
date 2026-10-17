@@ -36,8 +36,20 @@ public final class InputValidation {
         object(value); uuid(value, "id"); number(value.get("expectedVersion"), 0, 9007199254740991L);
         JsonNode action = value.get("action"); object(action); check(action.has("type") && action.get("type").isString()); String type = action.get("type").asString();
         switch (type) {
+            case "addBot", "setBotDifficulty" -> { check(action.has("botDifficulty") && action.get("botDifficulty").isString() && List.of("easy", "normal", "hard").contains(action.get("botDifficulty").asString())); if (type.equals("setBotDifficulty")) uuid(action, "playerId"); }
             case "activityInput" -> { uuid(action,"activityId"); number(action.get("activityRound"),1,Integer.MAX_VALUE); if(action.has("selection")) number(action.get("selection"),0,20); if(action.has("point")) number(action.get("point"),1,6); if(action.has("playerId")) uuid(action,"playerId"); }
-            case "chat" -> check(action.has("message") && action.get("message").isString() && !action.get("message").asString().isBlank() && action.get("message").asString().length() <= 300);
+            case "chat" -> {
+                check(action.has("message") && action.get("message").isString() && !action.get("message").asString().isBlank() && action.get("message").asString().length() <= 300);
+                if (action.has("references")) {
+                    JsonNode references = action.get("references"); check(references.isArray() && references.size() <= 100);
+                    for (JsonNode reference : references) {
+                        object(reference); number(reference.get("start"), 0, 299); number(reference.get("end"), 1, 300);
+                        check(reference.get("start").asInt() < reference.get("end").asInt() && reference.get("end").asInt() <= action.get("message").asString().length());
+                        check(reference.has("playerId") != reference.has("tileId"));
+                        if (reference.has("playerId")) uuid(reference, "playerId"); else number(reference.get("tileId"), 0, Rules.MAX_TILES - 1);
+                    }
+                }
+            }
             case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
             case "contentDecision" -> { uuid(action,"decisionId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
@@ -57,8 +69,10 @@ public final class InputValidation {
             default -> check(false);
         }
         List<String> fields = switch (type) {
+            case "addBot" -> List.of("botDifficulty");
+            case "setBotDifficulty" -> List.of("playerId", "botDifficulty");
             case "activityInput" -> List.of("activityId","activityRound","selection","point","playerId");
-            case "chat" -> List.of("message");
+            case "chat" -> List.of("message", "references");
             case "assignSeat" -> List.of("claimId");
             case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds");
             case "paymentDefense" -> List.of("decisionId","cardId");

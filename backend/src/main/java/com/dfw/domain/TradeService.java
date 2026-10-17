@@ -72,6 +72,7 @@ public class TradeService {
         from.cash += trade.wantCash - trade.giveCash; to.cash += trade.giveCash - trade.wantCash;
         for (int id : trade.giveTiles) room.board.get(id).ownerId = to.id;
         for (int id : trade.wantTiles) room.board.get(id).ownerId = from.id;
+        SettlementService.observe(room); from.matchStats.trades++; to.matchStats.trades++;
         log(room, "log", to.id, to.name + " 同意 " + from.name + " 的交易报价，双方完成交易；" + summary(room, trade));
         if (trade.debtCredit > 0) {
             String debt = paymentDescription(room, room.pending);

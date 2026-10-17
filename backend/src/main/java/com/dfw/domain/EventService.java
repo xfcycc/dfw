@@ -46,6 +46,7 @@ public final class EventService {
         require(effect.amount >= 0 && room.runtime.globalEvent == null && room.pending == null, "全体费用结算上下文不可用");
         GlobalEventFrame frame = new GlobalEventFrame(); frame.effectId = effect.id; frame.amount = effect.amount; frame.returnPhase = room.phase;
         frame.targets.addAll(room.players.stream().filter(value -> !value.bankrupt).map(value -> value.id).toList());
+        frame.sourceName = effect.content == null ? null : effect.content.name;
         room.runtime.globalEvent = frame;
         log(room, "全图事件：所有未破产玩家各向银行支付 " + effect.amount);
         for (String id : frame.targets) effects.submit(room, effects.effect("CHARGE_GLOBAL_TARGET", player(room, id)));
@@ -57,7 +58,10 @@ public final class EventService {
         require(frame != null && frame.nextTarget < frame.targets.size() && frame.targets.get(frame.nextTarget).equals(effect.playerId), "全图事件目标游标不一致");
         frame.nextTarget++;
         Player target = player(room, effect.playerId);
-        if (target != null && !target.bankrupt) economy.charge(room, target, frame.amount, null, null);
+        if (target != null && !target.bankrupt) {
+            economy.charge(room, target, frame.amount, null, null);
+            if (paymentPending(room)) room.pending.sourceName = frame.sourceName;
+        }
     }
     /** 输入批次结束效果，完成全部目标后统一检查胜负，必要时切换原行动者。 */
     private void finish(Room room, GameEffect effect) {

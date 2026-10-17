@@ -8,6 +8,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Player {
+    /** 随对局保存的统计及冻结结算；旧存档可为空。 */
+    public MatchStats matchStats;
+    /** 机器人难度；空值表示真人，easy、normal、hard。 */
+    public String botDifficulty;
+    /** 最近主动报价的全局回合编号，用于限制跨回合报价频率。 */
+    public int botTradeTurn = -1;
+    /** 最近三十二份主动报价的条件与回合，随存档保存，避免跨回合重报相同条件。 */
+    public Map<String, Integer> botTradeQuotes = new LinkedHashMap<>();
     /** 最新私人卡面（补给或双方可见的被转移牌）。 */
     public ContentResult contentNotice;
     /** 私人结果说明，不发给观战者。 */

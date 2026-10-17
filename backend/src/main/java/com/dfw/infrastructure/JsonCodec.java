@@ -28,11 +28,13 @@ public class JsonCodec {
         var fields = mapper.convertValue(action, TreeMap.class);
         // 新增可选金额省略或为零时，保持既有回执的规范化摘要，兼容重放。
         if (action.debtCredit == null || action.debtCredit == 0) fields.remove("debtCredit");
+        if (action.botDifficulty == null) fields.remove("botDifficulty");
         if (action.mapSize == null) fields.remove("mapSize");
         if (action.decisionId == null) fields.remove("decisionId");
         if (action.keepCardIds == null) fields.remove("keepCardIds");
         if (action.claimId == null) fields.remove("claimId");
         if (action.name == null) fields.remove("name");
+        if (action.references == null || action.references.isEmpty()) fields.remove("references");
         String canonical = write(fields);
         try { return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(canonical.getBytes(StandardCharsets.UTF_8))); }
         catch (NoSuchAlgorithmException error) { throw new IllegalStateException(error); }

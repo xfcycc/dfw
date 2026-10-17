@@ -12,6 +12,8 @@ public class GameAction {
     public String name;
     /** 玩家发送的公开聊天正文，最多三百字。 */
     public String message;
+    /** 聊天正文中选中的玩家和地块引用，旧客户端可省略。 */
+    public List<ChatReferenceInput> references;
     /** 房主批准的角色申请标识。 */
     public String claimId;
     /** 待选身份，防止恢复后提交旧选择。 */
@@ -26,6 +28,8 @@ public class GameAction {
     public Integer activityRound;
     /** 玩法选择或手势编码。 */
     public Integer selection;
+    /** 房主选择的机器人难度，easy、normal、hard。 */
+    public String botDifficulty;
     /** 操作类型。 */
     public String type;
     /** 房主在大厅选择的地图大小，small、medium 或 large。 */

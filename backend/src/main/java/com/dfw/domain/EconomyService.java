@@ -15,10 +15,15 @@ public class EconomyService {
         for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id) && !tile.mortgaged) value += Rules.mortgageValue(room, tile);
         return value;
     }
-    /** 输入房间、被清算人和债权，完成清算但由回合服务切换行动者。 */
-    public void eliminate(Room room, Player player, String creditorId, long debt) {
+    /** 输入房间、被清算人、债权及房主移出标记，先冻结个人战报，再清算并由回合服务切换行动者。 */
+    public void eliminate(Room room, Player player, String creditorId, long debt, boolean removed) {
         Player creditor = player(room, creditorId);
-        if (creditor != null && !creditor.bankrupt) creditor.cash += Math.min(liquidationValue(room, player), debt);
+        PendingDecision payment = paymentPending(room) && room.pending.playerId.equals(player.id) ? room.pending : null;
+        if (creditor != null && !creditor.bankrupt) {
+            long paid = Math.min(liquidationValue(room, player), debt);
+            creditor.cash += paid; SettlementService.payment(room, player, payment, paid);
+        }
+        SettlementService.eliminate(room, player, payment, removed);
         for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id)) { tile.ownerId = null; tile.level = 0; tile.mortgaged = false; tile.mortgageBase = null; }
         player.cash = 0; player.contentNotice=null; player.contentNoticeText=null; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; player.skipTurns = 0; player.jailed = false;
         player.eliminationOrder = (int) room.players.stream().filter(p -> p.bankrupt).count();
@@ -58,6 +63,7 @@ public class EconomyService {
         require(player.cash >= debt.amount, "现金不足，请先抵押资产或协商抵债");
         player.cash -= debt.amount; Player creditor = player(room, debt.creditorId);
         if (creditor != null && !creditor.bankrupt) creditor.cash += debt.amount;
+        SettlementService.payment(room, player, debt, debt.amount);
         log(room, "log", player.id, player.name + " 用现金支付 " + paymentDescription(room, debt) + " ¥" + String.format("%,d", debt.amount) + "，本笔欠款已结清");
         room.pending = null; room.phase = "manage";
     }
@@ -67,7 +73,7 @@ public class EconomyService {
         PendingDecision debt = room.pending;
         require(liquidationValue(room, player) < debt.amount, "现金加可变现资产足以偿清，请选择资产筹款并支付");
         require(debt.creditorId != null || room.board.stream().noneMatch(value -> Objects.equals(value.ownerId, player.id) && !value.mortgaged), "系统费用须先自行抵押全部可用地产");
-        eliminate(room, player, debt.creditorId, debt.amount);
+        eliminate(room, player, debt.creditorId, debt.amount, false);
     }
     /** 输入房间、玩家和地块索引，返回本人地产。 */
     public Tile ownedTile(Room room, Player player, Integer id) {
