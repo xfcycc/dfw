@@ -9,7 +9,7 @@ export const RULES = {
   maxLevel: 3, rentRate: 0.25, rentMultipliers: [1, 3, 6, 10],
 } as const;
 /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
-export function initialCashBase(count: number): number { return count >= 5 ? 15000 : count >= 3 ? 10000 : RULES.initialCash; }
+export function initialCashBase(count: number): number { return count >= 5 ? 7500 : RULES.initialCash; }
 /** 输入开局人数，返回每人初始手牌数量。 */
 export function initialCards(count: number): number { return count >= 3 ? 3 : RULES.initialCards; }
 /** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */

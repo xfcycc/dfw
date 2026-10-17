@@ -10,7 +10,7 @@ public final class Rules {
     public static final String[] COLORS = {"#ef6c68", "#4287e5", "#e6ad32", "#47ae88", "#a078d3", "#e982b2"};
     public static final String[] ITEMS = {"remote", "barrier", "stay", "immunity", "demolish", "swap"};
     /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
-    public static long initialCashBase(int count) { return count >= 5 ? 15000 : count >= 3 ? 10000 : INITIAL_CASH; }
+    public static long initialCashBase(int count) { return count >= 5 ? 7500 : INITIAL_CASH; }
     /** 输入开局人数，返回每人初始手牌数量。 */
     public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
     /** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */
