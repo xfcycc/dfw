@@ -13,8 +13,8 @@ import { activityArt } from '../activity-art';
 import { playSound } from '../audio';
 import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
-const props = defineProps<{ room: PublicRoomState; dashboardTarget?: string; statusTarget?: string; spectator?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
-const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string] }>();
+const props = defineProps<{ room: PublicRoomState; dashboardTarget?: string; statusTarget?: string; spectator?: boolean; spectatorFollow?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
+const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string]; view: [mode: 'follow' | 'landscape'] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
 const size = ref(700);
@@ -22,19 +22,22 @@ const availableWidth = ref(700);
 const availableViewportHeight = ref(0);
 const zoom = ref(1);
 const fullMap = ref(false);
+const following = computed(() => !!props.spectator && !!props.spectatorFollow);
 const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
 let lastLength = 0;
 let lastViewportHeight = 0;
+let followFrame = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
 const dimensions = computed(() => boardDimensions(props.room.board.length));
-const height = computed(() => { if (props.spectator && props.compact && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
+const height = computed(() => { if (props.spectator && props.compact && !following.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
 const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
+const followedPlayer = computed(() => motionPlayer.value ?? current.value);
 const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
 const movementLabel = computed(() => motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'} · 不结算落点` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
 const rotating = ref(false);
@@ -90,7 +93,7 @@ function pawnStyle(player: PublicPlayer) {
   const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
   return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color };
 }
-/** 无入参，读取地图可用尺寸，观战适配全图，手机游玩保留可读格距，无返回值。 */
+/** 无入参，读取地图可用尺寸；观战跟随与手机游玩保留可读格距，其余观战适配全图，无返回值。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   const availableHeight = viewport.value?.clientHeight ?? 0;
@@ -100,10 +103,11 @@ function resizeBoard(): void {
   availableViewportHeight.value = availableHeight;
   lastWidth = width; lastHeight = window.innerHeight; lastLength = props.room.board.length;
   lastViewportHeight = availableHeight;
-  if (props.spectator && props.compact) size.value = Math.max(1, width - 6);
+  if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  if (props.spectator || fullMap.value || !props.stretch) fitBoard();
+  if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
+  else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
   else expandBoard();
 }
 /** 无入参，恢复可读格距；手机对准本人附近，桌面沿用内圈视野，无返回值。 */
@@ -122,8 +126,25 @@ function locatePlayer(player?: PublicPlayer, smooth = false): void {
   const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
   viewport.value.scrollTo({ left: (inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value - viewport.value.clientWidth / 2, top: (inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value - viewport.value.clientHeight / 2, behavior: smooth ? 'smooth' : 'instant' });
 }
-/** 无入参，将视野平滑移到当前行动者，无返回值。 */
-function locateCurrent(): void { locatePlayer(current.value, true); }
+/** 无入参，定位当前行动者；跟随时使用动画中的角色，避免提前跳到下一回合，无返回值。 */
+function locateCurrent(): void { locatePlayer(following.value ? followedPlayer.value : current.value, !following.value); }
+/** 无入参，按棋子实际过渡位置逐帧滚动视窗，覆盖当前走格动画后停止，无返回值。 */
+function followPawn(): void {
+  cancelAnimationFrame(followFrame);
+  if (!props.spectator || !following.value || !viewport.value) return;
+  const view = viewport.value;
+  const pawn = Array.from(view.querySelectorAll<HTMLElement>('.map-character')).find(element => element.dataset.playerId === followedPlayer.value?.id);
+  if (!pawn) return;
+  const until = performance.now() + moveStepMs + 120;
+  /** 输入帧时间，按棋子当前屏幕位置调整视窗，并继续尚未结束的跟随，无返回值。 */
+  const frame = (now: number): void => {
+    const bounds = view.getBoundingClientRect();
+    const position = pawn.getBoundingClientRect();
+    view.scrollTo({ left: view.scrollLeft + position.left + position.width / 2 - bounds.left - view.clientLeft - view.clientWidth / 2, top: view.scrollTop + position.top + position.height / 2 - bounds.top - view.clientTop - view.clientHeight / 2, behavior: 'instant' });
+    if (now < until) followFrame = requestAnimationFrame(frame);
+  };
+  followFrame = requestAnimationFrame(frame);
+}
 /** 无入参，恢复局部地图并定位本人附近，无返回值。 */
 function locateMe(): void { expandBoard(); }
 /** 无入参，按地图视窗的宽高完整展示棋盘，无返回值。 */
@@ -134,11 +155,12 @@ function fitBoard(): void {
   zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
 }
-// 输入布局与地图规模变化，重新测量可用区域；本人与移动棋子的变化仅在手机局部视图跟随。
-watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length], async () => {
+// 输入布局、观战模式与地图规模变化，重新测量可用区域。
+watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length, following], async () => {
   fullMap.value = false; lastWidth = 0;
   await nextTick(); resizeBoard();
 }, { flush: 'post' });
+watch([following, () => props.spectator, () => followedPlayer.value?.id, () => followedPlayer.value?.position, () => animatedPosition.value?.position, moving, zoom, size, height, availableWidth, availableViewportHeight], followPawn, { flush: 'post' });
 watch([() => props.room.players.find(player => player.id === props.meId)?.position, () => animatedPosition.value?.position, () => props.room.turnIndex], () => {
   if (!props.dashboardTarget || props.spectator || fullMap.value) return;
   locatePlayer(motion.value ? motionPlayer.value : props.room.players.find(player => player.id === props.meId) ?? current.value);
@@ -149,11 +171,11 @@ onMounted(() => {
   if (viewport.value) observer.observe(viewport.value);
   window.addEventListener('resize', resizeBoard);
 });
-onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resize', resizeBoard); emit('animating', false); });
+onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(); window.removeEventListener('resize', resizeBoard); emit('animating', false); });
 </script>
 <template>
   <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch, 'detached-board': !!dashboardTarget }" :style="{ '--map-zoom': zoom, '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
-    <div v-if="!stretch || dashboardTarget || spectator" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
+    <div v-if="!stretch || dashboardTarget || spectator" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact && !spectator" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="spectator && compact" class="board-control" :aria-pressed="following" @click="emit('view', 'follow')">跟随模式</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
     <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
@@ -180,7 +202,7 @@ onBeforeUnmount(() => { observer?.disconnect(); window.removeEventListener('resi
           <div v-for="(change, index) in money" :key="change.key" class="money-float" :class="{ expense: change.amount < 0 }" :style="{ gridRow: tileCoordinates(change.tileId, room.board.length).row, gridColumn: tileCoordinates(change.tileId, room.board.length).column, '--float-offset': `${index % 3 * 14}px` }" aria-hidden="true"><small><PlayerText :text="change.name" :players="room.players" /></small>{{ change.amount > 0 ? '+' : '−' }}¥{{ Math.abs(change.amount).toLocaleString() }}</div>
         </div>
         <div v-if="rotating" class="activity-rotation-glow" aria-hidden="true"></div>
-        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
+        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
         <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>

@@ -41,6 +41,7 @@
 .game-board .board-tools > .eyebrow { font-size: 11px; color: #68805a; letter-spacing: .3px; }
 .board-controls { display: flex; align-items: center; gap: 8px; }
 .board-control { border: 1px solid #dbe3cd; background: #f6f8ee; color: #627c53; border-radius: 8px; padding: 7px 10px; font-size: 11px; min-height: 34px; }
+.spectator-page .board-control[aria-pressed="true"] { background: #e8efd9; border-color: #9eb47e; color: #48613b; }
 .game-board .board { background: #dde8ce; border: 2px solid #c7d3b7; box-shadow: 0 4px 0 #c2cbae; gap: 4px; padding: 8px; border-radius: 18px; }
 .game-board .board-center { background: radial-gradient(ellipse at 50% 60%, #fff9e4, #eaf2d7 75%); border: 1px solid #d4dfbf; border-radius: 14px; padding: 16px; min-width: 0; isolation: isolate; }
 .game-board .board-center::before { border-color: #ccdabc; width: 76%; height: 85%; }

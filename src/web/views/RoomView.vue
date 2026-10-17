@@ -84,7 +84,9 @@ const mapView = ref<HTMLElement>();
 const dashboardView = ref<HTMLElement>();
 const mobileQuery = window.matchMedia('(max-width: 800px), (max-width: 1000px) and (max-height: 500px)');
 const mobileViewport = ref(mobileQuery.matches);
-const detachedDashboard = computed(() => !props.spectator && mobileViewport.value);
+const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow' : 'landscape');
+const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
+const detachedDashboard = computed(() => spectatorFollowing.value || !props.spectator && mobileViewport.value);
 const workbenchTab = ref<'cards' | 'ranking'>('cards');
 /** 输入手牌或排行区域，打开手机更多菜单对应的详情，无返回值。 */
 function openMobileWorkbench(section: 'cards' | 'ranking'): void { workbenchTab.value = section; modal.value = 'workbench'; }
@@ -272,14 +274,32 @@ async function openWorkbench(section: 'assets' | 'trade' | 'choice' | 'history')
 }
 
 const fullscreenActive = ref(!!document.fullscreenElement);
-/** 无入参，同步浏览器全屏状态供入口显示；支持 Esc 退出，无返回值。 */
-function syncFullscreen(): void { fullscreenActive.value = !!document.fullscreenElement; }
+/** 无入参，同步全屏状态；退出浏览器全屏时释放方向锁并保留当前观战布局，无返回值。 */
+function syncFullscreen(): void {
+  const exited = fullscreenActive.value && !document.fullscreenElement;
+  fullscreenActive.value = !!document.fullscreenElement;
+  if (exited && props.spectator) screen.orientation?.unlock?.();
+}
 document.addEventListener('fullscreenchange', syncFullscreen);
-onBeforeUnmount(() => document.removeEventListener('fullscreenchange', syncFullscreen));
-/** 无入参，请求进入或退出浏览器全屏；失败时提示设备兼容方式，无返回值。 */
+onBeforeUnmount(() => { document.removeEventListener('fullscreenchange', syncFullscreen); if (props.spectator) screen.orientation?.unlock?.(); });
+/** 无入参，切换玩家页面的浏览器全屏；失败时提示兼容方式，无返回值。 */
 async function fullscreen(): Promise<void> {
   try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); }
   catch { game.notify('当前浏览器不支持全屏，请使用浏览器全屏或投屏功能。'); }
+}
+/** 输入观战模式，跟随时恢复上下布局，横屏时请求全屏和横向锁定；不支持时保留全图并提示，无返回值。 */
+async function switchSpectatorView(mode: 'follow' | 'landscape'): Promise<void> {
+  spectatorMode.value = mode;
+  if (mode === 'follow') {
+    screen.orientation?.unlock?.();
+    if (document.fullscreenElement) await document.exitFullscreen().catch(() => game.notify('请使用浏览器退出全屏。'));
+    return;
+  }
+  try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); }
+  catch { game.notify('已切换完整地图，当前浏览器不支持自动全屏，可横放手机观看。'); return; }
+  const orientation = screen.orientation as ScreenOrientation & { lock?: (value: 'landscape') => Promise<void> };
+  try { if (orientation?.lock) await orientation.lock('landscape'); else if (window.innerHeight > window.innerWidth) game.notify('请横放手机，查看完整地图。'); }
+  catch { if (window.innerHeight > window.innerWidth) game.notify('当前设备不支持自动横屏，请横放手机观看。'); }
 }
 /** 输入本人手牌，在窗口中查看或准备使用；付款防御复用当前费用窗口。 */
 function chooseCard(card: Card): void {
@@ -321,14 +341,15 @@ async function resetSession(): Promise<void> {
 }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
       <button class="room-tag" aria-label="复制房间号" @click="game.copy(code)">房间 <strong>{{ code }}</strong></button>
       <div v-if="isGameSession" class="room-utilities game-utilities" role="group" aria-label="游戏工具栏">
         <span class="connection-label" :class="game.connection"><i></i>{{ game.connection === 'online' ? '实时同步' : game.connection === 'connecting' ? '连接中' : '已断开' }}</span>
-        <button v-if="spectator" type="button" class="button spectator-fullscreen" :aria-pressed="fullscreenActive" @click="fullscreen">{{ fullscreenActive ? '退出全屏' : '全屏观战' }}</button>
+        <button v-if="spectator && !spectatorFollowing" type="button" class="button" @click="switchSpectatorView('follow')">跟随模式</button>
+        <button v-if="spectator" type="button" class="button spectator-fullscreen" :aria-pressed="fullscreenActive && !spectatorFollowing" @click="switchSpectatorView(fullscreenActive && !spectatorFollowing ? 'follow' : 'landscape')">{{ fullscreenActive && !spectatorFollowing ? '退出横屏' : '横屏模式' }}</button>
         <AudioSettings class="room-audio-control" />
         <button class="button game-tools-trigger" aria-label="打开游戏工具" aria-haspopup="dialog" @click="modal = 'tools'">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="m13 4 1-2h4l1 2 3 2 3-.2 2 3-1 3v4l1 3-2 3-3-.2-3 2-1 3h-4l-1-3-3-2-3 .2-2-3 1-3v-4l-1-3 2-3 3 .2Z" /><circle cx="16" cy="14.5" r="5" /></svg>
@@ -371,7 +392,7 @@ async function resetSession(): Promise<void> {
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -392,9 +413,9 @@ async function resetSession(): Promise<void> {
                     <section class="dashboard-records workspace-panel">
                       <div class="city-feed-panel">
                       <PanelFrame />
-                      <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>{{ spectator ? '房间聊天' : '城市新鲜事' }}</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <div class="records-scroll"><LiveRecords compact journal :chat-only="spectator" :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
-                      <div v-if="detachedDashboard" id="mobile-city-reveal" class="mobile-city-reveal"></div>
+                      <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
+                      <div class="records-scroll"><LiveRecords compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
+                      <div v-if="detachedDashboard || spectator" id="mobile-city-reveal" class="mobile-city-reveal"></div>
                       </div>
                       <form v-if="!spectator" class="room-chat" @submit.prevent="sendChat"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3></div><div class="chat-composer">
                         <label class="sr-only" for="room-chat-message">房间聊天</label><textarea id="room-chat-message" v-model="chatMessage" maxlength="300" rows="1" :disabled="!canChat" :placeholder="spectator || !game.me ? '观战中，可以查看房间对话' : game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊…'" @keydown.enter="chatEnter" />
@@ -402,7 +423,7 @@ async function resetSession(): Promise<void> {
                       </div></form>
                     </section>
                     <aside class="dashboard-sidebar">
-                      <Teleport :to="detachedDashboard ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard" defer>
+                      <Teleport :to="detachedDashboard && !spectator ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard || spectator" defer>
                       <aside class="dashboard-ranking workspace-panel"><PanelFrame variant="ranking" ornament="right" /><div class="workspace-heading"><div><h2>资产排行</h2></div><span class="workspace-count">{{ game.room.players.filter(p => !p.bankrupt).length }} 人</span></div><PublicLeaderboard compact :room="game.room" :me-id="game.me?.id" :can-remove="game.isHost && !spectator" :busy="game.busy" @select="selectTile" @remove="game.act({ type: 'removePlayer', playerId: $event })" /></aside>
                       </Teleport>
                       <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
@@ -429,14 +450,14 @@ async function resetSession(): Promise<void> {
                 </FitPanel>
               </template>
               <template #center-overlay>
-                <Teleport :to="detachedDashboard ? '#mobile-city-reveal' : 'body'" :disabled="!detachedDashboard" defer>
+                <Teleport :to="detachedDashboard || spectator ? '#mobile-city-reveal' : 'body'" :disabled="!detachedDashboard && !spectator" defer>
                   <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
                 </Teleport>
               </template>
             </Board>
           </div></section>
-          <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" aria-label="城市新鲜事与聊天"></aside>
-          <nav v-if="detachedDashboard" class="mobile-workbench-bar" aria-label="手机游戏操作">
+          <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" :aria-label="spectator ? '城市新鲜事与资产排行' : '城市新鲜事与聊天'"></aside>
+          <nav v-if="detachedDashboard && !spectator" class="mobile-workbench-bar" aria-label="手机游戏操作">
             <button type="button" class="mobile-image-button mobile-more-button" aria-label="更多" aria-haspopup="dialog" :aria-expanded="modal === 'more'" @click="modal = 'more'"><MobileActionArt action="more" /><span v-if="tradeReminder" class="mobile-action-badge">有报价</span></button>
             <button type="button" class="mobile-image-button mobile-roll-button" :disabled="!canRoll" aria-label="掷骰子" @click="game.act({ type: 'roll' })"><MobileActionArt action="roll" /></button>
             <button type="button" class="mobile-image-button mobile-end-button" :disabled="!canEndTurn" aria-label="结束行动" @click="game.act({ type: 'endTurn' })"><MobileActionArt action="endTurn" /></button>
@@ -444,7 +465,7 @@ async function resetSession(): Promise<void> {
         </div>
       </template>
     </main>
-    <Modal v-if="detachedDashboard && game.room" :open="modal === 'more'" panel-class="modern-modal mobile-more-modal" title="更多" @close="modal = null">
+    <Modal v-if="detachedDashboard && !spectator && game.room" :open="modal === 'more'" panel-class="modern-modal mobile-more-modal" title="更多" @close="modal = null">
       <div class="mobile-more-grid">
         <button type="button" class="mobile-image-button" :disabled="!game.me" :aria-label="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><MobileActionArt action="assets" /></button>
         <button type="button" class="mobile-image-button" aria-label="资产排行" @click="openMobileWorkbench('ranking')"><MobileActionArt action="ranking" /></button>
@@ -506,7 +527,7 @@ async function resetSession(): Promise<void> {
         <button v-if="game.me && !spectator" class="game-tool peach" @click="modal = 'avatar'"><span class="game-tool-icon" aria-hidden="true"><CharacterPawn :avatar-id="game.me.avatarId" :color="game.me.color" /></span><span>选择角色</span></button>
         <button v-if="game.me && !spectator" class="game-tool mint" :disabled="!canRename" @click="openRename"><span class="game-tool-icon" aria-hidden="true">✏️</span><span>修改昵称</span></button>
         <button class="game-tool mint" @click="modal = 'rules'"><span class="game-tool-icon" aria-hidden="true">📖</span><span>玩法说明</span></button>
-        <button class="game-tool sky" @click="modal = null; fullscreen()"><span class="game-tool-icon" aria-hidden="true">⛶</span><span>全屏模式</span></button>
+        <button class="game-tool sky" @click="modal = null; spectator ? switchSpectatorView('landscape') : fullscreen()"><span class="game-tool-icon" aria-hidden="true">⛶</span><span>{{ spectator ? '横屏模式' : '全屏模式' }}</span></button>
         <button v-if="game.me && !spectator" class="game-tool lavender" @click="modal = 'save'"><span class="game-tool-icon" aria-hidden="true">💾</span><span>游戏存档</span></button>
         <button class="game-tool peach" @click="modal = null; game.copy(`${origin}/room/${code}`)"><span class="game-tool-icon" aria-hidden="true">💌</span><span>邀请朋友</span></button>
         <button class="game-tool mint" @click="modal = null; game.copy(`${origin}/watch/${code}`)"><span class="game-tool-icon" aria-hidden="true">🔗</span><span>复制观战链接</span></button>
