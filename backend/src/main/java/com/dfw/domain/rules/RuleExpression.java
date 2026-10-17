@@ -7,7 +7,7 @@ import java.util.function.Function;
 
 /** 有限条件 AST，禁止反射、任意字段访问或脚本执行。 */
 public final class RuleExpression {
-    private static final Set<String> NUMBER_REFS = Set.of("action.point", "action.tileId", "actor.cash", "actor.position", "targetTile.id", "targetTile.level", "targetTile.forwardDistance", "turn.dice");
+    private static final Set<String> NUMBER_REFS = Set.of("action.point", "action.tileId", "actor.cash", "actor.position", "targetTile.id", "targetTile.level", "targetTile.forwardDistance", "targetTile.nearbyDistance", "turn.dice");
     private static final Set<String> BOOLEAN_REFS = Set.of("targetTile.exists", "targetTile.barrier", "targetPlayer.exists", "targetPlayer.bankrupt", "targetPlayer.jailed", "turn.activeCardUsed");
     private static final Set<String> STRING_REFS = Set.of("actor.id", "actor.name", "action.playerId", "targetTile.type", "targetTile.ownerId", "targetPlayer.id", "turn.phase");
     private RuleExpression() {}
@@ -81,6 +81,7 @@ public final class RuleExpression {
             case "targetTile.type" -> tile == null ? null : tile.type; case "targetTile.ownerId" -> tile == null ? null : tile.ownerId;
             case "targetTile.level" -> tile == null ? null : tile.level; case "targetTile.barrier" -> tile != null && tile.barrier;
             case "targetTile.forwardDistance" -> tile == null || room.board.isEmpty() ? null : Math.floorMod(tile.id - actor.position, room.board.size());
+            case "targetTile.nearbyDistance" -> tile == null || room.board.isEmpty() ? null : GameSupport.nearbyDistance(actor.position, tile.id, room.board.size());
             case "targetPlayer.exists" -> target != null; case "targetPlayer.id" -> target == null ? null : target.id;
             case "targetPlayer.bankrupt" -> target != null && target.bankrupt; case "targetPlayer.jailed" -> target != null && target.jailed;
             case "turn.phase" -> room.phase; case "turn.activeCardUsed" -> room.activeCardUsed; case "turn.dice" -> room.dice;

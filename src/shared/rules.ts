@@ -34,7 +34,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   cash: { name: '即时现金', icon: '💰', description: '获得卡面现金，占本回合主动次数。' },
   gamble: { name: '命运豪赌', icon: '🪙', description: '使用已有现金下注，按卡面概率大赚或大亏；确认下注才消耗卡牌和主动次数。' },
   remote: { name: '遥控骰子', icon: '🎯', description: '指定 1～6 点，替代本次掷骰。' },
-  barrier: { name: '路障', icon: '🚧', description: '在前方六格内任意无路障地块放置路障，首个经过者停下。' },
+  barrier: { name: '路障', icon: '🚧', description: '在附近 6 格内选择一个无路障地块放置路障（前后各 6 格，不含当前格），首个受影响的经过者停下。' },
   stay: { name: '停留', icon: '⚓', description: '替代掷骰，留在当前格重新结算。' },
   immunity: { name: '免租', icon: '🛡️', description: '支付路费前使用，免除本次全部租金。' },
   demolish: { name: '拆房', icon: '🔨', description: '让另一玩家的一块地产降一级，无退款。' },

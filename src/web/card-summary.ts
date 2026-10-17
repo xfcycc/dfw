@@ -9,7 +9,7 @@ export function cardSummary(card: ContentResult): string {
     fixed: steps === undefined ? '按指定步数移动' : `移动 ${steps} 格，替代掷骰`,
     move: steps === undefined ? '前进或后退，替代掷骰' : steps === 0 ? '原地停留，重新结算当前格' : `${steps < 0 ? '后退' : '前进'} ${Math.abs(steps)} 格，替代掷骰`,
     bonus: steps === undefined ? '增加本次掷骰步数' : `本次掷骰额外 +${steps} 格`,
-    barrier: '前方 6 格内设障，首位经过者停下',
+    barrier: '附近 6 格内设障，首位受影响者停下',
     stay: '原地停留，重新结算当前格',
     immunity: '免除本次租金',
     demolish: '对手一块地产的建筑降 1 级',

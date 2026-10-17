@@ -26,7 +26,7 @@ const example = computed(() => {
         <li>贪心宝箱：仅落点玩家自愿支付¥{{ activityMoney.treasureStake }}，每层二选一，成功后可收手领取本金的2／4／8倍，或继续挑战；触发机关则本次到账为零。最多三层，奖励只在收手或全部通关时发放。</li>
         <li>三关玻璃桥：每人可自愿支付¥{{ activityMoney.horseStake }}上桥；每关秘密选左或右，全部锁定后统一揭晓。选错淘汰，连续三关成功者各得¥{{ activityMoney.horsePrize }}，多人通关不分摊奖金。</li>
         <li>少数派夜市：全员免费秘密选择火锅摊或烧烤摊，人数较少的一边抽一人独得¥{{ activityMoney.rpsPrize }}；两边人数相同或全在同一摊时，全员抽一人。每场只发一份奖金。</li>
-        <li>丰收盲盒：固定20个盒子，每人免费领取一个。19个普通款各¥{{ activityMoney.blindboxRegular }}，唯一隐藏款为¥{{ activityMoney.blindboxHiddenBase }}＋参与人数×¥{{ activityMoney.blindboxHiddenPerPlayer }}；仅隐藏款有10%概率升级为双倍限定款。选中立即到账，未选中的盒子不发奖。</li>
+        <li>暖暖潮玩盲盒：固定20个盒子，每人免费领取一个。19个普通款各¥{{ activityMoney.blindboxRegular }}，唯一隐藏款为¥{{ activityMoney.blindboxHiddenBase }}＋参与人数×¥{{ activityMoney.blindboxHiddenPerPlayer }}；仅隐藏款有10%概率升级为双倍限定款。选中立即到账，未选中的盒子不发奖。</li>
         <li>四个新玩法最终结算统一播放奖励3秒，再停留5秒自动关闭；收起窗口不会放弃或重复领取。轮转保留原五类权重，在对应类别内选择新旧玩法，已有旧局继续原活动池。</li>
       </ul>
     </details>

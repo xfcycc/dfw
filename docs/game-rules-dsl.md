@@ -141,7 +141,7 @@ TURN_START 自动阶段
 | --- | --- |
 | `actor` | `id`、`name`、`cash`、`position` |
 | `action` | `point`、`tileId`、`playerId` |
-| `targetTile` | `exists`、`id`、`type`、`ownerId`、`level`、`barrier`、`forwardDistance` |
+| `targetTile` | `exists`、`id`、`type`、`ownerId`、`level`、`barrier`、`forwardDistance`、`nearbyDistance` |
 | `targetPlayer` | `exists`、`id`、`bankrupt`、`jailed` |
 | `turn` | `phase`、`activeCardUsed`、`dice` |
 

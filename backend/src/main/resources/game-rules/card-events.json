@@ -69,20 +69,20 @@
               {
                 "op": "GTE",
                 "left": {
-                  "ref": "targetTile.forwardDistance"
+                  "ref": "targetTile.nearbyDistance"
                 },
                 "right": 1
               },
               {
                 "op": "LTE",
                 "left": {
-                  "ref": "targetTile.forwardDistance"
+                  "ref": "targetTile.nearbyDistance"
                 },
                 "right": 6
               }
             ]
           },
-          "error": "请选择前方六格内没有路障的地块"
+          "error": "请选择附近 6 格内没有路障的地块（前后各 6 格，不含当前格）"
         }
       ],
       "steps": [

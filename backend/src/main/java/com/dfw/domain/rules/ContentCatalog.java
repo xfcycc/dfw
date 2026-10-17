@@ -69,7 +69,7 @@ public final class ContentCatalog {
             case "remote" -> "自选 1～6 点，替代掷骰并结算落点";
             case "move","forward","back" -> (steps < 0 ? "后退 " : "前进 ")+Math.abs(steps)+" 格并结算落点"+(r.pool.equals("card") ? "，替代本次掷骰" : "");
             case "bonus" -> "掷骰前加码 +"+steps+" 格；合成一次连续移动";
-            case "barrier" -> "前方 1～6 格任意无路障地块放置路障，首个受影响者停下";
+            case "barrier" -> "在附近 6 格内选择一个无路障地块放置路障（前后各 6 格，不含当前格），首个受影响者停下";
             case "demolish" -> "对手的一块地产降低 1 级建筑，无退款";
             case "swap" -> "与未服刑的对手交换位置，随后正常掷骰";
             case "blast" -> "指定一名未破产玩家（可选自己），直接传送至地图随机地块；不触发沿途奖励或此次落点，不消耗塔塔开";

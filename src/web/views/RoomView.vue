@@ -155,7 +155,7 @@ const targetLabel = computed(() => targetKind.value === 'tile' && targetTileId.v
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules = { barrier: '选择前方 1～6 格内任意无路障地块。', demolish: '选择对手有建筑的地产。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
+  const rules = { barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
   return rules[selectedCard.value!.kind as keyof typeof rules];
 });
 /** 输入房间地块与玩家，返回按可选性排序的目标选项；地块携带原始价格和建筑插画信息。 */
@@ -187,8 +187,10 @@ function tileReason(tile: Tile): string {
   if (mapChoice.value) return mapChoice.value.tileIds.includes(tile.id) ? '' : '该地块不在本次选择的合法目标中，请点击高亮地产。';
   if (selectedCard.value?.kind === 'demolish') return tile.ownerId && tile.ownerId !== game.me?.id && tile.level > 0 ? '' : '拆房需要选择对手有建筑的地产。';
   if (selectedCard.value?.kind === 'barrier') {
-    const distance = (tile.id - (game.me?.position ?? 0) + (game.room?.board.length ?? 1)) % (game.room?.board.length ?? 1);
-    if (distance < 1 || distance > 6) return '路障只能放在前方 1～6 格内的地块。';
+    const size = game.room?.board.length ?? 1;
+    const forward = (tile.id - (game.me?.position ?? 0) + size) % size;
+    const distance = Math.min(forward, size - forward);
+    if (distance < 1 || distance > 6) return '路障只能放在附近 6 格内的地块（前后各 6 格，不含当前格）。';
     return tile.barrier ? '这个地块已有路障，请选择其他地块。' : '';
   }
   return '当前道具不需要选择地块。';

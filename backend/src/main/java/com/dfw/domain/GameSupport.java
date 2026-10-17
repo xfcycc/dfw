@@ -24,14 +24,14 @@ public final class GameSupport {
         String effect = card.effect;
         if (effect == null) effect = switch (card.kind) {
             case "remote" -> "指定 " + action.point + " 点移动";
-            case "barrier" -> "设置一次路障，首个受影响的经过者截停并正常结算落点";
+            case "barrier" -> "在附近 6 格内选择一个无路障地块设置路障，首个受影响者截停并正常结算落点";
             case "stay" -> "原地重新结算落点";
             case "immunity" -> "免除本笔租金";
             case "demolish" -> "建筑降低一级，无退款";
             case "swap" -> "交换位置，随后正常掷骰";
             default -> "发动对应效果";
         };
-        if (card.kind.equals("barrier")) effect = "在前方六格内地块设置一次路障，首个受影响者截停并正常结算落点";
+        if (card.kind.equals("barrier")) effect = "在附近 6 格内选择一个无路障地块设置路障（前后各 6 格，不含当前格），首个受影响者截停并正常结算落点";
         if (card.kind.equals("remote")) effect = "指定 " + action.point + " 点移动，替代本次掷骰";
         ContentResult played = new ContentResult(); played.id = card.id; played.pool = "card"; played.kind = card.kind;
         played.skinId = card.skinId;
@@ -39,6 +39,11 @@ public final class GameSupport {
         played.quote = card.quote; played.description = card.description; played.effect = effect;
         room.runtime.playedCard = played; room.runtime.playedCardPlayerId = owner.id;
         log(room, "card_used", owner.id, owner.name + " 使用道具「" + (card.name == null ? switch (card.kind) { case "remote" -> "遥控骰子"; case "barrier" -> "路障"; case "stay" -> "停留"; case "immunity" -> "免租"; case "demolish" -> "拆房"; case "swap" -> "换位"; default -> card.kind; } : card.name) + "」；目标：" + aim + "；效果：" + effect);
+    }
+    /** 输入起点、目标格和棋盘格数，返回沿环形棋盘前后两个方向的最短格距。 */
+    public static int nearbyDistance(int from, int to, int size) {
+        int forward = Math.floorMod(to - from, size);
+        return Math.min(forward, size - forward);
     }
     /** 输入房间和索引，返回地块或空。 */
     public static Tile tile(Room room, Integer id) { return id == null || id < 0 || id >= room.board.size() ? null : room.board.get(id); }

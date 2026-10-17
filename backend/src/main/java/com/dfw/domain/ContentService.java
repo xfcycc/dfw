@@ -194,7 +194,7 @@ public final class ContentService {
         }
         room.pending=choice.returnPending; room.phase=choice.returnPhase; room.runtime.choice=null;
     }
-    /** 输入真实主动卡并验证地产或玩家目标；指定入狱可选自己，免费升级和风险道具确认后消费。 */
+    /** 输入房间、持牌者及主动卡操作，校验附近路障地块或其他目标，确认后消费，无返回值。 */
     public void use(Room room,Player owner,Action action) {
         Card card=find(owner,action.cardId); require(card.skinId!=null,"请使用兼容道具路径");
         require(room.phase.equals("pre_roll") && room.pending==null && !room.activeCardUsed && !Set.of("immunity","halfPayment","release").contains(card.kind),"每回合掷骰前最多主动使用一张道具");
@@ -209,8 +209,8 @@ public final class ContentService {
                 submit(room,"REPLACE_ROLL",owner,steps);
             }
             case "barrier" -> {
-                int distance=target==null?0:Math.floorMod(target.id-owner.position,room.board.size());
-                require(target!=null && !target.barrier && distance>=1 && distance<=6,"请选择前方六格内没有路障的地块"); consume(room,owner,card,true,action);
+                int distance=target==null?0:nearbyDistance(owner.position,target.id,room.board.size());
+                require(target!=null && !target.barrier && distance>=1 && distance<=6,"请选择附近 6 格内没有路障的地块（前后各 6 格，不含当前格）"); consume(room,owner,card,true,action);
                 GameEffect e=effects.effect("PLACE_BARRIER",owner); e.tileId=target.id; effects.submit(room,e);
             }
             case "demolish" -> {
