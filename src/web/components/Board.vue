@@ -20,6 +20,7 @@ const props = defineProps<{ room: PublicRoomState; dashboardTarget?: string; sta
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string]; view: [mode: 'follow' | 'landscape'] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
+const feedbackArea = ref<HTMLElement>();
 const size = ref(700);
 const availableWidth = ref(700);
 const availableViewportHeight = ref(0);
@@ -52,6 +53,7 @@ const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.val
 const movementLabel = computed(() => boardEffect.value?.boardEffect ? `${boardEffectLabel(boardEffect.value.boardEffect.kind)} · 播放中` : motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'}` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
 const effectTiles = computed(() => new Set(boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
 const effectPlayers = computed(() => new Set(boardEffect.value?.boardEffect?.moves.map(move => move.playerId) ?? []));
+const effectTileSize = computed(() => (size.value - (props.compact ? 20 : 18)) / dimensions.value.columns * zoom.value);
 /** 输入地块编号，返回与棋子一致的缩放后中心坐标，供演出定位。 */
 function effectPoint(id: number): { x: number; y: number } {
   const cell = tileCoordinates(id, props.room.board.length);
@@ -59,8 +61,16 @@ function effectPoint(id: number): { x: number; y: number } {
   return { x: (inset + (cell.column - .5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value,
     y: (inset + (cell.row - .5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value };
 }
+/** 输入玩家、格号及是否取换位终点，返回含同格错位的棋子坐标，仅供演出展示。 */
+function effectPlayerPoint(playerId: string, position: number, after = false): { x: number; y: number } {
+  const effect = boardEffect.value?.boardEffect;
+  const together = props.room.players.filter(player => !player.bankrupt && (after ? effect?.moves.find(move => move.playerId === player.id)?.to ?? player.position : player.position) === position);
+  const offset = (together.findIndex(player => player.id === playerId) - (together.length - 1) / 2) * 16;
+  const point = effectPoint(position);
+  return { x: point.x + offset, y: point.y };
+}
 let effectView: { zoom: number; fullMap: boolean; left: number; top: number } | null = null;
-// 多目标演出临时展示全图，单地产演出定位目标，结束或取消后恢复用户视野。
+// 多目标临时展示全图，单地块或单玩家定位生效处，结束或取消后恢复用户视野。
 watch(boardEffect, async value => {
   const view = viewport.value;
   if (!view) return;
@@ -73,11 +83,13 @@ watch(boardEffect, async value => {
   }
   effectView ??= { zoom: zoom.value, fullMap: fullMap.value, left: view.scrollLeft, top: view.scrollTop };
   const effect = value.boardEffect;
-  if (effect.moves.length || effect.beforeTiles.length > 1) fitBoard();
+  const positions = [...new Set(effect.beforeTiles.length ? effect.beforeTiles.map(tile => tile.id) : effect.moves.length ? effect.moves.flatMap(move => [move.from, move.to]) : props.room.players.filter(player => (effect.playerIds?.length ? effect.playerIds : [value.playerId]).includes(player.id)).map(player => player.position))];
+  if (positions.length > 1) fitBoard();
   else {
+    fullMap.value = false; zoom.value = 1;
     await nextTick();
-    if (boardEffect.value?.id !== value.id || !effect.beforeTiles[0]) return;
-    const point = effectPoint(effect.beforeTiles[0].id);
+    if (boardEffect.value?.id !== value.id || positions[0] == null) return;
+    const point = effectPoint(positions[0]);
     view.scrollTo({ left: point.x - view.clientWidth / 2, top: point.y - view.clientHeight / 2, behavior: 'instant' });
   }
 }, { flush: 'post' });
@@ -305,7 +317,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
           </div>
         </div>
         <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
-        <BoardEffectLayer v-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :zoom="zoom" @done="finishBoardEffect" />
+        <BoardEffectLayer v-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="size * zoom" :board-height="height * zoom" @done="finishBoardEffect" />
         <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
@@ -325,7 +337,8 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
     <Teleport to="body">
       <DesktopDiceThrow v-if="desktopDice && diceFullscreen && motion && motionPlayer && diceResult !== null" :key="motion.id" :board="container" :player="motionPlayer" :mine="!spectator && motionPlayer.id === meId" :value="diceResult" :rolling="rolling" :duration="diceRollMs" />
     </Teleport>
-    <Teleport :to="diceTarget || 'body'" defer>
+    <div ref="feedbackArea" class="board-local-feedback"></div>
+    <Teleport :to="diceTarget || feedbackArea || 'body'" defer>
       <Transition name="dice-overlay">
         <div v-if="!desktopDice && diceFullscreen && motion && motionPlayer" :key="motion.id" class="dice-overlay" :class="{ 'is-rolling': rolling }" role="status" aria-live="polite">
           <div class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
@@ -345,6 +358,11 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
   </div>
 </template>
 <style scoped>
+.board-container { position:relative; }
+.board-local-feedback { position:absolute; inset:0; pointer-events:none; z-index:13; }
+.board-local-feedback .dice-overlay { position:absolute; gap:12px; background:#fff9ebb8; backdrop-filter:blur(2px); pointer-events:none; touch-action:auto; }
+.board-local-feedback .dice-overlay .die { width:92px; height:92px; padding:16px; gap:7px; }
+.board-local-feedback .board-motion-feedback { position:absolute; bottom:10px; max-width:calc(100% - 20px); gap:10px; padding:8px 12px; }
 .effect-pawn-hidden { visibility:hidden; }
 .tile.kamui-frozen .property-tile-art,.tile.kamui-frozen .tile-icon,.tile.kamui-frozen .building-decor { opacity:.25; filter:grayscale(.7); }
 .tile.effect-target-kamui .property-tile-art,.tile.effect-target-kamui .tile-icon,.tile.effect-target-kamui .building-decor { transform-origin:center; animation:property-swallowed 1800ms ease-in-out both; }

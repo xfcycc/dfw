@@ -28,6 +28,7 @@ import { TILE_CARDS, PLAYER_CARDS } from '../card-targets';
 import CardTargetPicker from '../components/CardTargetPicker.vue';
 import ContentCard from '../components/ContentCard.vue';
 import CardReveal from '../components/CardReveal.vue';
+import { boardEffectLabel } from '../board-effect-presentation';
 import ActivityDialog from '../components/activities/ActivityDialog.vue';
 import { ACTIVITY_HINTS, activityArt } from '../activity-art';
 import ContentChoice from '../components/ContentChoice.vue';
@@ -125,6 +126,13 @@ async function sendChat(message: string, references: ChatReference[]): Promise<b
 /** 输入被引用的地块编号，电脑强调地块，手机将地图视野定位到该处，无返回值。 */
 function locateChatTile(id: number): void { board.value?.referenceTile(id, mobileViewport.value); }
 const boardAnimating = ref(false);
+const activeBoardEffect = computed(() => game.settling && !game.settlementRevealing ? game.room?.motion?.boardEffect : null);
+/** 从当前演出事实提取公开目标名称，供新鲜事提示；不读取私人卡面或计算结果。 */
+const effectTargetNames = computed(() => {
+  const effect = activeBoardEffect.value;
+  if (!effect || !game.room) return '';
+  return effect.beforeTiles.length ? effect.beforeTiles.map(tile => game.room!.board.find(value => value.id === tile.id)?.name).filter(Boolean).join('、') : game.room.players.filter(player => effect.playerIds?.includes(player.id) || effect.moves.some(move => move.playerId === player.id)).map(player => player.name).join('、');
+});
 const awaitingJoin = ref(false);
 const joining = ref(false);
 const entryName = ref(localStorage.getItem('dfw:nickname') || '');
@@ -479,7 +487,7 @@ async function resetSession(): Promise<void> {
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board ref="board" :desktop-dice="!mobileViewport" dice-target="#mobile-city-reveal" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board ref="board" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -505,8 +513,9 @@ async function resetSession(): Promise<void> {
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
+                      <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
+                      <div v-if="activeBoardEffect" class="city-alert effect-news-notice" role="status"><div class="city-alert-message"><strong>{{ boardEffectLabel(activeBoardEffect.kind) }} · 生效中</strong><small><PlayerText :text="effectTargetNames" /> · 动画结束后继续</small></div></div>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
-                      <div id="mobile-city-reveal" class="mobile-city-reveal city-effects-reveal"></div>
                       </div>
                       <ChatComposer v-if="!spectator" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊，输入 @ 提及玩家或地块…'" />
                     </section>
@@ -535,11 +544,6 @@ async function resetSession(): Promise<void> {
 
                 </div>
                 </FitPanel>
-              </template>
-              <template #center-overlay>
-                <Teleport to="#mobile-city-reveal" defer>
-                  <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
-                </Teleport>
               </template>
             </Board>
           </div></section>
@@ -701,6 +705,9 @@ async function resetSession(): Promise<void> {
 </template>
 
 <style scoped>
+.effect-news-notice { padding:7px 10px; margin:6px 0; border-width:1px; animation:none; }
+.effect-news-notice .city-alert-message { font-size:12px; }
+.effect-news-notice .city-alert-message small { display:block; max-height:3em; overflow:auto; font-size:10px; line-height:1.5; }
 .tile-detail-actions { margin-top: 12px; }
 .tile-detail-actions > .button { width: 100%; }
 </style>

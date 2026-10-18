@@ -27,6 +27,8 @@ export interface ContentResult {
   effect?: string;
   parameters?: Record<string, number>;
   targetId?: string | null;
+  /** 私人补给仅向获得者展示完整卡面；旧快照缺省为公开事件。 */
+  privateSupply?: boolean;
 }
 /** 私有手牌。 */
 export interface Card extends ContentResult { kind: ItemKind }
