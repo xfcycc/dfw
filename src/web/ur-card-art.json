@@ -1,0 +1,30 @@
+{
+  "card_naruto_shinra_tensei": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200902601.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200903424.webp"
+  },
+  "card_fate_coin": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200904210.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200904589.webp"
+  },
+  "card_all_in_ticket": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200906067.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200906583.webp"
+  },
+  "card_naruto_wood_houses": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200907182.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200908181.webp"
+  },
+  "card_fma_exchange": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200910047.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200910592.webp"
+  },
+  "card_naruto_kamui": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200911115.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200911663.webp"
+  },
+  "card_naruto_reaper_seal": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261018200914306.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261018200915037.webp"
+  }
+}

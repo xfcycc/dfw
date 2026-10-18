@@ -1,0 +1,62 @@
+{
+  "skinId": "card_naruto_shinra_tensei",
+  "source": "https://pic.caiguoyu.cn/typora/20261018061626115.webp",
+  "method": "ImageGen 分离人物透明图、补全无人物背景，SVG 分割手臂并以 CSS 播放 6 秒循环",
+  "status": "oss-uploaded",
+  "note": "运行素材已等尺寸转为 WebP 并经现有 PicGo 上传 OSS；仓库只保存 URL 和元数据，原始生成图保留在用户图片目录。未部署。",
+  "assets": [
+    {
+      "role": "foreground",
+      "generatedSource": "/Users/caiguoyu/.codex/generated_images/01a14e92-e480-7482-9ce9-4dc40f99a2c2/exec-e0cbcb03-e46f-4167-bac4-5389266f765e.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "038012dd38e41e134abbfecc0b4ebd309e242f31162f489bff73e1d703161af6",
+      "sourcePath": "src/web/public/images/cards/shinra/pain.png",
+      "sourceSha256": "89d83544e4c1da7b7a0638c5ae15ecff046bc01b26f6159996d551faefcd708e",
+      "sourceBytes": 838584,
+      "uploadPath": "/Users/caiguoyu/projects/dfw/artifacts/ur-scenes/oss/card_naruto_shinra_tensei-foreground.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261018200902601.webp",
+      "bytes": 162246,
+      "md5": "fIzzFypvlJa9hV9L4T5LjQ==",
+      "hasAlpha": true,
+      "alphaVerified": true,
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 162246,
+        "contentMd5": "fIzzFypvlJa9hV9L4T5LjQ=="
+      }
+    },
+    {
+      "role": "background",
+      "generatedSource": "/Users/caiguoyu/.codex/generated_images/01a14e92-e480-7482-9ce9-4dc40f99a2c2/exec-e2a27d6c-5618-428e-855a-ac10643bca09.png",
+      "width": 1254,
+      "height": 1254,
+      "sha256": "4c7d1507cfd21d8d88deb6e63c26eb88480a326d76c6f3e87b7654d15fa023d6",
+      "sourcePath": "src/web/public/images/cards/shinra/village.png",
+      "sourceSha256": "63228b55e30766407a3f2a552b609c7027cc07afd9c4f31ecd0505dff9bb3ad9",
+      "sourceBytes": 2855532,
+      "uploadPath": "/Users/caiguoyu/projects/dfw/artifacts/ur-scenes/oss/card_naruto_shinra_tensei-background.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261018200903424.webp",
+      "bytes": 420678,
+      "md5": "Xrv+XI8wCPetG7tPyzdc5A==",
+      "hasAlpha": false,
+      "alphaVerified": null,
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 420678,
+        "contentMd5": "Xrv+XI8wCPetG7tPyzdc5A=="
+      }
+    }
+  ],
+  "compression": {
+    "format": "webp",
+    "quality": 90,
+    "method": 6,
+    "alphaQuality": 100,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  }
+}

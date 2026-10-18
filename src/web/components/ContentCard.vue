@@ -4,8 +4,14 @@ import type { ContentResult } from '../../shared/types';
 import { ITEMS } from '../../shared/rules';
 import illustrationSources from '../card-illustrations.json';
 import CardFrame from './CardFrame.vue';
+import ShinraCardScene from './ShinraCardScene.vue';
+import UrCardScene from './UrCardScene.vue';
+import { UR_CARD_SCENES } from '../ur-card-scenes';
 import { cardSummary } from '../card-summary';
-const props = defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean }>();
+const props = withDefaults(defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean; animated?: boolean }>(), { animated: true });
+// 已生成分层的 UR 使用专属场景，静态对比和未知皮肤继续沿用原图。
+const shinraAnimated = computed(() => props.content.rarity === 'UR' && props.animated !== false && (props.content.skinId ?? props.content.id) === 'card_naruto_shinra_tensei');
+const urScene = computed(() => props.content.rarity === 'UR' && props.animated !== false ? UR_CARD_SCENES[props.content.skinId ?? props.content.id] : undefined);
 const kind = computed(() => props.content.kind ?? null);
 const fallback = computed(() => kind.value ? ITEMS[kind.value] : null);
 const pool = computed(() => kind.value || props.content.pool === 'card' ? 'card' : props.content.pool === 'chance' ? 'chance' : 'fortune');
@@ -31,10 +37,15 @@ const artwork = computed(() => {
 });
 </script>
 <template>
-  <article :key="content.id" class="content-card illustrated-card" :class="[{ compact, thumbnail, 'card-reveal': reveal }, `rarity-${content.rarity ?? 'R'}`]" :aria-label="`${poolName} · ${content.rarity ?? 'R'} · ${content.name ?? fallback?.name ?? '事件'}`">
+  <article :key="content.id" class="content-card illustrated-card" :class="[{ compact, thumbnail, 'card-reveal': reveal, 'ur-animated': content.rarity === 'UR' && animated !== false, 'scene-animated': shinraAnimated || urScene }, `rarity-${content.rarity ?? 'R'}`]" :aria-label="`${poolName} · ${content.rarity ?? 'R'} · ${content.name ?? fallback?.name ?? '事件'}`">
     <CardFrame :rarity="content.rarity" />
     <div class="card-surface">
-      <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
+      <div class="card-artwork">
+        <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
+        <ShinraCardScene v-if="shinraAnimated" />
+        <UrCardScene v-else-if="urScene" :key="urScene.skinId" :scene="urScene" />
+        <span v-else-if="content.rarity === 'UR' && animated !== false" class="ur-card-light" aria-hidden="true"><i v-for="spark in 6" :key="spark" :style="{ '--spark': spark }"></i></span>
+      </div>
       <div class="card-copy">
         <div class="content-card-heading"><strong>{{ content.name ?? fallback?.name ?? '事件' }}</strong></div>
         <p v-if="thumbnail" class="card-summary">{{ cardSummary(content) }}</p>
@@ -49,5 +60,6 @@ const artwork = computed(() => {
 </template>
 
 <style scoped>
+.scene-animated .card-illustration { animation: none; }
 .card-summary { margin: 0; color: #634e39; font-size: 12px; line-height: 1.45; overflow-wrap: anywhere; }
 </style>

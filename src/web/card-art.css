@@ -6,6 +6,21 @@
 .illustrated-card.rarity-SSR { --card-accent: #986811; --card-tint: #fff3d5; }
 .illustrated-card.rarity-UR { --card-accent: #b34155; --card-tint: #ffeadf; }
 .illustrated-card .card-illustration { display: block; width: 100%; height: auto; margin: 0; border-radius: 0; overflow: hidden; pointer-events: none; }
+/* UR 动态仅覆盖插画，卡框与正文保持稳定；缩略手牌减少粒子数量。 */
+.illustrated-card .card-artwork { position: relative; flex-shrink: 0; overflow: hidden; isolation: isolate; }
+.ur-animated .card-illustration { transform-origin: 50% 58%; animation: ur-art-breathe 12s ease-in-out infinite; }
+.ur-card-light { position: absolute; inset: 0; overflow: hidden; pointer-events: none; background: linear-gradient(0deg, #b341552e, transparent 35%); }
+.ur-card-light::before, .ur-card-light::after { content: ''; position: absolute; pointer-events: none; }
+.ur-card-light::before { inset: -18%; background: radial-gradient(ellipse at 18% 74%, #ffb96b60, transparent 45%), radial-gradient(ellipse at 83% 25%, #ffc8df60, transparent 42%); mix-blend-mode: screen; animation: ur-aura-drift 8s ease-in-out infinite alternate; }
+.ur-card-light::after { inset: -45%; background: linear-gradient(115deg, transparent 38%, #ffdbad14 44%, #fff8dc70 49%, #ffd5df38 52%, transparent 59%); mix-blend-mode: screen; animation: ur-foil-drift 7s ease-in-out infinite; }
+.ur-card-light i { position: absolute; left: calc(10% + var(--spark) * 12%); top: 100%; width: 4px; height: 4px; border-radius: 50%; background: #fff4c4; box-shadow: 0 0 7px 2px #ffbd7180; opacity: 0; animation: ur-stardust 5s linear infinite; animation-delay: calc(var(--spark) * -.83s); }
+.ur-card-light i:nth-child(even) { width: 7px; height: 7px; border-radius: 0; clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%); }
+.thumbnail .ur-card-light i:nth-child(n + 4) { display: none; }
+@keyframes ur-art-breathe { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.045) translateY(-.5%); } }
+@keyframes ur-aura-drift { from { opacity: .45; transform: translate(-3%, 2%) rotate(-6deg); } to { opacity: .85; transform: translate(3%, -2%) rotate(6deg); } }
+@keyframes ur-foil-drift { 0%, 15% { opacity: 0; transform: translateX(-65%); } 35% { opacity: .7; } 65%, 100% { opacity: 0; transform: translateX(65%); } }
+@keyframes ur-stardust { 0% { opacity: 0; transform: translate(0, 0) scale(.5); } 18%, 65% { opacity: .85; } 100% { opacity: 0; transform: translate(12px, -290px) scale(1.1); } }
+@media (prefers-reduced-motion: reduce) { .ur-animated .card-illustration { animation: none; } .ur-card-light { display: none; } }
 .illustrated-card .card-copy { position: relative; display: flex; flex-direction: column; min-height: 0; padding: 5% clamp(12px, 6cqw, 22px) 24%; margin: 0 6%; background: linear-gradient(135deg, #fffcf6, #fcf7ec); }
 .illustrated-card .content-card-heading { display: block; margin: 0 0 12px; padding: 0; }
 .illustrated-card .content-card-heading strong { font-size: 24px; line-height: 1.35; color: var(--card-accent); overflow-wrap: anywhere; }
