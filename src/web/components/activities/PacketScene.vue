@@ -20,7 +20,6 @@ const packets = computed(() => {
   const owners = Object.fromEntries(Object.entries(props.activity.packetSelections ?? {}).map(([id, slot]) => [slot, id]));
   return props.activity.participants.map((_, index) => ({ slot: index + 1, id: owners[index + 1] ?? '' }));
 });
-const closingIn = computed(() => Math.max(0, Math.ceil(((props.activity.endsAt ?? now.value) - now.value) / 1000)));
 const playingResult = computed(() => props.activity.stage === 'result' && Object.values(revealedAt.value).some(time => now.value < time + 3000));
 /** 输入领取者编号，返回本次开包动画已播放的毫秒数；已有结果不重复播放。 */
 function elapsed(id: string): number {
@@ -75,7 +74,7 @@ onBeforeUnmount(() => { clearInterval(clock); clearAnimation(); document.removeE
         <span v-if="(activity.bonuses[packet.id] ?? 0) > 0 && elapsed(packet.id) >= 1200 && elapsed(packet.id) < 3000" class="packet-lucky-celebration" aria-hidden="true">✦ 幸运翻倍 ✦</span>
       </button>
     </div>
-    <div v-if="activity.stage === 'result'" class="activity-result packet-final" :class="{ 'packet-final-playing': playingResult }" role="status"><strong>{{ activity.summary }}</strong><span>{{ playingResult ? '好运揭晓，恭喜大家！' : `${closingIn} 秒后自动关闭` }}</span></div>
+    <div v-if="activity.stage === 'result'" class="activity-result packet-final" :class="{ 'packet-final-playing': playingResult }" role="status"><strong>{{ activity.summary }}</strong></div>
     <p v-else class="activity-stage-caption">{{ game.me && activity.submitted.includes(game.me.id) ? '你的红包已到账，等待其他玩家选择' : '挑一个喜欢的红包，拆开你的好运！' }} · {{ activity.submitted.length }} / {{ activity.participants.length }} 已领取</p>
   </div>
 </template>

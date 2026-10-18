@@ -19,7 +19,7 @@ const example = computed(() => {
       <button :class="{ active: version === 'brief' }" :aria-pressed="version === 'brief'" @click="version = 'brief'">简略版 · 局内玩法</button>
       <button :class="{ active: version === 'detailed' }" :aria-pressed="version === 'detailed'" @click="version = 'detailed'">详细版 · 查看规则</button>
     </div>
-    <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角 · 苏暖暖游园会</strong></summary><p>起点、监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，银行基础奖池为¥{{ activityMoney.packetBase ?? 0 }}＋参与人数×¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；每人自选一个未领取红包，点击立即开包到账，基础份额1%～90%，每人独立10%幸运翻倍并额外庆祝。全员选完后播放结果，再延迟5秒关闭。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
+    <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角 · 苏暖暖游园会</strong></summary><p>起点、监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，银行基础奖池为¥{{ activityMoney.packetBase ?? 0 }}＋参与人数×¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；每人自选一个未领取红包，点击立即开包到账，基础份额1%～90%，每人独立10%幸运翻倍并额外庆祝。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
     <details v-if="activityMoney?.treasureStake !== undefined" class="rules-reminder">
       <summary><strong>趣味新玩法 · 同类别轮换</strong></summary>
       <ul class="rules-list">
@@ -27,7 +27,7 @@ const example = computed(() => {
         <li>三关玻璃桥：每人可自愿支付¥{{ activityMoney.horseStake }}上桥；每关秘密选左或右，全部锁定后统一揭晓。选错淘汰，连续三关成功者各得¥{{ activityMoney.horsePrize }}，多人通关不分摊奖金。</li>
         <li>少数派夜市：全员免费秘密选择火锅摊或烧烤摊，人数较少的一边抽一人独得¥{{ activityMoney.rpsPrize }}；两边人数相同或全在同一摊时，全员抽一人。每场只发一份奖金。</li>
         <li>暖暖潮玩盲盒：固定20个盒子，每人免费领取一个。19个普通款各¥{{ activityMoney.blindboxRegular }}，唯一隐藏款为¥{{ activityMoney.blindboxHiddenBase }}＋参与人数×¥{{ activityMoney.blindboxHiddenPerPlayer }}；仅隐藏款有10%概率升级为双倍限定款。选中立即到账，未选中的盒子不发奖。</li>
-        <li>四个新玩法最终结算统一播放奖励3秒，再停留5秒自动关闭；收起窗口不会放弃或重复领取。轮转保留原五类权重，在对应类别内选择新旧玩法，已有旧局继续原活动池。</li>
+        <li>收起窗口不会放弃或重复领取奖励。轮转保留原五类权重，在对应类别内选择新旧玩法，已有旧局继续原活动池。</li>
       </ul>
     </details>
     <p v-if="activityMoney" class="rules-intro">活动额外道具：赛马中奖、猜拳夺冠、轮盘获胜、宝箱三层全部通关、玻璃桥通关、少数派中奖、红包手气最佳，以及盲盒隐藏款／限定款，各获得 1 张随机道具。红包按基础金额评选手气最佳，并列沿用活动名单顺序取一人，全部领取后发牌；宝箱提前收手不发牌。具体卡面仅本人可见，活动结束后整理超限手牌。</p>

@@ -38,9 +38,9 @@ const progress = computed(() => {
   if (a.settled) return a.summary;
   if (a.kind === 'packet') return `${a.submitted.length} / ${a.participants.length} 人已拆红包 · 选中立即到账`;
   if (a.kind === 'blindbox') return `${a.submitted.length} / ${a.participants.length} 人已领取 · 20 个盲盒每人选一个`;
-  if (a.kind === 'treasure') return a.endsAt ? '正在开箱…' : `已通过 ${a.level ?? 0} 层 · 等待落点玩家${a.stage === 'select' ? '选箱' : '收手或继续'}`;
-  if (a.kind === 'bridge' && a.stage !== 'select') return a.endsAt ? '正在揭晓桥面…' : `第 ${a.level} 关 · ${a.submitted.length} / ${a.contenders.length} 人已选边`;
-  if (a.endsAt) return '正在揭晓，请稍候…';
+  if (a.kind === 'treasure') return a.endsAt ? '' : `已通过 ${a.level ?? 0} 层 · 等待落点玩家${a.stage === 'select' ? '选箱' : '收手或继续'}`;
+  if (a.kind === 'bridge' && a.stage !== 'select') return a.endsAt ? '' : `第 ${a.level} 关 · ${a.submitted.length} / ${a.contenders.length} 人已选边`;
+  if (a.endsAt) return '';
   return `${a.submitted.length} / ${a.kind === 'rps' ? a.contenders.length : a.participants.length} 人已提交${ownSelection.value != null ? ' · 你的选择已锁定' : ''}`;
 });
 /** 输入专属场景的选择，补齐服务端活动身份和子轮次后提交。 */
@@ -80,10 +80,10 @@ watch(() => `${activity.value?.id}:${activity.value?.round}:${activity.value?.st
 onBeforeUnmount(() => { clearInterval(hoof); });
 </script>
 <template>
-  <div v-if="activity" class="activity-entry"><div><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div><button v-if="activity.stage !== 'payment'" class="button primary small" :disabled="paused" @click="open = true">进入活动</button><small v-else>请先处理工作台的费用待办</small></div>
+  <div v-if="activity" class="activity-entry"><div><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div><button v-if="activity.stage !== 'payment'" class="button primary small" :disabled="paused" @click="open = true">进入活动</button><small v-else>请先处理工作台的费用待办</small></div>
   <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="open = false">
     <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
-      <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div>
+      <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div>
       <div class="activity-content"><ActivityPresentation :activity="activity" :revealing="blindboxRevealing"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" @revealing="blindboxRevealing = $event" /></ActivityPresentation>
         <p v-if="cardRewardRules[activity.kind]" class="activity-help">{{ cardRewardRules[activity.kind] }}额外获得 1 张随机道具。</p>
         <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
