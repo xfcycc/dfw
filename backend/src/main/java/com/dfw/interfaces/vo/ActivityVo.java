@@ -36,6 +36,8 @@ public class ActivityVo {
     public Map<String, Long> wagers;
     /** 已发放奖励。 */
     public Map<String, Long> payouts;
+    /** 本场已发放的额外道具数量，具体卡面仅本人可见。 */
+    public Map<String, Integer> cardRewards = new LinkedHashMap<>();
     /** 已公开红包基础金额。 */
     public Map<String, Long> packets = new LinkedHashMap<>();
     /** 已公开幸运加奖。 */

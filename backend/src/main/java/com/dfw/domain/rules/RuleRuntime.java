@@ -49,6 +49,7 @@ public final class RuleRuntime {
         for (var check : rule.checks()) require(check.condition().matches(context), check.error());
         List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects, rule.id());
         if (rule.activation().equals("RENT")) planned.getFirst().resumesDecision = true;
+        require(planned.stream().noneMatch(effect -> Set.of("PLACE_BARRIER","DEMOLISH").contains(effect.type) && PropertyEffects.frozen(tile(room,effect.tileId))), "神威空间中的地产无法操作");
         actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true; cardLog(room, actor, card, action);
         effects.submitAll(room, planned);
     }
@@ -83,6 +84,7 @@ public final class RuleRuntime {
             if (room.activity != null) return;
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
+            if ("DIRECTED".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             if ("JAIL".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
@@ -99,7 +101,9 @@ public final class RuleRuntime {
                 }
                 case "ROLL" -> {
                     require(room.runtime.rollMode != null, "缺少掷骰行动结果");
-                    if (room.runtime.rollMode.equals("RANDOM")) { room.dice = random.nextInt(6) + 1; room.runtime.movementSteps = room.dice + room.runtime.rollBonus; log(room, current(room).name + " 掷出 " + room.dice + " 点" + (room.runtime.rollBonus == 0 ? "" : "，加码后移动 " + room.runtime.movementSteps + " 格")); room.runtime.rollBonus = 0; }
+                    if (room.runtime.rollMode.equals("RANDOM")) { room.dice = random.nextInt(6) + 1; room.runtime.movementSteps = room.dice; log(room,current(room).name+" 掷出 "+room.dice+" 点"); }
+                    if(StatusService.consume(current(room),"NEXT_ROLL_HALF")) { room.runtime.movementSteps=Math.floorDiv(room.runtime.movementSteps,2); log(room,current(room).name+" 消耗迟缓，基础步数减为 "+room.runtime.movementSteps); }
+                    room.runtime.movementSteps=Math.addExact(room.runtime.movementSteps,room.runtime.rollBonus); room.runtime.rollBonus=0;
                     HistoryTrace.event(room, "dice", current(room).id, "本次移动点数为 " + room.dice, room.runtime.movementSteps);
                     room.runtime.stageIndex++;
                 }

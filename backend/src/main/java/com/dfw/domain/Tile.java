@@ -33,4 +33,18 @@ public class Tile {
     public Long mortgageBase;
     /** 是否有路障。 */
     public boolean barrier;
+    /** 一次建筑拆除保护，随地产保存和转移。 */
+    public boolean demolitionShield;
+    /** 首位正常落点玩家可领取的宝藏标记。 */
+    public boolean treasure;
+    /** 下一次正租金的演唱会层数，每层乘以 1.2。 */
+    public int concertStacks;
+    /** 独立于普通路障的剩余陨星截停次数。 */
+    public int meteorCharges;
+    /** 神威施术者，空值表示未封入异空间。 */
+    public String kamuiCasterId;
+    /** 神威剩余施术者个人回合。 */
+    public int kamuiTurns;
+    /** 神威施放时的全局行动编号，当回合不递减。 */
+    public int kamuiAppliedTurn;
 }

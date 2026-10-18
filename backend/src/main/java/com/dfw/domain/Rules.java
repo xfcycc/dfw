@@ -22,17 +22,33 @@ public final class Rules {
     }
     /** 输入房间，返回本局经济快照；旧对局保持原一倍金额。 */
     public static EconomyRules economy(Room room) { return room.economy == null ? new EconomyRules() : room.economy; }
-    /** 输入房间及地产，返回按本局基础比例计算的租金；抵押停收，固定金额优先。 */
+    /** 输入房间及地产，返回按本局基础比例计算的租金；抵押或神威停收，固定金额优先。 */
     public static long rent(Room room, Tile tile) {
         EconomyRules economy = economy(room);
-        return tile.mortgaged ? 0 : economy.derived("rent." + tile.price + "." + tile.level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * RENT_MULTIPLIERS[tile.level]);
+        return tile.mortgaged || PropertyEffects.frozen(tile) ? 0 : economy.derived("rent." + tile.price + "." + tile.level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * RENT_MULTIPLIERS[tile.level]);
     }
     /** 输入房间及地产，返回一级建筑成本。 */
     public static long buildCost(Room room, Tile tile) { return economy(room).derived("buildCost." + tile.price, tile.price / 2); }
     /** 输入房间及地产，返回出售一级建筑所得，缺省为实际建设成本的一半。 */
     public static long sellBuildingValue(Room room, Tile tile) { return economy(room).derived("sellBuilding." + tile.price, buildCost(room, tile) / 2); }
-    /** 输入房间及地产，返回未抵押空地卖出所得。 */
-    public static long landValue(Room room, Tile tile) { return economy(room).derived("sellLand." + tile.price, tile.price / 2); }
+    /** 输入房间及地产，返回整套出售净额；已抵押时扣固定赎回费，负数表示需补差价。 */
+    public static long landValue(Room room, Tile tile) { return propertySaleValue(room, tile, propertyValue(room, tile)) - (tile.mortgaged ? redeemCost(tile) : 0); }
+    /** 输入房间、地产及剩余成本估值，返回七折回收款；旧卖地金额覆盖继续作用于土地部分。 */
+    private static long propertySaleValue(Room room, Tile tile, long value) {
+        long land = tile.price * 70 / 100;
+        return value * 70 / 100 + economy(room).derived("sellLand." + tile.price, land) - land;
+    }
+    /** 输入房间及地产，返回抵押、整售或先卖房再变现可取得的最高现金，不计负权益。 */
+    public static long propertyLiquidationValue(Room room, Tile tile) {
+        if (tile.mortgaged) return Math.max(0, landValue(room, tile));
+        long value = 0, sold = 0, cost = buildCost(room, tile);
+        for (int level = tile.level; level >= 0; level--) {
+            long base = tile.price + level * cost;
+            value = Math.max(value, sold + Math.max(base / 2, propertySaleValue(room, tile, base)));
+            sold += sellBuildingValue(room, tile);
+        }
+        return value;
+    }
     /** 输入房间及地产，返回土地加现有建筑的成本估值。 */
     public static long propertyValue(Room room, Tile tile) { return tile.price + tile.level * buildCost(room, tile); }
     /** 输入房间及地产，返回整体抵押取得的现金。 */

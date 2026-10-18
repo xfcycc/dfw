@@ -29,6 +29,10 @@ public class PublicPlayerVo {
     public long cash;
     /** 公开的持有手牌数量，不包含卡面或超限候选；旧公开快照缺省为空。 */
     public Integer cardCount;
+    /** 当前手牌上限，旧公开快照可缺省。 */
+    public Integer handLimit;
+    /** 下一次掷骰或替代掷骰基础步数减半。 */
+    public boolean nextRollHalf;
     /** 扣除固定赎回费用后的公开净资产。 */
     public long netWorth;
     /** 未破产玩家的净资产名次，同额同名次，清算后为空。 */

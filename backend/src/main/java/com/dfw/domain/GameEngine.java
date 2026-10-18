@@ -28,7 +28,7 @@ public class GameEngine {
         this.random = random; this.rules = rules; this.economyRules = economyRules; maps = new MapService(regions); economy = new EconomyService(random);
         effects = new EffectResolver(random);
         content = new ContentService(rules.getContent(), effects, random);
-        activities = new ActivityService(random, economy);
+        activities = new ActivityService(random, economy, content);
         turns = new TurnService(economy, random, effects, content, activities);
         new EventService(effects, economy, turns, random, rules);
         ruleRuntime = new RuleRuntime(rules, effects, turns, random, content, activities);
@@ -86,7 +86,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
     /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
@@ -169,7 +169,7 @@ public class GameEngine {
             case "card" -> items.use(room, player, action);
             case "buy", "upgrade" -> {
                 require(room.phase.equals(action.type) && room.pending != null && room.pending.tileId != null, "当前没有这项操作");
-                Tile tile = room.board.get(room.pending.tileId); long cost = action.type.equals("buy") ? tile.price : Rules.buildCost(room, tile);
+                Tile tile = room.board.get(room.pending.tileId); require(!PropertyEffects.frozen(tile), "神威空间中的地产无法操作"); long cost = action.type.equals("buy") ? tile.price : Rules.buildCost(room, tile);
                 require(player.cash >= cost, "现金不足，可先管理资产或放弃");
                 String result;
                 if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
@@ -193,7 +193,7 @@ public class GameEngine {
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> {
                 economy.manage(room, player, action.type, action.tileId);
                 if (room.pending != null && room.pending.type.equals("upgrade")) {
-                    Tile tile = room.board.get(room.pending.tileId); if (!Objects.equals(tile.ownerId, player.id) || tile.mortgaged || tile.level >= Rules.MAX_LEVEL) { room.pending = null; room.phase = "manage"; }
+                    Tile tile = room.board.get(room.pending.tileId); require(!PropertyEffects.frozen(tile), "神威空间中的地产无法操作"); if (!Objects.equals(tile.ownerId, player.id) || tile.mortgaged || tile.level >= Rules.MAX_LEVEL) { room.pending = null; room.phase = "manage"; }
                 }
             }
             case "tradeOffer" -> trades.offer(room, player, action);

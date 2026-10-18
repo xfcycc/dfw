@@ -1,17 +1,26 @@
 """将已确认的 Markdown 素材同步为运行配置；只生成内容，不执行对局或测试。"""
 import json
 import re
+from fractions import Fraction
+from math import lcm, gcd
+from functools import reduce
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RARITIES = {'R', 'SR', 'SSR', 'UR'}
+NEW_CARD = {'shield': '3', 'recycle': '3', 'discover': '3', 'sap': '2', 'exchange': '0.5', 'slow': '3', 'swapAny': '2', 'kamui': '1', 'handDestruction': '1.5', 'gravity': '1.5', 'reaper': '0.5', 'shadowstep': '3', 'homeTeleport': '2', 'blackhole': '2', 'meteor': '3'}
+NEW_EVENT = {'chance': {'concert': '4', 'shuffle': '4'}, 'fortune': {'treasure': '5', 'all_cards': '6'}}
+NEW_RARITIES = {'shield': 'SSR', 'recycle': 'SR', 'discover': 'SSR', 'sap': 'SR', 'exchange': 'UR', 'slow': 'R', 'swapAny': 'SSR', 'kamui': 'UR', 'handDestruction': 'SSR', 'gravity': 'SSR', 'reaper': 'UR', 'shadowstep': 'SR', 'homeTeleport': 'SSR', 'blackhole': 'SSR', 'meteor': 'SSR', 'treasure': 'SSR', 'concert': 'SSR', 'shuffle': 'SSR', 'all_cards': 'SR'}
 
 
 def classify(pool, effect):
     """输入素材池和效果原文，返回已确认机制及完整参数，不改动原效果数值。"""
+    if effect.startswith('扩展:'): return effect.split()[0].split(':')[1], {}
     nums = [int(n) for n in re.findall(r'\d+', effect)]
     if effect.startswith(('指定入狱', '自身入狱')): return 'jail', {}
     if pool == 'card':
+        if effect.startswith('指定全拆'): return 'fullDemolish', {}
+        if effect.startswith('免费直升满级'): return 'fullUpgrade', {}
         if effect.startswith('随机传送'): return 'blast', {}
         if effect.startswith('赌博'): return 'gamble', dict(wager=nums[0], probability=nums[1], prize=nums[2])
         if effect.startswith('替代掷骰'): return ('remote', {}) if '自选' in effect else ('move', dict(steps=nums[0]))
@@ -51,11 +60,12 @@ def classify(pool, effect):
 
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
+    if kind in NEW_RARITIES: return NEW_RARITIES[kind]
     if pool == 'card':
-        if kind == 'gamble': return 'UR'
-        if kind in {'remote', 'immunity', 'demolish', 'swap', 'blast', 'jail', 'freeUpgrade', 'steal'}: return 'SSR'
+        if kind in {'gamble', 'fullDemolish', 'fullUpgrade'}: return 'UR'
+        if kind in {'remote', 'immunity', 'barrier', 'blast', 'jail', 'freeUpgrade'}: return 'SSR'
         if kind == 'cash': return 'R' if values['amount'] <= 600 else 'SR'
-        if kind in {'fixed', 'move', 'bonus'}: return 'SR'
+        if kind in {'fixed', 'move', 'bonus'}: return 'R'
         return 'SR'
     if kind in {'income', 'fee'}:
         amount = values['amount']
@@ -66,8 +76,48 @@ def impact_rarity(pool, kind, values):
     return 'SSR'
 
 
+def assign_weights(pool, mechanisms):
+    """输入池及去重效果，按确认的新增配额缩放原概率，使用精确分数生成整数权重，输出整数权重。"""
+    candidates = [(m['id'], p) for m in mechanisms if m['enabled'] for g in m['groups'] for p in g['parameters']]
+    probabilities = []
+    if pool == 'card':
+        percentages = dict(cash=20, move=12, bonus=6, barrier=5, demolish=11, swap=5, immunity=6, halfPayment=6, release=4, steal=5, remote=6, blast=3, jail=3, freeUpgrade=3, gamble=2, fullDemolish=2, fullUpgrade=1)
+        for kind, p in candidates:
+            count = sum(k == kind for k, _ in candidates)
+            if kind in NEW_CARD: probability = Fraction(NEW_CARD[kind]) / 100 / count
+            else:
+                probability = Fraction({300:9, 500:9, 800:2}[p['values']['amount']], 100) if kind == 'cash' else Fraction(percentages[kind], 100 * count)
+                probability *= Fraction(3,5) if p['rarity'] == 'UR' else Fraction(66,95)
+            probabilities.append(probability)
+    else:
+        rarities = dict(R=40, SR=30, SSR=25, UR=5)
+        # 2026-10-18 文案删减前的参数档数量；不按删减后的档位数重分整个事件池。
+        original_counts = dict(R=7, SR=21, SSR=21, UR=3) if pool == 'chance' else dict(R=4, SR=5, SSR=11, UR=5)
+        for kind, p in candidates:
+            if kind in NEW_EVENT[pool]:
+                probabilities.append(Fraction(NEW_EVENT[pool][kind]) / 100 / sum(k == kind for k, _ in candidates))
+                continue
+            probability = Fraction(rarities[p['rarity']], 100 * original_counts[p['rarity']])
+            if pool == 'chance':
+                if kind == 'opponent_destroy': probability = Fraction(3,100)
+                elif kind == 'income': probability *= Fraction(113,120)
+                elif kind in {'bottom_income', 'gamble'}:
+                    probability *= Fraction(4 if kind == 'bottom_income' else 7, sum(k == kind for k, _ in candidates))
+            else:
+                if kind == 'global_demolition': probability = Fraction(3,100)
+                elif kind == 'income': probability *= Fraction(633,655)
+                elif kind == 'directed': probability *= Fraction(3, sum(k == kind for k, _ in candidates))
+            probability *= Fraction(92,100) if pool == 'chance' else Fraction(89,100)
+            probabilities.append(probability)
+    if sum(probabilities) != 1: raise ValueError(f'{pool} 效果概率合计须为100%')
+    denominator = lcm(*(p.denominator for p in probabilities))
+    weights = [int(p * denominator) for p in probabilities]
+    divisor = reduce(gcd, weights)
+    for (_, parameter), weight in zip(candidates, weights): parameter['weight'] = weight // divisor
+
+
 def generate(pool, filename):
-    """输入素材文件，按完整效果去重并分配影响等级，输出无机制及金额档权重的运行配置。"""
+    """输入素材文件，去重完整效果、分配档位及独立权重，生成运行配置。"""
     mechanisms = {}
     for line in (ROOT / 'docs/content' / filename).read_text().splitlines():
         cells = [c.strip() for c in line.split('|')[1:-1]]
@@ -86,9 +136,10 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':126,'fortune':115,'card':115}[pool]
+    expected = {'chance':93,'fortune':63,'card':91}[pool]
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
+    assign_weights(pool, list(mechanisms.values()))
     file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')
     data = json.loads(file.read_text()); data['content'] = {'mechanisms': list(mechanisms.values())}
     file.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')

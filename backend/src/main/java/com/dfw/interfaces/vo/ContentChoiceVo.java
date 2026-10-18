@@ -15,7 +15,7 @@ public class ContentChoiceVo {
     public String type;
     /** 合法地产候选。 */
     public List<Integer> tileIds;
-    /** 仅超限整理时提供本人全部候选牌。 */
+    /** 超限、制衡或发现时仅提供选择者本人的候选牌。 */
     public List<Card> cards;
     /** 发动免费升级的未消费卡。 */
     public String cardId;
@@ -27,4 +27,6 @@ public class ContentChoiceVo {
     public boolean jailed;
     /** 每张弃牌的本局实际折现金额。 */
     public long discardCash;
+    /** 当前实际手牌上限。 */
+    public int handLimit;
 }

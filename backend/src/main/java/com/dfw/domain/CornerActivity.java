@@ -38,6 +38,8 @@ public class CornerActivity {
     public Map<String, Long> bonuses = new LinkedHashMap<>();
     /** 已实际发放的总到账金额。 */
     public Map<String, Long> payouts = new LinkedHashMap<>();
+    /** 本场各玩家已实际获得的额外道具数量，不含具体卡面。 */
+    public Map<String, Integer> cardRewards = new LinkedHashMap<>();
     /** 上一轮已公开的手势。 */
     public Map<String, Integer> revealed = new LinkedHashMap<>();
     /** 骰子或赛马的服务端随机结果。 */

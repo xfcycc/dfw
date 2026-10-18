@@ -256,6 +256,33 @@
   "content": {
     "mechanisms": [
       {
+        "id": "remote",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_dora_anywhere_door",
+                    "name": "任意门",
+                    "rarity": "SSR",
+                    "quote": "哆啦A梦！",
+                    "description": "大雄哭着扑进房间，一把抱住哆啦A梦，鼻涕眼泪蹭得满脸都是。哆啦A梦叹了口气，从口袋里掏出一扇粉红色的门：好啦，这次你想去哪里？大雄的哭声立刻停了，手已经搭上门把。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 792
+              }
+            ]
+          }
+        ]
+      },
+      {
         "id": "move",
         "enabled": true,
         "groups": [
@@ -263,58 +290,8 @@
             "id": "default",
             "parameters": [
               {
-                "id": "steps-6",
-                "rarity": "SR",
-                "values": {
-                  "steps": 6
-                },
-                "skins": [
-                  {
-                    "id": "card_delta_africa_star",
-                    "name": "非洲之星",
-                    "rarity": "SR",
-                    "quote": "兄弟们我先撤了",
-                    "description": "你把非洲之星塞进背包，忽然觉得每一声脚步都冲着自己来。队友还在研究怎么打，你已经把撤离路线背得比自家地址还熟。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_journey_kite_cloud",
-                    "name": "筋斗云",
-                    "rarity": "SR",
-                    "quote": "俺老孙去去就来！",
-                    "description": "你踩上筋斗云，学着大圣翻了个跟头。云是跟上了，发型没跟上，落地先找镜子比找路还急。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
-                "id": "steps-5",
-                "rarity": "SR",
-                "values": {
-                  "steps": 5
-                },
-                "skins": [
-                  {
-                    "id": "card_dora_anywhere_door",
-                    "name": "任意门",
-                    "rarity": "SR",
-                    "quote": "哆啦A梦！救我！",
-                    "description": "哆啦A梦刚把门掏出来，你已经拎着包往里钻。身后的朋友喊你等等，你只探回半个脑袋：到了再聊，外面太晒！",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_trisolaris_curvature",
-                    "name": "曲率驱动",
-                    "rarity": "SR",
-                    "quote": "别踩油门了，开曲率啊！",
-                    "description": "曲率引擎刚启动，窗外的街景就被拉成了光带。你郑重宣布进入星际时代，副驾只关心刚点的外卖还能不能追上。",
-                    "cardType": "主动"
-                  }
-                ]
-              },
-              {
                 "id": "steps-0",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 0
                 },
@@ -322,24 +299,25 @@
                   {
                     "id": "card_jojo_time_stop",
                     "name": "时间停止",
-                    "rarity": "SR",
-                    "quote": "砸瓦鲁多！都给我停下！",
-                    "description": "你摆好姿势喊停时间，连飘在半空的灰尘都安静了。正准备潇洒登场，才发现自己也站在原地，姿势还特别累。",
+                    "rarity": "R",
+                    "quote": "砸瓦鲁多！",
+                    "description": "DIO抬起手，钟声仿佛也在这一刻停住。半空的飞刀一动不动，承太郎站在原地，帽檐遮住了眼睛。DIO正要露出胜券在握的笑容，却忽然发现那根手指好像动了一下。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_moon_box",
                     "name": "月光宝盒",
-                    "rarity": "SR",
-                    "quote": "般若波罗蜜！诶，怎么还在这儿？",
-                    "description": "你举着宝盒大喊咒语，闭眼等了半天，再睁眼还是那张熟悉的脸。旁边的人递来一杯水：要不润润嗓子再试？",
+                    "rarity": "R",
+                    "quote": "般若波罗蜜！",
+                    "description": "至尊宝举起月光宝盒，认真念完咒语，四周的景物顿时卷成一团。再睁眼，又是那个熟悉的地方，熟悉的人，熟悉的一句你怎么又回来了。他看了看手里的盒子，决定这次先别急着答话。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
               },
               {
                 "id": "steps-4",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 4
                 },
@@ -347,15 +325,15 @@
                   {
                     "id": "card_dragonball_fly_air",
                     "name": "舞空术",
-                    "rarity": "SR",
-                    "quote": "我会飞了，你们自己走吧！",
-                    "description": "你第一次靠自己的本事飞上天空，激动得朝下面挥手。还没炫耀完，一只鸟从旁边超过去，顺便投来嫌你挡路的眼神。",
+                    "rarity": "R",
+                    "quote": "原来不用坐飞机，真的能飞啊！",
+                    "description": "悟饭伸出手，教比迪丽一点点把气聚到掌心。她的双脚终于离开地面，先是小心翼翼，接着越升越高。悟饭还在下面喊慢一点，她已经笑着往前飞了出去。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_delta_extract",
                     "name": "撤离",
-                    "rarity": "SR",
+                    "rarity": "R",
                     "quote": "别架了，撤离点都开了！",
                     "description": "撤离信号一亮，你立刻把背包抱紧，跑得比开局抢物资还认真。队友刚说再搜一间，你已经在远处疯狂招手。",
                     "cardType": "主动"
@@ -363,107 +341,115 @@
                   {
                     "id": "card_minecraft_ender_pearl",
                     "name": "末影珍珠",
-                    "rarity": "SR",
+                    "rarity": "R",
                     "quote": "珍珠扔了，落点别坑我啊！",
                     "description": "珍珠划过半空，你下一秒就出现在它落下的地方。落地姿势没选好，脸先亲了地，旁边的羊嚼着草看得很投入。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
               },
               {
                 "id": "steps-3",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 3
                 },
                 "skins": [
                   {
                     "id": "card_naruto_shunshin",
-                    "name": "瞬身术",
-                    "rarity": "SR",
-                    "quote": "你看清我刚才怎么走的吗？",
-                    "description": "一阵烟散开，你已经站到街道另一头。围观的人刚要鼓掌，你又跑回来：不好意思，包忘拿了。",
+                    "name": "瞬神夜一",
+                    "rarity": "R",
+                    "quote": "你在看哪里呢？",
+                    "description": "碎蜂的攻击落下，面前却只留下一道残影。夜一已经出现在她身后，语气轻松得像刚刚只是散了个步。等她转身追上去，那个熟悉的身影又一次消失，只剩衣角擦过指尖。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_dora_takecopter",
                     "name": "竹蜻蜓",
-                    "rarity": "SR",
-                    "quote": "我就说这小风扇有用吧。",
-                    "description": "竹蜻蜓一转，你终于摆脱了拥挤的人群。就是头顶的小风扇太抢眼，路人纷纷问你这款散热器哪里买的。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_meme_shortcut",
-                    "name": "抄近路",
-                    "rarity": "SR",
-                    "quote": "你们慢慢绕，我知道一条近路。",
-                    "description": "你自信地钻进小巷，说这条路从小走到大。朋友还在查导航，你已经从另一头探出脑袋，顺便带回来一袋刚买的煎饼。",
+                    "rarity": "R",
+                    "quote": "大雄，别把帽子压在上面！",
+                    "description": "哆啦A梦把竹蜻蜓往头上一放，轻轻升到半空。大雄急着跟上，脚刚离地就开始手忙脚乱，书包还挂在窗沿。两个人在窗外拉扯半天，楼下的妈妈只看见一双鞋慢慢飘了过去。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
               },
               {
                 "id": "steps-2",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 2
                 },
                 "skins": [
                   {
                     "id": "card_flash_summoner",
-                    "name": "闪现",
-                    "rarity": "SR",
-                    "quote": "闪现交了！这波别卖我！",
-                    "description": "金光一闪，你成功闪到了前面。气势很足，距离很近，旁边的人甚至没来得及把目光挪过去。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_stardew_mine_cart",
-                    "name": "矿车轨道",
-                    "rarity": "SR",
-                    "quote": "上车，扶好，这车没刹车。",
-                    "description": "矿车修好了，你兴冲冲跳上去，坐稳才发现没有安全带。车轮哐当一响，你开始用全部音量向山谷介绍自己。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_sekiro_grappling_hook",
-                    "name": "钩绳",
-                    "rarity": "SR",
-                    "quote": "钩到了！我先上去了！",
-                    "description": "钩绳扣住屋檐，你借力一荡，帅气地越过街道。落地前瞥见窗里的饭菜，你忽然觉得高手赶路也应该留个午休时间。",
+                    "name": "闪现向前",
+                    "rarity": "R",
+                    "quote": "他闪现向前了！",
+                    "description": "团战还没分出胜负，JackeyLove的霞突然交出闪现，迎着对面往前一步。羽毛铺开，血条一起往下掉，语音里的声音瞬间盖过了技能音效。解说刚吸了一口气，这波已经打完了。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
+              },
+              {
+                "id": "steps-6",
+                "rarity": "R",
+                "values": {
+                  "steps": 6
+                },
+                "skins": [
+                  {
+                    "id": "card_journey_kite_cloud",
+                    "name": "筋斗云",
+                    "rarity": "R",
+                    "quote": "俺老孙去去就来！",
+                    "description": "你踩上筋斗云，学着大圣翻了个跟头。云是跟上了，发型没跟上，落地先找镜子比找路还急。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 198
+              },
+              {
+                "id": "steps-5",
+                "rarity": "R",
+                "values": {
+                  "steps": 5
+                },
+                "skins": [
+                  {
+                    "id": "card_trisolaris_curvature",
+                    "name": "全速前进",
+                    "rarity": "R",
+                    "quote": "前进三！",
+                    "description": "舰桥里安静得只剩设备的低鸣，章北海望着舷窗外的星海，平静地下达指令。自然选择号开始加速，身后的舰队还在等待解释，他的目光已经越过所有人，落在遥远的黑暗里。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 198
               },
               {
                 "id": "steps--3",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": -3
                 },
                 "skins": [
                   {
                     "id": "card_tactic_retreat_best",
-                    "name": "走为上计",
-                    "rarity": "SR",
-                    "quote": "打不过还不能跑吗？",
-                    "description": "你把狠话放得响亮，脚却已经悄悄往后挪。等对方摆好架势，你只留下一个背影，跑得很有战略眼光。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_meme_run_away",
-                    "name": "开润",
-                    "rarity": "SR",
-                    "quote": "打扰了，我这就润。",
-                    "description": "气氛刚有点不对，你就礼貌地点头道别。大家还在分析你那句打扰了，门口已经只剩一阵风。",
+                    "name": "韩立眉头一皱",
+                    "rarity": "R",
+                    "quote": "诸位道友，且上前一探。",
+                    "description": "前方禁制忽然亮起，韩立眉头一皱，发现事情并不简单。他不动声色地后退半步，将众人护至身前，手里却已经扣住一张遁符。道友们还在商量谁打头阵，韩道友连退路都看好了。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
               },
               {
                 "id": "steps--2",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": -2
                 },
@@ -471,20 +457,21 @@
                   {
                     "id": "card_meme_reverse_parking",
                     "name": "倒车入库",
-                    "rarity": "SR",
+                    "rarity": "R",
                     "quote": "倒，倒，倒！好，停！",
                     "description": "你紧握方向盘，跟着朋友的手势一点点往后倒。车停稳了，朋友却还在喊倒，原来他一直在指挥旁边那辆车。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_starcraft_warp",
-                    "name": "折跃",
-                    "rarity": "SR",
-                    "quote": "星灵不跟你硬碰，先撤。",
-                    "description": "蓝色光芒卷起脚下的尘土，你在追兵眼前消失。重新站稳后发现自己撤得十分及时，连刚喊出的狠话都还飘在原地。",
+                    "name": "时空断裂",
+                    "rarity": "R",
+                    "quote": "我宁愿犯错，也不愿什么都不做。",
+                    "description": "艾克的身影冲进混战，下一秒又被刺眼的蓝光拉回原处。刚才溅起的碎片重新落下，他扶住时间装置，望了一眼远处的残影。这一回，他已经知道哪一步会出错。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 198
               }
             ]
           }
@@ -499,82 +486,67 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SR",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_journey_immobilize",
-                    "name": "定身法",
-                    "rarity": "SR",
-                    "quote": "定！你给我站那儿！",
-                    "description": "你掐诀一指，赶路的人保持着抬脚姿势僵在路上。你正想夸自己法力高强，才发现对方嘴没被定住，骂得还挺完整。",
+                    "name": "定住七仙女",
+                    "rarity": "SSR",
+                    "quote": "七个仙女定住了，大圣又吃桃去了。",
+                    "description": "七仙女提着花篮来到蟠桃园，迎面碰上正吃得起劲的孙悟空。大圣抬手一指，仙女们全定在原地。他绕着看了一圈，转身摘下一个更大的桃子，咔嚓一口，吃得比刚才还香。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_lol_teemo_mushroom",
-                    "name": "提莫蘑菇",
-                    "rarity": "SR",
-                    "quote": "团战可以输，这菇你得踩。",
-                    "description": "你蹲在草丛里埋好蘑菇，还贴心地盖了两片叶子。远处传来一声惨叫，你赶紧收起笑容，装作在认真赏花。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_sgyy_trip_rope",
-                    "name": "绊马索",
-                    "rarity": "SR",
-                    "quote": "马骑挺快？来，刹一下。",
-                    "description": "路边草丛里悄悄拉起一根绳，马蹄声由远及近。你刚想欣赏战果，身旁军师先提醒：收工记得拆，咱们也走这条路。",
+                    "name": "提莫必须死",
+                    "rarity": "SSR",
+                    "quote": "团战可以输，提莫必须死！",
+                    "description": "大龙坑里打得天昏地暗，地图另一头的提莫刚露出脑袋，五个人同时掉头。谁也没再看大龙一眼，连刚才还在劝大家冷静的辅助，都把闪现留给了这只蘑菇精。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_yugioh_trap_card",
-                    "name": "陷阱卡",
-                    "rarity": "SR",
-                    "quote": "你中我的陷阱卡了！",
-                    "description": "你把牌往桌上一扣，努力装出若无其事的样子。对方刚迈出一步，你就站起来大喊，憋了半天的台词终于有地方用了。",
+                    "name": "草丛三兄弟",
+                    "rarity": "SSR",
+                    "quote": "这草怎么还站起来三个人？",
+                    "description": "盖伦、德玛西亚皇子和赵信挤在同一丛草里，谁都不肯先走。路过的人刚插下眼，三个人已经同时冲了出来。眼还没把草照亮，屏幕先灰了。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_minecraft_dig_hole",
-                    "name": "挖坑",
-                    "rarity": "SR",
-                    "quote": "不好意思，这坑就是给你挖的。",
-                    "description": "你挥着镐子把路面挖空，再草草盖上几片草皮。朋友问你怎么突然爱搞绿化，你握着铲子说：主要是改善路人体验。",
+                    "name": "师傅别填",
+                    "rarity": "SSR",
+                    "quote": "师傅，这里有个坑，哎哎别填上啊！",
+                    "description": "你探头提醒师傅脚下有坑，一脚没踩稳，自己先滑了进去。上面的人只听清了前半句，铲车已经开始倒土。你从坑里举起双手，第一次觉得一句话能不能说完整，真的很重要。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_hp_obstacle_charm",
-                    "name": "障碍咒",
-                    "rarity": "SR",
-                    "quote": "路封了，有本事飞过去。",
-                    "description": "魔杖一挥，路中央突然多出一道看不见的阻碍。撞上的人摸着额头四处找门，你躲在旁边认真研究天花板。",
+                    "name": "昏昏倒地",
+                    "rarity": "SSR",
+                    "quote": "昏昏倒地！",
+                    "description": "魔杖尖端迸出一道红光，对面的人还没来得及念完咒语，就直挺挺地倒了下去。罗恩低头看了看自己的魔杖，赶紧把杖尖挪开：这次总算没打到自己人。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_meme_concrete_block",
-                    "name": "水泥墩",
-                    "rarity": "SR",
-                    "quote": "前方施工，你先歇会儿。",
-                    "description": "你连夜搬来一个水泥墩，往路中间一摆，施工气质立刻到位。有人问什么时候完工，你指了指空白的告示牌：以通知为准。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_monsterhunter_web",
-                    "name": "蛛丝",
-                    "rarity": "SR",
-                    "quote": "别挣扎了，越挣越黏。",
-                    "description": "你把蛛丝拉过路口，自己蹲在旁边等动静。猎物还没露面，过路的人已经粘掉一只鞋，你决定先不介绍这是谁的手艺。",
+                    "name": "实心水泥墩",
+                    "rarity": "SSR",
+                    "quote": "谁家路障里面是实心的啊！",
+                    "description": "你看那只路障歪在路边，抬腿就想把它踢正。鞋尖碰上的瞬间，人先站得笔直，脸色接着变得十分丰富。路障一动没动，里面那块水泥比你的嘴还硬。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_starcraft_spider_mine",
-                    "name": "蜘蛛雷",
-                    "rarity": "SR",
-                    "quote": "啊？刚才谁说这里没雷？",
-                    "description": "小小的蜘蛛雷钻进土里，路面恢复平静。你退开两步贴上施工告示，字还没写完，地下已经传来不太友善的机械声。",
+                    "name": "走不动道",
+                    "rarity": "SSR",
+                    "quote": "等一下，我突然不想走了。",
+                    "description": "你刚才还说赶时间，迎面看见漂亮姐姐，脚步立刻从快走切成了慢动作。朋友拽了两次袖子都没拽动，回头一看，你连路边那块毫无内容的告示牌都看得格外认真。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 660
               }
             ]
           }
@@ -589,82 +561,51 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_kungfu_buddha_palm",
                     "name": "如来神掌",
-                    "rarity": "SSR",
-                    "quote": "有没有听过一招从天而降的掌法？",
-                    "description": "天空忽然暗下来，一只巨掌越落越近。房主还在阳台上问谁挡了太阳，下一秒就开始认真考虑露天装修。",
+                    "rarity": "SR",
+                    "quote": "想学啊，我教你啊。",
+                    "description": "阿星收起掌势，面前的火云邪神跪在地上，终于问出这是什么功夫。尘土从两人之间慢慢落下，阿星没有再出手，只平静地伸出一只手。刚才还打得天翻地覆的院子，忽然安静了下来。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_journey_golden_staff",
-                    "name": "金箍棒",
-                    "rarity": "SSR",
-                    "quote": "吃俺老孙一棒！",
-                    "description": "金箍棒迎风一长，正好伸到邻居家屋顶。你说只是借个地方搁一下，瓦片噼里啪啦落下来，替你补完了后半句。",
+                    "name": "如意金箍棒",
+                    "rarity": "SR",
+                    "quote": "再小些，再细些！",
+                    "description": "东海龙宫里，孙悟空围着那根铁柱转了一圈，嫌它又粗又长。话音刚落，金箍棒便缩进掌心。他越试越欢喜，最后捻成一根绣花针塞进耳朵，龙王在旁边连笑都笑得小心翼翼。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_meme_demolition_crew",
-                    "name": "拆迁队",
-                    "rarity": "SSR",
-                    "quote": "师傅，就这栋，别拆错了。",
-                    "description": "师傅拿着图纸走到楼下，眯眼确认了半天门牌号。你还没来得及搭话，墙已经先开口了，施工效率令人无法反驳。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_starwars_lightsaber",
-                    "name": "光剑",
-                    "rarity": "SSR",
-                    "quote": "原力在这儿，屋顶你留不住。",
-                    "description": "你点亮光剑，沿着屋顶划出一条漂亮的光弧。房主看着滑落的瓦片问你什么流派，你回答：开放式天窗。",
+                    "name": "马里奥装修队",
+                    "rarity": "SR",
+                    "quote": "曾小贤，你把我家拆成什么样了！",
+                    "description": "曾小贤拍着胸口保证找来了专业师傅，门一开，两个马里奥打扮的人扛着工具就进了屋。墙那边传来第一声巨响，胡一菲的笑容已经僵住。曾小贤刚想解释施工方案，第二声又来了。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_minecraft_tnt",
-                    "name": "TNT爆破",
-                    "rarity": "SSR",
-                    "quote": "嘶——轰！你家矮了。",
-                    "description": "你把红石线接好，拍着胸脯说爆破范围算得很准。轰的一声之后，屋顶确实没了，大家对你数学成绩的兴趣也没了。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_jjk_limitless",
-                    "name": "无下限术式",
-                    "rarity": "SSR",
-                    "quote": "别问了，这层我先拿走。",
-                    "description": "你随手一抬，楼顶的砖瓦像忘记了自己该待在哪儿。房主抬头望着空出来的天空，第一次觉得无限这个词挺费装修钱。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_wukong_staff_press",
-                    "name": "棍势压制",
-                    "rarity": "SSR",
-                    "quote": "蓄满了，这一棒你接好！",
-                    "description": "你把棍势蓄得满满当当，一棒砸下去，楼顶扬起一圈灰。邻居探头问哪家在装修，房主咬着牙说：我家，被动开工。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_meme_husky_demolish",
-                    "name": "拆家二哈",
-                    "rarity": "SSR",
-                    "quote": "拆家还得看我家二哈。",
-                    "description": "二哈叼着半截门框冲出邻居家，尾巴摇得像刚立了大功。你看了看冒灰的屋顶，默默把牵引绳藏到了身后。",
+                    "name": "沙漠神殿压力板",
+                    "rarity": "SR",
+                    "quote": "别踩中间那块——",
+                    "description": "你顺着沙漠神殿的洞口往下跳，四个宝箱端端正正摆在角落。落地时脚下轻轻一响，你低头看见压力板，终于想起攻略里那句没看完的话。背包还没打开，屏幕已经开始回忆人生。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_civ6_catapult",
-                    "name": "投石机",
-                    "rarity": "SSR",
-                    "quote": "先别谈外交，我石头装好了。",
-                    "description": "投石机吱呀一响，石头划出一道很有说服力的弧线。城里的外交官默默收起讲稿，今天好像用不上口才。",
+                    "name": "花花草草也是生命",
+                    "rarity": "SR",
+                    "quote": "砸不到小朋友，砸到花花草草也不好嘛。",
+                    "description": "唐僧追着孙悟空讲道理，从乱扔东西一路讲到花草也有生命。悟空攥着金箍棒，额头上的筋跳了又跳。旁边刚飞过去一件东西，唐僧又转过头，认真地准备从头讲一遍。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 1452
               }
             ]
           }
@@ -679,82 +620,51 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_tactic_golden_cicada",
                     "name": "金蝉脱壳",
-                    "rarity": "SSR",
-                    "quote": "我先溜了，你替我站会儿。",
-                    "description": "对方盯着你留下的外套说个不停，你已经绕到了他身后。等他发现衣服里没人，你正坐在他刚才的位置上喝茶。",
+                    "rarity": "SR",
+                    "quote": "衣服还在，人先走了。",
+                    "description": "追兵将那件外袍团团围住，越喊越觉得里面的人镇定得过头。刀尖一挑，袍子轻飘飘落了下来，底下什么也没有。巷口卖茶的摊子上，刚坐下的客人不紧不慢地端起了碗。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_tactic_lure_tiger",
-                    "name": "调虎离山",
-                    "rarity": "SSR",
-                    "quote": "兄弟，你的位置看着不错。",
-                    "description": "你朝远处大喊一声有好东西，对方拔腿就走。等他发现上当回头，你已经在原地坐稳，还很礼貌地替他捂热了座位。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_dragonball_instant_move",
-                    "name": "瞬间移动",
-                    "rarity": "SSR",
-                    "quote": "气我感应到了，位置借一下。",
-                    "description": "你闭眼感应熟悉的气息，指尖一点，眼前的街景突然换了。刚才还在那边的人出现在你原来的地方，手里那口水都没咽下去。",
+                    "name": "道友请留步",
+                    "rarity": "SR",
+                    "quote": "道友请留步！",
+                    "description": "身后传来申公豹那句熟悉的招呼，你的脚步先停了半拍。还没回头，他已经满脸热情地追了上来，拉着你说只耽误片刻。风吹过山道，旁边的坐骑却悄悄往后退了一步。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_hp_apparition",
-                    "name": "幻影移形",
-                    "rarity": "SSR",
-                    "quote": "啪！你怎么站我这儿来了？",
-                    "description": "啪的一声，两个人同时从烟雾里冒出来。你们看着彼此脚下的地方陷入沉默，对方先开口：下次能不能提前打个招呼？",
+                    "name": "移形换位",
+                    "rarity": "SR",
+                    "quote": "位置不错，借我一下。",
+                    "description": "复仇之魂从阴影里抬起手，两道身影在紫光中瞬间交换。刚才还躲在队友身后的核心，转眼站进五个人中间；她已经落在原来的位置，队友的控制技能刚好接上。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_dora_time_machine",
-                    "name": "时光机",
-                    "rarity": "SSR",
-                    "quote": "大雄，车借我，我换个位置。",
-                    "description": "你钻进时光机，把目的地设成了朋友的位置。舱门打开时朋友已经坐到了你那边，只有哆啦A梦在认真心疼乱拧的旋钮。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_tactic_swap_pillar",
-                    "name": "偷梁换柱",
-                    "rarity": "SSR",
-                    "quote": "别看了，站错位的是你。",
-                    "description": "你趁大家看热闹，悄悄把两处位置调了个包。对方回过神来还在原地找座位，你已经替他把靠垫拍得整整齐齐。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_portal_gun",
-                    "name": "传送枪",
-                    "rarity": "SSR",
-                    "quote": "蓝门进，橙门出，换你过去。",
-                    "description": "蓝门开在脚边，橙门亮在对面，你和朋友同时掉了进去。落地后两人互看一眼，决定以后串门还是先敲门。",
+                    "name": "我们真的回不去了吗",
+                    "rarity": "SR",
+                    "quote": "我们真的回不去了吗？",
+                    "description": "聊天记录停在很久以前，输入框里的那句话删了又打。你翻到当初说永远的截图，窗外的天已经黑了。对方终于回复了一个字，你盯着屏幕，忽然不知道该接什么。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_naruto_flying_thunder",
                     "name": "飞雷神之术",
-                    "rarity": "SSR",
-                    "quote": "标记放好了，位置拿来吧。",
-                    "description": "你悄悄留下标记，下一瞬就和对方换了地方。对方低头看着陌生的脚下，你摆出高手姿态，努力压住嘴角。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_trisolaris_sophon",
-                    "name": "智子",
-                    "rarity": "SSR",
-                    "quote": "虫子们，换个地方站吧。",
-                    "description": "眼前闪过一行神秘文字，你和对方已经站到了彼此的位置。智子忙着炫耀技术，两位当事人只想投诉这次未经预约的搬家。",
+                    "rarity": "SR",
+                    "quote": "飞雷神之术！",
+                    "description": "带土的手刚穿过水门的身影，背后的苦无就亮起了术式。水门瞬间出现在他上方，螺旋丸紧随而下。交锋只在一瞬间结束，地上的标记却早已留在了那里。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 660
               }
             ]
           }
@@ -776,75 +686,60 @@
                     "id": "card_sgyy_empty_city",
                     "name": "空城计",
                     "rarity": "SSR",
-                    "quote": "城门开着，你进来试试。",
-                    "description": "你大开城门，端坐楼上抚琴，收租的人在门外越想越不对劲。等他转身走远，你才发现自己一直弹的是同一个音。",
+                    "quote": "城门开着，来坐坐？",
+                    "description": "城门大开，几名老兵低头洒扫，诸葛亮在城楼上焚香抚琴。司马懿勒住马，越看那副从容模样越觉得不对。琴声还没停，大军已经缓缓后撤，楼上握着琴弦的手这才松了一点。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_sgyy_borrow_arrows",
                     "name": "草船借箭",
                     "rarity": "SSR",
-                    "quote": "箭我借到了，租我不交了。",
-                    "description": "大雾里船身插满了箭，岸上的人还在数你到底借了多少。你笑着拱手道谢，顺势把催账的人也绕糊涂了。",
+                    "quote": "谢丞相赠箭！",
+                    "description": "江面大雾弥漫，草船两侧很快扎满箭矢。鲁肃攥着船沿不敢出声，诸葛亮却还在慢慢斟酒。等船头一转，士卒齐声道谢，岸上的曹军这才听出哪里不对。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_hp_invisibility_cloak",
                     "name": "隐形衣",
                     "rarity": "SSR",
-                    "quote": "你看不见我，看不见我。",
-                    "description": "你披上隐形衣，贴着墙根从房东身边溜过。对方攥着账单四处找人，你连呼吸都切成了静音。",
-                    "cardType": "防御"
-                  },
-                  {
-                    "id": "card_meme_hold_on",
-                    "name": "苟住",
-                    "rarity": "SSR",
-                    "quote": "稳住，能苟！",
-                    "description": "门外敲得震天响，你缩在沙发后面一动不动。连手机震动都捂进了抱枕，今天你和室内绿植比谁更像摆设。",
+                    "quote": "脚收进去，脚！",
+                    "description": "哈利把隐形衣往罗恩和赫敏头上一罩，三个人挤成一团溜出门。费尔奇的灯光扫过走廊，他们屏住呼吸，一点点往墙边挪。赫敏低头看了一眼，罗恩的鞋尖还露在外面。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_jjk_domain_expansion",
-                    "name": "领域展开",
+                    "name": "掩耳盗铃",
                     "rarity": "SSR",
-                    "quote": "领域展开！这单免了！",
-                    "description": "你双手结印，四周瞬间安静，催租声被隔在了外面。领域里第一次开会，你宣布议题只有一个：先清静一会儿。",
+                    "quote": "我都听不见，你们怎么可能听见？",
+                    "description": "你看中了门口那只铃铛，伸手一碰，响声立刻传遍整条街。想了一会儿，你认真堵住自己的耳朵，再次伸手。身后的脚步声越来越近，你对这次计划的信心却空前充足。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_zelda_shield_parry",
-                    "name": "盾反",
+                    "name": "美国队长的盾",
                     "rarity": "SSR",
-                    "quote": "反了！这都给我反到了！",
-                    "description": "账单递到眼前，你下意识举盾一挡，纸张擦着盾面飞了出去。围观的人齐声叫好，只有收租的人在追那张越飘越远的纸。",
+                    "quote": "我能这样打一整天。",
+                    "description": "史蒂夫扶着盾牌站起来，抹掉嘴角的血，重新摆好架势。对面的人看了看他，又看了看那块怎么也打不坏的盾。盾面上的划痕又多了一道，他却还是没有后退。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_lol_zhonya",
-                    "name": "中亚秒表",
+                    "name": "金身等死",
                     "rarity": "SSR",
-                    "quote": "金身！金身！别收我租！",
-                    "description": "你按下秒表，全身金光一亮，站成了路口最贵的雕像。收租的人绕了三圈没找到能收钱的口袋，气得对着金身拍照取证。",
-                    "cardType": "防御"
-                  },
-                  {
-                    "id": "card_meme_slack_off",
-                    "name": "摸鱼",
-                    "rarity": "SSR",
-                    "quote": "我不在，我今天不在。",
-                    "description": "收租的人刚进门，你立刻戴上耳机，对着黑屏敲起了键盘。对方喊了三遍，你的演技已经到了连自己都信在开会的程度。",
+                    "quote": "我有金身！你们人呢？",
+                    "description": "中娅按下去的瞬间，你化作一尊金色雕像，自信地等队友进场。两秒多过去，队友的头像已经整整齐齐灰在屏幕上方。对面五个人围成一圈，技能都捏着没放，就等你重新做人。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_bullet_flying_play_dumb",
-                    "name": "装糊涂",
+                    "name": "马什么梅",
                     "rarity": "SSR",
-                    "quote": "你说啥？风太大，我听不见。",
-                    "description": "对方拿着账单讲得口干舌燥，你始终一脸诚恳地问：您哪位？他开始怀疑人生，你趁机又给他续了一杯水。",
+                    "quote": "马什么梅啊？",
+                    "description": "夏洛扶着车把问了半天，楼下大爷始终只听清其中两个字。马冬梅三个字来来回回拆了几遍，问路的人已经开始怀疑自己会不会说话。大爷倒很热情，还准备再听一遍。",
                     "cardType": "防御"
                   }
-                ]
+                ],
+                "weight": 792
               }
             ]
           }
@@ -858,103 +753,66 @@
             "id": "default",
             "parameters": [
               {
-                "id": "steps-3",
-                "rarity": "SR",
-                "values": {
-                  "steps": 3
-                },
-                "skins": [
-                  {
-                    "id": "card_cyberpunk_sandevistan",
-                    "name": "斯安威斯坦",
-                    "rarity": "SR",
-                    "quote": "你们看着像慢动作啊。",
-                    "description": "义体启动，身边的人像突然切进了慢镜头。你淡定地穿过人群，顺手扶正差点洒掉的咖啡，这次装帅终于没弄脏衣服。",
-                    "cardType": "持续"
-                  },
-                  {
-                    "id": "card_meme_cheat",
-                    "name": "开挂",
-                    "rarity": "SR",
-                    "quote": "不是挂，我这是天赋。",
-                    "description": "你跑得快到只剩一道影子，朋友终于忍不住要求检查设备。你一脸无辜地原地拉伸：怎么，天赋好也得写说明书？",
-                    "cardType": "持续"
-                  },
-                  {
-                    "id": "card_aot_odm_gear",
-                    "name": "立体机动",
-                    "rarity": "SR",
-                    "quote": "瓦斯够了，先飞一段！",
-                    "description": "钢索扣住高墙，瓦斯一喷，你从屋檐间飞掠而过。地上的人还在抬头仰望，你已经开始祈祷这次别把披风挂在晾衣绳上。",
-                    "cardType": "持续"
-                  }
-                ]
-              },
-              {
                 "id": "steps-2",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 2
                 },
                 "skins": [
                   {
-                    "id": "card_mario_speed_mushroom",
-                    "name": "加速蘑菇",
-                    "rarity": "SR",
-                    "quote": "蘑菇吃了，谁都别拦我！",
-                    "description": "你一口吞下蘑菇，鞋底像突然装了弹簧。冲出去才发现自己忘了问路，只好边跑边喊前面往哪拐。",
-                    "cardType": "持续"
-                  },
-                  {
                     "id": "card_wukong_great_sage",
-                    "name": "大圣形态",
-                    "rarity": "SR",
-                    "quote": "大圣回来了，这路让一让。",
-                    "description": "金光一亮，披挂齐整，连步子都带上了大圣的气势。你刚想摆个威风姿势，身体已经先朝前冲了出去。",
-                    "cardType": "持续"
-                  },
-                  {
-                    "id": "card_demonslayer_breath",
-                    "name": "全集中呼吸",
-                    "rarity": "SR",
-                    "quote": "全集中！别催，我在呼吸！",
-                    "description": "你调整呼吸，脚下的步伐一下轻快起来。朋友在后面喘得像风箱，还不忘追问：这套能不能教给爬楼的我？",
+                    "name": "迪迦空中型",
+                    "rarity": "R",
+                    "quote": "打不过就换个颜色。",
+                    "description": "迪迦交叉双臂，额前水晶亮起，身上的颜色转为紫色。怪兽的攻击擦着身侧落空，他已经轻巧地跃上高处。地面上的队员刚把镜头转过去，画面里又只剩一片天空。",
                     "cardType": "持续"
                   }
-                ]
+                ],
+                "weight": 264
               },
               {
                 "id": "steps-1",
-                "rarity": "SR",
+                "rarity": "R",
                 "values": {
                   "steps": 1
                 },
                 "skins": [
                   {
                     "id": "card_lol_swiftness_boots",
-                    "name": "疾行之靴",
-                    "rarity": "SR",
-                    "quote": "鞋买好了，我先跑了。",
-                    "description": "新鞋刚上脚，你走路都带起了风。朋友追着问链接，你越跑越远，留下的声音像极了故意不想让他买同款。",
+                    "name": "五速鞋游走",
+                    "rarity": "R",
+                    "quote": "鞋买好了，中路我来了！",
+                    "description": "辅助刚回城补出五速鞋，转头就沿河道冲向中路。ADC望着身边空荡荡的草丛，连续发了三个问号。人已经跑出半张地图，语音里才传来一句：你先稳住，我去游走。",
                     "cardType": "持续"
                   },
                   {
                     "id": "card_wow_sprint",
-                    "name": "疾跑",
-                    "rarity": "SR",
-                    "quote": "疾跑开了，别想追上我。",
-                    "description": "你深吸一口气，突然从队伍后面蹿了出去。朋友以为前面出了稀有装备，跑近才发现你只是急着找洗手间。",
-                    "cardType": "持续"
-                  },
-                  {
-                    "id": "card_dune_spice",
-                    "name": "香料",
-                    "rarity": "SR",
-                    "quote": "香料来一点，路我还能赶。",
-                    "description": "一阵辛香钻进鼻腔，你仿佛看见了前方的路。正准备说点深奥的话，肚子先叫了，预知未来也没能预知午饭。",
+                    "name": "疾跑诺手",
+                    "rarity": "R",
+                    "quote": "你最好现在就开始跑。",
+                    "description": "诺手开着疾跑从河道里冲出来，斧子还没抬，你已经先交了闪现。屏幕上的流血层数继续往上跳，他追得不紧不慢。队友刚打出撤退信号，第一声断头台已经落下。",
                     "cardType": "持续"
                   }
-                ]
+                ],
+                "weight": 264
+              },
+              {
+                "id": "steps-3",
+                "rarity": "R",
+                "values": {
+                  "steps": 3
+                },
+                "skins": [
+                  {
+                    "id": "card_aot_odm_gear",
+                    "name": "兵长一米六",
+                    "rarity": "R",
+                    "quote": "别看身高，看刀。",
+                    "description": "利威尔借着钢索掠过墙头，双刃在半空划出连续的圆弧。巨人还没来得及转身，他已经落在另一侧收刀。地上的新兵仰着头看了半天，终于把那句关于身高的话咽了回去。",
+                    "cardType": "持续"
+                  }
+                ],
+                "weight": 264
               }
             ]
           }
@@ -973,78 +831,47 @@
                 "values": {},
                 "skins": [
                   {
-                    "id": "card_civ6_builder",
-                    "name": "建造者",
-                    "rarity": "SSR",
-                    "quote": "别睡了，起来盖房！",
-                    "description": "建造者们扛着工具一拥而上，脚手架比你的计划还先搭好。你想进去视察，对方递来一顶安全帽：领导先把头保护好。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_minecraft_enchant_table",
-                    "name": "附魔台",
-                    "rarity": "SSR",
-                    "quote": "效率拉满，房子也附个魔。",
-                    "description": "附魔台的符文浮起来，整栋房子都泛着神秘的光。邻居来问装修风格，你指着发亮的砖说：主要看它自己抽到了什么词条。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_stardew_greenhouse",
-                    "name": "温室",
-                    "rarity": "SSR",
-                    "quote": "温室有了，今晚不怕冻。",
-                    "description": "温室的玻璃一块块装好，寒风被挡在外面，幼苗精神得像刚放假。你端着茶巡视一圈，终于有了当农场主的派头。",
-                    "cardType": "主动"
-                  },
-                  {
                     "id": "card_onepiece_shipwright",
-                    "name": "船匠",
+                    "name": "超级弗兰奇",
                     "rarity": "SSR",
-                    "quote": "船都能造，楼还修不了？",
-                    "description": "船匠敲着墙听了两下，转头就抡起了锤子。新结构越搭越漂亮，你唯一的疑问是门口为什么装了个船舵。",
+                    "quote": "Super！",
+                    "description": "弗兰奇把可乐补进身体，两只大手啪地合在一起，摆出那套谁也拦不住的招牌姿势。乌索普和乔巴立刻跟着喊，罗宾在旁边平静地看了一眼。船还没修完，甲板上先热闹起来。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_wow_goblin_engineer",
-                    "name": "地精工程师",
+                    "name": "洛圣都改车王",
                     "rarity": "SSR",
-                    "quote": "螺丝拧好了，应该不会炸吧。",
-                    "description": "地精工程师把扳手一收，骄傲地展示刚改好的房子。你问那颗不停闪的红灯是什么，他已经边收工具边往远处走了。",
+                    "quote": "换个颜色，警察就不认识了。",
+                    "description": "你把冒着烟的车开进改装店，卷帘门缓缓落下。几分钟后，凹下去的车门修好了，车漆也换了，街上的警笛还在四处转。你从出口慢慢开出去，刚才追得最凶的警车从旁边直接路过。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_naruto_shadow_clone",
-                    "name": "影分身之术",
+                    "name": "多重影分身",
                     "rarity": "SSR",
-                    "quote": "分身别摸鱼，砖还没搬完呢！",
-                    "description": "一阵烟雾过后，工地上全是你，搬砖和递水都忙得井井有条。本体刚想坐下休息，分身们齐刷刷投来不满的眼神。",
+                    "quote": "多重影分身之术！",
+                    "description": "训练场上烟雾炸开，数不清的鸣人挤满了空地，每个人都拍着胸口说交给我。树上的卡卡西合起书，还没来得及点名，分身们已经为了谁最像本体吵成一团。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_zhenhuan_promotion",
-                    "name": "升位分",
+                    "name": "熹妃回宫",
                     "rarity": "SSR",
-                    "quote": "本宫的房子，也该升一升了。",
-                    "description": "晋封的旨意刚念完，院里的门匾就换了新的。你端着茶杯巡视新居，连脚边的猫都被叫成了小主。",
+                    "quote": "熹妃回宫！",
+                    "description": "宫门缓缓打开，仪仗一路排到长阶之下。甄嬛扶着人走下轿辇，抬眼望向那座曾经离开的宫城。沿途众人一齐低头，往日熟悉的称呼，这回谁也不敢再叫。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_eldenring_blessing",
-                    "name": "赐福",
+                    "name": "一步一步走到最高",
                     "rarity": "SSR",
-                    "quote": "赐福有了，房子先亮一下。",
-                    "description": "金色的赐福落在屋檐上，连破旧的墙角都亮了起来。你坐在光边歇了口气，第一次觉得这趟受苦有了像样的落脚处。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_jojo_gold_experience",
-                    "name": "黄金体验",
-                    "rarity": "SSR",
-                    "quote": "黄金体验！这楼给我长！",
-                    "description": "你轻轻碰了碰墙面，藤蔓与新芽顺着砖缝舒展开来。房子眼看着精神了，物业却开始研究绿化费到底该怎么填。",
+                    "quote": "我要一步一步，走到最高！",
+                    "description": "赵高站在阶下，抬头望着那把所有人都不敢久看的椅子。他把腰背一点点挺直，话也一句比一句响。旁边的人还想劝他低头，他已经踏上了第一级台阶。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 396
               }
             ]
           }
@@ -1063,14 +890,6 @@
                 "values": {},
                 "skins": [
                   {
-                    "id": "card_bullet_flying_stand_money",
-                    "name": "站着把钱挣了",
-                    "rarity": "SR",
-                    "quote": "我就想站着把钱省了！",
-                    "description": "对方把价开得响亮，你站着没动，慢慢讲完了道理。等他把账单改好，你发现腰杆挺直确实有用，就是站久了腿麻。",
-                    "cardType": "防御"
-                  },
-                  {
                     "id": "card_meme_groupon",
                     "name": "团购",
                     "rarity": "SR",
@@ -1088,53 +907,38 @@
                   },
                   {
                     "id": "card_watermargin_songjiang",
-                    "name": "及时雨",
+                    "name": "及时雨宋公明",
                     "rarity": "SR",
-                    "quote": "及时雨来了，这事儿好商量。",
-                    "description": "宋江端着酒坐到双方中间，几句场面话说得谁都不好意思再板着脸。你赶紧收好重新写过的账单，敬酒的动作比谁都快。",
+                    "quote": "兄弟有难，怎么不早说！",
+                    "description": "宋江听完来人的遭遇，放下酒碗，先让人把银两拿来。对方还在解释日后如何报答，他已经端起酒，连名字都没让人说完。桌边一声公明哥哥，喊得比刚进门时亲近了许多。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_sgyy_debate",
                     "name": "舌战群儒",
                     "rarity": "SR",
-                    "quote": "你先别收，听我给你讲。",
-                    "description": "你展开扇子，从古今大义讲到对方的定价依据。满屋的人听得直点头，记账先生揉着太阳穴，终于拿起了橡皮。",
+                    "quote": "公既知一，其未知其二。",
+                    "description": "江东群儒轮番发难，诸葛亮摇着羽扇，等对方说完才慢慢开口。堂上的声音起初一个比一个高，后来只剩扇子轻轻晃动。鲁肃站在旁边，几次想插话，最后全咽了回去。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_avengers_time_stone",
                     "name": "时间宝石",
                     "rarity": "SR",
-                    "quote": "博士，这账单往回拨一点。",
-                    "description": "绿色光环轻轻转动，账单上的数字开始往回退。博士还在认真施法，你已经忍不住凑过去小声指导：再一点，再一点。",
+                    "quote": "多玛姆，我是来谈条件的。",
+                    "description": "多玛姆刚结束这一轮，斯特兰奇又完好无损地站到了面前。相同的开场白再一次响起，绿色的时间印记缓缓转动。地球法师还没有不耐烦，黑暗维度的主人先受不了了。",
                     "cardType": "防御"
                   },
                   {
                     "id": "card_conan_reasoning",
-                    "name": "柯南式推理",
+                    "name": "真相只有一个",
                     "rarity": "SR",
-                    "quote": "等等，你这账单有问题！",
-                    "description": "你扶了扶眼镜，指着账单上前后矛盾的几处明细。对方的汗越擦越多，原本理直气壮的解释逐渐只剩一句打错了。",
-                    "cardType": "防御"
-                  },
-                  {
-                    "id": "card_mi_disguise",
-                    "name": "易容术",
-                    "rarity": "SR",
-                    "quote": "熟客熟客，给个五折吧。",
-                    "description": "你揭下伪装，换上一张熟客的笑脸，连寒暄都准备得滴水不漏。对方热情地重新算价，你努力回想自己到底扮的是哪位老板。",
-                    "cardType": "防御"
-                  },
-                  {
-                    "id": "card_cyberpunk_hack",
-                    "name": "黑客入侵",
-                    "rarity": "SR",
-                    "quote": "黑进去了，数字改小一点。",
-                    "description": "数据线一接，屏幕上的数字跳得飞快。你敲完最后一个键，假装随意地擦掉手汗，旁边的朋友还以为你只是在连打印机。",
+                    "quote": "真相只有一个！",
+                    "description": "柯南低头看了一眼麻醉手表，毛利小五郎随即歪进椅子里。众人正要上前，他躲到桌后调好变声器，熟悉的推理声已经响了起来。小兰望着椅子里的父亲，总觉得今天坐得有点歪。",
                     "cardType": "防御"
                   }
-                ]
+                ],
+                "weight": 792
               }
             ]
           }
@@ -1162,69 +966,38 @@
                   },
                   {
                     "id": "card_sekiro_escape",
-                    "name": "苇名流逃脱",
+                    "name": "月下的魔术师",
                     "rarity": "SR",
-                    "quote": "苇名流的事，能叫坐牢吗？",
-                    "description": "守卫刚转过身，你已顺着墙边翻上屋檐。离开前还礼貌地合上了门，留给对方一间锁得很完整的空屋子。",
+                    "quote": "Ladies and gentlemen！",
+                    "description": "预告函上的时间刚到，展厅灯光骤然熄灭。白色披风掠过月光，怪盗基德已经站在屋顶，抬手压住礼帽。警察冲上来时，四周先飞起一群白鸽，谁也没看清他走的是哪一边。",
                     "cardType": "即时"
                   },
                   {
                     "id": "card_pokemon_escape_rope",
-                    "name": "逃脱绳",
+                    "name": "肖申克的救赎",
                     "rarity": "SR",
-                    "quote": "绳子抓好了，我先走了。",
-                    "description": "你从背包深处翻出一截绳子，郑重地往地上一甩。等大家再找到你，人已经在外面晒太阳，连你自己都觉得这绳子挺不讲道理。",
+                    "quote": "有些鸟儿是关不住的。",
+                    "description": "安迪举着双手站在暴雨里，仰头任雨水冲过脸庞。那条漫长的通道终于留在身后，雷声盖过远处监狱的动静。他缓缓张开双臂，第一次没有去看围墙的方向。",
                     "cardType": "即时"
                   },
                   {
                     "id": "card_dora_pass_ring",
-                    "name": "穿透环",
+                    "name": "穿透环乌龙",
                     "rarity": "SR",
-                    "quote": "哆啦A梦，墙上开个洞！",
-                    "description": "圆环往墙上一贴，硬邦邦的砖墙就像多了一扇小门。你钻出去时不忘回头招手，守卫正在认真怀疑自己的建筑常识。",
+                    "quote": "等一下，出口好像放反了！",
+                    "description": "大雄把穿透环贴上墙，催着哆啦A梦赶紧跟来。两人钻过去才发现，这头是塞满杂物的储物间。扫帚、纸箱和旧被褥一齐倒下，哆啦A梦从最底下伸出手：先听完说明书啊！",
                     "cardType": "即时"
                   },
                   {
                     "id": "card_hp_portkey",
-                    "name": "门钥匙",
+                    "name": "多比是自由的",
                     "rarity": "SR",
-                    "quote": "抓紧了，门钥匙要发动了！",
-                    "description": "你刚碰到那只旧靴子，肚脐就像被什么东西拽走了。再落地时人已经脱困，只是这趟旅程的舒适度很值得投诉。",
-                    "cardType": "即时"
-                  },
-                  {
-                    "id": "card_journey_72_changes",
-                    "name": "七十二变",
-                    "rarity": "SR",
-                    "quote": "变！看你还能关住谁。",
-                    "description": "看守盯着空空的角落发愣，一只小飞虫已经从窗缝钻了出去。你变回人形后赶紧拍掉灰，刚才那点风差点把高手吹迷路。",
-                    "cardType": "即时"
-                  },
-                  {
-                    "id": "card_jjk_curtain",
-                    "name": "帐",
-                    "rarity": "SR",
-                    "quote": "帐放好了，走，现在就走。",
-                    "description": "黑色的帐从头顶落下，四周的视线全被遮住。你趁着混乱猫腰溜走，回来才发现披风被门把手留下当了替身。",
-                    "cardType": "即时"
-                  },
-                  {
-                    "id": "card_aot_titan_break",
-                    "name": "巨人化逃脱",
-                    "rarity": "SR",
-                    "quote": "地方太小了，我撑一下。",
-                    "description": "你一声怒吼，狭小的囚笼顿时装不下这副身躯。栏杆散落一地，看守仰着头，终于承认当初量尺寸太草率。",
-                    "cardType": "即时"
-                  },
-                  {
-                    "id": "card_avengers_hulk_smash",
-                    "name": "浩克砸笼",
-                    "rarity": "SR",
-                    "quote": "浩克，砸！",
-                    "description": "浩克抓住栏杆往两边一掰，出口的问题当场解决。你刚想道谢，他已经踩着碎铁走远，完全没打算听施工评价。",
+                    "quote": "多比是一个自由的小精灵！",
+                    "description": "马尔福庄园的吊灯轰然坠下，多比冲进混乱之中，紧紧抓住哈利和同伴的手。追来的咒语擦过耳边，幻影移形的响声骤然炸开。屋里的人再伸手时，原地只剩扬起的灰尘。",
                     "cardType": "即时"
                   }
-                ]
+                ],
+                "weight": 528
               }
             ]
           }
@@ -1239,82 +1012,51 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_watermargin_shiqian",
-                    "name": "时迁偷甲",
-                    "rarity": "SSR",
-                    "quote": "别捂了，时迁都看见了。",
-                    "description": "时迁在屋檐上轻巧一翻，回到你身边时怀里多了件战利品。主人还在门口夸今晚月色好，你赶紧点头，免得笑出声。",
+                    "name": "顺手牵羊",
+                    "rarity": "SR",
+                    "quote": "这次可没有距离1的限制了！",
+                    "description": "你把顺手牵羊往桌上一拍，手已经越过旁边两个人，伸向最远那位的手牌。对方连忙低头算距离，你很贴心地把牌推过去：别算了，这次真够得着。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_bullet_flying_rob",
-                    "name": "抢黄四郎",
-                    "rarity": "SSR",
-                    "quote": "黄老爷，好东西分我一张。",
-                    "description": "你把话说得客客气气，黄老爷却把手里的好东西越捂越紧。等他终于松手，你发现礼貌这东西偶尔也挺有压迫感。",
+                    "name": "乡绅的钱如数奉还",
+                    "rarity": "SR",
+                    "quote": "乡绅的钱如数奉还，百姓的钱三七分成。",
+                    "description": "黄四郎刚把银子摆上桌，张麻子就顺着话往下谈。分账的规矩越讲越明白，旁边的人点头点到一半，忽然觉得哪里不对。钱还没收上来，怎么分倒先安排好了。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_idiom_empty_hand",
-                    "name": "妙手空空",
-                    "rarity": "SSR",
-                    "quote": "诶，你怎么少一张牌啊？",
-                    "description": "你和对方热情握手，笑着聊了半天天气。转身时袖子里悄悄多了件东西，对方还在感叹今天遇见了个讲礼貌的人。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_idiom_steal_sky",
-                    "name": "偷天换日",
-                    "rarity": "SSR",
-                    "quote": "看天上！诶，牌归我了。",
-                    "description": "你指着天边大喊快看，对方果然抬起了头。等他重新低头，你已经把手收回口袋，表情纯洁得像真看见了彩虹。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_genshin_paimon_steal",
-                    "name": "派蒙偷吃",
-                    "rarity": "SSR",
-                    "quote": "派蒙！那个不能吃！",
-                    "description": "派蒙趁人不注意，把桌上的东西往怀里一抱。被发现时还鼓着脸解释自己只是替旅行者保管，你赶紧假装在看地图。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_trisolaris_droplet",
-                    "name": "水滴截走",
-                    "rarity": "SSR",
-                    "quote": "虫子，这张我截了。",
-                    "description": "一道银光掠过桌面，水滴带着截获的东西静静悬停。对方刚想追问原理，你看着这大材小用的场面，决定先忍住笑。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_onepiece_nami_steal",
-                    "name": "娜美偷钱包",
-                    "rarity": "SSR",
-                    "quote": "娜美你别摸了！我真没几张！",
-                    "description": "娜美笑着拍了拍对方肩膀，顺手掂了掂刚摸来的小包。你还没看清里面是什么，她已把自己的辛苦费算得明明白白。",
+                    "name": "斗转星移",
+                    "rarity": "SR",
+                    "quote": "以彼之道，还施彼身。",
+                    "description": "慕容复看准对方来势，衣袖一转，将那股劲力原样送了回去。出招的人踉跄退开，低头看着自己惯用的起手式。招还是那一招，这次挨上的却换成了自己。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_stardew_trash_dive",
-                    "name": "翻垃圾桶",
-                    "rarity": "SSR",
-                    "quote": "别看我，我只是翻个桶。",
-                    "description": "你趁四下无人掀开垃圾桶，居然从里面翻出别人落下的好东西。刚想庆祝，身后传来一声咳嗽，整个镇子好像都认识你了。",
+                    "name": "潜行100",
+                    "rarity": "SR",
+                    "quote": "把桶扣上，他就看不见了。",
+                    "description": "你把一只木桶轻轻扣在商店老板头上，蹲下，潜行的眼睛慢慢合拢。货架就在手边，老板还在热情介绍商品。等你把桶拿走，他看着空了一截的架子，继续问要不要再看看。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_gintama_yorozuya",
-                    "name": "万事屋顺手",
-                    "rarity": "SSR",
-                    "quote": "万事屋的事，你就说成没成吧。",
-                    "description": "万事屋接下委托，拍着胸脯说肯定办妥。东西送到时附着一张皱巴巴的收据，备注写着路上顺便解决了一顿午饭。",
+                    "name": "鲁邦三世",
+                    "rarity": "SR",
+                    "quote": "东西我收下了，下次见。",
+                    "description": "鲁邦刚把战利品装进口袋，窗外就响起钱形警部熟悉的怒吼。他冲对方挥了挥手，翻身跳上等在楼下的车。次元压低帽檐踩下油门，警部的声音追了半条街。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 660
               }
             ]
           }
@@ -1336,37 +1078,30 @@
                 "skins": [
                   {
                     "id": "card_meme_eu_king",
-                    "name": "欧皇附体",
+                    "name": "十连三金",
                     "rarity": "SR",
-                    "quote": "欧了！这号终于欧了！",
-                    "description": "你随手一试就出了别人求不到的好运，朋友们瞬间围成一圈。嘴上说都是运气，手已经自觉地摆好了给大家蹭欧气的姿势。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_onepiece_treasure",
-                    "name": "大秘宝",
-                    "rarity": "SR",
-                    "quote": "大秘宝！我就说有大秘宝！",
-                    "description": "你掀开宝箱，金光把每个人的脸都照得格外真诚。刚才还在谈梦想的船员，立刻切换到谁负责数钱的现实问题。",
+                    "quote": "我是神里绫华的狗！",
+                    "description": "祈愿的金光刚划过天空，你已经站了起来。结果页面翻开，三个金色头像排在一起，神里绫华的名字让你当场失去语言组织能力。群里还在说发图不发种，你的截图已经连着刷了三屏。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_delta_sell_gold",
-                    "name": "出售大金",
+                    "name": "摸出非洲之星",
                     "rarity": "SR",
-                    "quote": "老板，大金收不收？",
-                    "description": "老板接过大金，嘴上说最近行情一般，手却握得比谁都紧。你看了看他的表情，决定这回价格还得再聊聊。",
+                    "quote": "我靠，非洲之星！",
+                    "description": "箱子打开的那一刻，红色光芒照亮了整个搜索界面。你愣了半秒，立刻把麦克风推到嘴边，又突然压低声音。刚才还嫌队友报点太慢，现在连自己的呼吸都怕传出去。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_avengers_ironman_money",
-                    "name": "钞能力",
+                    "name": "我买下了银行",
                     "rarity": "SR",
-                    "quote": "我没超能力，我有钱。",
-                    "description": "托尼听完你的困难，随手把卡递了过来。你酝酿了半天的融资演讲卡在喉咙里，他只关心这里能不能停车。",
+                    "quote": "我买下了银行。",
+                    "description": "超人问布鲁斯，是怎么把肯特家的房子拿回来的。布鲁斯说自己买下了银行，语气平静得像顺路买了一杯咖啡。克拉克等了一会儿，终于确认这句话没有后半句。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 264
               },
               {
                 "id": "amount-300",
@@ -1379,27 +1114,12 @@
                     "id": "card_mario_coin",
                     "name": "顶金币",
                     "rarity": "R",
-                    "quote": "再顶一个，钱不嫌多！",
-                    "description": "你对准头顶的砖块猛地一跳，金币叮的一声弹了出来。捂着额头缓了一会儿，你又抬头看了看：这伤好像受得挺值。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_stardew_sell_crops",
-                    "name": "卖萝卜",
-                    "rarity": "R",
-                    "quote": "萝卜卖了！今天不用吃土了。",
-                    "description": "最后一筐萝卜被人搬走，你把沾着泥的手在裤腿上擦了擦。数完钱才舍得喝口水，今天的夕阳看着都像熟透的金瓜。",
-                    "cardType": "主动"
-                  },
-                  {
-                    "id": "card_zhenhuan_reward",
-                    "name": "皇上赏银",
-                    "rarity": "R",
-                    "quote": "皇上大气！臣先收了！",
-                    "description": "赏银的托盘刚端进来，你谢恩的声音就比平时亮了几分。回到屋里立刻关门数钱，方才那点端庄暂时交给了门外的宫女。",
+                    "quote": "这块砖还能再顶一下！",
+                    "description": "马里奥跳起来顶中问号砖，金币伴着熟悉的音效弹了出来。你刚准备往前走，发现那块砖还亮着，于是又跳了一次。公主还在城堡里等，头顶这点存款得先收完。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 1188
               },
               {
                 "id": "amount-500",
@@ -1418,47 +1138,22 @@
                   },
                   {
                     "id": "card_civ6_golden_age",
-                    "name": "黄金时代",
+                    "name": "黄金时代的错觉",
                     "rarity": "R",
-                    "quote": "黄金时代，这把有了！",
-                    "description": "城里的钟声响起，街市忽然热闹起来，连路边摊都在排队。你站在城头感慨盛世到了，大臣已经抱着新账本跑来报喜。",
+                    "quote": "这是她成年以来最好的夏天。",
+                    "description": "一个韩国女孩发来消息，说工作找到了，股票也涨了，机票便宜得连海边都像在招手。你听得心动，刚打开行情软件，就发现自己还没买。别人的黄金时代已经开始，你的开户链接还没填完。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_wow_auction",
-                    "name": "拍卖行出货",
+                    "name": "拍卖会捡漏",
                     "rarity": "R",
-                    "quote": "谁秒了我的货？谢谢老板！",
-                    "description": "挂了好几天的货突然被人一口价买走，你冲到邮箱前笑出了声。笑到一半又停住了：卖这么快，我是不是挂便宜了？",
+                    "quote": "还有人加价吗？没有我可拿走了。",
+                    "description": "拍卖师连喊三遍，台下没人举牌。你用起拍价抱走那件灰扑扑的拍品，出门一擦，里面竟露出一层漂亮的纹路。刚才说不值的几个人追了出来，称呼已经从哥们变成了老师。",
                     "cardType": "主动"
                   }
-                ]
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "remote",
-        "enabled": true,
-        "groups": [
-          {
-            "id": "default",
-            "parameters": [
-              {
-                "id": "default",
-                "rarity": "SSR",
-                "values": {},
-                "skins": [
-                  {
-                    "id": "card_remote_dice_control",
-                    "name": "遥控骰子",
-                    "rarity": "SSR",
-                    "quote": "别掷了，这回点数我说了算！",
-                    "description": "骰子刚要停稳，你悄悄按下遥控器，它又倔强地翻了个面。桌友盯着你问：这骰子是不是还得连你家 Wi-Fi？",
-                    "cardType": "主动"
-                  }
-                ]
+                ],
+                "weight": 1188
               }
             ]
           }
@@ -1472,31 +1167,32 @@
             "id": "default",
             "parameters": [
               {
-                "id": "prize-6000_probability-50_wager-2000",
+                "id": "prize-5000_probability-50_wager-1000",
                 "rarity": "UR",
                 "values": {
-                  "wager": 2000,
+                  "wager": 1000,
                   "probability": 50,
-                  "prize": 6000
+                  "prize": 5000
                 },
                 "skins": [
                   {
                     "id": "card_fate_coin",
-                    "name": "命运硬币",
+                    "name": "DNF命运硬币",
                     "rarity": "UR",
-                    "quote": "这把要么起飞，要么吃土！",
-                    "description": "硬币被你弹向半空，桌边的人跟着屏住呼吸。它还没落下，你已经把暴富和吃土的台词各准备了一套。",
+                    "quote": "来个回血，别又劈我！",
+                    "description": "血条只剩一丝，你咬牙点下命运硬币。硬币在半空转了几圈，队友已经默默退开。圣光和落雷到底哪个先到，全看这枚硬币愿不愿意把你当自己人。",
                     "cardType": "主动"
                   },
                   {
                     "id": "card_all_in_ticket",
                     "name": "孤注一掷",
                     "rarity": "UR",
-                    "quote": "赢了买地，输了认账！",
-                    "description": "你把筹码往桌中央一推，连豪言壮语都押了上去。刚才还在劝你冷静的朋友，已经掏出手机准备拍表情包。",
+                    "quote": "今天睡地板，明天当老板！",
+                    "description": "陆经理在台上振臂高喊，台下的人跟着拍手，声音一轮比一轮整齐。潘生站在人群里，看了一眼紧闭的大门，又看了一眼墙上的高薪海报。掌声越热闹，他越想知道出口在哪里。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 228
               }
             ]
           }
@@ -1522,7 +1218,8 @@
                     "description": "吉格斯戴好护目镜，把新作品摆上工作台，郑重宣布这次实验绝对可控。助手刚翻开记录本，整扇窗户就从眼前飞了出去。烟尘里，他兴奋地竖起一根手指：很好，现在我们知道窗户不够结实了。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 396
               }
             ]
           }
@@ -1548,7 +1245,467 @@
                     "description": "欧庇克莱歌剧院的灯光亮起，芙宁娜站在高处，张开双臂向满座观众宣告自己的神名。聚光灯随她的手势转向被告席，方才还喧闹的剧场骤然安静。她得意地抬起下巴，仿佛下一场审判的主角，已经由她亲手选定。",
                     "cardType": "主动"
                   }
-                ]
+                ],
+                "weight": 396
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fullDemolish",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_shinra_tensei",
+                    "name": "神罗天征",
+                    "rarity": "UR",
+                    "quote": "让世界感受痛苦吧！神罗天征！",
+                    "description": "黑底红云的衣袍在高空翻动，佩恩俯视着脚下的木叶，缓缓张开双臂。喧闹的村落仿佛在这一刻静止，随即，无形的斥力从天而降。街道、房屋与尘土被一并推向远方，只留下巨大的凹坑，以及烟尘中那道悬空的身影。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 228
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fullUpgrade",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_wood_houses",
+                    "name": "木遁·连柱家之术",
+                    "rarity": "UR",
+                    "quote": "木遁·连柱家之术！",
+                    "description": "赶了一天的路，众人正准备找地方过夜，大和已经走到空地中央，双手结印。木柱接连破土，梁架自行交错，一排木屋转眼拔地而起。别人执行任务还要考虑露宿，他随队出发，连住宿都能当场解决——木遁的用途，在大和队长手里格外实在。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 114
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "shield",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_eva_at_field",
+                    "name": "A.T.力场",
+                    "rarity": "SSR",
+                    "quote": "A.T.力场，全开！",
+                    "description": "橙色的光壁在初号机面前层层展开。迎面而来的冲击撞上屏障，空气随之扭曲，身后的建筑却依然安静地立在那里。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "recycle",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_sgs_zhiheng",
+                    "name": "制衡",
+                    "rarity": "SR",
+                    "quote": "容我三思。",
+                    "description": "孙权将案上的几封奏报移到一旁，又从余下的文书中抽出新的几封。群臣还在争论方才的安排，他已经重新审视起整盘局势。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "discover",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_hs_discover",
+                    "name": "发现·探险者的抉择",
+                    "rarity": "SSR",
+                    "quote": "好吧，只能带一件。",
+                    "description": "遗迹深处的石门缓缓升起，三件古怪的宝物同时亮了起来。雷诺挽起袖子，刚想全抱走，脚下的机关便发出了不太友善的响声。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sap",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_wow_sap",
+                    "name": "闷棍",
+                    "rarity": "SR",
+                    "quote": "睡一会儿，东西我替你保管。",
+                    "description": "你正低头清点行囊，身后的影子忽然近了一步。后脑勺传来一声闷响，再醒来时，四周很安静，包里却像是少了点什么。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 380
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "exchange",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_fma_exchange",
+                    "name": "等价交换",
+                    "rarity": "UR",
+                    "quote": "想得到什么，就得付出代价。",
+                    "description": "爱德华双手合十，将手掌重重按向地面。蓝色电光沿着阵纹奔走，原有的形态在光中分解，再以另一种形式重新组合。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 95
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "slow",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "R",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_onepiece_slow",
+                    "name": "迟缓光线",
+                    "rarity": "R",
+                    "quote": "别急，好戏才刚开始！",
+                    "description": "福克西咧开嘴，摆出那个古怪的手势。一束光扫过，你明明已经迈出了腿，身体却像还在等上一秒的自己追上来。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "swapAny",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_tianlong_star_shift",
+                    "name": "斗转星移",
+                    "rarity": "SSR",
+                    "quote": "以彼之道，还施彼身。",
+                    "description": "慕容复侧身接住来势，手腕轻轻一转。出招的人只觉眼前一晃，原本对准别人的方向，转眼便成了自己最不愿面对的处境。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 380
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kamui",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_kamui",
+                    "name": "神威空间",
+                    "rarity": "UR",
+                    "quote": "这里，已经不属于这个世界了。",
+                    "description": "写轮眼中的纹样缓缓转动，眼前的空间随之卷成漩涡。整座建筑被无声地吸入中心，原地只剩一道逐渐合拢的扭曲。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 190
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "handDestruction",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_yugioh_hand_destruction",
+                    "name": "手牌抹杀",
+                    "rarity": "SSR",
+                    "quote": "这手牌，全部重来！",
+                    "description": "魔法卡翻开的瞬间，双方手中的卡片同时化作碎光。刚刚还握在掌心的布局消失了，新一轮命运已经落到指间。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 285
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "gravity",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_chibaku_tensei",
+                    "name": "地爆天星",
+                    "rarity": "SSR",
+                    "quote": "都到这里来。",
+                    "description": "黑色球体缓缓升起，碎石开始脱离地面。下一刻，四周的一切都被无形的力量扯向同一个中心，连站稳都成了奢望。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 285
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "reaper",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_reaper_seal",
+                    "name": "尸鬼封尽",
+                    "rarity": "UR",
+                    "quote": "这份代价，你我一起承担。",
+                    "description": "死神的虚影在身后浮现，冰冷的手臂穿过施术者的身体，伸向面前的敌人。这场封印从一开始，就没有为任何一方留下完整的退路。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 95
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "shadowstep",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_wow_shadowstep",
+                    "name": "暗影步",
+                    "rarity": "SR",
+                    "quote": "往哪儿看呢？",
+                    "description": "前方的人还在留意街口，你的身影已经融进脚边的暗处。再出现时，你与他的距离，只剩下一个转身。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "homeTeleport",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_lol_teleport",
+                    "name": "传送",
+                    "rarity": "SSR",
+                    "quote": "守住，我到了。",
+                    "description": "紫色光柱在远处的建筑旁亮起，旋转的符文越来越清晰。守在原地的人还没看清来者，一道身影已经落在光芒中央。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 380
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "blackhole",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_original_blackhole",
+                    "name": "黑洞",
+                    "rarity": "SSR",
+                    "quote": "多余的东西，就到此为止。",
+                    "description": "一点漆黑在街道中央张开，周围的光线都向它弯去。旗帜、碎石与悬浮的符文被卷入其中，旋涡闭合时，街面已恢复平静。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 380
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "meteor",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_naruto_meteor",
+                    "name": "陨星",
+                    "rarity": "SSR",
+                    "quote": "那么，下一颗呢？",
+                    "description": "巨大的阴影忽然遮住天空，众人抬起头，才发现云层之上还有更庞大的轮廓。第一声轰鸣尚未散去，下一颗陨石已经逼近地面。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 570
               }
             ]
           }

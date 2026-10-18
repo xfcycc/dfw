@@ -15,6 +15,10 @@ public class ArchiveRules {
     private static final String PREVIOUS_BARRIER_RULES = "46709d3ca47ef8ad32dca845b91bcb56f929fae9eb15f0e9d9b6c2d5067b7ed6";
     /** 当前默认四类规则摘要，路障允许放在前方六格内任意无路障地块。 */
     private static final String CURRENT_BARRIER_RULES = "9bec850b41eecf601a0f20cac3448e6f2425185c034eb6f8989cb3226454c247";
+    /** 本次扩展前默认规则，兼容缺省新增状态的已保存对局。 */
+    private static final String PRE_EXPANSION_RULES = "b386ed8437b2b1ead3c5b4ece63fe93e4abd83e425b8778ccc9d4b7aff4ebbe4";
+    /** 已确认十九项扩展内容的默认规则摘要，不放宽任意外部配置。 */
+    private static final String EXPANSION_RULES = "13733a2ff165c91a601ae06128896ed1f6eb89523eb1a30a5858257f8e5b7e3d";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -30,9 +34,9 @@ public class ArchiveRules {
         }
         digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.write(values).getBytes(StandardCharsets.UTF_8)));
     }
-    /** 输入保存时的规则摘要，返回能否保留原进度并按当前规则继续；仅额外兼容本次路障范围扩展。 */
+    /** 输入保存时的规则摘要，返回能否保留原进度并按当前规则继续；仅额外兼容明确的旧默认规则与本次新增字段缺省。 */
     public boolean compatible(String savedDigest) {
-        return digest.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
+        return digest.equals(savedDigest) || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
     }
     /** 输入 JSON 值，递归排序对象键，保留数组顺序并返回规范化结构。 */
     private static Object normalize(Object value) {

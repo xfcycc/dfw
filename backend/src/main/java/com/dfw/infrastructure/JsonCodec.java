@@ -32,6 +32,8 @@ public class JsonCodec {
         if (action.mapSize == null) fields.remove("mapSize");
         if (action.decisionId == null) fields.remove("decisionId");
         if (action.keepCardIds == null) fields.remove("keepCardIds");
+        if (action.discardCardIds == null) fields.remove("discardCardIds");
+        if (action.secondPlayerId == null) fields.remove("secondPlayerId");
         if (action.claimId == null) fields.remove("claimId");
         if (action.name == null) fields.remove("name");
         if (action.references == null || action.references.isEmpty()) fields.remove("references");

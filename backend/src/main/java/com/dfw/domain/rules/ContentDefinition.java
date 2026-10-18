@@ -4,7 +4,7 @@ import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 按实际影响分档的内容文件，同档内按完整效果等概率抽取，皮肤只改变表达。 */
+/** 按完整效果独立配权的内容文件，稀有度标识影响等级，皮肤只改变表达。 */
 @Getter
 @Setter
 public class ContentDefinition {
@@ -35,6 +35,8 @@ public class ContentDefinition {
         public String id;
         /** 实际效果的影响等级：R、SR、SSR 或 UR，同效果卡面必须一致。 */
         public String rarity;
+        /** 完整效果的正整数抽取权重；旧配置全部缺省时沿用原分档抽取。 */
+        public Integer weight;
         /** 步数、金额、次数或概率；类型不混用。 */
         public Map<String, Long> values;
         /** 只改变卡面文案的皮肤。 */

@@ -14,6 +14,7 @@ public class TurnService {
     public TurnService(EconomyService economy, RandomSource random, EffectResolver effects, ContentService content, ActivityService activities) {
         this.economy = economy; this.random = random; this.effects = effects; this.content = content; this.activities = activities;
         effects.register("DRAW_CARDS", this::drawCards);
+        effects.register("DIRECTED_TELEPORT", this::directedTeleport);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", this::moveEffect);
         effects.register("RANDOM_TELEPORT", this::teleport);
@@ -95,11 +96,28 @@ public class TurnService {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
             if (player.position == 0) rewardStart(room, player, steps > 0 ? "向前经过起点" : "后退经过起点");
             Tile tile = room.board.get(player.position);
-            if (tile.barrier && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
-            if (tile.barrier) { tile.barrier = false; log(room, player.name + " 在 " + tile.name + " 被路障拦下"); break; }
+            if (PropertyEffects.frozen(tile)) continue;
+            if ((tile.barrier || tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
+            if (tile.barrier || tile.meteorCharges>0) {
+                if(tile.barrier) tile.barrier=false; else tile.meteorCharges--;
+                log(room, player.name + " 在 " + tile.name + " 被路障或陨星拦下，每次仅消耗一层"); break;
+            }
         }
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
+        content.overflow(room);
+    }
+    /** 输入已确认传送终点，替代掷骰并保存路径；到起点仅领取一次奖励，落点交原 LANDING 阶段。 */
+    private void directedTeleport(Room room, GameEffect effect) {
+        Player actor=player(room,effect.playerId); Tile destination=tile(room,effect.tileId);
+        GameError.require(destination!=null,"传送终点不可用");
+        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=actor.id; motion.from=actor.position; motion.teleport=true;
+        actor.position=destination.id; motion.path.add(destination.id);
+        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=actor.id; segment.from=motion.from; segment.path=motion.path; segment.teleport=true;
+        room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
+        room.runtime.rollMode="DIRECTED"; room.runtime.windowExit="replace_roll";
+        log(room,actor.name+" 传送至 "+destination.name+"（"+destination.id+"号），替代本次掷骰并正常结算");
+        if(destination.id==0) rewardStart(room,actor,"传送到达起点");
         content.overflow(room);
     }
     /** 输入已校验的传送目标玩家，随机直达任意地块并保存动画；不走路径、不结算落点或消费振奋。 */
@@ -142,10 +160,13 @@ public class TurnService {
                 content.event(room, player, tile.type);
             }
             case "property" -> {
+                if(PropertyEffects.frozen(tile)) { log(room,player.name+" 停在神威中的 "+tile.name+"，不结算地产效果"); break; }
+                boolean found=tile.treasure;
+                if(found) { long reward=PropertyEffects.baseRent(room,tile); tile.treasure=false; player.cash=Math.addExact(player.cash,reward); log(room,player.name+" 在 "+tile.name+" 领取宝藏 ¥"+reward+"，本次不收租且保留全部租金状态"); }
                 if (tile.ownerId == null) { room.phase = "buy"; room.pending = pending("buy", player, tile.id, tile.price, null); }
                 else if (tile.ownerId.equals(player.id)) {
                     if (!tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }
-                } else if (!tile.mortgaged) {
+                } else if (!found && !tile.mortgaged) {
                     charge(room, player, Rules.rent(room, tile), tile.ownerId, tile.id);
                 }
             }

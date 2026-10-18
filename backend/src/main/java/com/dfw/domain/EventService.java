@@ -32,7 +32,7 @@ public final class EventService {
         int affected=0;
         for (Tile target : room.board) {
             Player owner=owners.get(target.ownerId);
-            if (!target.type.equals("property") || target.level<=0 || owner==null) continue;
+            if (!target.type.equals("property") || target.level<=0 || owner==null || PropertyEffects.preventDemolition(room,target)) continue;
             int previousLevel=target.level; long rent=Rules.rent(room,target);
             long compensation=Math.multiplyExact(rent,effect.compensationPercent)/100;
             target.level--; owner.cash=Math.addExact(owner.cash,compensation); affected++;
@@ -70,23 +70,24 @@ public final class EventService {
         room.phase = frame.returnPhase; room.runtime.globalEvent = null;
         if (!turns.checkWinner(room) && current(room).bankrupt) turns.advance(room);
     }
-    /** 输入指定或随机地块，保存实际损失及摧毁前租金后触发补偿订阅，空目标无事实。 */
+    /** 输入指定或随机地块，保存实际损失；事件触发原补偿订阅，UR 全拆手牌不补偿，空目标无事实。 */
     private void destroy(Room room, GameEffect effect) {
         Tile target = tile(room, effect.tileId);
         if ("RANDOM_BUILT_PROPERTY".equals(effect.selector)) {
-            List<Tile> candidates = room.board.stream().filter(value -> value.type.equals("property") && value.ownerId != null && value.level > 0).toList();
+            List<Tile> candidates = room.board.stream().filter(value -> value.type.equals("property") && !PropertyEffects.frozen(value) && value.ownerId != null && value.level > 0).toList();
             if (candidates.isEmpty()) { log(room, "龙卷风经过，当前没有可摧毁的建筑"); return; }
             target = candidates.get(random.nextInt(candidates.size()));
         }
         require(target != null && target.type.equals("property"), "请选择有效地产");
         Player owner = player(room, target.ownerId);
         if (target.level == 0 || owner == null || owner.bankrupt) { log(room, target.name + " 没有实际建筑损失，不触发补偿"); return; }
+        if (PropertyEffects.preventDemolition(room,target)) return;
         DisasterResult result = new DisasterResult(); result.effectId = effect.id; result.tileId = target.id; result.ownerId = owner.id;
         result.destroyedLevels = target.level; result.loss = Math.multiplyExact(Rules.buildCost(room, target), target.level);
         result.rent = Rules.rent(room, target);
         target.level = 0; result.eventId = random.id(); room.runtime.lastDisaster = result;
         log(room, target.name + " 的 " + result.destroyedLevels + " 级建筑被摧毁，" + owner.name + " 损失 " + result.loss);
-        publishDestroyed(room, result, owner);
+        if (effect.content == null || !"card".equals(effect.content.pool) || !"fullDemolish".equals(effect.content.mechanism)) publishDestroyed(room, result, owner);
         HistoryTrace.event(room, "disaster", owner.id, "建筑灾害结果已确定", result);
     }
     /** 输入实际损失与租金快照，按当前规则保存匹配明细并插入以租金为基数的补偿效果。 */

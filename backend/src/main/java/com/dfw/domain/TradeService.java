@@ -39,8 +39,8 @@ public class TradeService {
         require(trade.giveCash > 0 || trade.wantCash > 0 || !trade.giveTiles.isEmpty() || !trade.wantTiles.isEmpty(), "请选择交易内容");
         Set<Integer> unique = new HashSet<>(trade.giveTiles); unique.addAll(trade.wantTiles);
         require(unique.size() == trade.giveTiles.size() + trade.wantTiles.size(), "交易地产不能重复");
-        for (int id : trade.giveTiles) economy.ownedTile(room, from, id);
-        for (int id : trade.wantTiles) economy.ownedTile(room, to, id);
+        for (int id : trade.giveTiles) require(!PropertyEffects.frozen(economy.ownedTile(room, from, id)), "神威空间中的地产不能交易");
+        for (int id : trade.wantTiles) require(!PropertyEffects.frozen(economy.ownedTile(room, to, id)), "神威空间中的地产不能交易");
     }
     /** 输入发起人和报价参数，建立待确认交易并公开双方及报价明细。 */
     public void offer(Room room, Player player, Action action) {

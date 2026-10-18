@@ -18,8 +18,10 @@ public class GameAction {
     public String claimId;
     /** 待选身份，防止恢复后提交旧选择。 */
     public String decisionId;
-    /** 手牌超限时恰好保留的六张牌。 */
+    /** 手牌超限时按本人当前上限恰好保留的牌。 */
     public List<String> keepCardIds;
+    /** 制衡确认弃掉的本人旧牌，不含发动卡。 */
+    public List<String> discardCardIds;
     /** 本人选择的内置角色形象。 */
     public String avatarId;
     /** 本次活动身份。 */
@@ -46,6 +48,8 @@ public class GameAction {
     public Integer tileId;
     /** 目标玩家。 */
     public String playerId;
+    /** 斗转星移的第二名玩家，其他操作留空。 */
+    public String secondPlayerId;
     /** 交易接收人。 */
     public String toId;
     /** 发起人现金。 */

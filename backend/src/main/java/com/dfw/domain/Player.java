@@ -50,4 +50,6 @@ public class Player {
     public List<PlayerStatus> statuses = new ArrayList<>();
     /** 私人手牌，仅在服务端及本人状态中使用。 */
     public List<Card> hand = new ArrayList<>();
+    /** 本局永久扣减的手牌位，旧快照为零，新局重置。 */
+    public int handLimitReduction;
 }

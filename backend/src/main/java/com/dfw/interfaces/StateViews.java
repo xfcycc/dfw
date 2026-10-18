@@ -20,7 +20,8 @@ public final class StateViews {
         for (Player player : room.players) assets.put(player.id, Rules.netWorth(room, player));
         for (Player player : room.players) {
             PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position;
-            p.cardCount = player.hand.size();
+            p.cardCount = player.hand.size(); p.handLimit=PropertyEffects.handLimit(player);
+            p.nextRollHalf=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_ROLL_HALF") && s.remainingTurns>0);
             p.netWorth = assets.get(player.id); p.assetRank = player.bankrupt ? null : 1 + (int) room.players.stream().filter(other -> !other.bankrupt && assets.get(other.id) > p.netWorth).count();
             p.settlement = settlement(player.matchStats);
             p.botDifficulty = player.botDifficulty; p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
@@ -53,7 +54,7 @@ public final class StateViews {
             ContentChoice choice=room.runtime.choice;
             if(choice!=null && choice.playerId.equals(id)) {
                 ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=ContentService.choiceTargets(room,choice); v.cards=choice.cards; v.cardId=choice.cardId;
-                v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; value.choice=v;
+                v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
             }
         }
         value.activeCardUsed = current(room) != null && current(room).id.equals(id) && room.activeCardUsed;
@@ -70,7 +71,7 @@ public final class StateViews {
         ActivityVo v=new ActivityVo(); v.id=a.id; v.kind=a.kind; v.tileId=a.tileId; v.triggerId=a.triggerId; v.stage=a.stage; v.round=a.round; v.participants=a.participants; v.contenders=a.contenders; v.submitted=new java.util.ArrayList<>(a.choices.keySet());
         if(a.kind.equals("horse")) v.bets=a.choices;
         v.revealed=a.revealed; v.wagers=a.wagers; v.payouts=a.payouts; v.currentPlayerId=a.currentPlayerId; v.opponentId=a.opponentId; v.lastShooterId=a.lastShooterId; v.shots=a.shots;
-        v.level=a.level; v.safePaths=a.safePaths;
+        v.level=a.level; v.safePaths=a.safePaths; v.cardRewards=a.cardRewards;
         v.startedAt=a.startedAt; v.endsAt=a.endsAt; v.settled=a.settled; v.summary=a.summary;
         if(a.settled && (a.kind.equals("casino") || a.kind.equals("horse"))) v.result=a.sample;
         if(a.kind.equals("packet")) {

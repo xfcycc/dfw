@@ -10,13 +10,13 @@ import lombok.Setter;
 public class ContentChoice {
     /** 唯一选择身份。 */
     public String id;
-    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release 或 hand_limit。 */
+    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release、hand_limit、recycle 或 discover。 */
     public String type;
     /** 实际做选择的玩家。 */
     public String playerId;
     /** 可选地产，确认时再次校验合法性。 */
     public List<Integer> tileIds = new ArrayList<>();
-    /** 手牌超限时的完整候选牌，补给结果已确定。 */
+    /** 超限、制衡或发现的完整候选牌，补给结果已确定。 */
     public List<Card> cards = new ArrayList<>();
     /** 触发选择的主动卡，免费升级确认成功才消费。 */
     public String cardId;
