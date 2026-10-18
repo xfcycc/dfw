@@ -260,7 +260,7 @@ watch([eligibleTiles, eligiblePlayers], () => {
 watch([modal, targetKind], () => { if (!targeting.value || targetKind.value !== 'tile') mapPicking.value = false; });
 const actionStatus = computed(() => {
   if (game.connection !== 'online') return '正在连接';
-  if (game.settling) return game.settlementRevealing ? '查看卡牌，收起后继续移动' : '移动中，落地后结算';
+  if (game.settling) return game.settlementRevealing ? '查看卡牌，收起后播放效果' : '效果播放中，完成后继续';
   if (game.room?.pausedReason) return '等待重连';
   if (game.room?.status === 'finished') return '本局结束';
   if (game.room?.tradePending) return '交易中';
@@ -368,7 +368,7 @@ async function switchSpectatorView(mode: 'follow' | 'landscape'): Promise<void> 
 }
 /** 输入本人手牌，在窗口中查看或准备使用；付款防御复用当前费用窗口。 */
 function chooseCard(card: Card): void {
-  if (game.settling) { game.notify('人物移动完成后再使用道具。'); return; }
+  if (game.settling) { game.notify('效果播放完成后再使用道具。'); return; }
   if (selectedCard.value?.id === card.id) { modal.value = 'card'; return; }
   if (payment.value && !payment.value.defenseResolved && defenseCards.value.some(value => value.id === card.id)) { selectedDefense.value = card.id; modal.value = 'defense'; return; }
   if (choice.value || game.privateData?.trade || game.busy) { game.notify('请先处理当前选择或报价。'); return; }
@@ -564,7 +564,7 @@ async function resetSession(): Promise<void> {
         <div id="mobile-workbench-ranking" v-show="workbenchTab === 'ranking'" role="region" aria-label="资产排行"></div>
       </div></div>
     </Modal>
-    <Modal panel-class="modern-modal decision-modal" v-if="modal === 'decision' && game.room && hasCentralDecision && !game.cardReveals.length" :title="decisionTitle"  @close="modal = null"><div class="action-details">
+    <Modal panel-class="modern-modal decision-modal" v-if="modal === 'decision' && game.room && hasCentralDecision && !game.cardReveals.length && !game.settling" :title="decisionTitle"  @close="modal = null"><div class="action-details">
                         <template v-if="game.canDecide">
                           <template v-if="game.room.pending?.type === 'choice'">
                             <template v-if="choice"><p class="muted">{{ choice.content?.name ?? '当前选择' }} · {{ choice.type === 'hand_limit' ? '整理手牌后继续行动' : '请打开窗口处理本次选择' }}</p><button class="button primary small" :disabled="!game.canAct" @click="openWorkbench('choice')">处理当前选择</button></template>

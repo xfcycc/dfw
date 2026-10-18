@@ -32,7 +32,13 @@ public class ItemService {
         switch (effect.type) {
             case "PLACE_BARRIER" -> { require(tile != null && !PropertyEffects.frozen(tile) && !tile.barrier, "路障目标不可用"); tile.barrier = true; log(room, player.name + " 在 " + tile.name + " 设置了路障"); }
             case "DEMOLISH" -> { require(tile != null && tile.ownerId != null && tile.level > 0, "建筑目标不可用"); if (!PropertyEffects.preventDemolition(room, tile)) { tile.level--; log(room, tile.name + " 的建筑降低一级"); } }
-            case "SWAP_POSITION" -> { Player target = player(room, effect.targetId); require(target != null && !target.bankrupt && !target.id.equals(player.id), "换位目标不可用"); int position = player.position; player.position = target.position; target.position = position; log(room, player.name + " 与 " + target.name + " 交换了位置"); }
+            case "SWAP_POSITION" -> {
+                Player target = player(room, effect.targetId); require(target != null && !target.bankrupt && !target.id.equals(player.id), "换位目标不可用");
+                MotionSegment segment = BoardEffect.begin("swap", player);
+                BoardEffect.movement(segment, player, target.position); BoardEffect.movement(segment, target, player.position);
+                int position = player.position; player.position = target.position; target.position = position;
+                BoardEffect.publish(room, segment); log(room, player.name + " 与 " + target.name + " 交换了位置");
+            }
             case "WAIVE_RENT" -> { require(room.phase.equals("rent") && room.pending != null && room.pending.playerId.equals(player.id), "当前没有待支付的租金"); log(room, "log", player.id, player.name + " 免除 " + paymentDescription(room, room.pending) + " ¥" + String.format("%,d", room.pending.amount) + "，剩余待支付 ¥0"); room.phase = "manage"; room.pending = null; }
             default -> throw new GameError("未知道具效果");
         }

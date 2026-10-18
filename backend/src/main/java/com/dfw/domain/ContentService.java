@@ -92,7 +92,7 @@ public final class ContentService {
                 for (Player target : room.players) if (!target.bankrupt) { GameEffect e=effects.effect("ADD_STATUS",target); e.statusId="NEXT_MOVE_DOUBLE"; e.amount=1; effects.submit(room,e); }
             }
             case "talent" -> { submit(room,"GRANT_RANDOM_LAND",owner,0); submit(room,"GRANT_MONEY",owner,p.get("amount")); submit(room,"DRAW_CARDS",owner,p.get("count")); }
-            case "global_demolition" -> { GameEffect e=effects.effect("LOWER_ALL_BUILDINGS",owner); e.compensationPercent=p.get("compensationPercent").intValue(); effects.submit(room,e); }
+            case "global_demolition" -> { GameEffect e=effects.effect("LOWER_ALL_BUILDINGS",owner); e.content=r; e.compensationPercent=p.get("compensationPercent").intValue(); effects.submit(room,e); }
             case "trap_immunity","next_waiver","rent_double" -> { GameEffect e=effects.effect("ADD_STATUS",owner); e.statusId=switch(r.mechanism){case "trap_immunity"->"TRAP_IMMUNITY";case "next_waiver"->"NEXT_PAYMENT_WAIVER";default->"NEXT_RENT_DOUBLE";}; e.amount=r.mechanism.equals("trap_immunity")?3:1; effects.submit(room,e); }
             default -> expansion.event(room, owner, r);
         }
@@ -146,11 +146,11 @@ public final class ContentService {
     private void gamble(Room room,GameEffect effect) { ContentChoice choice=open(room,player(room,effect.playerId),"gamble"); choice.content=effect.content; }
     /** 输入刚施加的监禁或休息，解控持有人立即选择；无解控则直接施加对应限制。 */
     public void restrict(Room room,Player owner,int count,boolean jailed) {
-        if (owner.hand.stream().anyMatch(c -> c.kind.equals("release"))) { ContentChoice choice=open(room,owner,"release"); choice.skipTurns=count; choice.jailed=jailed; return; }
+        if (owner.hand.stream().anyMatch(c -> c.kind.equals("release"))) { ContentChoice choice=open(room,owner,"release"); choice.skipTurns=count; choice.jailed=jailed; BoardEffect.cue(room,jailed?"jail":"rest",owner); return; }
         applyRestriction(room,owner,count,jailed);
     }
     /** 输入确定限制参数，保存后续跳过次数；监禁立即暂停收租，普通休息仍可收租，无返回值。 */
-    private static void applyRestriction(Room room,Player owner,int count,boolean jailed) { SettlementService.observe(room); if (jailed && count > 0) owner.matchStats.jailCount++; owner.skipTurns=Math.max(owner.skipTurns,count); owner.jailed=jailed || owner.jailed; log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"+(jailed?"；服刑期间暂停收租，其他小游戏正常参与":"")); }
+    private static void applyRestriction(Room room,Player owner,int count,boolean jailed) { SettlementService.observe(room); if (jailed && count > 0) owner.matchStats.jailCount++; owner.skipTurns=Math.max(owner.skipTurns,count); owner.jailed=jailed || owner.jailed; log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"+(jailed?"；服刑期间暂停收租，其他小游戏正常参与":"")); BoardEffect.cue(room,jailed?"jail":"rest",owner); }
     /** 输入选择拥有者和类型，保存父事项并开放唯一私人选择，返回可填写参数的选择帧。 */
     ContentChoice open(Room room,Player owner,String type) {
         require(room.runtime.choice==null && room.trade==null,"请先处理已有选择");
@@ -174,15 +174,18 @@ public final class ContentService {
                 owner.hand=new ArrayList<>(choice.cards.stream().filter(c -> kept.contains(c.id)).toList());
                 owner.cash=Math.addExact(owner.cash,Math.multiplyExact(choice.cards.size()-limit,choice.discardCash));
                 log(room,owner.name+" 已整理私人补给");
+                if (choice.cards.size()>limit && choice.discardCash>0) BoardEffect.cue(room,"income",owner);
             }
             case "free_upgrade","full_upgrade" -> {
                 if (Boolean.TRUE.equals(action.accept)) {
                     require(choice.tileIds.contains(action.tileId) && upgradeTargets(room,owner).contains(action.tileId),"请选择合法的自家地产");
                     Tile target=tile(room,action.tileId);
+                    BoardEffect.Observation presentation=BoardEffect.watch(room,"upgrade",owner);
                     if(choice.cardId!=null) consume(room,owner,find(owner,choice.cardId),true,action);
                     int previousLevel=target.level; target.level=choice.type.equals("full_upgrade") ? Rules.MAX_LEVEL : target.level+1;
                     SettlementService.observe(room); owner.matchStats.builtLevels += target.level - previousLevel;
                     room.upgradedTiles.add(target.id); log(room,"log",owner.id,owner.name+" 免费升级 "+target.name+"（"+target.id+"号），建筑从 "+previousLevel+" 级升至 "+target.level+" 级，费用 ¥0，现金余额 ¥"+String.format("%,d",owner.cash));
+                    presentation.finish(room);
                 }
             }
             case "self_destroy","opponent_destroy" -> {
@@ -205,12 +208,14 @@ public final class ContentService {
                     boolean won=choice.sample<choice.content.parameters.get("probability");
                     if(won) owner.cash=Math.addExact(owner.cash,choice.content.parameters.get("prize"));
                     log(room,owner.name+" 下注 ¥"+wager+(won?"，中奖获得 ¥"+choice.content.parameters.get("prize"):"，本次未中奖"));
+                    BoardEffect.cue(room,won?"gambleWin":"gambleLose",owner);
                 } else if (choice.cardId == null) log(room,owner.name+" 放弃本次赌博");
             }
             case "release" -> {
                 if(Boolean.TRUE.equals(action.accept)) {
                     Card card=find(owner,action.cardId); require(card.kind.equals("release"),"请选择解控卡"); consume(room,owner,card,false,action);
                     log(room,owner.name+" 解除本次"+(choice.jailed?"监禁":"休息"));
+                    BoardEffect.cue(room,"release",owner);
                 } else applyRestriction(room,owner,choice.skipTurns,choice.jailed);
             }
             default -> throw new GameError("选择类型不可用");
@@ -252,7 +257,7 @@ public final class ContentService {
                 require(opponent!=null && !opponent.bankrupt,"请选择一名未破产玩家，可选择自己"); consume(room,owner,card,true,action);
                 effects.submit(room,effects.effect("SEND_TO_JAIL",opponent));
             }
-            case "bonus" -> { consume(room,owner,card,true,action); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); }
+            case "bonus" -> { consume(room,owner,card,true,action); room.runtime.rollBonus=card.parameters.get("steps").intValue(); log(room,owner.name+" 为本次掷骰增加 "+room.runtime.rollBonus+" 格"); BoardEffect.cue(room,"moveBoost",owner); }
             case "cash" -> { consume(room,owner,card,true,action); submit(room,"GRANT_MONEY",owner,card.parameters.get("amount")); }
             case "freeUpgrade","fullUpgrade" -> {
                 List<Integer> targets=upgradeTargets(room,owner); if(targets.isEmpty()) { owner.contentNotice=card; owner.contentNoticeText="没有合法免费升级目标，此卡已保留"; return; }
@@ -264,6 +269,7 @@ public final class ContentService {
                 Card transferred=opponent.hand.get(random.nextInt(opponent.hand.size())); consume(room,owner,card,true,action); opponent.hand.remove(transferred); owner.hand.add(transferred);
                 owner.contentNotice=transferred; owner.contentNoticeText="抢夺获得这张道具"; opponent.contentNotice=transferred; opponent.contentNoticeText="这张道具被转移给 "+owner.name;
                 log(room,owner.name+" 对 "+opponent.name+" 发动私人道具转移"); overflow(room);
+                BoardEffect.cue(room,"steal",owner,opponent);
             }
             default -> expansion.use(room, owner, card, action);
         }
@@ -277,6 +283,7 @@ public final class ContentService {
             require(card.kind.equals("halfPayment") || card.kind.equals("immunity") && debt.type.equals("rent"),"此道具不能减免本笔费用");
             consume(room,owner,card,false,action); long reduction=card.kind.equals("immunity")?debt.amount:debt.amount/2; debt.amount-=reduction;
             log(room,"log",owner.id,owner.name+" 减免 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",reduction)+"，剩余待支付 ¥"+String.format("%,d",debt.amount));
+            BoardEffect.cue(room,card.kind.equals("immunity")?"immunity":"halfPayment",owner);
         } else log(room,"log",owner.id,owner.name+" 放弃本笔付款防御，仍需支付 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",debt.amount));
         debt.defenseResolved=true;
         if(debt.amount==0) { room.pending=null; room.phase="manage"; }

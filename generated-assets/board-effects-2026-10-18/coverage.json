@@ -1,0 +1,581 @@
+{
+  "scope": "当前启用内容配置的静态映射，不代表真实对局验收",
+  "entries": [
+    {
+      "pool": "card",
+      "mechanism": "remote",
+      "effects": [
+        "movement"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "move",
+      "effects": [
+        "movement"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "barrier",
+      "effects": [
+        "barrier",
+        "barrierHit"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "demolish",
+      "effects": [
+        "demolish",
+        "shieldBlock"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "swap",
+      "effects": [
+        "swap"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "immunity",
+      "effects": [
+        "immunity"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "bonus",
+      "effects": [
+        "moveBoost"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "freeUpgrade",
+      "effects": [
+        "upgrade"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "halfPayment",
+      "effects": [
+        "halfPayment"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "release",
+      "effects": [
+        "release"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "steal",
+      "effects": [
+        "steal"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "cash",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "gamble",
+      "effects": [
+        "gambleWin",
+        "gambleLose"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "blast",
+      "effects": [
+        "teleport"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "jail",
+      "effects": [
+        "teleport",
+        "jail",
+        "release"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "fullDemolish",
+      "effects": [
+        "demolish",
+        "shieldBlock"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "fullUpgrade",
+      "effects": [
+        "upgrade"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "shield",
+      "effects": [
+        "shield",
+        "shieldBlock"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "recycle",
+      "effects": [
+        "recycle"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "discover",
+      "effects": [
+        "discover"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "sap",
+      "effects": [
+        "rest",
+        "release",
+        "steal"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "exchange",
+      "effects": [
+        "exchange"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "slow",
+      "effects": [
+        "slow"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "swapAny",
+      "effects": [
+        "swapAny"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "kamui",
+      "effects": [
+        "kamui",
+        "kamuiRelease"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "handDestruction",
+      "effects": [
+        "handDestruction"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "gravity",
+      "effects": [
+        "gravity"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "reaper",
+      "effects": [
+        "seal"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "shadowstep",
+      "effects": [
+        "teleport"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "homeTeleport",
+      "effects": [
+        "teleport"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "blackhole",
+      "effects": [
+        "blackhole"
+      ],
+      "names": []
+    },
+    {
+      "pool": "card",
+      "mechanism": "meteor",
+      "effects": [
+        "meteor"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "income",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "fee",
+      "effects": [
+        "fee",
+        "payment"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "forward",
+      "effects": [
+        "movement"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "back",
+      "effects": [
+        "movement"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "skip",
+      "effects": [
+        "rest",
+        "release"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "cards",
+      "effects": [
+        "supply"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "all_income",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "all_fee",
+      "effects": [
+        "fee",
+        "payment"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "rich_fee",
+      "effects": [
+        "fee",
+        "payment"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "bottom_income",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "gamble",
+      "effects": [
+        "gambleWin",
+        "gambleLose"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "self_destroy",
+      "effects": [
+        "demolish",
+        "shieldBlock",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "disaster",
+      "effects": [
+        "demolish",
+        "shieldBlock",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "free_upgrade",
+      "effects": [
+        "upgrade",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "trap_immunity",
+      "effects": [
+        "trapImmune",
+        "statusExpired"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "next_waiver",
+      "effects": [
+        "waiver"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "rent_double",
+      "effects": [
+        "rentDouble"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "opponent_destroy",
+      "effects": [
+        "demolish",
+        "shieldBlock",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "all_morale",
+      "effects": [
+        "morale"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "jail",
+      "effects": [
+        "teleport",
+        "jail",
+        "release"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "concert",
+      "effects": [
+        "concert",
+        "concertRent"
+      ],
+      "names": []
+    },
+    {
+      "pool": "chance",
+      "mechanism": "shuffle",
+      "effects": [
+        "shuffle"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "income",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "cards_two",
+      "effects": [
+        "supply"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "cards_one",
+      "effects": [
+        "supply"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "directed",
+      "effects": [
+        "supply"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "free_upgrade",
+      "effects": [
+        "upgrade",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "all_income",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "next_waiver",
+      "effects": [
+        "waiver"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "bottom_bonus",
+      "effects": [
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "fee",
+      "effects": [
+        "fee",
+        "payment"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "full_upgrade",
+      "effects": [
+        "upgrade",
+        "income"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "talent",
+      "effects": [
+        "talent",
+        "income",
+        "supply"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "global_demolition",
+      "effects": [
+        "tornado"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "treasure",
+      "effects": [
+        "treasure",
+        "treasureClaim"
+      ],
+      "names": []
+    },
+    {
+      "pool": "fortune",
+      "mechanism": "all_cards",
+      "effects": [
+        "supply"
+      ],
+      "names": []
+    }
+  ]
+}

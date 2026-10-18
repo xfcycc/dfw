@@ -48,7 +48,9 @@ public final class ExpansionService {
                 List<Integer> order;
                 do { order=shuffled(indices); } while(hasFixedPoint(order));
                 List<Integer> positions=alive.stream().map(p -> p.position).toList();
-                for(int i=0;i<alive.size();i++) relocate(room,alive.get(i),positions.get(order.get(i)));
+                MotionSegment segment=BoardEffect.begin("shuffle",actor); segment.beforeEvent=result;
+                for(int i=0;i<alive.size();i++) relocate(room,segment,alive.get(i),positions.get(order.get(i)));
+                BoardEffect.publish(room,segment);
                 log(room,"ROOM·错位空间：所有未破产玩家均接手另一人的原位置，不结算落点或起点");
             }
             case "all_cards" -> {
@@ -63,12 +65,9 @@ public final class ExpansionService {
         for(int i=0;i<order.size();i++) if(order.get(i)==i) return true;
         return false;
     }
-    /** 输入房间、玩家和目标格，只保存直接位移片段，不结算路径与落点。 */
-    private void relocate(Room room,Player target,int position) {
-        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
-        target.position=position; motion.path.add(position);
-        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=target.id; segment.from=motion.from; segment.teleport=true; segment.path=motion.path;
-        room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
+    /** 输入房间、同批片段、玩家及目标格，记录实际换位，不结算路径与落点，无返回值。 */
+    private void relocate(Room room,MotionSegment segment,Player target,int position) {
+        BoardEffect.movement(segment,target,position); target.position=position;
         log(room,target.name+" 直接移动至 "+room.board.get(position).name+"（"+position+"号）");
     }
     /** 输入作用双方，将目标的一张随机手牌私下转交；空手时仍保留此前闷棍效果。 */
@@ -100,6 +99,8 @@ public final class ExpansionService {
                 Player landlord=player(room,target.ownerId); long price=PropertyEffects.baseRent(room,target);
                 if(card.kind.equals("exchange")) require(landlord!=null && !landlord.bankrupt && landlord!=actor && actor.cash>=price,"请选择付得起无修正租金的对手地产");
                 ContentService.consume(room,actor,card,true,action);
+                MotionSegment presentation=Set.of("kamui","blackhole","shield","exchange").contains(card.kind) ? BoardEffect.begin(card.kind,actor) : null;
+                if(presentation!=null) presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
                 switch(card.kind) {
                     case "shield" -> target.demolitionShield=true;
                     case "exchange" -> {
@@ -111,6 +112,7 @@ public final class ExpansionService {
                     case "homeTeleport" -> teleport(room,actor,target.id);
                     default -> throw new IllegalStateException("未处理的地产道具");
                 }
+                if(presentation!=null) { presentation.boardEffect.afterTiles.add(BoardEffect.appearance(target)); BoardEffect.publish(room,presentation); }
             }
             case "sap","slow","reaper","shadowstep" -> {
                 require(opponent!=null && !opponent.bankrupt && opponent!=actor,"请选择其他未破产玩家");
@@ -126,6 +128,7 @@ public final class ExpansionService {
                     case "reaper" -> {
                         actor.handLimitReduction++; opponent.handLimitReduction++;
                         log(room,actor.name+" 与 "+opponent.name+" 的本局手牌上限分别降为 "+PropertyEffects.handLimit(actor)+"、"+PropertyEffects.handLimit(opponent)+" 张"); content.overflow(room);
+                        BoardEffect.cue(room,"seal",actor,opponent);
                     }
                     case "shadowstep" -> teleport(room,actor,opponent.position);
                     default -> throw new IllegalStateException("未处理的玩家道具");
@@ -135,26 +138,34 @@ public final class ExpansionService {
                 Player second=player(room,action.secondPlayerId);
                 require(opponent!=null && second!=null && opponent!=second && !opponent.bankrupt && !second.bankrupt,"请选择两名不同的未破产玩家");
                 ContentService.consume(room,actor,card,true,action); int first=opponent.position, other=second.position;
-                relocate(room,opponent,other); relocate(room,second,first);
+                MotionSegment segment=BoardEffect.begin("swapAny",actor);
+                relocate(room,segment,opponent,other); relocate(room,segment,second,first); BoardEffect.publish(room,segment);
                 log(room,opponent.name+" 与 "+second.name+" 斗转星移，不结算落点或起点");
             }
             case "handDestruction" -> {
                 ContentService.consume(room,actor,card,true,action);
                 for(Player owner:room.players) if(!owner.bankrupt) { int count=owner.hand.size(); owner.hand.clear(); content.giveCards(room,owner,count,null); }
                 log(room,"手牌抹杀：所有未破产玩家的剩余手牌已等量重抽，弃牌不折现"); content.overflow(room);
+                BoardEffect.cue(room,"handDestruction",actor,room.players.toArray(Player[]::new));
             }
             case "gravity" -> {
                 ContentService.consume(room,actor,card,true,action);
-                for(Player owner:room.players) if(owner!=actor && !owner.bankrupt) relocate(room,owner,actor.position);
+                MotionSegment segment=BoardEffect.begin("gravity",actor);
+                for(Player owner:room.players) if(owner!=actor && !owner.bankrupt) relocate(room,segment,owner,actor.position);
+                BoardEffect.publish(room,segment);
                 log(room,"地爆天星：其他玩家聚集至 "+actor.name+" 所在格，不结算任何落点");
             }
             case "meteor" -> {
                 List<Tile> candidates=properties(room); require(!candidates.isEmpty(),"没有可放置陨星的地产");
                 ContentService.consume(room,actor,card,true,action); int count=Math.min(1+random.nextInt(3),candidates.size());
+                MotionSegment segment=BoardEffect.begin("meteor",actor);
                 for(Tile property:shuffled(candidates).stream().limit(count).toList()) {
+                    segment.boardEffect.beforeTiles.add(BoardEffect.appearance(property));
                     property.meteorCharges=Math.addExact(property.meteorCharges,1);
+                    segment.boardEffect.afterTiles.add(BoardEffect.appearance(property));
                     log(room,"陨星落在 "+property.name+"（"+property.id+"号），剩余陨星截停次数 "+property.meteorCharges);
                 }
+                BoardEffect.publish(room,segment);
             }
             default -> throw new GameError("该道具不可主动使用");
         }
@@ -177,5 +188,6 @@ public final class ExpansionService {
             ContentService.consume(room,actor,source,true,action); actor.hand.add(selected); actor.contentNotice=selected; actor.contentNoticeText="发现获得这张道具";
         }
         log(room,actor.name+" 已完成私人选牌，弃置牌不折现");
+        BoardEffect.cue(room,choice.type,actor);
     }
 }

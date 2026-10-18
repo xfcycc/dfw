@@ -1,6 +1,8 @@
 import { onBeforeUnmount, ref, watch } from 'vue';
 import type { PublicRoomState } from '../../shared/types';
 import { playSound, type Sound } from '../audio';
+import { boardEffectDuration } from '../board-effect-presentation';
+import { prepareEffectSprite } from '../effect-sprites';
 
 const DICE_ROLL_MS = 780;
 const DICE_HOLD_MS = 220;
@@ -14,6 +16,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   const rolling = ref(false);
   const celebrating = ref(false);
   const motion = ref<PublicRoomState['motion']>(null);
+  const boardEffect = ref<PublicRoomState['motion']>(null);
   const animatedPosition = ref<{ id: string; position: number } | null>(null);
   const moving = ref(false);
   const landing = ref(false);
@@ -32,8 +35,13 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   /** 无入参，取消旧路径和延迟声音，恢复服务端位置，无返回值。 */
   function clearMotion(): void {
     motionTimers.forEach(clearTimeout); motionTimers.clear();
-    motion.value = null; animatedPosition.value = null; rolling.value = false;
+    motion.value = null; boardEffect.value = null; animatedPosition.value = null; rolling.value = false;
     moving.value = false; landing.value = false; step.value = 0; diceResult.value = null;
+  }
+  /** 输入已完成的演出标识，幂等释放本段，服务端结算结果交原队列展示，无返回值。 */
+  function finishBoardEffect(id: string): void {
+    if (boardEffect.value?.id !== id) return;
+    clearMotion(); settled(id);
   }
   /** 输入快照、掷骰标识及落点反馈，展示走格或直接传送动画，无返回值。 */
   function animateMotion(next: PublicRoomState, roll: boolean, feedback: () => void): void {
@@ -41,6 +49,17 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     const movement = next.motion!;
     if (roll) playSound('dice');
     if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { feedback(); settled(movement.id); return; }
+    if (movement.boardEffect) {
+      motion.value = movement;
+      void prepareEffectSprite(movement.boardEffect.kind).then(() => {
+        if (motion.value?.id !== movement.id) return;
+        if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { clearMotion(); settled(movement.id); return; }
+        boardEffect.value = movement; playSound('magic');
+        // 图集解码完成后才启动时间轴和兜底计时，首次加载不占用播放时长。
+        later(boardEffectDuration(movement.boardEffect!.kind) + 250, () => finishBoardEffect(movement.id), motionTimers);
+      });
+      return;
+    }
     motion.value = movement; diceResult.value = roll ? movement.dice ?? next.dice : null;
     animatedPosition.value = { id: movement.playerId, position: movement.from };
     rolling.value = roll; diceFace.value = 1;
@@ -125,5 +144,5 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     }
   }, { flush: 'pre' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
-  return { money, tiles, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
+  return { money, tiles, rolling, celebrating, motion, boardEffect, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
 }

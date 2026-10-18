@@ -44,8 +44,10 @@ public class EffectResolver {
             GameEffect effect = room.runtime.effects.getFirst();
             if (room.activity != null && !effect.resumesDecision) return;
             insertionIndex.set(1);
+            BoardEffect.Observation presentation = BoardEffect.watch(room, effect);
             try { handler(effect).accept(room, effect); }
             finally { insertionIndex.remove(); }
+            if (presentation != null) presentation.finish(room);
             SettlementService.observe(room);
             HistoryTrace.event(room, "effect", effect.playerId, "游戏效果已结算", effect);
             room.runtime.effects.removeFirst(); room.runtime.settledEffects++;

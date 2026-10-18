@@ -54,14 +54,16 @@ public class EconomyService {
             Tile property = tile(room,tileId);
             if (PropertyEffects.frozen(property)) return;
             if (property.concertStacks > 0) {
+                BoardEffect.Observation presentation = BoardEffect.watch(room,"concertRent",player);
                 amount = PropertyEffects.concertRent(amount,property.concertStacks);
                 log(room,property.name + " 消耗 " + property.concertStacks + " 层演唱会，租金变为 ¥" + amount); property.concertStacks=0;
+                presentation.finish(room);
             }
         }
-        if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); }
+        if (tileId != null && creditorId != null && StatusService.consume(player, "NEXT_RENT_DOUBLE")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); BoardEffect.cue(room,"rentDouble",player); }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
         PendingDecision payment = pending(type, player, tileId, amount, creditorId);
-        if (StatusService.consume(player,"NEXT_PAYMENT_WAIVER")) { log(room,"log",player.id,player.name+" 自动免除 "+paymentDescription(room,payment)+" ¥"+String.format("%,d",amount)+"，剩余待支付 ¥0，状态已消耗"); return; }
+        if (StatusService.consume(player,"NEXT_PAYMENT_WAIVER")) { log(room,"log",player.id,player.name+" 自动免除 "+paymentDescription(room,payment)+" ¥"+String.format("%,d",amount)+"，剩余待支付 ¥0，状态已消耗"); BoardEffect.cue(room,"waiver",player); return; }
         room.pending = payment; room.pending.id = random.id(); room.pending.originalAmount = amount; room.phase = type;
         log(room, "log", player.id, player.name + " 待支付 " + paymentDescription(room, room.pending) + " ¥" + String.format("%,d", amount) + "，请选择支付方式");
     }

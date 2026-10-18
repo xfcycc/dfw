@@ -81,29 +81,36 @@ public class TurnService {
     }
     /** 输入房间和移动效果，执行实际路径并关联触发本段的公开事件，无返回值。 */
     private void moveEffect(Room room, GameEffect effect) {
+        int first = room.movementSequence.size();
         move(room, player(room, effect.playerId), (int) effect.amount);
-        if (effect.content != null && !effect.content.privateSupply) room.movementSequence.getLast().beforeEvent = effect.content;
+        if (effect.content != null && !effect.content.privateSupply) room.movementSequence.stream().skip(first).filter(segment -> segment.boardEffect == null).findFirst().ifPresent(segment -> segment.beforeEvent = effect.content);
         if (effect.message != null) log(room, effect.message);
     }
     /** 输入房间、玩家及最终有符号步数，消费塔塔开后翻倍，再处理路障、起点奖励和路径，无返回值。 */
     public void move(Room room, Player player, int steps) {
-        if (StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); }
+        if (StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); BoardEffect.cue(room,"morale",player); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
-        segment.dice = room.movementSequence.isEmpty() && room.phase.equals("pre_roll") ? room.dice : null;
-        if (steps == 0 && player.position == 0) rewardStart(room, player, "在起点原地停留");
+        segment.dice = room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;
+        boolean rewarded = false, immune = false;
+        BoardEffect.Observation trap = null;
+        if (steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (player.position == 0) rewardStart(room, player, steps > 0 ? "向前经过起点" : "后退经过起点");
+            if (player.position == 0) { rewardStart(room, player, steps > 0 ? "向前经过起点" : "后退经过起点"); rewarded = true; }
             Tile tile = room.board.get(player.position);
             if (PropertyEffects.frozen(tile)) continue;
-            if ((tile.barrier || tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); continue; }
+            if ((tile.barrier || tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); immune = true; continue; }
             if (tile.barrier || tile.meteorCharges>0) {
+                trap = BoardEffect.watch(room,"barrierHit",player);
                 if(tile.barrier) tile.barrier=false; else tile.meteorCharges--;
                 log(room, player.name + " 在 " + tile.name + " 被路障或陨星拦下，每次仅消耗一层"); break;
             }
         }
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
+        if (rewarded) { BoardEffect.cue(room,"income",player); BoardEffect.cue(room,"supply",player); }
+        if (immune) BoardEffect.cue(room,"trapImmune",player);
+        if (trap != null) trap.finish(room);
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
         content.overflow(room);
     }
@@ -117,7 +124,7 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
         room.runtime.rollMode="DIRECTED"; room.runtime.windowExit="replace_roll";
         log(room,actor.name+" 传送至 "+destination.name+"（"+destination.id+"号），替代本次掷骰并正常结算");
-        if(destination.id==0) rewardStart(room,actor,"传送到达起点");
+        if(destination.id==0) { rewardStart(room,actor,"传送到达起点"); BoardEffect.cue(room,"income",actor); BoardEffect.cue(room,"supply",actor); }
         content.overflow(room);
     }
     /** 输入已校验的传送目标玩家，随机直达任意地块并保存动画；不走路径、不结算落点或消费振奋。 */
@@ -194,6 +201,7 @@ public class TurnService {
         Player actor = current(room);
         if (actor == null || !actor.online || actor.skipTurns == 0 || room.trade != null) return false;
         boolean jailed=actor.jailed; actor.skipTurns--; if (actor.skipTurns==0) actor.jailed=false;
-        log(room, actor.name + (jailed ? actor.jailed ? " 服刑休息一回合，继续暂停收租" : " 服刑休息一回合，现已出狱并恢复收租" : " 休息一回合")); advance(room); return true;
+        log(room, actor.name + (jailed ? actor.jailed ? " 服刑休息一回合，继续暂停收租" : " 服刑休息一回合，现已出狱并恢复收租" : " 休息一回合"));
+        BoardEffect.cue(room,jailed ? actor.jailed ? "jail" : "release" : "rest",actor); advance(room); return true;
     }
 }

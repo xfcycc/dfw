@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MotionSegment {
+    /** 可选棋盘演出事实，旧存档缺省为空；与移动共用有序展示队列。 */
+    public BoardEffect boardEffect;
     /** 本段路径标识。 */
     public String id;
     /** 本段移动玩家。 */

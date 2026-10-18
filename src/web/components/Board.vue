@@ -7,6 +7,8 @@ import City from './City.vue';
 import CharacterPawn from './CharacterPawn.vue';
 import DiceFace from './DiceFace.vue';
 import DesktopDiceThrow from './DesktopDiceThrow.vue';
+import BoardEffectLayer from './BoardEffectLayer.vue';
+import { boardEffectLabel } from '../board-effect-presentation';
 import PlayerText from './PlayerText.vue';
 import PropertyGrade from './PropertyGrade.vue';
 import PanelFrame from './PanelFrame.vue';
@@ -25,7 +27,7 @@ const zoom = ref(1);
 const fullMap = ref(false);
 const referencedTile = ref<number | null>(null);
 const following = computed(() => !!props.spectator && !!props.spectatorFollow);
-const { money, tiles: tileEffects, rolling, celebrating, motion, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
+const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -47,7 +49,38 @@ const diceFullscreen = computed(() => !!motion.value && diceResult.value !== nul
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
 const followedPlayer = computed(() => motionPlayer.value ?? current.value);
 const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
-const movementLabel = computed(() => motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'} · 不结算落点` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
+const movementLabel = computed(() => boardEffect.value?.boardEffect ? `${boardEffectLabel(boardEffect.value.boardEffect.kind)} · 播放中` : motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'}` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
+const effectTiles = computed(() => new Set(boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
+const effectPlayers = computed(() => new Set(boardEffect.value?.boardEffect?.moves.map(move => move.playerId) ?? []));
+/** 输入地块编号，返回与棋子一致的缩放后中心坐标，供演出定位。 */
+function effectPoint(id: number): { x: number; y: number } {
+  const cell = tileCoordinates(id, props.room.board.length);
+  const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
+  return { x: (inset + (cell.column - .5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value,
+    y: (inset + (cell.row - .5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value };
+}
+let effectView: { zoom: number; fullMap: boolean; left: number; top: number } | null = null;
+// 多目标演出临时展示全图，单地产演出定位目标，结束或取消后恢复用户视野。
+watch(boardEffect, async value => {
+  const view = viewport.value;
+  if (!view) return;
+  if (!value?.boardEffect) {
+    if (!effectView) return;
+    const saved = effectView; effectView = null; zoom.value = saved.zoom; fullMap.value = saved.fullMap;
+    await nextTick();
+    if (!boardEffect.value) view.scrollTo({ left: saved.left, top: saved.top, behavior: 'instant' });
+    return;
+  }
+  effectView ??= { zoom: zoom.value, fullMap: fullMap.value, left: view.scrollLeft, top: view.scrollTop };
+  const effect = value.boardEffect;
+  if (effect.moves.length || effect.beforeTiles.length > 1) fitBoard();
+  else {
+    await nextTick();
+    if (boardEffect.value?.id !== value.id || !effect.beforeTiles[0]) return;
+    const point = effectPoint(effect.beforeTiles[0].id);
+    view.scrollTo({ left: point.x - view.clientWidth / 2, top: point.y - view.clientHeight / 2, behavior: 'instant' });
+  }
+}, { flush: 'post' });
 const rotating = ref(false);
 const displayedActivityKinds = ref<Record<number, ActivityKind>>({});
 let rotationTimer: ReturnType<typeof setTimeout> | undefined;
@@ -191,7 +224,7 @@ defineExpose({ referenceTile });
 /** 无入参，按棋子实际过渡位置逐帧滚动视窗，覆盖当前走格动画后停止，无返回值。 */
 function followPawn(): void {
   cancelAnimationFrame(followFrame);
-  if (!props.spectator || !following.value || !viewport.value || referencedTile.value != null) return;
+  if (boardEffect.value || !props.spectator || !following.value || !viewport.value || referencedTile.value != null) return;
   const view = viewport.value;
   const pawn = Array.from(view.querySelectorAll<HTMLElement>('.map-character')).find(element => element.dataset.playerId === followedPlayer.value?.id);
   if (!pawn) return;
@@ -222,7 +255,7 @@ watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, 
 }, { flush: 'post' });
 watch([following, () => props.spectator, () => followedPlayer.value?.id, () => followedPlayer.value?.position, () => animatedPosition.value?.position, moving, zoom, size, height, availableWidth, availableViewportHeight], followPawn, { flush: 'post' });
 watch([() => props.room.players.find(player => player.id === props.meId)?.position, () => animatedPosition.value?.position, () => props.room.turnIndex], () => {
-  if (!props.dashboardTarget || props.spectator || fullMap.value || referencedTile.value != null) return;
+  if (boardEffect.value || !props.dashboardTarget || props.spectator || fullMap.value || referencedTile.value != null) return;
   locatePlayer(motion.value ? motionPlayer.value : props.room.players.find(player => player.id === props.meId) ?? current.value);
 }, { flush: 'post' });
 watch([() => props.room.roomId, () => props.room.gameId], () => { referencedTile.value = null; });
@@ -242,7 +275,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
-          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, { 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
+          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, effectTiles.has(tile.id) ? `effect-target-${boardEffect?.boardEffect?.kind}` : '', { 'kamui-frozen': !!tile.kamuiCasterId && !!tile.kamuiTurns, 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
             <svg v-if="referencedTile === tile.id" class="chat-reference-glow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="7" pathLength="100" /></svg>
             <span v-if="compact" class="tile-ground" aria-hidden="true"></span>
             <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
@@ -271,7 +304,8 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span class="trade-map-arrow" aria-hidden="true"></span>
           </div>
         </div>
-        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
+        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
+        <BoardEffectLayer v-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :zoom="zoom" @done="finishBoardEffect" />
         <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
@@ -299,7 +333,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
         </div>
       </Transition>
       <Transition name="motion-feedback">
-        <div v-if="motion && motionPlayer && !diceFullscreen" :key="motion.id" class="board-motion-feedback" :class="{ 'is-rolling': rolling, 'is-settled': !rolling }" :style="{ '--motion-color': motionPlayer.color }" role="status" aria-live="polite">
+        <div v-if="motion && motionPlayer && !diceFullscreen && !motion.boardEffect" :key="motion.id" class="board-motion-feedback" :class="{ 'is-rolling': rolling, 'is-settled': !rolling }" :style="{ '--motion-color': motionPlayer.color }" role="status" aria-live="polite">
           <div v-if="diceResult !== null" class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
           <CharacterPawn v-else :avatar-id="motionPlayer.avatarId" :color="motionPlayer.color" :moving="moving" />
           <div class="motion-caption"><strong><PlayerText :text="motionPlayer.name" :players="room.players" /></strong><span>{{ movementLabel }}</span><div v-if="!rolling && motion.path.length" class="motion-progress" aria-hidden="true"><i :style="{ width: `${step / motion.path.length * 100}%` }"></i></div></div>
@@ -311,6 +345,16 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
   </div>
 </template>
 <style scoped>
+.effect-pawn-hidden { visibility:hidden; }
+.tile.kamui-frozen .property-tile-art,.tile.kamui-frozen .tile-icon,.tile.kamui-frozen .building-decor { opacity:.25; filter:grayscale(.7); }
+.tile.effect-target-kamui .property-tile-art,.tile.effect-target-kamui .tile-icon,.tile.effect-target-kamui .building-decor { transform-origin:center; animation:property-swallowed 1800ms ease-in-out both; }
+.tile.effect-target-kamuiRelease .property-tile-art,.tile.effect-target-kamuiRelease .tile-icon,.tile.effect-target-kamuiRelease .building-decor { transform-origin:center; animation:property-restored 1800ms ease-in-out both; }
+.tile.effect-target-blackhole { box-shadow:inset 0 0 26px #9e79b45c; }
+.tile.effect-target-tornado .property-tile-art,.tile.effect-target-tornado .tile-icon,.tile.effect-target-tornado .building-decor { animation:property-storm 2400ms ease-in-out both; }
+@keyframes property-swallowed { 0%,20% { scale:1; opacity:1; } 70%,100% { scale:.1; opacity:0; rotate:90deg; } }
+@keyframes property-restored { 0%,25% { scale:.1; opacity:0; rotate:-90deg; } 85%,100% { scale:1; opacity:1; rotate:0deg; } }
+@keyframes property-storm { 0%,25%,80%,100% { translate:0; } 35%,55%,75% { translate:-3px; } 45%,65% { translate:3px; } }
+
 .trade-map-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
 .trade-map-marker { position: absolute; filter: drop-shadow(0 2px 3px #49311d55); }
 .trade-map-marker.is-gaining { color: #248547; }

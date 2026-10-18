@@ -86,6 +86,7 @@ export const useGameStore = defineStore('game', () => {
   let movementResult: PublicRoomState | null = null;
   const movementSegments: MotionSegment[] = [];
   let latestVersion = 0;
+  const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
   const snapshots: ({ type: 'public'; state: PublicRoomState } | { type: 'private'; state: PrivatePlayerState })[] = [];
   const me = computed(() => room.value?.players.find(player => player.id === session.value?.playerId));
   const current = computed(() => room.value?.players.find(player => player.id === room.value?.turnOrder[room.value.turnIndex]));
@@ -110,7 +111,7 @@ export const useGameStore = defineStore('game', () => {
     else if (chats.some(entry => entry.actorId ? entry.actorId !== ownId : !ownName || !entry.text.startsWith(`${ownName}：`))) playSound('chat');
   }
 
-  /** 输入公开快照，先揭示用卡再播放路径并同步结算；跳过路径时仍按顺序揭示公开事件，无返回值。 */
+  /** 输入公开快照，先揭卡再播放移动或棋盘效果，全部完成后展示最终结算，无返回值。 */
   function applyPublicState(state: PublicRoomState, animate = true): void {
     const previous = room.value;
     if (animate && !publicBaseline && previous && state.version > previous.version && state.gameId === previous.gameId && !state.recoveryPending && !previous.recoveryPending && state.motion && state.motion.id !== previous.motion?.id && state.status !== 'lobby' && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -135,7 +136,7 @@ export const useGameStore = defineStore('game', () => {
     }
     publicBaseline = false;
   }
-  /** 无入参，等待已有卡面及触发事件展示完再送出下一段路径，结算结果继续等待，无返回值。 */
+  /** 无入参，等待已有卡面及来源事件展示完，再送出下一段移动或棋盘演出，无返回值。 */
   function presentMovement(): void {
     const state = movementResult;
     const segment = movementSegments[0];
@@ -149,8 +150,9 @@ export const useGameStore = defineStore('game', () => {
     }
     movementSegments.shift();
     settlementRevealing.value = false;
-    room.value = { ...room.value, dice: state.dice, motion: segment, pending: null, turnNumber: state.turnNumber, turnIndex: state.turnIndex,
-      players: room.value.players.map(player => player.id === segment.playerId ? { ...player, position: segment.path.at(-1) ?? segment.from } : player) };
+    room.value = { ...room.value, dice: state.dice, motion: segment, pending: null,
+      board: segment.boardEffect ? room.value.board.map(tile => { const appearance = segment.boardEffect!.beforeTiles.find(value => value.id === tile.id); return appearance ? { ...tile, ...appearance } : tile; }) : room.value.board,
+      players: segment.boardEffect ? room.value.players : room.value.players.map(player => player.id === segment.playerId ? { ...player, position: segment.path.at(-1) ?? segment.from } : player) };
   }
   /** 输入本人私人快照，同步手牌、补给揭卡与选择，首次连接只建立基线，无返回值。 */
   function applyPrivateState(state: PrivatePlayerState): void {
@@ -167,14 +169,21 @@ export const useGameStore = defineStore('game', () => {
     privateBaseline = false;
     if (state.archiveCode) { session.value = { ...session.value, archiveCode: state.archiveCode }; rememberSession(session.value); }
   }
-  /** 输入已落地的片段 ID，先揭示落点事件并接续移动，最后释放结果，返回完成状态的异步操作。 */
+  /** 输入已播放片段 ID，应用该段公开外观及位移，接续事件和后续片段，最后释放结算快照。 */
   async function finishMovement(id: string): Promise<void> {
     if (!movementResult || room.value?.motion?.id !== id) return;
     const epoch = presentationEpoch.value;
+    const segment = room.value.motion;
+    const effect = segment.boardEffect;
+    if (effect) {
+      room.value = { ...room.value,
+        players: room.value.players.map(player => { const move = effect.moves.find(value => value.playerId === player.id); return move ? { ...player, position: move.to } : player; }),
+        board: room.value.board.map(tile => { const appearance = effect.afterTiles.find(value => value.id === tile.id); return appearance ? { ...tile, ...appearance } : tile; }) };
+    }
     if (movementSegments.length) {
-      const event = room.value.motion.event;
+      const event = segment.event;
       if (event) {
-        const playerId = room.value.motion.playerId;
+        const playerId = segment.playerId;
         room.value = { ...room.value, event, eventPlayerId: playerId };
         enqueueCardReveal(event, 'draw', room.value.players.find(player => player.id === playerId)?.name ?? '玩家');
         playSound('card');
@@ -215,6 +224,8 @@ export const useGameStore = defineStore('game', () => {
 
   /** 无入参，页面进入后台时同步最新局面，不补播未完成的移动和揭卡。 */
   function onVisibilityChange(): void { if (document.hidden) syncPresentation(); }
+  /** 输入动态效果偏好，启用减少动态效果时取消积压演出并同步最新局面，无返回值。 */
+  function onMotionPreferenceChange(event: MediaQueryListEvent): void { if (event.matches) syncPresentation(); }
 
   /** 输入服务端已确认的卡面和展示方式，按身份去重并排队，无返回值。 */
   function enqueueCardReveal(content: ContentResult, mode: CardReveal['mode'], actor: string): void {
@@ -252,6 +263,7 @@ export const useGameStore = defineStore('game', () => {
     socket?.disconnect();
     socket = null;
     document.removeEventListener('visibilitychange', onVisibilityChange);
+    motionPreference.removeEventListener('change', onMotionPreferenceChange);
     movementResult = null; movementSegments.length = 0; snapshots.length = 0; settling.value = false; settlementRevealing.value = false; latestVersion = 0;
     room.value = null;
     privateData.value = null;
@@ -271,6 +283,7 @@ export const useGameStore = defineStore('game', () => {
     const scheme = location.protocol === 'https:' ? 'wss:' : 'ws:';
     socket = new RealtimeClient(`${scheme}//${location.host}/ws`, value.token);
     document.addEventListener('visibilitychange', onVisibilityChange);
+    motionPreference.addEventListener('change', onMotionPreferenceChange);
     socket.on('connect', () => { syncPresentation(); publicBaseline = true; privateBaseline = true; chatState = null; connection.value = 'online'; fatalError.value = ''; socket?.emit('room:sync'); });
     socket.on('room:snapshot', (state: PublicRoomState) => {
       notifyChat(state);

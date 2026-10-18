@@ -29,16 +29,22 @@ public final class EventService {
         require(effect.compensationPercent>=0 && effect.compensationPercent<=100,"补偿比例不可用");
         var owners=new java.util.HashMap<String,Player>();
         for (Player owner : room.players) if (!owner.bankrupt) owners.put(owner.id,owner);
+        MotionSegment segment=BoardEffect.begin("tornado",player(room,effect.playerId));
+        segment.beforeEvent=effect.content;
         int affected=0;
         for (Tile target : room.board) {
             Player owner=owners.get(target.ownerId);
-            if (!target.type.equals("property") || target.level<=0 || owner==null || PropertyEffects.preventDemolition(room,target)) continue;
+            if (!target.type.equals("property") || target.level<=0 || owner==null || PropertyEffects.frozen(target)) continue;
+            segment.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
+            if (PropertyEffects.preventDemolition(room,target)) { segment.boardEffect.afterTiles.add(BoardEffect.appearance(target)); continue; }
             int previousLevel=target.level; long rent=Rules.rent(room,target);
             long compensation=Math.multiplyExact(rent,effect.compensationPercent)/100;
             target.level--; owner.cash=Math.addExact(owner.cash,compensation); affected++;
+            segment.boardEffect.afterTiles.add(BoardEffect.appearance(target));
             log(room,"log",owner.id,target.name+"（"+target.id+"号）建筑从 "+previousLevel+" 级降至 "+target.level+" 级，"+owner.name+" 获得租金补偿 ¥"+compensation);
             HistoryTrace.event(room,"building_downgrade",owner.id,"龙卷风降级与补偿已结算",java.util.Map.of("effectId",effect.id,"tileId",target.id,"previousLevel",previousLevel,"level",target.level,"rent",rent,"compensation",compensation));
         }
+        BoardEffect.publish(room,segment);
         log(room,"龙卷风摧毁停车场：共 "+affected+" 块地产建筑降低一级");
     }
     /** 输入全体费用效果，固定座位目标并展开子效果，原 pending 之外保存返回位置。 */

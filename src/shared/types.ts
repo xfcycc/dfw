@@ -160,9 +160,26 @@ export interface PlayerMention { id?: string; name: string; color: string }
 /** 显式 @ 引用；UTF-16 偏移对应消息正文，发送后对应含发送者前缀的公开文案。 */
 export interface ChatReference { start: number; end: number; playerId?: string; tileId?: number; color?: string }
 export interface PublicLog { type?: string; actorId?: string; references?: ChatReference[]; mentions?: PlayerMention[]; id: string; text: string; at: number }
+/** 服务端记录的棋盘演出事实，外观与位移只用于展示，不重新计算结算。 */
+export interface BoardEffect {
+  kind: 'swap' | 'swapAny' | 'shuffle' | 'gravity' | 'kamui' | 'kamuiRelease' | 'blackhole' | 'meteor' | 'tornado'
+    | 'barrier' | 'barrierHit' | 'trapImmune' | 'demolish' | 'shield' | 'shieldBlock' | 'upgrade' | 'exchange'
+    | 'slow' | 'seal' | 'steal' | 'recycle' | 'discover' | 'handDestruction' | 'supply' | 'treasure' | 'treasureClaim'
+    | 'concert' | 'concertRent' | 'morale' | 'waiver' | 'rentDouble' | 'immunity' | 'halfPayment' | 'income' | 'fee'
+    | 'payment' | 'gambleWin' | 'gambleLose' | 'talent' | 'teleport' | 'movement' | 'moveBoost' | 'release' | 'rest' | 'jail' | 'statusExpired';
+  /** 公开参与者，不含具体手牌和数量；旧演出缺省为空。 */
+  playerIds?: string[];
+  moves: { playerId: string; from: number; to: number }[];
+  beforeTiles: BoardEffectTile[];
+  afterTiles: BoardEffectTile[];
+}
+/** 演出前后的地产公开外观，可包含实际产权变化，不覆盖抵押或资金。 */
+export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn'> & { ownerId?: string | null };
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   id: string; playerId: string; from: number; path: number[];
+  /** 与走格共用同一播放队列；缺省为空时沿用旧移动动画。 */
+  boardEffect?: BoardEffect | null;
   /** 直接传送，路径只含目的地，不表示走过沿途地块。 */
   teleport?: boolean;
   /** 本段掷骰结果；事件移动为空，旧协议可缺省。 */

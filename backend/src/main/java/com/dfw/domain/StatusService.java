@@ -25,9 +25,10 @@ public final class StatusService {
     public static void endTurn(Room room, Player owner) {
         PropertyEffects.endTurn(room, owner);
         for (PlayerStatus status : owner.statuses) if ("TRAP_IMMUNITY".equals(status.type) && room.turnNumber > status.appliedTurn) status.remainingTurns--;
-        owner.statuses.removeIf(status -> {
+        boolean expired = owner.statuses.removeIf(status -> {
             if (status.remainingTurns > 0) return false;
             log(room, owner.name + " 的陷阱免疫已到期"); return true;
         });
+        if (expired) BoardEffect.cue(room,"statusExpired",owner);
     }
 }

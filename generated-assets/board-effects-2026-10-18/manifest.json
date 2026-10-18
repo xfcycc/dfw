@@ -1,0 +1,278 @@
+{
+  "date": "2026-10-18",
+  "generator": "image_gen.imagegen",
+  "layout": {
+    "columns": 4,
+    "rows": 4,
+    "frames": 16,
+    "order": "row-major"
+  },
+  "transparentBackground": true,
+  "style": "Hand-painted cel-shaded anime game VFX, no text or background",
+  "runtimePlayback": {
+    "fps": 16,
+    "cycleMs": 1000
+  },
+  "compression": {
+    "format": "webp",
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  },
+  "entries": [
+    {
+      "skinId": "board-effect-blackhole",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-3296aa76-b2b2-47f2-b823-6f7720031be9.png",
+      "sourceBytes": 3050813,
+      "sourceSha256": "bf88b024542a25e65999e8edc7c4033fe8a28f2b749452bf73c33cad47198d2b",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-effect-art-20261018/webp/board-effect-blackhole.webp",
+      "bytes": 887452,
+      "sha256": "2e87d42db9c1d2476948432e708b1be51a429e5593d1747b6d19ffd507243842",
+      "md5": "DJ9h+ZWB9t1Fu5D8tm1KnA==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018183724394.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 887452,
+        "contentMd5": "DJ9h+ZWB9t1Fu5D8tm1KnA=="
+      },
+      "kind": "blackhole",
+      "promptSummary": "Golden apricot and lilac plasma accretion ribbons and star fragments spiraling clockwise into a deep indigo black hole."
+    },
+    {
+      "skinId": "board-effect-kamui",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-db8b0993-5685-42ac-a992-fabc4ce24d04.png",
+      "sourceBytes": 3024984,
+      "sourceSha256": "c874fda0d3a7c50d636f25362eeb6f1fcaffede20df7dc83e79c1eff25dcdbb1",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-effect-art-20261018/webp/board-effect-kamui.webp",
+      "bytes": 937986,
+      "sha256": "fdfd75090cf315cbaa83df8b2e08d49d3c0732a1667e47f3ca244788333dc3e8",
+      "md5": "RDihqmqSER6fyGBGuW8Fnw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018183746194.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 937986,
+        "contentMd5": "RDihqmqSER6fyGBGuW8Fnw=="
+      },
+      "kind": "kamui",
+      "promptSummary": "Charcoal and burgundy space distortion with sweeping crimson coral anime ink arms and warm gold sparks."
+    },
+    {
+      "skinId": "board-effect-tornado",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-cf115c78-72e9-409d-9aa9-ca2502e607df.png",
+      "sourceBytes": 2781890,
+      "sourceSha256": "7ddd6f9ddbd163265d4b8e8460e00a8380e2f5fa1b49a7943aa0d55bd8f79d47",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-effect-art-20261018/webp/board-effect-tornado.webp",
+      "bytes": 881122,
+      "sha256": "0e28cddef8b7581c43efed7472966dff82e709a96cab6a0e64b4f0fd9c34424a",
+      "md5": "/Dhae0aCLKfUI8DmDmWgAw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018183809867.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 881122,
+        "contentMd5": "/Dhae0aCLKfUI8DmDmWgAw=="
+      },
+      "kind": "tornado",
+      "promptSummary": "Isometric hand-painted warm ivory and amber smoke funnel with gray-violet shadows and orbiting roof and wood debris."
+    },
+    {
+      "skinId": "board-effect-meteor",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-b2857a7a-facf-49d5-93d1-51bf0a875bf4.png",
+      "sourceBytes": 2038738,
+      "sourceSha256": "7a7d37888e804a99828ddcf16682307a2d4295ef33410947e8233852d29384e1",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-effect-art-20261018/webp/board-effect-meteor.webp",
+      "bytes": 759328,
+      "sha256": "e39fd830238ef01ba30c3604cb4608bae8ecc6372f00ad44b3fb81c2e5f6fe65",
+      "md5": "WFQcgVEOyklRpflpH8W2jA==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018183827007.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 759328,
+        "contentMd5": "WFQcgVEOyklRpflpH8W2jA=="
+      },
+      "kind": "meteor",
+      "promptSummary": "Diagonal upper-left to lower-right molten rock with amber coral flame ribbons, glowing edges and streaming sparks."
+    },
+    {
+      "skinId": "board-effect-shield",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-63950953-0616-4f4b-9a46-3606436b233b.png",
+      "sourceBytes": 2821764,
+      "sourceSha256": "87f0b4b4d5dfe6b33dae67bf9a2b66299ca771dc0991ff0a0ffa005a0a485202",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-shield.webp",
+      "bytes": 808462,
+      "sha256": "65f048112fcdb72fb2dd89886c5dc30911cdb0f4e4ec33d2a3ad6841cbdfbee7",
+      "md5": "LeWtc3rveTbTRN9T29u96g==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193014531.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 808462,
+        "contentMd5": "LeWtc3rveTbTRN9T29u96g=="
+      },
+      "kind": "shield",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A luminous translucent cyan and pale jade crystalline barrier shield, stylized broad ornate silhouette with beveled facets, gold filigree edges and a bright pearl core. A circle of small golden spark fragments and airy jade ribbons rotates protectively around the fixed shield, light pulses through the facets over sixteen frames. Isolated magical defensive VFX, not equipment icon."
+    },
+    {
+      "skinId": "board-effect-build",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-8f96d2ed-d6f7-4374-9ec0-6913754d2619.png",
+      "sourceBytes": 2925613,
+      "sourceSha256": "f674f5d7cdb635c817a30c54f029b5d8084cd1866c05101eef5dfd61f83adbb6",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-build.webp",
+      "bytes": 882350,
+      "sha256": "3b393724c7ba98d1b371ada1c51ed230f1aa6788c89ac3f4b862df2b3f80327e",
+      "md5": "PdlfRh7H+K8RQsBrYz9BZw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193031214.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 882350,
+        "contentMd5": "PdlfRh7H+K8RQsBrYz9BZw=="
+      },
+      "kind": "build",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. An isometric little golden fantasy city building assembling in a floating gilded geometric magic field: warm ivory walls, amber roof, teal blue windows, a few orbiting luminous blocks and golden construction sparks. Building stays recognizable at the same size, luminous building blocks cycle up its sides in all sixteen frames, glowing stepped base, stylish spell for upgrading and acquiring real estate. No humans, no text."
+    },
+    {
+      "skinId": "board-effect-impact",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-78c3a2ea-946e-45ce-8699-a963dc94032b.png",
+      "sourceBytes": 2867067,
+      "sourceSha256": "ec011592ee5fbceaa463cdd82b8b5cac9958292ce9f1f08d9a32082126fcc987",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-impact.webp",
+      "bytes": 959878,
+      "sha256": "837128cb4629ec97843f0f62a5d09d2d841d342ddd782eb53505fe0e30267faf",
+      "md5": "F2J4sfaTi/J5HkFj8MWZRw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193049526.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 959878,
+        "contentMd5": "F2J4sfaTi/J5HkFj8MWZRw=="
+      },
+      "kind": "impact",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. An energetic anime impact and demolition shockwave: warm orange-white explosive core, layered curved cel-shaded ivory smoke curls, flying brown wood and terracotta fragments, golden sharp streaks. Sixteen frames of a continually churning dust and force burst with stable circular footprint, stylized playful and non-violent, isolated VFX not a scene, no building, no characters."
+    },
+    {
+      "skinId": "board-effect-control",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-6f990aba-8b09-4226-a10b-61e7e2fc0c9b.png",
+      "sourceBytes": 3426772,
+      "sourceSha256": "54dc10e6f8ea13e914eb2285db7be11a3d4ada78c4cc96126e8539602e0612df",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-control.webp",
+      "bytes": 1078468,
+      "sha256": "bd60935923a99b1c8da2a5251b44a7028eded91771d6759f03f3781f567c90e1",
+      "md5": "ILwA2i8ZU4T5Q8yz/T4Yjw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193109858.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 1078468,
+        "contentMd5": "ILwA2i8ZU4T5Q8yz/T4Yjw=="
+      },
+      "kind": "control",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A beautiful purple and blue-gold magical time and control seal, an ornate luminous hourglass floating at the center, curved violet ink wisps and golden star sparks orbit in a rhythmic swirl. Cel-shaded amethyst glass, warm ivory sand glowing inside, a few tiny abstract runic marks but NO readable text. Sixteen frames of flowing sand, drifting stars and breathing magic, stable silhouette, polished game status VFX."
+    },
+    {
+      "skinId": "board-effect-cards",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-c30f5aab-d2da-40a3-b7b9-3936169cecfd.png",
+      "sourceBytes": 2829330,
+      "sourceSha256": "4f7c7524ac3dbe1084fd847ed9480209ae6a253349db13e67e0300048ad9aabc",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-cards.webp",
+      "bytes": 811652,
+      "sha256": "b2cd2437e2a05349f5a4728ce3fbdbf3ae4ad9735d00bd51d25fe41a6712ffb6",
+      "md5": "O3L6VhLR5/jdSEKyCXb9RQ==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193125487.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 811652,
+        "contentMd5": "O3L6VhLR5/jdSEKyCXb9RQ=="
+      },
+      "kind": "cards",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A fan of exactly three beautiful face-down fantasy playing cards with ivory borders, rich plum and golden patterned backs, no letters or numbers. The centered card fan floats over warm gold magical ribbons and tiny sparks; sixteen frames show cards gently fanning and flexing and magical ribbons swirling around, same stable position and size. All cards are face-down for private hand effects, isolated VFX."
+    },
+    {
+      "skinId": "board-effect-coins",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-de7d2648-f3f0-4e2c-b015-96cfed097891.png",
+      "sourceBytes": 2442041,
+      "sourceSha256": "43096c823504376ba8a2345449a5fce7539fb9a0399a943efee88f3be89eff23",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-coins.webp",
+      "bytes": 853382,
+      "sha256": "d72cb091ab8fb852b35543b387c850297c45126bf0affb7e9582c6664d163e90",
+      "md5": "VyLUyq6GsvHd1hSY5Ph2Ig==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193143364.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 853382,
+        "contentMd5": "VyLUyq6GsvHd1hSY5Ph2Ig=="
+      },
+      "kind": "coins",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A delightful golden coins and treasure reward VFX, rich polished cel-shaded gold coins with abstract star embossing and no numbers or letters, curved streams of bright coins and warm amber-white sparkles spiraling upward from a small golden energy pool. Sixteen frames of smooth continuous orbiting and rising coin flow with stable overall bounds, no chest, no bags, no backdrop."
+    },
+    {
+      "skinId": "board-effect-treasure",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-8bb0f0e2-3781-47b7-a6dc-e8ae6b511b40.png",
+      "sourceBytes": 3294870,
+      "sourceSha256": "f496d0a21b002eb1a984c2639a1f0f031d25f20e64c17184367d05d0884b5c97",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-treasure.webp",
+      "bytes": 926896,
+      "sha256": "99017f313ad00b83769fa235e639f8d1cc3cf7d13f0fdff30bba7640832020d8",
+      "md5": "9LiC9NlplSx+UUstPiTgfg==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193200537.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 926896,
+        "contentMd5": "9LiC9NlplSx+UUstPiTgfg=="
+      },
+      "kind": "treasure",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A charming open fantasy treasure chest, deep warm brown wood with rich gold edging, teal gems and warm ivory gold light pouring from within. Delicate luminous gold particles and soft emerald magic ribbons curl around it. Sixteen consecutive frames show the fixed open chest gently bouncing, beams breathing and coins and stars twinkling and orbiting. Consistent centered shape, isolated premium anime game VFX, no scenery."
+    },
+    {
+      "skinId": "board-effect-concert",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-0ee201cc-ef78-4c44-83b1-84081bc61db8.png",
+      "sourceBytes": 2696930,
+      "sourceSha256": "ab22d786d0d963a6e64df4dee33dde1ae72c09472bb76b9f573008aab6370c0e",
+      "width": 1254,
+      "height": 1254,
+      "uploadPath": "/tmp/dfw-remaining-effect-art-20261018/webp/board-effect-concert.webp",
+      "bytes": 847920,
+      "sha256": "a2f63cf28118831f87abe3b2b68e33dda05818f77d2eb6f8bc2e523d6d37f625",
+      "md5": "hxiHwNztT5ELnSzZpVjqRA==",
+      "url": "https://pic.caiguoyu.cn/typora/20261018193217921.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 847920,
+        "contentMd5": "hxiHwNztT5ELnSzZpVjqRA=="
+      },
+      "kind": "concert",
+      "prompt": "Professional production-ready anime game VFX animation sprite sheet. EXACT square, exactly 4 columns x 4 rows = 16 equal square cells, row-major animation order. Genuine TRANSPARENT ALPHA background, no checkerboard, no text, no borders, no UI, no spacing. SAME centered effect, fixed center, stable overall bounds and size in all frames, 12% transparent padding inside each cell, nothing crosses a cell boundary. Sixteen successive fluid frames of a seamless active LOOP, no empty frames. Premium hand-painted cel-shaded fantasy mobile party board game special effect, layered painterly shading, bright warm glints, crisp outlines, soft composited glow, elegant lively motion, no photographic realism, no pixel art. A gorgeous energetic anime concert magic VFX: elegant golden musical notes and a few pearl pink and lilac sparkling stars orbit around a glowing cyan and rose sound-wave ribbon shaped like a loose spiral, with a central luminous golden treble clef. Sixteen successive frames of flowing ribbon, dancing notes and twinkling sparks, stable size and fixed center, lively hand-painted magical musical effect, no text, no stage, no people."
+    }
+  ]
+}

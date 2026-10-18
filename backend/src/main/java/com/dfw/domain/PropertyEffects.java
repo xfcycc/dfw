@@ -40,6 +40,9 @@ public final class PropertyEffects {
     }
     /** 输入房间及到期地产，恢复保留的附加效果并公开记录。 */
     private static void release(Room room, Tile tile) {
+        MotionSegment segment = BoardEffect.begin("kamuiRelease", player(room, tile.kamuiCasterId));
+        segment.boardEffect.beforeTiles.add(BoardEffect.appearance(tile));
         tile.kamuiCasterId = null; tile.kamuiTurns = 0; log(room, tile.name + " 已离开神威空间，地产及原有附加效果恢复");
+        segment.boardEffect.afterTiles.add(BoardEffect.appearance(tile)); BoardEffect.publish(room, segment);
     }
 }
