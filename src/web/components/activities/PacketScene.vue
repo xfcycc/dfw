@@ -69,6 +69,7 @@ onBeforeUnmount(() => { clearInterval(clock); clearAnimation(); document.removeE
           <b :key="elapsed(packet.id) < 1200 ? 'base' : 'final'">+¥{{ (elapsed(packet.id) < 1200 ? activity.packets[packet.id] : activity.payouts[packet.id])?.toLocaleString() }}</b><small>基础 ¥{{ activity.packets[packet.id]?.toLocaleString() }} · 已到账</small>
           <span v-if="activity.bonuses[packet.id] && elapsed(packet.id) >= 1200" class="lucky-badge">幸运大奖 · 翻倍 +¥{{ activity.bonuses[packet.id]?.toLocaleString() }}</span>
           <span v-if="activity.settled && activity.packets[packet.id] === best" class="best-badge">手气最佳</span>
+          <small v-if="activity.cardRewards?.[packet.id]">＋{{ activity.cardRewards[packet.id] }} 张随机道具 · 已发放</small>
         </div>
         <small v-else>{{ packet.id ? (elapsed(packet.id) < 650 ? '红包开启中…' : '已选择') : enabled ? '点我拆开' : '等待领取' }}</small>
         <span v-if="(activity.bonuses[packet.id] ?? 0) > 0 && elapsed(packet.id) >= 1200 && elapsed(packet.id) < 3000" class="packet-lucky-celebration" aria-hidden="true">✦ 幸运翻倍 ✦</span>

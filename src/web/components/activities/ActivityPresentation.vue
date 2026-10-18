@@ -17,7 +17,7 @@ const delay = computed(() => {
   if (['casino', 'horse'].includes(a.kind) && !a.result || ['bridge', 'treasure'].includes(a.kind) && !a.safePaths?.length) return 0;
   return ({ casino: 500, horse: 1100, rps: 550, bridge: 1350, treasure: 650, minority: 1000, roulette: 0, packet: 0, blindbox: 0 })[a.kind];
 });
-const rewarding = computed(() => Object.values(props.activity.payouts).some(amount => amount > 0));
+const rewarding = computed(() => Object.values(props.activity.payouts).some(amount => amount > 0) || Object.values(props.activity.cardRewards ?? {}).some(count => count > 0));
 const showRewards = computed(() => props.activity.stage === 'result' && props.activity.kind !== 'packet' && ready.value && !props.revealing);
 /** 无入参，停止当前庆祝并展示静态结果；刷新、后台和重连不补播动画。 */
 function stop(): void { clearTimeout(finish); clearTimeout(reveal); playing.value = false; ready.value = true; }

@@ -2,7 +2,7 @@
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { ITEMS, mapLength, MAP_SIZES, mortgageValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
+import { isKamui, hasPropertyEffects, baseRentFor, concertRent, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
 import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
 import { forgetSession, readSession, useGameStore } from '../stores/game';
 import { useTurnSound } from '../composables/useTurnSound';
@@ -23,6 +23,8 @@ import Modal from '../components/Modal.vue';
 import MatchSettlement from '../components/MatchSettlement.vue';
 import Assets from '../components/Assets.vue';
 import CardAction from '../components/CardAction.vue';
+import PropertyEffects from '../components/PropertyEffects.vue';
+import { TILE_CARDS, PLAYER_CARDS } from '../card-targets';
 import CardTargetPicker from '../components/CardTargetPicker.vue';
 import ContentCard from '../components/ContentCard.vue';
 import CardReveal from '../components/CardReveal.vue';
@@ -136,8 +138,9 @@ const pendingTile = computed(() => game.room?.board[game.room.pending?.tileId ??
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
 const creditorName = computed(() => game.room?.players.find(player => player.id === payment.value?.creditorId)?.name ?? '银行');
 const canTrade = computed(() => !drafting.value && canPlay.value && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved) && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
-const liquidationValue = computed(() => (game.me?.cash ?? 0) + owned.value.reduce((sum, tile) => sum + (tile.mortgaged ? 0 : mortgageValue(tile, game.room?.economy)), 0));
-const canLiquidate = computed(() => canPlay.value && !!payment.value && liquidationValue.value < payment.value.amount && (!!payment.value.creditorId || owned.value.every(tile => tile.mortgaged)));
+/** 根据现金及本人地产的最高银行变现能力，返回可偿债金额；与服务端清算校验一致。 */
+const liquidationValue = computed(() => (game.me?.cash ?? 0) + owned.value.reduce((sum, tile) => sum + (isKamui(tile) ? 0 : propertyLiquidationValue(tile, game.room?.economy)), 0));
+const canLiquidate = computed(() => canPlay.value && !!payment.value && liquidationValue.value < payment.value.amount && (!!payment.value.creditorId || owned.value.every(tile => tile.mortgaged || isKamui(tile))));
 const elimination = computed(() => game.room?.players.filter(player => player.bankrupt).sort((a, b) => (a.eliminationOrder ?? 0) - (b.eliminationOrder ?? 0)) ?? []);
 const archiveCode = computed(() => game.privateData?.archiveCode ?? game.session?.archiveCode ?? '');
 const latestLog = computed(() => game.room?.logs[0]);
@@ -155,17 +158,23 @@ const selectedTileOwner = computed(() => game.room?.players.find(player => playe
 const canManageSelectedProperty = computed(() => {
   const tile = liveSelectedTile.value;
   return canPlay.value && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved)
-    && tile?.type === 'property' && tile.ownerId === game.me?.id
+    && tile?.type === 'property' && !isKamui(tile) && tile.ownerId === game.me?.id
     && (!tile.mortgaged || !payment.value && (game.me?.cash ?? 0) >= redeemCost(tile));
 });
 const turnIdentity = computed(() => `${game.room?.roomId ?? code.value}:${game.room?.gameId}:${game.room?.turnNumber}`);
 const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && !game.privateData?.activeCardUsed);
 const drafting = computed(() => !!selectedCard.value && selectedCardActive.value);
 const mapChoice = computed(() => choice.value && ['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.value.type) ? choice.value : null);
-const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && ['barrier', 'demolish'].includes(selectedCard.value!.kind) ? 'tile' : drafting.value && ['swap', 'steal', 'blast', 'jail'].includes(selectedCard.value!.kind) ? 'player' : null);
+const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && TILE_CARDS.includes(selectedCard.value!.kind) ? 'tile' : drafting.value && PLAYER_CARDS.includes(selectedCard.value!.kind) ? 'player' : null);
 const targeting = computed(() => targetKind.value !== null && (modal.value === 'card' || modal.value === 'choice'));
 const eligibleTiles = computed(() => targetKind.value === 'tile' ? game.room?.board.filter(tile => !tileReason(tile)).map(tile => tile.id) ?? [] : []);
-const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => !player.bankrupt && (['blast', 'jail'].includes(selectedCard.value?.kind ?? '') || player.id !== game.me?.id) && (selectedCard.value?.kind !== 'swap' || !player.jailed)).map(player => player.id) ?? [] : []);
+/** 输入当前牌型及公开玩家，返回满足同格、上限与服刑规则的目标。 */
+const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => {
+  const kind = selectedCard.value?.kind;
+  return !player.bankrupt && (['blast', 'jail', 'swapAny'].includes(kind ?? '') || player.id !== game.me?.id)
+    && (kind !== 'swap' || !player.jailed) && (kind !== 'sap' || player.position === game.me?.position)
+    && (kind !== 'reaper' || (player.handLimit ?? 6) > 1 && (game.me?.handLimit ?? 6) > 1);
+}).map(player => player.id) ?? [] : []);
 const targetTileId = computed(() => targetKind.value === 'tile' && selectedTarget.value !== '' ? Number(selectedTarget.value) : null);
 /** 输入当前目标及房间状态，返回玩家昵称或包含地块编号、当前归属的土地名称。 */
 const targetLabel = computed(() => {
@@ -178,13 +187,13 @@ const targetLabel = computed(() => {
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules = { barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
-  return rules[selectedCard.value!.kind as keyof typeof rules];
+  const rules: Partial<Record<Card['kind'], string>> = { shield: '选择没有护盾的自家地产，保护一次所有类型建筑拆除。', exchange: '选择付得起无修正租金的对手地产，承接抵押与附加效果。', kamui: '选择一处地产，暂停三个后续个人回合。', blackhole: '选择有附加效果的非神威地产。', homeTeleport: '选择自家非神威地产，传送替代掷骰，可正常付费升级。', sap: '选择同格的一名对手，休息一回合并随机偷牌。', slow: '选择对手，下次基础步数减半。', reaper: '选择手牌上限大于一张的对手，双方本局上限各减一。', shadowstep: '选择另一名玩家所在格，替代掷骰并正常结算。', swapAny: '先选择第一名玩家，再在下方选择第二名；可包括自己，服刑者保留控制状态。', barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产，全部拆除且不补偿。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
+  return rules[selectedCard.value!.kind] ?? selectedCard.value!.effect ?? '';
 });
 /** 输入房间地块与玩家，返回按可选性排序的目标选项；地块携带原始价格和建筑插画信息。 */
 const dialogTargets = computed(() => {
-  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: player.name, detail: `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.id === game.me?.id ? '不能选择自己' : player.bankrupt ? '该玩家已破产' : '该玩家正在服刑' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
-  if (targetKind.value === 'tile') return (game.room?.board ?? []).map(tile => ({ id: String(tile.id), name: `${tile.name} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile, reason: tileReason(tile) })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: player.name, detail: `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.id === game.me?.id ? '不能选择自己' : player.bankrupt ? '该玩家已破产' : '不满足本牌的同格、上限或服刑条件' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'tile') return (game.room?.board ?? []).map(tile => ({ id: String(tile.id), name: `${tile.name}${hasPropertyEffects(tile) ? ' ✦' : ''} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile, reason: tileReason(tile) })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
   return [];
 });
 const canEndTurn = computed(() => !drafting.value && canPlay.value && game.room?.phase === 'manage' && !game.room.pending);
@@ -208,7 +217,17 @@ watch(() => game.privateData, (next, previous) => {
 /** 输入当前地块，返回无法选为道具目标的原因；空字符串表示合法。 */
 function tileReason(tile: Tile): string {
   if (mapChoice.value) return mapChoice.value.tileIds.includes(tile.id) ? '' : '该地块不在本次选择的合法目标中，请点击高亮地产。';
-  if (selectedCard.value?.kind === 'demolish') return tile.ownerId && tile.ownerId !== game.me?.id && tile.level > 0 ? '' : '拆房需要选择对手有建筑的地产。';
+  if (isKamui(tile)) return '神威空间中的地产无法操作或施加效果。';
+  const kind = selectedCard.value?.kind;
+  if (['shield', 'exchange', 'kamui', 'blackhole', 'homeTeleport'].includes(kind ?? '')) {
+    if (tile.type !== 'property') return '请选择普通地产。';
+    if (kind === 'shield') return tile.ownerId !== game.me?.id ? '请选择自家地产。' : tile.demolitionShield ? '该地产已有一次护盾。' : '';
+    if (kind === 'homeTeleport') return tile.ownerId === game.me?.id ? '' : '请选择自家地产。';
+    if (kind === 'exchange') return !tile.ownerId || tile.ownerId === game.me?.id ? '请选择对手地产。' : (game.me?.cash ?? 0) < baseRentFor(tile, game.room?.economy) ? '现金不足以支付无修正租金。' : '';
+    if (kind === 'blackhole') return hasPropertyEffects(tile) ? '' : '该地产没有附加效果。';
+    return '';
+  }
+  if (['demolish', 'fullDemolish'].includes(selectedCard.value?.kind ?? '')) return tile.ownerId && tile.ownerId !== game.me?.id && !game.room?.players.find(p => p.id === tile.ownerId)?.bankrupt && tile.level > 0 ? '' : '拆房需要选择未破产对手有建筑的地产。';
   if (selectedCard.value?.kind === 'barrier') {
     const size = game.room?.board.length ?? 1;
     const forward = (tile.id - (game.me?.position ?? 0) + size) % size;
@@ -221,7 +240,7 @@ function tileReason(tile: Tile): string {
 watch(() => game.room?.activity?.id, id => { if (id) { modal.value = null; selectedTile.value = null; } });
 watch(() => choice.value?.id, id => {
   selectedTarget.value = '';
-  if (id) { const fromCard = modal.value === 'card' && selectedCard.value?.kind === 'freeUpgrade'; clearCard(); selectedTile.value = null; if (fromCard) modal.value = 'choice'; }
+  if (id) { const fromCard = modal.value === 'card' && ['freeUpgrade', 'fullUpgrade', 'recycle', 'discover'].includes(selectedCard.value?.kind ?? ''); clearCard(); selectedTile.value = null; if (fromCard) modal.value = 'choice'; }
   else if (modal.value === 'choice') modal.value = null;
 });
 watch([turnIdentity, canPrepareCard, () => game.privateData?.hand], () => {
@@ -353,7 +372,7 @@ function chooseCard(card: Card): void {
 /** 无入参，取消本地选牌并关闭其窗口，不消费手牌或主动次数。 */
 function clearCard(): void { submittingCard.value = false; selectedCard.value = null; selectedCardActive.value = false; selectedTarget.value = ''; if (modal.value === 'card') modal.value = null; }
 /** 输入成功使用的牌型，免费升级及风险道具接续服务端选择，其他道具结束选牌。 */
-function cardUsed(kind: Card['kind']): void { clearCard(); if (kind === 'freeUpgrade' && choice.value?.type === 'free_upgrade' || kind === 'gamble' && choice.value?.type === 'gamble') modal.value = 'choice'; }
+function cardUsed(kind: Card['kind']): void { clearCard(); if (['recycle', 'discover'].includes(kind) && choice.value) { modal.value = 'choice'; return; } if (['freeUpgrade', 'fullUpgrade'].includes(kind) && ['free_upgrade', 'full_upgrade'].includes(choice.value?.type ?? '') || kind === 'gamble' && choice.value?.type === 'gamble') modal.value = 'choice'; }
 /** 输入窗口内目标标识，按原规则更新选择；确认按钮才发送命令。 */
 function selectDialogTarget(id: string): void { if (targetKind.value === 'tile') { const tile = game.room?.board[Number(id)]; if (tile) selectTile(tile); } else selectPlayer(id); }
 /** 输入地图地块，选择合法目标或打开普通地块详情，不提交游戏命令。 */
@@ -483,7 +502,7 @@ async function resetSession(): Promise<void> {
                     </aside>
                   </div>
                   <Teleport :to="detachedDashboard ? '#mobile-workbench-cards' : 'body'" :disabled="!detachedDashboard" defer>
-                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><span v-for="slot in Math.max(0, 6 - handCount)" :key="`empty-${slot}`" class="empty-hand-slot" aria-hidden="true"><span>＋</span>空位</span></div></template>
+                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><span v-for="slot in Math.max(0, (game.me.handLimit ?? 6) - handCount)" :key="`empty-${slot}`" class="empty-hand-slot" aria-hidden="true"><span>＋</span>空位</span></div></template>
                       <p v-else class="workspace-caption">手牌仅本人可见</p><p v-if="detachedDashboard && !handCount" class="workspace-caption">暂无手牌</p></section>
                   </Teleport>
 
@@ -535,8 +554,8 @@ async function resetSession(): Promise<void> {
                             <template v-if="!payment.defenseResolved"><button class="button primary small" :disabled="!canPlay" @click="modal = 'defense'">选择防御与付款方式</button></template>
                             <div v-else class="button-row"><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < payment.amount" @click="game.act({ type: 'payDebt' })">确认现金支付</button></div>
                             <div v-if="payment.defenseResolved" class="button-row"><button class="button secondary" :disabled="!canPlay" @click="openWorkbench('assets')">抵押／变现</button><button v-if="payment.creditorId" class="button secondary" :disabled="!canTrade" @click="openWorkbench('trade')">协商抵债／出售</button></div>
-                            <p v-if="!payment.creditorId && (game.me?.cash ?? 0) < payment.amount" class="notice warning">系统费用需自行选择地产抵押筹款。</p>
-                            <template v-if="payment.defenseResolved && liquidationValue < payment.amount"><p class="muted">银行变现仍不足。{{ payment.creditorId ? '可继续与玩家协商成交，或主动结束协商并清算。' : '抵押全部可用地产后仍不足，可确认清算。' }}</p><button class="button ghost small danger" :disabled="!canLiquidate" @click="modal = 'bankruptcy'">结束协商并申请清算</button></template>
+                            <p v-if="!payment.creditorId && (game.me?.cash ?? 0) < payment.amount" class="notice warning">系统费用需自行选择地产抵押或整套出售筹款。</p>
+                            <template v-if="payment.defenseResolved && liquidationValue < payment.amount"><p class="muted">银行变现仍不足。{{ payment.creditorId ? '可继续与玩家协商成交，或主动结束协商并清算。' : '自行抵押或出售全部可抵押地产后仍不足，可确认清算。' }}</p><button class="button ghost small danger" :disabled="!canLiquidate" @click="modal = 'bankruptcy'">结束协商并申请清算</button></template>
                           </template>
                         </template>
                         </div></Modal>
@@ -598,14 +617,14 @@ async function resetSession(): Promise<void> {
       </form>
     </Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'bankruptcy' && payment && !spectator" title="结束偿债并清算" @close="modal = null"><p>待支付 ¥{{ payment.amount.toLocaleString() }}，现金加银行可变现资产 ¥{{ liquidationValue.toLocaleString() }}。</p><p class="notice warning">确认后全部地产归还银行，你退出本局竞争。<PlayerText :text="payment.creditorId ? `银行变现所得用于向 ${creditorName} 偿债。` : '剩余现金用于向银行偿债。'" /></p><div class="button-row"><button class="button secondary" @click="modal = null">继续筹款协商</button><button class="button danger" :disabled="!canLiquidate" @click="game.act({ type: 'declareBankruptcy' }).then(ok => { if (ok) modal = null; })">确认清算并退出竞争</button></div></Modal>
-    <Modal panel-class="modern-modal tile-detail-modal" v-if="liveSelectedTile" :title="liveSelectedTile.name" @close="selectedTile = null">
+    <Modal panel-class="modern-modal tile-detail-modal" v-if="liveSelectedTile" :title="`${liveSelectedTile.name}${hasPropertyEffects(liveSelectedTile) ? ' ✦' : ''}`" @close="selectedTile = null">
       <div class="tile-detail tile-detail-card">
         <div class="tile-detail-hero" :class="`district-${liveSelectedTile.district}`">
           <div class="tile-detail-art" :class="[liveSelectedTile.type, `level-${liveSelectedTile.level}`, { mortgaged: liveSelectedTile.mortgaged }]" :style="{ '--detail-property-art': `url(${imageUrl('/images/board/property-levels.png')})` }" aria-hidden="true">
             <img v-if="liveSelectedTile.type !== 'property'" :src="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind ? activityArt(`${liveSelectedTile.activityKind}-tile`) : imageUrl(`/images/tiles/${liveSelectedTile.type}.png`)" alt="" />
           </div>
           <div class="tile-detail-intro">
-            <p>{{ liveSelectedTile.name }}</p>
+            <p>{{ liveSelectedTile.name }}{{ hasPropertyEffects(liveSelectedTile) ? ' ✦' : '' }}</p>
             <span class="tile-detail-location">{{ liveSelectedTile.id }} 号地块</span>
             <span v-if="liveSelectedTile.type === 'property'" class="tile-detail-status" :class="{ mortgaged: liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? '已抵押' : liveSelectedTile.ownerId ? '已购入' : '待购入' }}</span>
           </div>
@@ -618,19 +637,22 @@ async function resetSession(): Promise<void> {
           </div>
           <dl class="tile-detail-metrics">
             <div><dt>地产价格</dt><dd>¥{{ liveSelectedTile.price.toLocaleString() }}</dd></div>
+            <div><dt>无修正租金</dt><dd>¥{{ baseRentFor(liveSelectedTile, game.room?.economy).toLocaleString() }}</dd></div>
+            <div><dt>演唱会后租金</dt><dd>¥{{ concertRent(baseRentFor(liveSelectedTile, game.room?.economy), liveSelectedTile.concertStacks ?? 0).toLocaleString() }}</dd></div>
             <div><dt>当前路费</dt><dd>{{ selectedTileOwner?.jailed && selectedTileOwner.skipTurns > 0 ? '¥0 · 房东服刑中' : `¥${rentFor(liveSelectedTile, game.room?.economy).toLocaleString()}` }}</dd></div>
           </dl>
+          <PropertyEffects :tile="liveSelectedTile" :economy="game.room?.economy" />
           <dl class="tile-detail-facts">
             <div><dt>抵押状态</dt><dd :class="{ 'tile-detail-mortgaged': liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? `已抵押 · 赎回 ¥${redeemCost(liveSelectedTile).toLocaleString()}` : '未抵押' }}</dd></div>
           </dl>
           <div v-if="!spectator && game.me && selectedTileOwner" class="tile-detail-actions">
-            <button v-if="liveSelectedTile.ownerId !== game.me.id" type="button" class="button primary" :disabled="!canTrade || selectedTileOwner.bankrupt" @click="tradeSelectedProperty">交易此房产</button>
+            <button v-if="liveSelectedTile.ownerId !== game.me.id" type="button" class="button primary" :disabled="!canTrade || selectedTileOwner.bankrupt || isKamui(liveSelectedTile)" @click="tradeSelectedProperty">交易此房产</button>
             <button v-else type="button" class="button primary" :disabled="!canManageSelectedProperty" @click="manageSelectedProperty">{{ liveSelectedTile.mortgaged ? `赎回此房产 −¥${redeemCost(liveSelectedTile).toLocaleString()}` : `抵押此房产 +¥${mortgageValue(liveSelectedTile, game.room?.economy).toLocaleString()}` }}</button>
           </div>
         </template>
         <p v-else-if="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind" class="tile-detail-description">{{ ACTIVITY_HINTS[liveSelectedTile.activityKind] }}。停在这里触发活动，经过不触发。</p>
         <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `经过或停留在起点，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()} 和 ${startCards(game.room?.players.length ?? 2)} 张道具补给。` : '停在此处，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可当场用解控卡解除限制。' }}</p>
-        <p class="tile-detail-barrier" :class="{ active: liveSelectedTile.barrier }"><span aria-hidden="true">{{ liveSelectedTile.barrier ? '🚧' : '↝' }}</span><span><strong>{{ liveSelectedTile.barrier ? '设有路障' : '无路障' }}</strong><small v-if="liveSelectedTile.barrier">首位受影响的经过者将停下，随后正常结算地块</small></span></p>
+        <p class="tile-detail-barrier" :class="{ active: liveSelectedTile.barrier }"><span aria-hidden="true">{{ liveSelectedTile.barrier ? '🚧' : '↝' }}</span><span><strong>{{ liveSelectedTile.barrier ? '设有路障' : '无路障' }}</strong><small v-if="liveSelectedTile.barrier">{{ isKamui(liveSelectedTile) ? '神威期间暂停，不截停也不消耗' : '首位受影响的经过者将停下，随后正常结算地块' }}</small></span></p>
       </div>
     </Modal>
     <footer v-if="!isLobby" class="room-footer">小小棋盘，大大野心。<span>好运和朋友，都在这里。</span></footer>

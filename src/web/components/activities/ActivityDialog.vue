@@ -21,6 +21,7 @@ const game = useGameStore(); const open = ref(true);
 const blindboxRevealing = ref(false);
 const activity = computed(() => game.room?.activity);
 const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene, treasure: TreasureScene, bridge: BridgeScene, minority: MinorityScene, blindbox: BlindBoxScene };
+const cardRewardRules = { casino: '', horse: '赛马中奖者', roulette: '轮盘获胜者', packet: '全员领取后的手气最佳者', rps: '猜拳冠军', treasure: '三层全部通关者', bridge: '三关全部通关者', minority: '本场中奖者', blindbox: '隐藏款或限定款领取者' };
 const ownSelection = computed(() => game.privateData?.activityId === activity.value?.id && game.privateData?.activityRound === activity.value?.round ? game.privateData?.activitySelection : null);
 const enabled = computed(() => {
   const a = activity.value, id = game.me?.id;
@@ -84,6 +85,7 @@ onBeforeUnmount(() => { clearInterval(hoof); });
     <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small>{{ progress }}</small></div>
       <div class="activity-content"><ActivityPresentation :activity="activity" :revealing="blindboxRevealing"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" @revealing="blindboxRevealing = $event" /></ActivityPresentation>
+        <p v-if="cardRewardRules[activity.kind]" class="activity-help">{{ cardRewardRules[activity.kind] }}额外获得 1 张随机道具。</p>
         <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
       </div>
     </div>

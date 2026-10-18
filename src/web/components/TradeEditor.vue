@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isKamui } from '../../shared/rules';
 import { computed, ref, watch } from 'vue';
 import { useGameStore } from '../stores/game';
 import PlayerText from './PlayerText.vue';
@@ -18,8 +19,8 @@ const toCreditor = computed(() => !!payment.value?.creditorId && toId.value === 
 const canOffer = computed(() => (!game.room?.activity || game.room.activity.stage === 'payment') && !props.offerDisabled && game.canAct && game.canDecide && !game.room?.tradePending && game.room?.pending?.type !== 'choice' && (!payment.value || payment.value.defenseResolved) && (['pre_roll', 'manage'].includes(game.room?.phase ?? '') || !!payment.value?.creditorId));
 const partners = computed(() => game.room?.players.filter(player => !player.bankrupt && player.id !== game.me?.id) ?? []);
 const partner = computed(() => game.room?.players.find(player => player.id === toId.value));
-const own = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
-const theirs = computed(() => game.room?.board.filter(tile => tile.ownerId === toId.value) ?? []);
+const own = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id && !isKamui(tile)) ?? []);
+const theirs = computed(() => game.room?.board.filter(tile => tile.ownerId === toId.value && !isKamui(tile)) ?? []);
 const offer = computed(() => trade.value ?? { fromId: game.me?.id ?? '', toId: toId.value, giveCash: giveCash.value, wantCash: wantCash.value, giveTiles: giveTiles.value, wantTiles: wantTiles.value, debtId: payment.value?.id, debtCredit: toCreditor.value ? debtCredit.value : 0 });
 const from = computed(() => game.room?.players.find(player => player.id === offer.value.fromId));
 const to = computed(() => game.room?.players.find(player => player.id === offer.value.toId));
@@ -31,6 +32,7 @@ const previewError = computed(() => {
   if (![value.giveCash, value.wantCash, value.debtCredit ?? 0].every(amount => typeof amount === 'number' && Number.isSafeInteger(amount) && amount >= 0)) return '请输入有效的非负整数金额，再查看成交后结果。';
   if (value.giveCash > from.value.cash || value.wantCash > to.value.cash) return '报价现金超过对应玩家持有现金，请调整后查看结果。';
   if (value.giveTiles.some(id => game.room?.board[id]?.ownerId !== from.value?.id) || value.wantTiles.some(id => game.room?.board[id]?.ownerId !== to.value?.id)) return '报价地产的归属已变化，请重新选择。';
+  if ([...value.giveTiles, ...value.wantTiles].some(id => game.room?.board[id] && isKamui(game.room.board[id]!))) return '神威空间中的地产不能交易。';
   if (new Set([...value.giveTiles, ...value.wantTiles]).size !== value.giveTiles.length + value.wantTiles.length) return '交易地产不能重复。';
   if ((value.debtCredit ?? 0) > 0 && (!associatedDebt.value || value.toId !== payment.value?.creditorId || !value.giveTiles.length || (value.debtCredit ?? 0) > (payment.value?.amount ?? 0))) return '抵债须向债权人提供地产，抵扣金额不能超过当前欠款。';
   if (!value.giveCash && !value.wantCash && !value.giveTiles.length && !value.wantTiles.length) return '选择现金或地产后，这里将展示成交后的结果。';
@@ -58,7 +60,7 @@ function selectProperty(tileId: number): boolean {
   if (!canOffer.value || trade.value) return false;
   const tile = game.room?.board[tileId];
   if (tile?.type !== 'property' || !tile.ownerId) return false;
-  if (tile.ownerId === game.me?.id) {
+  if (tile.ownerId === game.me?.id && !isKamui(tile)) {
     if (!giveTiles.value.includes(tileId)) giveTiles.value.push(tileId);
   } else {
     if (!partners.value.some(player => player.id === tile.ownerId)) return false;

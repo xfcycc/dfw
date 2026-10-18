@@ -10,7 +10,7 @@ export type BotDifficulty = 'easy' | 'normal' | 'hard';
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble';
+export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -33,7 +33,7 @@ export interface Card extends ContentResult { kind: ItemKind }
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit';
+  type: 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit' | 'recycle' | 'discover';
   tileIds: number[];
   cards: Card[];
   cardId: string | null;
@@ -41,6 +41,8 @@ export interface ContentChoice {
   skipTurns: number;
   jailed: boolean;
   discardCash: number;
+  /** 当前实际手牌上限，旧协议缺省六张。 */
+  handLimit?: number;
 }
 /** 随对局冻结的公开个人战报；旧存档不补造缺失数据。 */
 export interface PlayerSettlement {
@@ -77,6 +79,9 @@ export interface PublicPlayer {
   cash: number;
   /** 公开的持有手牌数量；旧服务端及历史快照可缺省，具体卡面仍为私有。 */
   cardCount?: number | null;
+  /** 尸鬼封尽后的当前上限。 */
+  handLimit?: number | null;
+  nextRollHalf?: boolean;
   /** 所有人可见的净资产及名次，旧服务端可缺省。 */
   netWorth?: number;
   assetRank?: number | null;
@@ -112,6 +117,13 @@ export interface Tile {
   /** 抵押时的土地加建筑估值，旧土地抵押缺省按地价计算。 */
   mortgageBase?: number | null;
   barrier: boolean;
+  demolitionShield?: boolean;
+  treasure?: boolean;
+  concertStacks?: number;
+  meteorCharges?: number;
+  kamuiCasterId?: string | null;
+  kamuiTurns?: number;
+  kamuiAppliedTurn?: number;
 }
 /** 当前需要玩家决定的公开事项。 */
 export interface PendingDecision {
@@ -249,8 +261,8 @@ export type GameAction =
   | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }
   | { type: 'paymentDefense'; decisionId?: string; cardId?: string }
-  | { type: 'contentDecision'; decisionId: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[] }
-  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string }
+  | { type: 'contentDecision'; decisionId: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[] }
+  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }
   | { type: 'tradeOffer'; toId: string; giveCash: number; wantCash: number; giveTiles: number[]; wantTiles: number[]; debtCredit?: number }
   | { type: 'tradeRespond'; accept: boolean }
@@ -272,6 +284,8 @@ export interface CornerActivity {
   participants: string[]; contenders: string[]; submitted: string[];
   bets: Record<string, number>; revealed: Record<string, number>; wagers: Record<string, number>;
   payouts: Record<string, number>; packets: Record<string, number>; bonuses: Record<string, number>;
+  /** 本场已获得的额外道具数量，旧快照缺省，具体卡面保持私有。 */
+  cardRewards?: Record<string, number>;
   /** 红包领取者与已选序号，未领取红包不公开金额。 */
   packetSelections: Record<string, number>;
   /** 新玩法的公开进度及已揭晓安全方向，旧快照缺省。 */

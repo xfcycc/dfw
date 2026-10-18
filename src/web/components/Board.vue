@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { boardDimensions, DISTRICTS, districtName, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
+import { boardDimensions, DISTRICTS, districtName, hasPropertyEffects, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
 import type { ActivityKind, PublicPlayer, PublicRoomState, Tile, Trade } from '../../shared/types';
 import City from './City.vue';
 import CharacterPawn from './CharacterPawn.vue';
@@ -240,10 +240,10 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
             <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
-            <span v-if="tile.barrier" class="barrier-marker" title="路障">🚧</span>
+            <span v-if="tile.barrier && tile.type !== 'property'" class="barrier-marker" title="路障">🚧</span>
             <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong><span class="tile-name">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
+            <strong><span class="tile-name">{{ tile.name }}{{ tile.type === 'property' && hasPropertyEffects(tile) ? ' ✦' : '' }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :style="{ '--owner-ink': tile.ownerId ? ownerTextColor(tile) : undefined }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
               <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
               <span class="tile-owner-name">{{ tile.ownerId ? tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>

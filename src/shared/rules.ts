@@ -5,7 +5,7 @@ import economyDefaults from '../../backend/src/main/resources/game-rules/economy
 export const RULES = {
   minPlayers: 2, maxPlayers: 6, initialCash: 6000, initialCards: 2, startIncome: 1000,
   prices: [400, 600, 800, 1200, 1600], buildRate: 0.5, sellBuildingRate: 0.25,
-  mortgageRate: 0.5, redeemRate: 0.55, sellLandRate: 0.5,
+  mortgageRate: 0.5, redeemRate: 0.55, sellLandRate: 0.7,
   maxLevel: 3, rentRate: 0.25, rentMultipliers: [1, 3, 6, 10],
 } as const;
 /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
@@ -24,9 +24,27 @@ export function mapLength(count: number, size: MapSize = 'large'): number { retu
 /** 输入闭环地图格数，返回整数行列；34／46 格使用相邻长度的矩形边。 */
 export function boardDimensions(length: number): { rows: number; columns: number } { return { rows: Math.floor(length / 4) + 1, columns: Math.ceil(length / 4) + 1 }; }
 export const ITEMS: Record<ItemKind, { name: string; icon: string; description: string }> = {
+  shield: { name: 'A.T.力场', icon: '✦', description: '保护自家地产，抵挡一次任何建筑拆除。' },
+  recycle: { name: '制衡', icon: '✦', description: '其他手牌任意数量弃置并等量重抽。' },
+  discover: { name: '发现·探险者的抉择', icon: '✦', description: '三张不同效果道具中选一张。' },
+  sap: { name: '闷棍', icon: '✦', description: '同格对手休息一回合并随机偷一张牌。' },
+  exchange: { name: '等价交换', icon: '✦', description: '支付无修正租金，夺取对手地产。' },
+  slow: { name: '迟缓光线', icon: '✦', description: '下次基础骰点减半，向下取整。' },
+  swapAny: { name: '斗转星移', icon: '✦', description: '任意两名玩家换位，不结算落点。' },
+  kamui: { name: '神威空间', icon: '✦', description: '冻结地产三个施术者个人回合。' },
+  handDestruction: { name: '手牌抹杀', icon: '✦', description: '全员手牌等量重抽，不包括本牌。' },
+  gravity: { name: '地爆天星', icon: '✦', description: '其他玩家聚集到自己，不结算落点。' },
+  reaper: { name: '尸鬼封尽', icon: '✦', description: '双方本局手牌上限各减一，最低一张。' },
+  shadowstep: { name: '暗影步', icon: '✦', description: '传送到另一玩家并结算，替代掷骰。' },
+  homeTeleport: { name: '传送', icon: '✦', description: '传送到自家地产并结算，替代掷骰。' },
+  blackhole: { name: '黑洞', icon: '✦', description: '清除地产全部附加效果，神威除外。' },
+  meteor: { name: '陨星', icon: '✦', description: '一至三处随机地产各增加一次截停。' },
+
   fixed: { name: '固定步数', icon: '👣', description: '按卡面固定步数替代本次掷骰，结算落点。' },
   move: { name: '主动位移', icon: '↔️', description: '按卡面前进或后退，替代本次掷骰，结算落点。' },
   bonus: { name: '掷骰加码', icon: '🎲', description: '掷骰前使用，加码与骰子合成一次连续移动。' },
+  fullUpgrade: { name: '木遁·连柱家之术', icon: '🌳', description: '自家合法地产免费直升3级，取消或无目标时保留卡和主动次数。' },
+  fullDemolish: { name: '神罗天征', icon: '💥', description: '指定对手一块有建筑地产，全部拆除，不补偿，保留产权和抵押信息。' },
   freeUpgrade: { name: '免费升级', icon: '🏗️', description: '自己的合法地产升一级，确认前取消保留卡。' },
   halfPayment: { name: '付款减半', icon: '🧾', description: '本笔强制费用减免一半，减免额向下取整。' },
   release: { name: '解除监禁／休息', icon: '🔑', description: '限制刚施加时使用，不占主动次数。' },
@@ -124,19 +142,47 @@ export function ruleMoney(economy: EconomySettings | null | undefined, key: stri
 function derivedMoney(economy: EconomySettings | null | undefined, key: string, actual: number): number { return economy?.fixedAmounts[key] ?? actual; }
 /** 输入地产及本局经济参数，返回按基础比例计算的租金；旧对局缺省 10%，抵押不收费。 */
 export function rentFor(tile: Tile, economy?: EconomySettings | null): number {
-  return tile.mortgaged ? 0 : derivedMoney(economy, `rent.${tile.price}.${tile.level}`, Math.floor(tile.price * (economy?.rentBasePercent ?? 10) / 100) * RULES.rentMultipliers[tile.level]);
+  return tile.mortgaged || isKamui(tile) ? 0 : concertRent(baseRentFor(tile,economy), tile.concertStacks ?? 0);
 }
+/** 输入地产，返回是否处于神威冻结中。 */
+export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }
+/** 输入地产，返回是否需要在名称后显示统一附加效果标记。 */
+export function hasPropertyEffects(tile: Tile): boolean { return !!(tile.barrier || tile.demolitionShield || tile.treasure || tile.concertStacks || tile.meteorCharges || isKamui(tile)); }
+/** 输入地产和经济快照，返回忽略抵押、房东及临时修正的等级租金，无主按零级。 */
+export function baseRentFor(tile: Tile, economy?: EconomySettings | null): number {
+  const level = tile.ownerId ? tile.level : 0;
+  return derivedMoney(economy, `rent.${tile.price}.${level}`, Math.floor(tile.price * (economy?.rentBasePercent ?? 10) / 100) * RULES.rentMultipliers[level]);
+}
+/** 输入无修正租金和层数，用精确整数比计算演唱会租金，最后向下取整。 */
+export function concertRent(base: number, stacks: number): number { return Number(BigInt(base) * 6n ** BigInt(stacks) / (5n ** BigInt(stacks))); }
 /** 输入地产及本局经济参数，返回一级建设成本。 */
 export function buildCost(tile: Tile, economy?: EconomySettings | null): number { return derivedMoney(economy, `buildCost.${tile.price}`, Math.floor(tile.price / 2)); }
 /** 输入地产及本局经济参数，返回出售一级建筑的现金。 */
 export function sellBuildingValue(tile: Tile, economy?: EconomySettings | null): number { return derivedMoney(economy, `sellBuilding.${tile.price}`, Math.floor(buildCost(tile, economy) / 2)); }
-/** 输入地产及本局经济参数，返回未抵押空地的出售现金。 */
-export function landValue(tile: Tile, economy?: EconomySettings | null): number { return tile.mortgaged ? 0 : derivedMoney(economy, `sellLand.${tile.price}`, Math.floor(tile.price / 2)); }
+/** 输入地产及本局经济参数，返回整套出售净额；已抵押时扣固定赎回费，负数表示需补差价。 */
+export function landValue(tile: Tile, economy?: EconomySettings | null): number { return propertySaleValue(tile, economy, propertyValue(tile, economy)) - (tile.mortgaged ? redeemCost(tile) : 0); }
+/** 输入地产、本局经济参数及剩余成本估值，返回七折回收款；旧卖地金额覆盖继续作用于土地部分。 */
+function propertySaleValue(tile: Tile, economy: EconomySettings | null | undefined, value: number): number {
+  const land = Math.floor(tile.price * 70 / 100);
+  return Math.floor(value * 70 / 100) + derivedMoney(economy, `sellLand.${tile.price}`, land) - land;
+}
+/** 输入地产及本局经济参数，返回抵押、整售或先卖房再变现可取得的最高现金，不计负权益。 */
+export function propertyLiquidationValue(tile: Tile, economy?: EconomySettings | null): number {
+  if (tile.mortgaged) return Math.max(0, landValue(tile, economy));
+  let value = 0, sold = 0;
+  const cost = buildCost(tile, economy);
+  for (let level = tile.level; level >= 0; level--) {
+    const base = tile.price + level * cost;
+    value = Math.max(value, sold + Math.max(Math.floor(base / 2), propertySaleValue(tile, economy, base)));
+    sold += sellBuildingValue(tile, economy);
+  }
+  return value;
+}
 /** 输入地产及本局经济参数，返回土地加建筑的成本估值。 */
 export function propertyValue(tile: Tile, economy?: EconomySettings | null): number { return tile.price + tile.level * buildCost(tile, economy); }
 /** 输入地产及本局经济参数，返回整体抵押取得的现金。 */
 export function mortgageValue(tile: Tile, economy?: EconomySettings | null): number { return Math.floor(propertyValue(tile, economy) * RULES.mortgageRate); }
 /** 输入地产，返回固定于抵押时估值的赎回成本，兼容旧土地抵押。 */
-export function redeemCost(tile: Tile): number { return Math.floor((tile.mortgageBase ?? tile.price) * RULES.redeemRate); }
+export function redeemCost(tile: Tile): number { return Math.floor((tile.mortgageBase ?? tile.price) * 55 / 100); }
 /** 输入地产，返回本局地区名，兼容未保存地区元数据的旧地图。 */
 export function districtName(tile: Tile): string { return tile.regionName ?? DISTRICTS[tile.district]; }
