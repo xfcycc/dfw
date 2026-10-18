@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemedSelect from './ThemedSelect.vue';
 import { ref } from 'vue';
 import { archiveRequest } from '../archive';
 import { useGameStore } from '../stores/game';
@@ -31,7 +32,7 @@ async function joinLobby(): Promise<void> {
     <div class="section-heading"><h2>{{ game.me ? '分配保存下来的角色' : '申请你的角色' }}</h2><span>恢复房间</span></div>
     <template v-if="!game.me">
       <p class="muted">角色的现金、地产、手牌与进度都已保留。选择角色，等待房主批准。</p>
-      <form @submit.prevent="requestSeat"><label class="field">你的昵称 <span class="optional">选填</span><input v-model="name" placeholder="方便房主认出你" /></label><label class="field">保存角色<select v-model="selected" required><option value="" disabled>选择要使用的角色</option><option v-for="player in game.room.players.filter(player => !player.botDifficulty)" :key="player.id" :value="player.id">{{ player.name }}{{ player.online ? ' · 在线' : '' }}</option></select></label><p v-if="error" class="error-text" role="alert">{{ error }}</p><p v-if="claim" class="notice">申请已保存，等待房主批准。</p><button class="button primary" :disabled="loading || game.connection !== 'online'">{{ loading ? '正在申请…' : '申请角色' }}</button></form>
+      <form @submit.prevent="requestSeat"><label class="field">你的昵称 <span class="optional">选填</span><input v-model="name" placeholder="方便房主认出你" /></label><label class="field">保存角色<ThemedSelect v-model="selected" label="保存角色" required :options="[{ value: '', label: '选择要使用的角色', disabled: true }, ...game.room.players.filter(player => !player.botDifficulty).map(player => ({ value: player.id, label: player.name + (player.online ? ' · 在线' : '') }))]" /></label><p v-if="error" class="error-text" role="alert">{{ error }}</p><p v-if="claim" class="notice">申请已保存，等待房主批准。</p><button class="button primary" :disabled="loading || game.connection !== 'online'">{{ loading ? '正在申请…' : '申请角色' }}</button></form>
       <button v-if="game.room.status === 'lobby' && !game.room.recoveryPending && game.room.players.length < 6" class="button secondary" :disabled="loading || game.connection !== 'online'" @click="joinLobby">以新玩家身份加入大厅</button>
     </template>
     <template v-else-if="game.isHost">

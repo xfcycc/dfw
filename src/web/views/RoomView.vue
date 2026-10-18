@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemedSelect from '../components/ThemedSelect.vue';
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
@@ -58,11 +59,9 @@ const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar'
 const nickname = ref('');
 const botDifficulty = ref<BotDifficulty>('normal');
 const botLevels = [{ value: 'easy', label: '简单' }, { value: 'normal', label: '普通' }, { value: 'hard', label: '困难' }] as const;
-/** 输入机器人席位与选择事件，通过已有命令更新大厅难度，无返回值。 */
-async function changeBotDifficulty(playerId: string, event: Event): Promise<void> {
-  const select = event.target as HTMLSelectElement;
-  const level = select.value as BotDifficulty;
-  if (!await game.act({ type: 'setBotDifficulty', playerId, botDifficulty: level })) select.value = game.room?.players.find(player => player.id === playerId)?.botDifficulty ?? level;
+/** 输入机器人席位与难度，通过已有命令更新大厅难度，显示值沿用服务器状态。 */
+async function changeBotDifficulty(playerId: string, level: BotDifficulty): Promise<void> {
+  await game.act({ type: 'setBotDifficulty', playerId, botDifficulty: level });
 }
 const canRename = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.settling && !game.room?.recoveryPending);
 /** 无入参，使用本人当前昵称打开改名弹窗，无返回值。 */
@@ -144,6 +143,7 @@ const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2
 const canPlay = computed(() => !props.spectator && !boardAnimating.value && (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending);
 const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
 const defenseCards = computed(() => game.privateData?.hand.filter(card => card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent') ?? []);
+const defenseOptions = computed(() => [{ value: '', label: '不使用道具' }, ...defenseCards.value.map(card => ({ value: card.id, label: card.name ?? ITEMS[card.kind].name }))]);
 const pendingTile = computed(() => game.room?.board[game.room.pending?.tileId ?? -1]);
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
 const creditorName = computed(() => game.room?.players.find(player => player.id === payment.value?.creditorId)?.name ?? '银行');
@@ -470,14 +470,14 @@ async function resetSession(): Promise<void> {
             <div v-for="player in game.room.players" :key="player.id" class="lobby-seat" :class="{ 'is-me': player.id === game.me?.id, offline: !player.online }">
               <CharacterPawn :avatar-id="player.avatarId" :color="player.color" />
               <div class="seat-identity"><strong :style="{ color: player.color }" :title="player.name">{{ player.name }}</strong><small>{{ player.botDifficulty ? `机器人 · ${botLevels.find(level => level.value === player.botDifficulty)?.label}` : player.id === game.room.hostId ? '房主' : player.id === game.me?.id ? '我' : '玩家' }}{{ player.id === game.room.hostId && player.id === game.me?.id ? ' · 我' : '' }}</small></div>
-              <select v-if="game.isHost && player.botDifficulty" class="bot-level-select" :aria-label="`${player.name}的难度`" :value="player.botDifficulty" :disabled="game.busy || !game.canAct" @change="changeBotDifficulty(player.id, $event)"><option v-for="level in botLevels" :key="level.value" :value="level.value">{{ level.label }}</option></select>
+              <ThemedSelect v-if="game.isHost && player.botDifficulty" class="bot-level-select" :label="`${player.name}的难度`" :model-value="player.botDifficulty" :options="botLevels" :disabled="game.busy || !game.canAct" @update:model-value="changeBotDifficulty(player.id, $event)" />
               <ReadyIcon class="seat-ready" :ready="player.ready" :offline="!player.online" />
               <button v-if="game.isHost && (!player.online || player.botDifficulty) && player.id !== game.me?.id" class="seat-remove" :disabled="game.busy" :aria-label="`移出 ${player.name}`" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出</button>
             </div>
             <div v-for="seat in 6 - game.room.players.length" :key="`empty-${seat}`" class="lobby-seat empty"><span class="empty-seat-mark" aria-hidden="true">＋</span><span>待加入</span></div>
           </div>
           <div class="cottage-map"><span>地图</span><div class="map-size-options" role="group" aria-label="地图大小"><button v-for="size in MAP_SIZES" :key="size.value" type="button" :class="{ selected: (game.room.mapSize ?? 'large') === size.value }" :aria-pressed="(game.room.mapSize ?? 'large') === size.value" :disabled="spectator || !game.isHost || !game.canAct" @click="changeMapSize(size.value)">{{ size.name }}<small>{{ mapLength(previewPlayers, size.value) }} 格</small></button></div></div>
-          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<select v-model="botDifficulty" :disabled="!game.canAct"><option v-for="level in botLevels" :key="level.value" :value="level.value">{{ level.label }}</option></select></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；开局前可调整难度。</p></div>
+          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<ThemedSelect v-model="botDifficulty" label="机器人难度" :options="botLevels" :disabled="!game.canAct" /></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；开局前可调整难度。</p></div>
           <section v-if="game.me && !spectator" class="lobby-avatar-picker"><div class="lobby-avatar-heading"><h2>选择头像</h2><button type="button" class="button secondary small lobby-rename" :disabled="!canRename" @click="openRename">改名</button></div><AvatarPicker /></section>
           <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : allReady ? game.isHost ? '大家都准备好了' : '等待房主开局' : '等待所有玩家准备' }}</p></div>
           <p v-else class="lobby-hint">观战中 · 等待开局</p>
@@ -626,7 +626,7 @@ async function resetSession(): Promise<void> {
         <ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" compact dialog @done="modal = null" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'defense-use-modal']" v-if="payment" :open="modal === 'defense' && !game.settling && !game.cardReveals.length" title="本次付款防御" @close="modal = null"><p class="defense-amount">待支付 ¥{{ payment.amount.toLocaleString() }} → <PlayerText :text="creditorName" /></p><label class="field">选择防御卡<select v-model="selectedDefense"><option value="">不使用道具</option><option v-for="card in defenseCards" :key="card.id" :value="card.id">{{ card.name ?? ITEMS[card.kind].name }}</option></select></label><ContentCard v-if="defenseCards.find(card => card.id === selectedDefense)" :content="defenseCards.find(card => card.id === selectedDefense)!" /><p class="muted">本笔至多使用一张防御卡，不占主动次数。</p><button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'paymentDefense', ...(payment.id ? { decisionId: payment.id } : {}), ...(selectedDefense ? { cardId: selectedDefense } : {}) })">{{ selectedDefense ? '确认使用防御卡' : '不使用道具，继续付款' }}</button></Modal>
+    <Modal :panel-class="['modern-modal', 'defense-use-modal']" v-if="payment" :open="modal === 'defense' && !game.settling && !game.cardReveals.length" title="本次付款防御" @close="modal = null"><p class="defense-amount">待支付 ¥{{ payment.amount.toLocaleString() }} → <PlayerText :text="creditorName" /></p><label class="field">选择防御卡<ThemedSelect v-model="selectedDefense" label="选择防御卡" :options="defenseOptions" /></label><ContentCard v-if="defenseCards.find(card => card.id === selectedDefense)" :content="defenseCards.find(card => card.id === selectedDefense)!" /><p class="muted">本笔至多使用一张防御卡，不占主动次数。</p><button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'paymentDefense', ...(payment.id ? { decisionId: payment.id } : {}), ...(selectedDefense ? { cardId: selectedDefense } : {}) })">{{ selectedDefense ? '确认使用防御卡' : '不使用道具，继续付款' }}</button></Modal>
     <Modal panel-class="modern-modal game-tools-modal" v-if="isGameSession && modal === 'tools'" title="小镇工具箱" @close="modal = null">
       <div class="game-tools-grid">
         <button v-if="game.me && !spectator" class="game-tool peach" @click="modal = 'avatar'"><span class="game-tool-icon" aria-hidden="true"><CharacterPawn :avatar-id="game.me.avatarId" :color="game.me.color" /></span><span>选择角色</span></button>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemedSelect from './ThemedSelect.vue';
 import { computed, ref } from 'vue';
 import { TILE_CARDS, PLAYER_CARDS } from '../card-targets';
 import type { Card, GameAction } from '../../shared/types';
@@ -28,7 +29,7 @@ async function submit(): Promise<void> {
 <template>
   <div class="card-action" :class="{ compact }">
     <ContentCard v-if="!compact" :content="card" />
-    <label v-if="card.kind === 'remote' && !readonly" class="field">指定点数<select v-model.number="point"><option v-for="number in 6" :key="number" :value="number">{{ number }} 点</option></select></label>
+    <label v-if="card.kind === 'remote' && !readonly" class="field">指定点数<ThemedSelect v-model="point" label="指定点数" :options="Array.from({ length: 6 }, (_, index) => ({ value: index + 1, label: `${index + 1} 点` }))" /></label>
     <p v-if="needsTarget && !readonly" class="target-current" role="status"><PlayerText :text="card.kind === 'swapAny' ? `第一位：${targetLabel || '未选择'} ↔ 第二位：${secondPlayer?.name ?? '未选择'}` : targetLabel ? `已选目标：${targetLabel}` : dialog ? '请选择目标，再确认使用' : PLAYER_CARDS.includes(card.kind) ? '请点击玩家头像选择目标' : '请点击地图高亮地块选择目标'" /></p>
     <p v-if="card.kind === 'swapAny' && target && secondTarget && game.room?.players.find(p => p.id === target)?.position === game.room?.players.find(p => p.id === secondTarget)?.position" class="notice">两名玩家当前同格，交换后位置不会变化。</p>
     <p v-if="needsTarget && !readonly && !hasCandidates" class="notice">当前没有符合条件的目标，可以保留到下次。</p>

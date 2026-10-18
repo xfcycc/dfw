@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemedSelect from './ThemedSelect.vue';
 import PropertyEffects from './PropertyEffects.vue';
 import { onBeforeUnmount, ref, watch } from 'vue';
 import type { ArchiveSnapshot, HistoryEntry, HistoryPage, Tile } from '../../shared/types';
@@ -48,7 +49,7 @@ onBeforeUnmount(() => { ++generation; ++previewGeneration; });
 </script>
 <template>
   <div class="room-history">
-    <div class="history-toolbar"><label class="field">回顾范围<select v-model="allGames"><option :value="false">当前对局</option><option :value="true">房间全部对局</option></select></label><label class="field">事件类型<select v-model="type"><option value="">全部公开事件</option><option v-for="[value, label] in eventTypes" :key="value" :value="value">{{ label }}</option></select></label><button class="button secondary small" :disabled="loading" @click="load()">刷新历史</button><RouterLink class="button ghost small" to="/archives" @click="selectArchiveCode(archiveCode)">存档与恢复 ↗</RouterLink></div>
+    <div class="history-toolbar"><label class="field">回顾范围<ThemedSelect v-model="allGames" label="回顾范围" :options="[{ value: false, label: '当前对局' }, { value: true, label: '房间全部对局' }]" /></label><label class="field">事件类型<ThemedSelect v-model="type" label="事件类型" :options="[{ value: '', label: '全部公开事件' }, ...eventTypes.map(([value, label]) => ({ value: value!, label: label! }))]" /></label><button class="button secondary small" :disabled="loading" @click="load()">刷新历史</button><RouterLink class="button ghost small" to="/archives" @click="selectArchiveCode(archiveCode)">存档与恢复 ↗</RouterLink></div>
     <p v-if="!compact" class="muted">回顾以往事件、道具使用与结算，按最新在前排列。当前局势请查看城市新鲜事及实时记录。点击“当时局面”查看历史棋盘，当前对局继续保留。</p>
     <p v-if="error" class="notice warning" role="alert">{{ error }}</p>
     <div class="history-entries"><article v-for="entry in entries" :key="entry.sequence" class="history-entry" :class="{ 'chat-record': entry.type === 'chat' }"><div><time>{{ new Date(entry.at).toLocaleString('zh-CN') }}</time><small v-if="entry.turnNumber">第 {{ entry.turnNumber }} 次行动<PlayerText v-if="entry.actorName" :text="` · ${entry.actorName}`" :players="[{ name: entry.actorName, color: '#416d55' }]" /></small><p><ChatText v-if="entry.type === 'chat'" :text="entry.text" :references="entry.references" :players="entry.mentions" :interactive="entry.gameId === gameId" @tile="emit('tile', $event)" /><PlayerText v-else :text="entry.text" :players="entry.mentions?.length ? entry.mentions : entry.actorName ? [{ name: entry.actorName, color: '#416d55' }] : undefined" /></p></div><button class="button ghost small" :disabled="previewLoading" @click="inspect(entry.snapshotId)">当时局面 ↗</button></article></div>

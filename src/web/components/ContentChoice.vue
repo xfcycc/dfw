@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ThemedSelect from './ThemedSelect.vue';
 import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
@@ -64,7 +65,7 @@ async function decide(accept: boolean): Promise<void> {
     <template v-else-if="choice.type === 'release'">
       <p class="notice warning">即将{{ choice.jailed ? '被监禁' : '休息' }}，跳过后续 {{ choice.skipTurns }} 次行动。现在可使用解控卡。</p>
       <p v-if="choice.jailed" class="muted">接受监禁后暂停收租，服刑结束后恢复；其他小游戏正常参加。解控只解除休息和停租，不撤销已完成的入狱传送。</p>
-      <label class="field">选择解控卡<select v-model="releaseCard"><option disabled value="">请选择道具</option><option v-for="card in releaseCards" :key="card.id" :value="card.id">{{ card.name ?? '解除监禁／休息' }} · {{ card.rarity ?? 'R' }}</option></select></label>
+      <label class="field">选择解控卡<ThemedSelect v-model="releaseCard" label="选择解控卡" :options="[{ value: '', label: '请选择道具', disabled: true }, ...releaseCards.map(card => ({ value: card.id, label: `${card.name ?? '解除监禁／休息'} · ${card.rarity ?? 'R'}` }))]" /></label>
       <ContentCard v-if="releaseCards.find(c => c.id === releaseCard)" :content="releaseCards.find(c => c.id === releaseCard)!" />
       <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">接受本次限制</button><button class="button primary" :disabled="!enabled || !releaseCard" @click="decide(true)">使用解控卡</button></div>
     </template>
