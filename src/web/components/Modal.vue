@@ -28,7 +28,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
     <div v-show="open" class="modal-backdrop" @click.self="!closeDisabled && emit('close')">
       <section ref="dialog" class="modal chibi-modal" :class="[{ wide }, panelClass]" role="dialog" aria-modal="true" :aria-label="title" tabindex="-1">
         <div v-if="!hideHeading" class="modal-heading"><h2>{{ title }}</h2><button class="icon-button" aria-label="关闭弹窗" :disabled="closeDisabled" @click="emit('close')">✕</button></div>
-        <slot />
+        <div class="modal-content"><slot /></div>
       </section>
     </div>
   </Teleport>
@@ -37,11 +37,17 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
 <style scoped>
 .modal-backdrop { padding: 24px; background: #52614980; backdrop-filter: blur(5px); }
 /* 公共外壳覆盖各页面旧的白色弹框，内容与业务操作仍由原组件承载。 */
-.modal.chibi-modal { --dialog-padding: 24px; width: min(100%, 520px); max-height: calc(100dvh - 48px); padding: var(--dialog-padding); border: 3px solid #cfb58e; border-radius: 30px; background: #fff9eb; color: #705a43; box-shadow: inset 0 0 0 5px #fffdf5, 0 7px 0 #9c7c4e38, 0 24px 70px #43361c30; scrollbar-width: thin; scrollbar-color: #cfb58e #fff9eb; }
+.modal.chibi-modal { --dialog-padding: 24px; display: flex; flex-direction: column; min-width: 0; width: min(100%, 520px); max-height: calc(100dvh - 48px); overflow: hidden; padding: var(--dialog-padding); border: 3px solid #cfb58e; border-radius: 30px; background: #fff9eb; color: #705a43; box-shadow: inset 0 0 0 5px #fffdf5, 0 7px 0 #9c7c4e38, 0 24px 70px #43361c30; }
+/* 滚动限制在正文内，给圆角边框及内容焦点、按钮阴影留出间距。 */
+.modal-content { min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: #cfb58e transparent; scrollbar-gutter: stable; margin: -5px; padding: 5px; }
+.modal-content::-webkit-scrollbar { width: 6px; height: 6px; }
+.modal-content::-webkit-scrollbar-track { background: transparent; }
+.modal-content::-webkit-scrollbar-thumb { border-radius: 999px; background: #cfb58e; }
+.modal-content :deep(> .button) { margin-top: 10px; }
 .modal.chibi-modal.wide { width: min(100%, 920px); }
 .modal.chibi-modal.home-archive-modal { width: min(100%, 960px); }
 .modal.chibi-modal.game-tools-modal { width: min(100%, 420px); }
-.chibi-modal > .modal-heading { position: sticky; top: calc(-1 * var(--dialog-padding)); z-index: 3; gap: 12px; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 2px dashed #e5d5b7; background: #fff9eb; }
+.chibi-modal > .modal-heading { position: relative; top: auto; flex-shrink: 0; z-index: 3; gap: 12px; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 2px dashed #e5d5b7; background: #fff9eb; }
 .chibi-modal > .modal-heading h2 { min-width: 0; margin: 0; color: #806344; font-size: 21px; font-weight: 800; line-height: 1.5; overflow-wrap: anywhere; }
 .chibi-modal > .modal-heading .icon-button { width: 36px; height: 36px; flex-shrink: 0; border: 2px solid #dcc39a; border-radius: 14px; background: linear-gradient(#fff9e8, #f3e1bd); color: #967650; box-shadow: inset 0 2px 0 #fffdf5, 0 3px 0 #dcc39a70; font-size: 17px; }
 .chibi-modal:focus-visible { outline: 3px solid #b5c99a; outline-offset: 5px; }
