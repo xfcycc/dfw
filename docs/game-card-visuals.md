@@ -4,7 +4,7 @@
 
 本批 WebP 使用 quality 90、method 6 等尺寸转码，不裁切、不缩放，合计 81,647,626 字节；235 张均核对 HTTP 200、image/webp、Content-Length 与 Content-MD5。集齐无限宝石、蘑菇加速、顶金币、开卡包使用原创 Q 版人物和道具演绎，清单中有明确标识。
 
-后续生成遵循 [卡面图片生成规范](card-art-generation.md)。当前图片地址、原图来源、实际提示词、摘要及远端记录见 [Q 版素材记录](../generated-assets/q-neta-2026-10-18/README.md)，可打开 [图片总览](../generated-assets/q-neta-2026-10-18/index.html)。下文为旧风格及历次接入记录，当前启用卡面以本批清单为准。
+后续生成遵循 [卡牌设计准则](card-art-generation.md)。当前图片地址、原图来源、实际提示词、摘要及远端记录见 [Q 版素材记录](../generated-assets/q-neta-2026-10-18/README.md)，可打开 [图片总览](../generated-assets/q-neta-2026-10-18/index.html)。下文为旧风格及历次接入记录，当前启用卡面以本批清单为准。
 
 2026-10-16：全部卡面、卡框及素材归档图统一使用 OSS HTTPS 地址，项目内不再保留图片二进制。历史章节中的原图本地位置和摘要用于追溯，当前压缩文件的 URL、大小及远端校验记录以 `generated-assets/cloud-images.json` 为准。
 

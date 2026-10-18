@@ -39,6 +39,8 @@ npm run db:migrate:sqlite
 
 修改配置并重启后，进行中对局后续抽取使用当前内容配置；新式手牌保存完整参数和皮肤，出牌按取得时的结果执行，六种无皮肤旧手牌保留兼容配置路径。已经入队的具体效果、待偿债金额和已提交随机结果按原进度恢复，不重新计算。四个行为环境变量为 `GAME_RULES_CHANCE_EVENTS`、`GAME_RULES_FORTUNE_EVENTS`、`GAME_RULES_CARD_EVENTS`、`GAME_RULES_TURN_RULES`，默认分别指向 `classpath:game-rules/` 下同名文件，也支持 `file:` 外部文件。另有独立 `GAME_RULES_ECONOMY` 与 `GAME_RULES_MAP_REGIONS`，见 [金额与地区配置](docs/game-configuration.md)。新局保存本局金额和地图；修改这两类配置不重算已开始的对局。行为结构仍使用当前规则集，勿在进行中对局修改规则 ID 或步骤顺序。
 
+卡名、梗、台词、故事和 Q 版插画统一遵循 [卡牌设计准则](docs/card-art-generation.md)。卡名直接突出梗本身，来源在故事和出处字段中表达。
+
 Flowable 与房间存储共用 MySQL 数据源和事务管理器；流程推进、快照和回执在同一短事务中提交。默认启动创建缺失的 `ACT_*` 引擎表并部署固定 BPMN，不启用异步游戏推进。已完成建表的环境可设置 `FLOWABLE_SCHEMA_UPDATE=false`，启动时仅校验引擎表结构。备份恢复应包含同一时点的整个数据库，包括 Flowable 表。启动仍校验流程实例、任务、决策关联和阶段游标，错配时拒绝继续；不迁移旧格式存档、不自动重建流程或清理现有数据库。
 
 ## 已实现的玩法

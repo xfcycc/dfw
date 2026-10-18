@@ -19,6 +19,8 @@ public class ArchiveRules {
     private static final String PRE_EXPANSION_RULES = "b386ed8437b2b1ead3c5b4ece63fe93e4abd83e425b8778ccc9d4b7aff4ebbe4";
     /** 已确认十九项扩展内容的默认规则摘要，不放宽任意外部配置。 */
     private static final String EXPANSION_RULES = "13733a2ff165c91a601ae06128896ed1f6eb89523eb1a30a5858257f8e5b7e3d";
+    /** 仅精简四十六个卡名后的默认规则摘要，效果、参数和权重保持不变。 */
+    private static final String RENAMED_CONTENT_RULES = "0265c821a96c52a3d1e93bbc6f9e26d659cc0087f62a99c2367265a87059c460";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -34,9 +36,11 @@ public class ArchiveRules {
         }
         digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.write(values).getBytes(StandardCharsets.UTF_8)));
     }
-    /** 输入保存时的规则摘要，返回能否保留原进度并按当前规则继续；仅额外兼容明确的旧默认规则与本次新增字段缺省。 */
+    /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确的旧默认规则、扩展字段缺省与本次纯改名。 */
     public boolean compatible(String savedDigest) {
-        return digest.equals(savedDigest) || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
+        return digest.equals(savedDigest)
+                || RENAMED_CONTENT_RULES.equals(digest) && (EXPANSION_RULES.equals(savedDigest) || PRE_EXPANSION_RULES.equals(savedDigest))
+                || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
     }
     /** 输入 JSON 值，递归排序对象键，保留数组顺序并返回规范化结构。 */
     private static Object normalize(Object value) {
