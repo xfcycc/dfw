@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import { onBeforeUnmount, nextTick, onMounted, ref, watch } from 'vue';
-const props = withDefaults(defineProps<{ title: string; wide?: boolean; panelClass?: string | string[]; closeDisabled?: boolean; open?: boolean; hideHeading?: boolean }>(), { open: true });
+const props = withDefaults(defineProps<{ title: string; wide?: boolean; panelClass?: string | string[]; closeDisabled?: boolean; open?: boolean; hideHeading?: boolean; mapPicking?: boolean }>(), { open: true });
 const emit = defineEmits<{ close: [] }>();
 const dialog = ref<HTMLElement>();
 let previous: HTMLElement | null = null;
 /** 输入键盘事件，关闭弹窗或将焦点限制在弹窗内。 */
 function keydown(event: KeyboardEvent): void {
   const visibleDialogs = Array.from(document.querySelectorAll<HTMLElement>('[role="dialog"]')).filter(node => node.getClientRects().length > 0);
+  if (props.mapPicking) {
+    if (props.open && event.key === 'Escape' && !props.closeDisabled && !visibleDialogs.length) emit('close');
+    return;
+  }
   if (!props.open || visibleDialogs.at(-1) !== dialog.value) return;
   if (event.key === 'Escape' && !props.closeDisabled) emit('close');
   if (event.key !== 'Tab' || !dialog.value) return;
@@ -20,15 +24,18 @@ watch(() => props.open, async open => {
   if (open) { previous = document.activeElement as HTMLElement; await nextTick(); if (props.open) dialog.value?.focus(); }
   else if (previous?.isConnected && (dialog.value?.contains(document.activeElement) || document.activeElement === document.body)) previous.focus();
 }, { immediate: true });
+/** 输入地图选择状态，回到列表时恢复弹框焦点，无返回值。 */
+watch(() => props.mapPicking, async picking => { if (!picking && props.open) { await nextTick(); dialog.value?.focus(); } });
 onMounted(() => { document.addEventListener('keydown', keydown); });
 onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (previous?.isConnected && dialog.value?.contains(document.activeElement)) previous.focus(); });
 </script>
 <template>
-  <Teleport to="body">
-    <div v-show="open" class="modal-backdrop" @click.self="!closeDisabled && emit('close')">
-      <section ref="dialog" class="modal chibi-modal" :class="[{ wide }, panelClass]" role="dialog" aria-modal="true" :aria-label="title" tabindex="-1">
-        <div v-if="!hideHeading" class="modal-heading"><h2>{{ title }}</h2><button class="icon-button" aria-label="关闭弹窗" :disabled="closeDisabled" @click="emit('close')">✕</button></div>
+  <Teleport to="body" :disabled="mapPicking">
+    <div v-show="open" class="modal-backdrop" :class="{ 'map-picking-backdrop': mapPicking }" @click.self="!mapPicking && !closeDisabled && emit('close')">
+      <section ref="dialog" class="modal chibi-modal" :class="[{ wide }, panelClass]" :role="mapPicking ? 'region' : 'dialog'" :aria-modal="mapPicking ? undefined : true" :aria-label="title" tabindex="-1">
+        <div v-if="!hideHeading" class="modal-heading"><h2>{{ title }}</h2><button class="icon-button" :aria-label="mapPicking ? '返回列表选择' : '关闭弹窗'" :disabled="closeDisabled" @click="emit('close')">✕</button></div>
         <div class="modal-content"><slot /></div>
+        <div v-if="$slots.footer" class="modal-footer"><slot name="footer" /></div>
       </section>
     </div>
   </Teleport>
@@ -44,6 +51,18 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
 .modal-content::-webkit-scrollbar-track { background: transparent; }
 .modal-content::-webkit-scrollbar-thumb { border-radius: 999px; background: #cfb58e; }
 .modal-content :deep(> .button) { margin-top: 10px; }
+.modal-footer { flex-shrink: 0; min-width: 0; margin-top: 18px; padding-top: 14px; border-top: 2px dashed #e5d5b7; }
+.modal-backdrop.map-picking-backdrop { position: static; inset: auto; z-index: auto; display: flex; align-items: flex-start; min-width: 0; min-height: 0; padding: 0; background: none; backdrop-filter: none; overflow: hidden; }
+.map-picking-backdrop .modal.chibi-modal { width: 100%; max-height: calc(100dvh - 100px); padding: 16px; border-radius: 22px; }
+.map-picking-backdrop .chibi-modal > .modal-heading { margin-bottom: 12px; padding-bottom: 10px; }
+.map-picking-backdrop .chibi-modal > .modal-heading h2 { font-size: 16px; }
+.map-picking-backdrop .modal-footer { margin-top: 10px; padding-top: 10px; }
+@media (max-width: 800px) {
+  .map-picking-backdrop .modal.chibi-modal { max-height: 50dvh; padding: 12px; }
+}
+@media (max-width: 800px) and (max-height: 500px) {
+  .map-picking-backdrop .modal.chibi-modal { max-height: calc(100dvh - 100px); }
+}
 .modal.chibi-modal.wide { width: min(100%, 920px); }
 .modal.chibi-modal.home-archive-modal { width: min(100%, 960px); }
 .modal.chibi-modal.game-tools-modal { width: min(100%, 420px); }

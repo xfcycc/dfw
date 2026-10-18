@@ -91,6 +91,8 @@ const tradeEditorVersion = ref(0);
 const tradeEditor = ref<InstanceType<typeof TradeEditor>>();
 const submittingCard = ref(false);
 const selectedTarget = ref('');
+const selectedSecondTarget = ref('');
+const mapPicking = ref(false);
 const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
@@ -167,6 +169,7 @@ const drafting = computed(() => !!selectedCard.value && selectedCardActive.value
 const mapChoice = computed(() => choice.value && ['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.value.type) ? choice.value : null);
 const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && TILE_CARDS.includes(selectedCard.value!.kind) ? 'tile' : drafting.value && PLAYER_CARDS.includes(selectedCard.value!.kind) ? 'player' : null);
 const targeting = computed(() => targetKind.value !== null && (modal.value === 'card' || modal.value === 'choice'));
+const mapTargeting = computed(() => mapPicking.value && targeting.value && targetKind.value === 'tile' && !game.settling && !game.cardReveals.length);
 const eligibleTiles = computed(() => targetKind.value === 'tile' ? game.room?.board.filter(tile => !tileReason(tile)).map(tile => tile.id) ?? [] : []);
 /** 输入当前牌型及公开玩家，返回满足同格、上限与服刑规则的目标。 */
 const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => {
@@ -182,18 +185,18 @@ const targetLabel = computed(() => {
   const tile = targetTileId.value == null ? null : game.room?.board[targetTileId.value];
   if (!tile) return '';
   const owner = game.room?.players.find(player => player.id === tile.ownerId)?.name ?? (tile.type === 'property' ? '无主地产' : '公共地块');
-  return `${tile.name} · ${tile.id}号 · 归属：${owner}`;
+  return `${tile.name} · ${tile.id}号 · 归属：${owner}${tile.type === 'property' ? ` · ${tile.level}级` : ''}`;
 });
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules: Partial<Record<Card['kind'], string>> = { shield: '选择没有护盾的自家地产，保护一次所有类型建筑拆除。', exchange: '选择付得起无修正租金的对手地产，承接抵押与附加效果。', kamui: '选择一处地产，暂停三个后续个人回合。', blackhole: '选择有附加效果的非神威地产。', homeTeleport: '选择自家非神威地产，传送替代掷骰，可正常付费升级。', sap: '选择同格的一名对手，休息一回合并随机偷牌。', slow: '选择对手，下次基础步数减半。', reaper: '选择手牌上限大于一张的对手，双方本局上限各减一。', shadowstep: '选择另一名玩家所在格，替代掷骰并正常结算。', swapAny: '先选择第一名玩家，再在下方选择第二名；可包括自己，服刑者保留控制状态。', barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产，全部拆除且不补偿。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
+  const rules: Partial<Record<Card['kind'], string>> = { shield: '选择没有护盾的自家地产，保护一次所有类型建筑拆除。', exchange: '选择付得起无修正租金的对手地产，承接抵押与附加效果。', kamui: '选择一处地产，暂停三个后续个人回合。', blackhole: '选择有附加效果的非神威地产。', homeTeleport: '选择自家非神威地产，传送替代掷骰，可正常付费升级。', sap: '选择同格的一名对手，休息一回合并随机偷牌。', slow: '选择对手，下次基础步数减半。', reaper: '选择手牌上限大于一张的对手，双方本局上限各减一。', shadowstep: '选择另一名玩家所在格，替代掷骰并正常结算。', swapAny: '选择两名不同玩家进行换位，可包括自己；服刑者保留控制状态。', barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产，全部拆除且不补偿。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
   return rules[selectedCard.value!.kind] ?? selectedCard.value!.effect ?? '';
 });
-/** 输入房间地块与玩家，返回按可选性排序的目标选项；地块携带原始价格和建筑插画信息。 */
+/** 输入房间地块与玩家，返回合法地块及带禁用原因的玩家；地块携带价格和建筑插画。 */
 const dialogTargets = computed(() => {
-  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: player.name, detail: `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.id === game.me?.id ? '不能选择自己' : player.bankrupt ? '该玩家已破产' : '不满足本牌的同格、上限或服刑条件' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
-  if (targetKind.value === 'tile') return (game.room?.board ?? []).map(tile => ({ id: String(tile.id), name: `${tile.name}${hasPropertyEffects(tile) ? ' ✦' : ''} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile, reason: tileReason(tile) })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: `${player.name}${player.id === game.me?.id ? '（我）' : ''}`, detail: ['swap', 'swapAny', 'shadowstep', 'sap'].includes(selectedCard.value?.kind ?? '') ? `位置：${game.room?.board[player.position]?.name ?? player.position} · ${player.position}号${player.jailed ? ' · 服刑中' : ''}` : `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.bankrupt ? '该玩家已破产' : player.id === game.me?.id ? '不能选择自己' : '不满足本牌的同格、上限或服刑条件' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'tile') return (game.room?.board ?? []).filter(tile => eligibleTiles.value.includes(tile.id)).map(tile => ({ id: String(tile.id), name: `${tile.name}${hasPropertyEffects(tile) ? ' ✦' : ''} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile }));
   return [];
 });
 const canEndTurn = computed(() => !drafting.value && canPlay.value && game.room?.phase === 'manage' && !game.room.pending);
@@ -240,6 +243,7 @@ function tileReason(tile: Tile): string {
 watch(() => game.room?.activity?.id, id => { if (id) { modal.value = null; selectedTile.value = null; } });
 watch(() => choice.value?.id, id => {
   selectedTarget.value = '';
+  mapPicking.value = false;
   if (id) { const fromCard = modal.value === 'card' && ['freeUpgrade', 'fullUpgrade', 'recycle', 'discover'].includes(selectedCard.value?.kind ?? ''); clearCard(); selectedTile.value = null; if (fromCard) modal.value = 'choice'; }
   else if (modal.value === 'choice') modal.value = null;
 });
@@ -250,7 +254,10 @@ watch([eligibleTiles, eligiblePlayers], () => {
   if (selectedTarget.value && !(targetKind.value === 'tile' ? eligibleTiles.value.includes(Number(selectedTarget.value)) : eligiblePlayers.value.includes(selectedTarget.value))) {
     selectedTarget.value = ''; game.notify('原目标已不可用，请重新选择高亮目标。');
   }
+  if (selectedSecondTarget.value && (!eligiblePlayers.value.includes(selectedSecondTarget.value) || selectedSecondTarget.value === selectedTarget.value)) selectedSecondTarget.value = '';
 });
+/** 输入窗口及目标类型，离开目标选择流程时恢复普通地图，无返回值。 */
+watch([modal, targetKind], () => { if (!targeting.value || targetKind.value !== 'tile') mapPicking.value = false; });
 const actionStatus = computed(() => {
   if (game.connection !== 'online') return '正在连接';
   if (game.settling) return game.settlementRevealing ? '查看卡牌，收起后继续移动' : '移动中，落地后结算';
@@ -365,16 +372,33 @@ function chooseCard(card: Card): void {
   if (selectedCard.value?.id === card.id) { modal.value = 'card'; return; }
   if (payment.value && !payment.value.defenseResolved && defenseCards.value.some(value => value.id === card.id)) { selectedDefense.value = card.id; modal.value = 'defense'; return; }
   if (choice.value || game.privateData?.trade || game.busy) { game.notify('请先处理当前选择或报价。'); return; }
-  selectedCard.value = card; selectedTarget.value = ''; selectedTile.value = null;
+  selectedCard.value = card; selectedTarget.value = ''; selectedSecondTarget.value = ''; mapPicking.value = false; selectedTile.value = null;
   selectedCardActive.value = canPrepareCard.value && !['immunity', 'halfPayment', 'release'].includes(card.kind);
   selectedCardTurn.value = turnIdentity.value; modal.value = 'card';
 }
 /** 无入参，取消本地选牌并关闭其窗口，不消费手牌或主动次数。 */
-function clearCard(): void { submittingCard.value = false; selectedCard.value = null; selectedCardActive.value = false; selectedTarget.value = ''; if (modal.value === 'card') modal.value = null; }
+function clearCard(): void { submittingCard.value = false; selectedCard.value = null; selectedCardActive.value = false; selectedTarget.value = ''; selectedSecondTarget.value = ''; mapPicking.value = false; if (modal.value === 'card') modal.value = null; }
 /** 输入成功使用的牌型，免费升级及风险道具接续服务端选择，其他道具结束选牌。 */
 function cardUsed(kind: Card['kind']): void { clearCard(); if (['recycle', 'discover'].includes(kind) && choice.value) { modal.value = 'choice'; return; } if (['freeUpgrade', 'fullUpgrade'].includes(kind) && ['free_upgrade', 'full_upgrade'].includes(choice.value?.type ?? '') || kind === 'gamble' && choice.value?.type === 'gamble') modal.value = 'choice'; }
-/** 输入窗口内目标标识，按原规则更新选择；确认按钮才发送命令。 */
-function selectDialogTarget(id: string): void { if (targetKind.value === 'tile') { const tile = game.room?.board[Number(id)]; if (tile) selectTile(tile); } else selectPlayer(id); }
+/** 输入目标标识和玩家槽位，按原规则更新选择；确认按钮才发送命令。 */
+function selectDialogTarget(id: string, slot: 1 | 2 = 1): void {
+  if (targetKind.value === 'tile') { const tile = game.room?.board[Number(id)]; if (tile) selectTile(tile); }
+  else if (slot === 2 && selectedCard.value?.kind === 'swapAny') { if (game.canAct && eligiblePlayers.value.includes(id) && id !== selectedTarget.value) selectedSecondTarget.value = id; }
+  else { selectPlayer(id); if (selectedSecondTarget.value === selectedTarget.value) selectedSecondTarget.value = ''; }
+}
+/** 输入是否地图点选，保留已选目标；进入时定位合法地块并交还地图键盘焦点，无返回值。 */
+async function switchTargetMode(picking: boolean): Promise<void> {
+  mapPicking.value = picking;
+  if (!picking) return;
+  selectedTile.value = null;
+  await nextTick();
+  const id = targetTileId.value ?? eligibleTiles.value[0];
+  if (id == null || !mapTargeting.value) return;
+  await board.value?.referenceTile(id, mobileViewport.value);
+  mapView.value?.querySelector<HTMLElement>(`[data-cash-tile="${id}"]`)?.focus({ preventScroll: true });
+}
+/** 无入参，地图模式先返回列表，列表模式收起窗口，无返回值。 */
+function closeTargetPicker(): void { if (mapPicking.value) void switchTargetMode(false); else modal.value = null; }
 /** 输入地图地块，选择合法目标或打开普通地块详情，不提交游戏命令。 */
 function selectTile(tile: Tile): void {
   if (!targeting.value) { selectedTile.value = tile; return; }
@@ -399,7 +423,7 @@ async function resetSession(): Promise<void> {
 }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'map-targeting': mapTargeting }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
@@ -452,7 +476,7 @@ async function resetSession(): Promise<void> {
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board ref="board" :desktop-dice="!mobileViewport" dice-target="#mobile-city-reveal" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="targetKind === 'tile'" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board ref="board" :desktop-dice="!mobileViewport" dice-target="#mobile-city-reveal" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -560,8 +584,9 @@ async function resetSession(): Promise<void> {
                         </template>
                         </div></Modal>
     <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null"><Assets /></Modal>
-    <Modal :panel-class="['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card'" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" wide @close="modal = null">
-      <div class="card-use-layout">
+    <Modal :panel-class="['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card'" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :map-picking="mapTargeting" wide @close="closeTargetPicker">
+      <p v-show="mapTargeting" class="map-target-instructions">{{ targetHint }}<br />点击高亮地块选择，确认后才使用道具。</p>
+      <div v-show="!mapTargeting" class="card-use-layout" :class="{ 'has-targets': drafting && targetKind }">
         <div class="card-use-preview"><ContentCard :content="selectedCard" compact preview /></div>
         <div class="card-use-controls">
           <section v-if="selectedCardCopy" class="card-use-details">
@@ -573,14 +598,27 @@ async function resetSession(): Promise<void> {
           <p v-if="!drafting" class="notice">{{ ['immunity', 'halfPayment', 'release'].includes(selectedCard.kind) ? '这张卡在付款防御或解除限制时使用。' : '当前不能主动使用，可以查看卡牌说明。' }}</p>
           <section v-if="drafting && targetKind" class="card-use-targets">
             <h3>选择{{ targetKind === 'player' ? '玩家' : '地块' }}</h3><p class="muted">{{ targetHint }}</p>
-            <CardTargetPicker :options="dialogTargets" :selected="selectedTarget" :player-target="targetKind === 'player'" :disabled="!game.canAct" @select="selectDialogTarget" />
+            <CardTargetPicker :key="selectedCard.id" :options="dialogTargets" :selected="selectedTarget" :second-selected="selectedSecondTarget" :player-target="targetKind === 'player'" :two-players="selectedCard.kind === 'swapAny'" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
           </section>
           <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复连接后才能确认。</p>
-          <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
+
         </div>
       </div>
+      <template #footer>
+        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(false)">← 返回列表选择</button>
+        <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
+      </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length" :title="choice.content?.name ?? '处理当前选择'" wide @close="modal = null"><p v-if="mapChoice" class="muted">{{ targetHint }}</p><CardTargetPicker v-if="mapChoice" :options="dialogTargets" :selected="selectedTarget" :disabled="!game.canAct" @select="selectDialogTarget" /><p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p><ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" :compact="!!mapChoice" dialog @done="modal = null" /></Modal>
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length" :title="choice.content?.name ?? '处理当前选择'" :map-picking="mapTargeting" wide @close="closeTargetPicker">
+      <p v-if="mapChoice" class="map-target-instructions">{{ targetHint }}</p>
+      <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
+      <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>
+      <ContentChoice v-if="!mapChoice" :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" dialog @done="modal = null" />
+      <template v-if="mapChoice" #footer>
+        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(false)">← 返回列表选择</button>
+        <ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" compact dialog @done="modal = null" />
+      </template>
+    </Modal>
     <Modal :panel-class="['modern-modal', 'defense-use-modal']" v-if="payment" :open="modal === 'defense' && !game.settling && !game.cardReveals.length" title="本次付款防御" @close="modal = null"><p class="defense-amount">待支付 ¥{{ payment.amount.toLocaleString() }} → <PlayerText :text="creditorName" /></p><label class="field">选择防御卡<select v-model="selectedDefense"><option value="">不使用道具</option><option v-for="card in defenseCards" :key="card.id" :value="card.id">{{ card.name ?? ITEMS[card.kind].name }}</option></select></label><ContentCard v-if="defenseCards.find(card => card.id === selectedDefense)" :content="defenseCards.find(card => card.id === selectedDefense)!" /><p class="muted">本笔至多使用一张防御卡，不占主动次数。</p><button class="button primary full" :disabled="!canPlay" @click="game.act({ type: 'paymentDefense', ...(payment.id ? { decisionId: payment.id } : {}), ...(selectedDefense ? { cardId: selectedDefense } : {}) })">{{ selectedDefense ? '确认使用防御卡' : '不使用道具，继续付款' }}</button></Modal>
     <Modal panel-class="modern-modal game-tools-modal" v-if="isGameSession && modal === 'tools'" title="小镇工具箱" @close="modal = null">
       <div class="game-tools-grid">

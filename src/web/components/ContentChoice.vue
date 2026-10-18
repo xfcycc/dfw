@@ -51,7 +51,7 @@ async function decide(accept: boolean): Promise<void> {
       <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">取消并保留卡</button><button class="button primary" :disabled="!enabled || !discovered" @click="decide(true)">确认获得所选道具</button></div>
     </template>
     <template v-else-if="['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.type)">
-      <p class="target-current"><PlayerText :text="tileId == null ? dialog ? '请在上方选择地产，再确认' : '请点击地图高亮地产选择目标' : `已选目标：${targetLabel} · ${game.room?.board[tileId]?.level}级`" /></p>
+      <p class="target-current"><PlayerText :text="tileId == null ? dialog ? '请选择地产，再确认' : '请点击地图高亮地产选择目标' : `已选目标：${targetLabel}`" /></p>
       <p v-if="upgrading" class="muted">{{ choice.cardId ? '取消会保留这张卡和主动次数。' : '放弃本次升级不会获得替代现金。' }}</p>
       <p v-if="choice.type === 'full_upgrade'" class="muted">所选地产将直接升至 3 级，计入本回合该地产的升级次数。</p>
       <div class="button-row"><button v-if="upgrading" class="button secondary small" :disabled="!enabled" @click="decide(false)">{{ choice.cardId ? '取消并保留卡' : '放弃升级' }}</button><button class="button primary small" :disabled="!enabled || tileId == null || !choice.tileIds.includes(tileId)" @click="decide(true)">{{ choice.type === 'full_upgrade' ? '确认免费直升满级' : choice.type === 'free_upgrade' ? '确认免费升一级' : '确认摧毁全部建筑' }}</button></div>

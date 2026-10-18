@@ -371,15 +371,14 @@
 .card-use-description { margin: 0 0 20px; color: #705338; font-size: 22px; font-weight: 700; line-height: 1.7; overflow-wrap: anywhere; }
 .card-use-quote { margin: 20px 0 0; padding-left: 14px; border-left: 3px solid #dcc396; color: #927650; font-size: 16px; line-height: 1.8; overflow-wrap: anywhere; }
 .card-use-controls > .notice { margin: 0; }
-.card-use-controls .card-action { margin: 0; padding-top: 18px; border-top: 1px dashed #dfcda9; }
-.card-use-controls .card-action > .field:first-child { margin-top: 0; }
-.card-use-controls .card-action .button-row { margin-top: 0; display: flex; justify-content: flex-end; gap: 10px; }
-.modal.chibi-modal.card-use-modal .card-action .button-row > .button { flex: 0 1 auto; min-width: 112px; min-height: 42px; padding: 10px 18px; font-size: 12px; }
-.modal.chibi-modal.card-use-modal .card-action .button-row > .button.primary { min-width: 152px; }
-.card-use-controls .card-action > .muted:last-child { margin: 12px 0 0; }
-.card-use-controls .target-current { color: #8d7859; font-size: 12px; line-height: 1.8; }
-.card-use-targets .card-target-picker { max-height: 280px; }
-.card-target-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 10px; max-height: 400px; overflow: auto; padding: 3px; scrollbar-width: thin; }
+.card-use-modal .modal-footer .card-action > .field:first-child { margin-top: 0; }
+.card-use-modal .modal-footer .card-action .button-row { margin-top: 0; display: flex; justify-content: flex-end; gap: 10px; }
+.modal.chibi-modal.card-use-modal .card-action .button-row > .button { flex: 1; min-width: 0; min-height: 42px; padding: 10px 18px; font-size: 12px; }
+.modal.chibi-modal.card-use-modal .card-action .button-row > .button.primary { flex-grow: 1.4; }
+.card-use-modal .modal-footer .card-action > .muted:last-child { margin: 12px 0 0; }
+.card-use-modal .modal-footer .target-current { color: #8d7859; font-size: 12px; line-height: 1.8; }
+.card-use-targets .card-target-picker { max-height: none; }
+.card-target-picker { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 10px; padding: 3px; }
 .target-option { position: relative; display: flex; align-items: center; gap: 12px; min-width: 0; min-height: 88px; text-align: left; padding: 12px; border: 1px solid #e2ead9; border-radius: 10px; background: #fbfcf8; color: #7d9469; }
 .target-option:not(:disabled):hover { border-color: #a9ba8d; }
 .target-option:focus-visible { outline: 3px solid #a6b980; outline-offset: -3px; }
@@ -398,6 +397,50 @@
 .target-option.selected .target-option-copy strong { padding-right: 16px; }
 .target-check { position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; background: #789555; color: #fffdf4; font-size: 13px; }
 .choice-use-modal .card-target-picker { margin-bottom: 16px; }
+/* 目标列表只随弹框正文滚动，确认操作独立保留在底部。 */
+.target-selector { min-width: 0; }
+.target-list-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #806344; font-size: 13px; font-weight: 700; }
+.chibi-modal .field.target-search { margin: 12px 0; }
+.target-owner-filters { display: flex; flex-wrap: wrap; gap: 6px; }
+.target-owner-filters button { min-height: 36px; padding: 6px 10px; border: 1px solid #dfcfad; border-radius: 10px; background: #fffdf4; color: #8a704b; font-size: 12px; }
+.target-owner-filters button[aria-pressed='true'] { border-color: #97b477; background: #edf5dd; color: #526c3c; }
+.target-result-count { margin: 10px 0; color: #8c7c66; font-size: 12px; line-height: 1.7; }
+.target-player-slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 12px; }
+.target-player-slots button { min-width: 0; min-height: 62px; padding: 8px 10px; border: 2px solid #dfcfad; border-radius: 14px; background: #fffdf4; color: #8a704b; text-align: left; }
+.target-player-slots button[aria-pressed='true'] { border-color: #97b477; background: #edf5dd; }
+.target-player-slots small, .target-player-slots strong { display: block; overflow-wrap: anywhere; }
+.target-player-slots small { margin-bottom: 5px; font-size: 11px; }
+.target-player-slots strong { font-size: 13px; }
+.card-target-picker.player-targets { grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr)); }
+.player-targets .target-option { flex-direction: column; align-items: center; justify-content: flex-start; min-height: 140px; padding: 16px 10px 10px; text-align: center; }
+.player-targets .target-option .character-pawn { width: 48px; height: 48px; border-radius: 16px; }
+.player-targets .target-option-copy strong { padding: 0; }
+.player-targets .target-option-copy small { font-size: 11px; }
+.player-targets .target-check { top: 5px; right: 5px; width: auto; min-width: 20px; padding: 0 5px; border-radius: 8px; font-size: 10px; }
+.player-targets .target-option.selected:disabled { opacity: 1; }
+.modal-footer .target-current { margin: 0 0 10px; font-size: 13px; line-height: 1.7; }
+.modal-footer .card-action { margin: 0; padding: 0; border: 0; }
+.modal-footer .card-action .field { margin-top: 0; }
+.modal.chibi-modal .modal-footer .button-row > .button { flex: 1; min-width: 0; }
+.modal-footer .card-action > .muted:last-child { margin-bottom: 0; }
+.modal-footer .content-choice > .muted { margin-bottom: 8px; }
+.map-picking-backdrop .modal-footer .content-choice > .muted { display: none; }
+.modal-footer .target-back-list { margin-bottom: 12px; }
+.map-target-instructions { margin: 0 0 12px; color: #806344; font-size: 12px; line-height: 1.7; }
+@media (max-width: 600px) {
+  .card-use-layout.has-targets { grid-template-columns: 68px minmax(0, 1fr); gap: 12px; }
+  .card-use-layout.has-targets .card-use-controls { display: contents; }
+  .card-use-layout.has-targets .card-use-preview { padding: 4px; border-radius: 12px; }
+  .card-use-layout.has-targets .card-use-details { min-width: 0; }
+  .card-use-layout.has-targets .card-use-controls > :not(.card-use-details) { grid-column: 1 / -1; }
+  .card-use-layout.has-targets .card-use-meta { margin-bottom: 6px; gap: 4px; }
+  .card-use-layout.has-targets .card-use-meta span { padding: 3px 6px; font-size: 10px; }
+  .card-use-layout.has-targets .card-use-description { margin-bottom: 6px; font-size: 13px; }
+  .card-use-layout.has-targets .card-use-effect { padding: 8px 10px; font-size: 13px; }
+  .card-use-layout.has-targets .card-use-quote { margin-top: 8px; padding-left: 8px; font-size: 11px; }
+  .target-list-heading .button.small { min-height: 40px; }
+  .target-owner-filters button { min-height: 40px; }
+}
 .choice-use-modal .button-row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 18px; }
 .defense-amount { color: #7b9365; font-size: 14px; line-height: 1.8; }
 .defense-use-modal .illustrated-card { max-width: 230px; margin: 16px auto; }
@@ -424,8 +467,7 @@
   .card-use-description { margin-bottom: 16px; font-size: 18px; }
   .card-use-effect { padding: 12px 14px; font-size: 16px; }
   .modal.chibi-modal.card-use-modal .card-action .button-row > .button { flex: 1; min-width: 0; padding: 10px 12px; }
-  .modal.chibi-modal.card-use-modal .card-action .button-row > .button.primary { flex-grow: 1.4; min-width: 0; }
-  .card-target-picker { max-height: 280px; }
+  .modal.chibi-modal.card-use-modal .card-action .button-row > .button.primary { flex-grow: 1.4; }
   .modern-modal .choice-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .modern-modal .trade-columns { grid-template-columns: minmax(0, 1fr); }
   .modern-modal .trade-outcome > div { grid-template-columns: 78px minmax(0, 1fr); }

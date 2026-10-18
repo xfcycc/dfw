@@ -127,7 +127,7 @@ function tradeMarkerStyle(id: number) {
     '--trade-label-x': `${-dx * 44}px`, '--trade-label-y': `${-dy * 38}px`,
   };
 }
-/** 无入参，读取地图可用尺寸；观战跟随与手机游玩保留可读格距，其余观战适配全图，无返回值。 */
+/** 无入参，读取地图可用尺寸；选点时桌面适配全图、手机定位目标，其余沿用观战与游玩视野，无返回值。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   const availableHeight = viewport.value?.clientHeight ?? 0;
@@ -140,6 +140,14 @@ function resizeBoard(): void {
   if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
+  if (props.targeting) {
+    if (!props.dashboardTarget) fitBoard();
+    else {
+      const id = props.selectedTarget ?? props.eligibleTiles?.[0];
+      if (id != null) void nextTick(() => referenceTile(id, true));
+    }
+    return;
+  }
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
   else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
   else expandBoard();
@@ -202,7 +210,7 @@ function locateMe(): void { expandBoard(); }
 /** 无入参，按地图视窗的宽高完整展示棋盘，无返回值。 */
 function fitBoard(): void {
   fullMap.value = true;
-  const detached = !!props.dashboardTarget || !!props.spectator && !!props.compact;
+  const detached = !!props.targeting || !!props.dashboardTarget || !!props.spectator && !!props.compact;
   const heightLimit = detached || props.bounded ? Math.max(1, (viewport.value?.clientHeight ?? height.value) - 10) / height.value : props.stretch ? Math.max(240, window.innerHeight - Math.max(0, container.value?.getBoundingClientRect().top ?? 0) - 24) / height.value : 1;
   zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
@@ -229,7 +237,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 </script>
 <template>
   <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch, 'detached-board': !!dashboardTarget }" :style="{ '--map-zoom': zoom, '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
-    <div v-if="!stretch || dashboardTarget || spectator" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact && !spectator" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="spectator && compact" class="board-control" :aria-pressed="following" @click="emit('view', 'follow')">跟随模式</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
+    <div v-if="!stretch || dashboardTarget || spectator || targeting" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact && !spectator" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="spectator && compact" class="board-control" :aria-pressed="following" @click="emit('view', 'follow')">跟随模式</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
     <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
