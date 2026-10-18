@@ -18,6 +18,8 @@ function volume(key: string, fallback: number): number {
 export const audioPreferences = reactive({
   music: localStorage.getItem('dfw:music') !== 'off',
   sound: localStorage.getItem('dfw:turn-sound') !== 'off',
+  backgroundMusic: localStorage.getItem('dfw:background-music') !== 'off',
+  backgroundSound: localStorage.getItem('dfw:background-sound') !== 'off',
   musicVolume: volume('dfw:music-volume', 0.22),
   soundVolume: volume('dfw:sound-volume', 0.45),
 });
@@ -50,16 +52,16 @@ function loadSound(sound: Sound, device: AudioContext): Promise<AudioBuffer | nu
   return pending;
 }
 
-/** 输入效果名，播放与 BGM 音高分析相配的原创短音；静音、后台或过期加载结果不补播。 */
+/** 输入效果名，按前后台音效偏好播放原创短音；静音或过期加载结果不补播。 */
 export function playSound(sound: Sound): void {
-  if (!audioPreferences.sound || !context || context.state !== 'running' || document.hidden) return;
+  if (!audioPreferences.sound || !context || context.state !== 'running' || document.hidden && !audioPreferences.backgroundSound) return;
   const now = performance.now();
   if (now - (lastPlayed.get(sound) ?? -Infinity) < (sound === 'step' ? 80 : (sound === 'chat' || sound === 'mention') ? 350 : 60)) return;
   lastPlayed.set(sound, now);
   const device = context;
   const generation = soundGeneration;
   void loadSound(sound, device).then(buffer => {
-    if (!buffer || context !== device || device.state !== 'running' || !audioPreferences.sound || document.hidden || generation !== soundGeneration || performance.now() - now > 250) return;
+    if (!buffer || context !== device || device.state !== 'running' || !audioPreferences.sound || document.hidden && !audioPreferences.backgroundSound || generation !== soundGeneration || performance.now() - now > 250) return;
     const voice = device.createBufferSource();
     voice.buffer = buffer;
     voice.connect(soundGain!);
@@ -69,7 +71,7 @@ export function playSound(sound: Sound): void {
   });
 }
 
-/** 无入参，停止仍在播放或等待的短音效，避免静音、切后台后残留。 */
+/** 无入参，停止仍在播放或等待的短音效，避免关闭声音后残留。 */
 function stopSounds(): void { soundGeneration++; for (const voice of voices) voice.stop(); }
 
 /** 无入参，按当前场景播放列表中的曲目，切歌淡出后淡入；过期播放结果不修改新场景。 */
@@ -77,7 +79,7 @@ function updateMusic(): void {
   clearTimeout(fadeTimer);
   const generation = ++musicGeneration;
   if (!music || !context || !musicGain) return;
-  const track = scene && audioPreferences.music && !document.hidden ? tracks[trackIndex] : null;
+  const track = scene && audioPreferences.music && (!document.hidden || audioPreferences.backgroundMusic) ? tracks[trackIndex] : null;
   musicGain.gain.cancelScheduledValues(context.currentTime);
   if (!track) { music.pause(); musicGain.gain.setValueAtTime(0, context.currentTime); return; }
   if (music.getAttribute('src') === track && !music.paused) {
@@ -135,17 +137,19 @@ export async function enableAudio(preview = false): Promise<boolean> {
   } catch { audioBlocked.value = true; return false; }
 }
 
-/** 输入场景来源，在应用生命周期内管理音乐、点击音、音量及后台暂停；离开时释放音频。 */
+/** 输入场景来源，在应用生命周期内按偏好管理前后台声音；离开时释放音频。 */
 export function useAudioEnvironment(musicScene: () => MusicScene): void {
   watch(musicScene, value => { scene = value; if (unlocked) updateMusic(); }, { immediate: true });
   watch(audioPreferences, () => {
     localStorage.setItem('dfw:music', audioPreferences.music ? 'on' : 'off');
     localStorage.setItem('dfw:turn-sound', audioPreferences.sound ? 'on' : 'off');
+    localStorage.setItem('dfw:background-music', audioPreferences.backgroundMusic ? 'on' : 'off');
+    localStorage.setItem('dfw:background-sound', audioPreferences.backgroundSound ? 'on' : 'off');
     localStorage.setItem('dfw:music-volume', String(audioPreferences.musicVolume));
     localStorage.setItem('dfw:sound-volume', String(audioPreferences.soundVolume));
     if (context && soundGain) soundGain.gain.setTargetAtTime(audioPreferences.sound ? audioPreferences.soundVolume : 0, context.currentTime, 0.02);
-    if (!audioPreferences.sound) stopSounds();
-    if (unlocked) updateMusic();
+    if (!audioPreferences.sound || document.hidden && !audioPreferences.backgroundSound) stopSounds();
+    if (unlocked) visibility();
   });
   /** 输入用户手势，启用音频，并只为可操作按钮或链接播放一次点击反馈。 */
   function gesture(event: Event): void {
@@ -153,9 +157,11 @@ export function useAudioEnvironment(musicScene: () => MusicScene): void {
     const button = event.target instanceof Element ? event.target.closest('button, a, summary') : null;
     void enableAudio().then(() => { if (button && !button.matches(':disabled, [aria-disabled="true"]')) playSound('click'); });
   }
-  /** 无入参，切后台暂停音乐与提示音，返回页面后恢复已启用的音乐。 */
+  /** 无入参，按后台偏好同步音乐与音效；仅两类后台声音都关闭时挂起设备。 */
   function visibility(): void {
-    if (document.hidden) { updateMusic(); stopSounds(); void context?.suspend(); }
+    updateMusic();
+    if (document.hidden && !audioPreferences.backgroundSound) stopSounds();
+    if (document.hidden && !audioPreferences.backgroundMusic && !audioPreferences.backgroundSound) void context?.suspend();
     else if (unlocked) void enableAudio();
   }
   onMounted(() => {

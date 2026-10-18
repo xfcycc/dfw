@@ -3,6 +3,9 @@
 .audio-setting + .audio-setting { border-top: 1px solid #e7ecdf; }
 .audio-setting > button { flex-shrink: 0; }
 .audio-setting input { flex: 1; min-width: 0; accent-color: #809d68; }
+.audio-reminder-setting > div { flex: 1; min-width: 0; }
+.audio-reminder-setting strong { display: block; font-size: 14px; }
+.audio-reminder-setting small { display: block; margin-top: 5px; font-size: 12px; line-height: 1.6; }
 .home-toolbar .audio-settings-button { border: 1px solid #ffffffa6; border-radius: 30px; background: #174f893b; color: #fff8e6; padding: 11px 15px; backdrop-filter: blur(12px); }
 .home-toolbar .audio-settings-button:hover { background: #174f896b; }
 .room-audio-control { flex-shrink: 0; }

@@ -4,6 +4,7 @@ import { RealtimeClient } from '../../shared/realtime.js';
 import type { CommandResult, ContentResult, GameAction, GameCommand, MotionSegment, PrivatePlayerState, PublicRoomState, Session } from '../../shared/types.js';
 import { postJson } from '../http';
 import { playSound } from '../audio';
+import { clearNotifications, notifyBackground } from '../notifications';
 
 /** 输入会话，返回该浏览器的角色专用存储键。 */
 function sessionKey(identity: string, spectator: boolean, visitor = false): string { return `dfw:${visitor ? 'guest' : spectator ? 'viewer' : 'player'}:${identity}`; }
@@ -96,7 +97,7 @@ export const useGameStore = defineStore('game', () => {
   const isHost = computed(() => !!me.value && room.value?.hostId === me.value.id);
   const canAct = computed(() => connection.value === 'online' && !!room.value && !room.value.pausedReason && !busy.value && !settling.value);
 
-  /** 输入刚收到的公开快照，为新聊天播放提示音，被显式艾特时优先播放专属提示；同步和重连不补播。 */
+  /** 输入公开快照，为他人的新聊天播放音效和后台通知，优先提醒艾特；同步和重连不补播。 */
   function notifyChat(state: PublicRoomState): void {
     const previous = chatState;
     const sameGame = previous && state.code === previous.code && state.roomId === previous.roomId && state.gameId === previous.gameId;
@@ -106,9 +107,12 @@ export const useGameStore = defineStore('game', () => {
     const seen = new Set(previous.logs.map(entry => entry.id));
     const ownId = session.value?.playerId;
     const ownName = state.players.find(player => player.id === ownId)?.name;
-    const chats = state.logs.filter(entry => entry.type === 'chat' && !seen.has(entry.id));
-    if (ownId && chats.some(entry => entry.references?.some(reference => reference.playerId === ownId))) playSound('mention');
-    else if (chats.some(entry => entry.actorId ? entry.actorId !== ownId : !ownName || !entry.text.startsWith(`${ownName}：`))) playSound('chat');
+    const chats = state.logs.filter(entry => entry.type === 'chat' && !seen.has(entry.id) && (entry.actorId ? entry.actorId !== ownId : !ownName || !entry.text.startsWith(`${ownName}：`)));
+    const mention = ownId ? chats.findLast(entry => entry.references?.some(reference => reference.playerId === ownId)) : undefined;
+    const latest = mention ?? chats.at(-1);
+    if (!latest) return;
+    playSound(mention ? 'mention' : 'chat');
+    notifyBackground(mention ? '有人 @ 你' : '收到新聊天', latest.text, `dfw:chat:${state.roomId ?? state.code}`);
   }
 
   /** 输入公开快照，先揭卡再播放移动或棋盘效果，全部完成后展示最终结算，无返回值。 */
@@ -259,6 +263,7 @@ export const useGameStore = defineStore('game', () => {
 
   /** 关闭当前网络连接并清空页面状态；不删除恢复令牌。 */
   function disconnect(): void {
+    clearNotifications();
     socket?.removeAllListeners();
     socket?.disconnect();
     socket = null;
