@@ -438,6 +438,9 @@ async function resetSession(): Promise<void> {
           工具
         </button>
       </div>
+      <div v-else-if="isLobby" class="room-utilities" role="group" aria-label="房间工具栏">
+        <AudioSettings class="room-audio-control" />
+      </div>
     </header>
     <main v-if="awaitingJoin" class="loading-page">
       <div class="entry-icon">🎲</div><h2>加入好友房间</h2><p class="muted">朋友邀请你加入房间 {{ code }}，一起开启财富派对。</p>

@@ -2,7 +2,13 @@ import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue';
 
 export type Sound = 'click' | 'turn' | 'chat' | 'mention' | 'dice' | 'step' | 'coin' | 'pay' | 'buy' | 'build' | 'card' | 'magic' | 'error' | 'victory' | 'casino_dice' | 'casino_win' | 'casino_loss' | 'horse_start' | 'horse_run' | 'horse_finish' | 'roulette_spin' | 'roulette_click' | 'roulette_hit' | 'packet_open' | 'packet_lucky' | 'rps_count' | 'rps_reveal' | 'rps_win' | 'rotation_count' | 'rotation_switch';
 type MusicScene = 'lobby' | 'game' | null;
-const tracks = { lobby: '/audio/nikki-bianzhi-yuanjing.m4a', game: '/audio/nikki-bianzhi-yuanjing.m4a' };
+const tracks = [
+  '/audio/nikki-bianzhi-yuanjing.m4a',
+  '/audio/nikki-caolan-guangdang.m4a',
+  '/audio/nikki-yuanwang-anshui-yu-wuyan.m4a',
+  '/audio/nikki-yuanwang-yaoye-de-jiejiao.m4a',
+  '/audio/nikki-qiji-dalu-de-qidian.m4a',
+];
 /** 输入本机音量存储键和默认值，返回 0～1 的有效音量。 */
 function volume(key: string, fallback: number): number {
   const stored = localStorage.getItem(key);
@@ -23,6 +29,7 @@ let soundGain: GainNode | undefined;
 let scene: MusicScene = null;
 let unlocked = false;
 let music: HTMLAudioElement | undefined;
+let trackIndex = 0;
 let fadeTimer: ReturnType<typeof setTimeout> | undefined;
 let musicGeneration = 0;
 const voices = new Set<AudioBufferSourceNode>();
@@ -65,12 +72,12 @@ export function playSound(sound: Sound): void {
 /** 无入参，停止仍在播放或等待的短音效，避免静音、切后台后残留。 */
 function stopSounds(): void { soundGeneration++; for (const voice of voices) voice.stop(); }
 
-/** 无入参，按当前场景切换本地音乐，切歌淡出后淡入；过期播放结果不修改新场景。 */
+/** 无入参，按当前场景播放列表中的曲目，切歌淡出后淡入；过期播放结果不修改新场景。 */
 function updateMusic(): void {
   clearTimeout(fadeTimer);
   const generation = ++musicGeneration;
   if (!music || !context || !musicGain) return;
-  const track = scene && audioPreferences.music && !document.hidden ? tracks[scene] : null;
+  const track = scene && audioPreferences.music && !document.hidden ? tracks[trackIndex] : null;
   musicGain.gain.cancelScheduledValues(context.currentTime);
   if (!track) { music.pause(); musicGain.gain.setValueAtTime(0, context.currentTime); return; }
   if (music.getAttribute('src') === track && !music.paused) {
@@ -98,6 +105,12 @@ function updateMusic(): void {
   else fadeTimer = setTimeout(startTrack, 240);
 }
 
+/** 无入参，整曲结束后切换下一首，列表末尾回到第一首，无返回值。 */
+function nextTrack(): void {
+  trackIndex = (trackIndex + 1) % tracks.length;
+  updateMusic();
+}
+
 /** 输入可选试听标志，通过用户手势启用共享音频设备，返回启用是否成功。 */
 export async function enableAudio(preview = false): Promise<boolean> {
   if (!audioPreferences.music && !audioPreferences.sound) return false;
@@ -106,8 +119,9 @@ export async function enableAudio(preview = false): Promise<boolean> {
       context = new AudioContext();
       soundGain = context.createGain(); soundGain.connect(context.destination);
       musicGain = context.createGain(); musicGain.connect(context.destination);
-      music = new Audio(); music.loop = true; music.preload = 'none';
+      music = new Audio(); music.preload = 'none';
       context.createMediaElementSource(music).connect(musicGain);
+      music.addEventListener('ended', nextTrack);
       music.addEventListener('error', () => { musicFailed.value = true; });
       sounds.forEach(sound => { void loadSound(sound, context!); });
     }
