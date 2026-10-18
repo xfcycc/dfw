@@ -1,0 +1,48 @@
+{
+  "date": "2026-10-18",
+  "source": "image_gen",
+  "compression": {
+    "quality": 82,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "entries": [
+    {
+      "skinId": "card_naruto_shinra_tensei",
+      "name": "神罗天征",
+      "rarity": "UR",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14b29-e4c7-79f3-9cc6-8b98cf6d13cb/exec-88da45b2-8861-4e5f-837c-7f37736be9a0.png",
+      "sourceSha256": "53d7570c6c58c58a193876641738795508dab41a3ae23f473224e740aea2e1f3",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 307610,
+      "sha256": "8d830bb9f7a4212a75ddfa94a2489458140c9d7377c2a3eca0d8012e538216c4",
+      "url": "https://pic.caiguoyu.cn/typora/20261018030759921.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": "307610",
+        "contentMd5": "q8MPwsYDrSqBQlR72jJbwQ=="
+      }
+    },
+    {
+      "skinId": "card_naruto_wood_houses",
+      "name": "木遁·连柱家之术",
+      "rarity": "UR",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14b29-e4c7-79f3-9cc6-8b98cf6d13cb/exec-6572af00-5e56-47f4-ab3d-807a31ccb6e2.png",
+      "sourceSha256": "97a1d603a08a0efa4bf6945e710fb48db70fbdd1b25923119496e0cf1403b45d",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 247234,
+      "sha256": "8e80db8b457b7dded16d69d6d0780b54181796aacf5b4567470256cefc476ba5",
+      "url": "https://pic.caiguoyu.cn/typora/20261018030759922.webp",
+      "remoteVerification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": "247234",
+        "contentMd5": "R1yX+Y5Y/Bm3d1ZMTlrvoA=="
+      }
+    }
+  ]
+}
