@@ -1,0 +1,26 @@
+{
+  "url": "https://pic.caiguoyu.cn/typora/20261018220647194.webp",
+  "bytes": 290108,
+  "sha256": "e3ee052bbe3dca8e93944be88f45d57a532cbc5b88b364d173654bc7b32e8321",
+  "md5": "CeMPQWE9IYHHcNABusGdJw==",
+  "verification": {
+    "status": 200,
+    "contentType": "image/webp",
+    "contentLength": 290108,
+    "contentMd5": "CeMPQWE9IYHHcNABusGdJw=="
+  },
+  "name": "尸鬼封尽卡位锁链",
+  "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a14e68-3f7b-7a23-b01b-24553ee5c49e/exec-af95b777-ba19-4860-bcba-5108145ee5e9.png",
+  "width": 1024,
+  "height": 1536,
+  "transparent": true,
+  "conversion": {
+    "format": "WebP",
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "promptSummary": "透明纵向2:3卡位覆盖图，交叉铁链、中央闭合锁与封印符纸，Q版手绘赛璐璐风格，无角色、文字、卡框或背景。",
+  "usage": "保留原六个手牌位，当前上限以外的未占用位置显示锁链；不遮住超限待整理手牌，不参与业务结算。"
+}

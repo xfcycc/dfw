@@ -40,7 +40,7 @@ function complete(event: AnimationEvent): void { if (event.target === event.curr
 </script>
 
 <template>
-  <div class="board-effect-layer" :class="`effect-${effect.kind}`" :style="{ '--effect-duration': `${duration}ms`, '--effect-zoom': zoom, '--vfx-size': `${spriteSize}px` }" role="status" :aria-label="`${label}，正在生效位置播放`" @animationend="complete">
+  <div class="board-effect-layer" :class="`effect-${effect.kind}`" :style="{ '--effect-duration': `${duration}ms`, '--effect-zoom': zoom, '--vfx-size': `${spriteSize}px` }" role="status" :aria-label="label" @animationend="complete">
     <div v-for="move in moving" :key="`gate-${move.playerId}`" class="effect-gate" :style="{ left: `${move.start.x}px`, top: `${move.start.y}px` }"><EffectSprite kind="blackhole" /></div>
     <div v-for="move in moving" :key="move.playerId" class="effect-traveler" :style="{ left: `${move.start.x}px`, top: `${move.start.y}px`, '--travel-x': `${move.end.x - move.start.x}px`, '--travel-y': `${move.end.y - move.start.y}px`, '--traveler-color': move.player?.color }">
       <CharacterPawn variant="pawn" :avatar-id="move.player?.avatarId" :color="move.player?.color" /><strong>{{ move.player?.name }} · {{ label }}</strong>

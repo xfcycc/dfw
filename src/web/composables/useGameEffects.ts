@@ -43,13 +43,14 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if (boardEffect.value?.id !== id) return;
     clearMotion(); settled(id);
   }
-  /** 输入快照、掷骰标识及落点反馈，展示走格或直接传送动画，无返回值。 */
+  /** 输入快照、掷骰标识及落点反馈，播放移动或启用特效；零时长片段直接继续，无返回值。 */
   function animateMotion(next: PublicRoomState, roll: boolean, feedback: () => void): void {
     clearMotion();
     const movement = next.motion!;
     if (roll) playSound('dice');
     if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { feedback(); settled(movement.id); return; }
     if (movement.boardEffect) {
+      if (boardEffectDuration(movement.boardEffect.kind) === 0) { feedback(); settled(movement.id); return; }
       motion.value = movement;
       void prepareEffectSprite(movement.boardEffect.kind).then(() => {
         if (motion.value?.id !== movement.id) return;

@@ -3,7 +3,7 @@ import ThemedSelect from '../components/ThemedSelect.vue';
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { isKamui, hasPropertyEffects, baseRentFor, concertRent, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
+import { isKamui, hasPropertyEffects, baseRentFor, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
 import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
 import { forgetSession, readSession, useGameStore } from '../stores/game';
 import { useTurnSound } from '../composables/useTurnSound';
@@ -28,8 +28,8 @@ import PropertyEffects from '../components/PropertyEffects.vue';
 import { TILE_CARDS, PLAYER_CARDS } from '../card-targets';
 import CardTargetPicker from '../components/CardTargetPicker.vue';
 import ContentCard from '../components/ContentCard.vue';
+import HandSlots from '../components/HandSlots.vue';
 import CardReveal from '../components/CardReveal.vue';
-import { boardEffectLabel } from '../board-effect-presentation';
 import ActivityDialog from '../components/activities/ActivityDialog.vue';
 import { ACTIVITY_HINTS, activityArt } from '../activity-art';
 import ContentChoice from '../components/ContentChoice.vue';
@@ -93,6 +93,7 @@ const submittingCard = ref(false);
 const selectedTarget = ref('');
 const selectedSecondTarget = ref('');
 const mapPicking = ref(false);
+const mapConfirmOpen = ref(false);
 const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
@@ -125,18 +126,16 @@ async function sendChat(message: string, references: ChatReference[]): Promise<b
 /** 输入被引用的地块编号，电脑强调地块，手机将地图视野定位到该处，无返回值。 */
 function locateChatTile(id: number): void { board.value?.referenceTile(id, mobileViewport.value); }
 const boardAnimating = ref(false);
-const activeBoardEffect = computed(() => game.settling && !game.settlementRevealing ? game.room?.motion?.boardEffect : null);
-/** 从当前演出事实提取公开目标名称，供新鲜事提示；不读取私人卡面或计算结果。 */
-const effectTargetNames = computed(() => {
-  const effect = activeBoardEffect.value;
-  if (!effect || !game.room) return '';
-  return effect.beforeTiles.length ? effect.beforeTiles.map(tile => game.room!.board.find(value => value.id === tile.id)?.name).filter(Boolean).join('、') : game.room.players.filter(player => effect.playerIds?.includes(player.id) || effect.moves.some(move => move.playerId === player.id)).map(player => player.name).join('、');
-});
 const awaitingJoin = ref(false);
 const joining = ref(false);
 const entryName = ref(localStorage.getItem('dfw:nickname') || '');
 let entryGeneration = 0;
 const code = computed(() => String(route.params.code));
+/** 无入参，复制包含文案、房间号及入房链接的邀请内容，完成后无返回值。 */
+async function inviteFriends(): Promise<void> {
+  modal.value = null;
+  await game.copy(`🎲 来和我一起玩《大富翁 · 好友财富派对》！\n掷骰、买地、建房、收租，看看谁能成为大富翁！\n房间号：${code.value}\n点击链接加入：${origin}/room/${code.value}`);
+}
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
 const allReady = computed(() => !!game.room && game.room.players.length >= 2 && game.room.players.every(player => player.ready && player.online));
 const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2));
@@ -268,7 +267,6 @@ watch([eligibleTiles, eligiblePlayers], () => {
 watch([modal, targetKind], () => { if (!targeting.value || targetKind.value !== 'tile') mapPicking.value = false; });
 const actionStatus = computed(() => {
   if (game.connection !== 'online') return '正在连接';
-  if (game.settling) return game.settlementRevealing ? '查看卡牌，收起后播放效果' : '效果播放中，完成后继续';
   if (game.room?.pausedReason) return '等待重连';
   if (game.room?.status === 'finished') return '本局结束';
   if (game.room?.tradePending) return '交易中';
@@ -315,8 +313,8 @@ watch([decisionKey, () => choice.value?.id], ([key], [previousKey]) => {
   if (key !== previousKey) { selectedTile.value = null; openDecision(); }
   else if (modal.value === 'decision' && choice.value) modal.value = 'choice';
 });
-/** 打开当前本人待办，已同步的私人选择复用原选择弹窗。 */
-function openDecision(): void { if (!hasCentralDecision.value || game.cardReveals.length) return; modal.value = choice.value ? 'choice' : payment.value && !payment.value.defenseResolved ? 'defense' : 'decision'; }
+/** 无入参，打开当前本人待办并返回列表选择，已同步的私人选择复用原弹窗，无返回值。 */
+function openDecision(): void { if (!hasCentralDecision.value || game.cardReveals.length) return; void switchTargetMode(false); modal.value = choice.value ? 'choice' : payment.value && !payment.value.defenseResolved ? 'defense' : 'decision'; }
 /** 输入本人收到的报价 ID，新报价打开交易弹窗，同一报价同步不重复打开；结束后收起窗口。 */
 watch(() => !props.spectator && game.privateData?.trade?.toId === game.me?.id ? game.privateData?.trade?.id : null, (id, previousId) => {
   if (id && id !== previousId) { selectedTile.value = null; modal.value = 'trade'; }
@@ -376,7 +374,7 @@ async function switchSpectatorView(mode: 'follow' | 'landscape'): Promise<void> 
 }
 /** 输入本人手牌，在窗口中查看或准备使用；付款防御复用当前费用窗口。 */
 function chooseCard(card: Card): void {
-  if (game.settling) { game.notify('效果播放完成后再使用道具。'); return; }
+  if (game.settling) return;
   if (selectedCard.value?.id === card.id) { modal.value = 'card'; return; }
   if (payment.value && !payment.value.defenseResolved && defenseCards.value.some(value => value.id === card.id)) { selectedDefense.value = card.id; modal.value = 'defense'; return; }
   if (choice.value || game.privateData?.trade || game.busy) { game.notify('请先处理当前选择或报价。'); return; }
@@ -394,26 +392,29 @@ function selectDialogTarget(id: string, slot: 1 | 2 = 1): void {
   else if (slot === 2 && selectedCard.value?.kind === 'swapAny') { if (game.canAct && eligiblePlayers.value.includes(id) && id !== selectedTarget.value) selectedSecondTarget.value = id; }
   else { selectPlayer(id); if (selectedSecondTarget.value === selectedTarget.value) selectedSecondTarget.value = ''; }
 }
-/** 输入是否地图点选，保留已选目标；进入时定位合法地块并交还地图键盘焦点，无返回值。 */
+/** 输入是否地图点选，保留目标与地图视野，收起确认框并交还地图键盘焦点，无返回值。 */
 async function switchTargetMode(picking: boolean): Promise<void> {
+  mapConfirmOpen.value = false;
   mapPicking.value = picking;
   if (!picking) return;
   selectedTile.value = null;
   await nextTick();
   const id = targetTileId.value ?? eligibleTiles.value[0];
   if (id == null || !mapTargeting.value) return;
-  await board.value?.referenceTile(id, mobileViewport.value);
   mapView.value?.querySelector<HTMLElement>(`[data-cash-tile="${id}"]`)?.focus({ preventScroll: true });
 }
-/** 无入参，地图模式先返回列表，列表模式收起窗口，无返回值。 */
-function closeTargetPicker(): void { if (mapPicking.value) void switchTargetMode(false); else modal.value = null; }
+/** 无入参，关闭地图确认框后继续点选，列表模式收起窗口，无返回值。 */
+function closeTargetPicker(): void { if (mapPicking.value) void switchTargetMode(true); else modal.value = null; }
 /** 输入地图地块，选择合法目标或打开普通地块详情，不提交游戏命令。 */
 function selectTile(tile: Tile): void {
   if (!targeting.value) { selectedTile.value = tile; return; }
   if (targetKind.value === 'player') { game.notify('正在使用玩家道具，请点击排行榜的玩家姓名或头像。'); return; }
   const reason = tileReason(tile);
   if (reason) { game.notify(reason); return; }
-  if (game.canAct) selectedTarget.value = String(tile.id);
+  if (game.canAct) {
+    selectedTarget.value = String(tile.id);
+    if (mapTargeting.value) mapConfirmOpen.value = true;
+  }
 }
 /** 输入排行榜玩家身份，选择合法道具目标；确认按钮才发送命令。 */
 function selectPlayer(id: string): void {
@@ -431,7 +432,7 @@ async function resetSession(): Promise<void> {
 }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'map-targeting': mapTargeting }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
@@ -465,7 +466,7 @@ async function resetSession(): Promise<void> {
       <RecoverySeats v-if="!spectator" />
       <section v-if="isLobby" class="lobby-layout cottage-lobby" aria-label="房间大厅">
         <div class="lobby-panel cottage-panel">
-          <div class="cottage-heading"><h1>好友房间 <small>{{ game.room.players.length }} / 6</small></h1><button class="button secondary small" @click="game.copy(`${origin}/room/${code}`)">邀请朋友</button></div>
+          <div class="cottage-heading"><h1>好友房间 <small>{{ game.room.players.length }} / 6</small></h1><button class="button secondary small" @click="inviteFriends">邀请朋友</button></div>
           <div class="lobby-seats">
             <div v-for="player in game.room.players" :key="player.id" class="lobby-seat" :class="{ 'is-me': player.id === game.me?.id, offline: !player.online }">
               <CharacterPawn :avatar-id="player.avatarId" :color="player.color" />
@@ -489,8 +490,8 @@ async function resetSession(): Promise<void> {
           <section class="map-panel"><div ref="mapView" class="board-view">
             <Board ref="board" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
-                <template v-if="game.me && !spectator">
-                  <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card'" @click="modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
+                <template v-if="game.me && !spectator && !game.settling && !boardAnimating">
+                  <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card' && (!mapTargeting || mapConfirmOpen)" @click="switchTargetMode(false); modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
                   <button v-else-if="tradeReminder" type="button" class="turn-action-status turn-action-link needs-confirmation" aria-haspopup="dialog" :aria-expanded="modal === 'trade'" title="点击查看报价" @click="modal = 'trade'"><strong>当前行动：<PlayerText :text="tradeReminder" /></strong><span aria-hidden="true">↗</span></button>
                   <button v-else-if="hasCentralDecision" type="button" class="turn-action-status turn-action-link needs-confirmation" :disabled="!!game.cardReveals.length" aria-haspopup="dialog" :aria-expanded="modal === 'decision' || modal === 'choice' || modal === 'defense'" title="点击处理当前事项" @click="openDecision"><strong>当前行动：{{ actionStatus }}</strong><span aria-hidden="true">↗</span></button>
                   <div v-else class="turn-action-status" :class="{ 'is-waiting': game.connection !== 'online' || !!game.room.pausedReason || game.room.status === 'finished' || !game.isMyTurn && !game.canDecide }" role="status"><strong>当前行动：{{ actionStatus }}</strong></div>
@@ -513,8 +514,9 @@ async function resetSession(): Promise<void> {
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
-                      <div v-if="activeBoardEffect" class="city-alert effect-news-notice" role="status"><div class="city-alert-message"><strong>{{ boardEffectLabel(activeBoardEffect.kind) }} · 生效中</strong><small><PlayerText :text="effectTargetNames" /> · 动画结束后继续</small></div></div>
+                      <Teleport to="#mobile-card-reveal" :disabled="!detachedDashboard || spectator" defer>
+                        <div class="mobile-city-reveal"><CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" /></div>
+                      </Teleport>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
                       <ChatComposer v-if="!spectator" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊，输入 @ 提及玩家或地块…'" />
@@ -538,7 +540,7 @@ async function resetSession(): Promise<void> {
                     </aside>
                   </div>
                   <Teleport :to="detachedDashboard ? '#mobile-workbench-cards' : 'body'" :disabled="!detachedDashboard" defer>
-                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><span v-for="slot in Math.max(0, (game.me.handLimit ?? 6) - handCount)" :key="`empty-${slot}`" class="empty-hand-slot" aria-hidden="true"><span>＋</span>空位</span></div></template>
+                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail" :class="{ 'has-sealed-slots': (game.me.handLimit ?? 6) < 6 }"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><HandSlots :count="handCount" :limit="game.me.handLimit" /></div></template>
                       <p v-else class="workspace-caption">手牌仅本人可见</p><p v-if="detachedDashboard && !handCount" class="workspace-caption">暂无手牌</p></section>
                   </Teleport>
 
@@ -548,6 +550,7 @@ async function resetSession(): Promise<void> {
             </Board>
           </div></section>
           <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" :aria-label="spectator ? '城市新鲜事与资产排行' : '城市新鲜事与聊天'"></aside>
+          <div v-if="detachedDashboard && !spectator" id="mobile-card-reveal" class="mobile-card-reveal"></div>
           <nav v-if="detachedDashboard && !spectator" class="mobile-workbench-bar" aria-label="手机游戏操作">
             <button type="button" class="mobile-image-button mobile-more-button" aria-label="更多" aria-haspopup="dialog" :aria-expanded="modal === 'more'" @click="modal = 'more'"><MobileActionArt action="more" /><span v-if="tradeReminder" class="mobile-action-badge">有报价</span></button>
             <button type="button" class="mobile-image-button mobile-roll-button" :disabled="!canRoll" aria-label="掷骰子" @click="game.act({ type: 'roll' })"><MobileActionArt action="roll" /></button>
@@ -591,8 +594,7 @@ async function resetSession(): Promise<void> {
                         </template>
                         </div></Modal>
     <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null"><Assets /></Modal>
-    <Modal :panel-class="['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card'" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :map-picking="mapTargeting" wide @close="closeTargetPicker">
-      <p v-show="mapTargeting" class="map-target-instructions">{{ targetHint }}<br />点击高亮地块选择，确认后才使用道具。</p>
+    <Modal :panel-class="mapTargeting ? 'modern-modal' : ['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card' && (!mapTargeting || mapConfirmOpen)" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :wide="!mapTargeting" @close="closeTargetPicker">
       <div v-show="!mapTargeting" class="card-use-layout" :class="{ 'has-targets': drafting && targetKind }">
         <div class="card-use-preview"><ContentCard :content="selectedCard" compact preview /></div>
         <div class="card-use-controls">
@@ -612,17 +614,17 @@ async function resetSession(): Promise<void> {
         </div>
       </div>
       <template #footer>
-        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(false)">← 返回列表选择</button>
+        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(true)">← 重新点选</button>
         <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length" :title="choice.content?.name ?? '处理当前选择'" :map-picking="mapTargeting" wide @close="closeTargetPicker">
-      <p v-if="mapChoice" class="map-target-instructions">{{ targetHint }}</p>
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
+      <p v-if="mapChoice && !mapTargeting" class="map-target-instructions">{{ targetHint }}</p>
       <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
       <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>
       <ContentChoice v-if="!mapChoice" :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" dialog @done="modal = null" />
       <template v-if="mapChoice" #footer>
-        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(false)">← 返回列表选择</button>
+        <button v-if="mapTargeting" type="button" class="button secondary small target-back-list" @click="switchTargetMode(true)">← 重新点选</button>
         <ContentChoice :key="choice.id" :choice="choice" :tile-id="targetTileId" :target-label="targetLabel" compact dialog @done="modal = null" />
       </template>
     </Modal>
@@ -634,7 +636,7 @@ async function resetSession(): Promise<void> {
         <button class="game-tool mint" @click="modal = 'rules'"><span class="game-tool-icon" aria-hidden="true">📖</span><span>玩法说明</span></button>
         <button class="game-tool sky" @click="modal = null; spectator ? switchSpectatorView('landscape') : fullscreen()"><span class="game-tool-icon" aria-hidden="true">⛶</span><span>{{ spectator ? '横屏模式' : '全屏模式' }}</span></button>
         <button v-if="game.me && !spectator" class="game-tool lavender" @click="modal = 'save'"><span class="game-tool-icon" aria-hidden="true">💾</span><span>游戏存档</span></button>
-        <button class="game-tool peach" @click="modal = null; game.copy(`${origin}/room/${code}`)"><span class="game-tool-icon" aria-hidden="true">💌</span><span>邀请朋友</span></button>
+        <button class="game-tool peach" @click="inviteFriends"><span class="game-tool-icon" aria-hidden="true">💌</span><span>邀请朋友</span></button>
         <button class="game-tool mint" @click="modal = null; game.copy(`${origin}/watch/${code}`)"><span class="game-tool-icon" aria-hidden="true">🔗</span><span>复制观战链接</span></button>
       </div>
     </Modal>
@@ -682,11 +684,8 @@ async function resetSession(): Promise<void> {
           </div>
           <dl class="tile-detail-metrics">
             <div><dt>地产价格</dt><dd>¥{{ liveSelectedTile.price.toLocaleString() }}</dd></div>
-            <div><dt>无修正租金</dt><dd>¥{{ baseRentFor(liveSelectedTile, game.room?.economy).toLocaleString() }}</dd></div>
-            <div><dt>演唱会后租金</dt><dd>¥{{ concertRent(baseRentFor(liveSelectedTile, game.room?.economy), liveSelectedTile.concertStacks ?? 0).toLocaleString() }}</dd></div>
             <div><dt>当前路费</dt><dd>{{ selectedTileOwner?.jailed && selectedTileOwner.skipTurns > 0 ? '¥0 · 房东服刑中' : `¥${rentFor(liveSelectedTile, game.room?.economy).toLocaleString()}` }}</dd></div>
           </dl>
-          <PropertyEffects :tile="liveSelectedTile" :economy="game.room?.economy" />
           <dl class="tile-detail-facts">
             <div><dt>抵押状态</dt><dd :class="{ 'tile-detail-mortgaged': liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? `已抵押 · 赎回 ¥${redeemCost(liveSelectedTile).toLocaleString()}` : '未抵押' }}</dd></div>
           </dl>
@@ -697,7 +696,7 @@ async function resetSession(): Promise<void> {
         </template>
         <p v-else-if="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind" class="tile-detail-description">{{ ACTIVITY_HINTS[liveSelectedTile.activityKind] }}。停在这里触发活动，经过不触发。</p>
         <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `经过或停留在起点，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()} 和 ${startCards(game.room?.players.length ?? 2)} 张道具补给。` : '停在此处，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可当场用解控卡解除限制。' }}</p>
-        <p class="tile-detail-barrier" :class="{ active: liveSelectedTile.barrier }"><span aria-hidden="true">{{ liveSelectedTile.barrier ? '🚧' : '↝' }}</span><span><strong>{{ liveSelectedTile.barrier ? '设有路障' : '无路障' }}</strong><small v-if="liveSelectedTile.barrier">{{ isKamui(liveSelectedTile) ? '神威期间暂停，不截停也不消耗' : '首位受影响的经过者将停下，随后正常结算地块' }}</small></span></p>
+        <PropertyEffects :tile="liveSelectedTile" :economy="game.room?.economy" />
       </div>
     </Modal>
     <footer v-if="!isLobby" class="room-footer">小小棋盘，大大野心。<span>好运和朋友，都在这里。</span></footer>
@@ -705,9 +704,6 @@ async function resetSession(): Promise<void> {
 </template>
 
 <style scoped>
-.effect-news-notice { padding:7px 10px; margin:6px 0; border-width:1px; animation:none; }
-.effect-news-notice .city-alert-message { font-size:12px; }
-.effect-news-notice .city-alert-message small { display:block; max-height:3em; overflow:auto; font-size:10px; line-height:1.5; }
 .tile-detail-actions { margin-top: 12px; }
 .tile-detail-actions > .button { width: 100%; }
 </style>

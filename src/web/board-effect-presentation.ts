@@ -36,9 +36,9 @@ export const BOARD_EFFECTS = {
   rentDouble: { label: '超级加倍', duration: 1300, sprite: 'coins', description: '展示租金翻倍状态的获得或消耗，再衔接付款。' },
   immunity: { label: '免除租金', duration: 1400, sprite: 'shield', description: '防御生效后，再继续本笔费用流程。' },
   halfPayment: { label: '费用减半', duration: 1400, sprite: 'shield', description: '展示减免，再按原规则处理剩余费用。' },
-  income: { label: '现金奖励', duration: 1400, sprite: 'coins', description: '单人、全员及排名奖励先播放，再展示余额变化。' },
-  fee: { label: '费用到来', duration: 1300, sprite: 'coins', description: '费用演出结束后开放付款防御、支付或偿债选择。' },
-  payment: { label: '支付完成', duration: 1400, sprite: 'coins', description: '实际支付完成后展示资金流动，再继续原流程。' },
+  income: { label: '现金奖励', duration: 0, sprite: 'coins', description: '不播放特效，单人、全员及排名奖励直接展示余额变化。' },
+  fee: { label: '费用到来', duration: 0, sprite: 'coins', description: '不播放特效，直接开放原有付款防御、支付或偿债选择。' },
+  payment: { label: '支付完成', duration: 0, sprite: 'coins', description: '不播放特效，实际支付完成后直接继续原流程。' },
   gambleWin: { label: '开奖中奖', duration: 1800, sprite: 'coins', description: '使用服务端已确定的中奖结果，演出后展示最终余额。' },
   gambleLose: { label: '本次未中奖', duration: 1700, sprite: 'cards', description: '使用服务端已确定的未中奖结果，不重新抽取。' },
   talent: { label: '人才引进', duration: 1800, sprite: 'build', description: '展示实际获得的地产，再接现金与私人道具补给。' },
@@ -51,7 +51,7 @@ export const BOARD_EFFECTS = {
   statusExpired: { label: '状态结束', duration: 1100, sprite: 'shield', description: '持续状态按原规则到期，演出后继续下一行动。' },
 } as const satisfies Record<BoardEffect['kind'], { label: string; duration: number; sprite: EffectSpriteKind; description: string }>;
 
-/** 输入效果类型，返回整段演出时长，动画时间轴与队列兜底使用同一数值。 */
+/** 输入效果类型，返回整段演出时长；零表示直接衔接原流程，不播放或等待特效。 */
 export function boardEffectDuration(kind: BoardEffect['kind']): number { return BOARD_EFFECTS[kind]?.duration ?? 1400; }
 /** 输入效果类型，返回播放提示，不覆盖卡牌自身冻结的业务文案。 */
 export function boardEffectLabel(kind: BoardEffect['kind']): string { return BOARD_EFFECTS[kind]?.label ?? '效果发动'; }

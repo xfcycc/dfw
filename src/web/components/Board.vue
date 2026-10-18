@@ -8,7 +8,6 @@ import CharacterPawn from './CharacterPawn.vue';
 import DiceFace from './DiceFace.vue';
 import DesktopDiceThrow from './DesktopDiceThrow.vue';
 import BoardEffectLayer from './BoardEffectLayer.vue';
-import { boardEffectLabel } from '../board-effect-presentation';
 import PlayerText from './PlayerText.vue';
 import PropertyGrade from './PropertyGrade.vue';
 import PanelFrame from './PanelFrame.vue';
@@ -50,7 +49,7 @@ const diceFullscreen = computed(() => !!motion.value && diceResult.value !== nul
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
 const followedPlayer = computed(() => motionPlayer.value ?? current.value);
 const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
-const movementLabel = computed(() => boardEffect.value?.boardEffect ? `${boardEffectLabel(boardEffect.value.boardEffect.kind)} · 播放中` : motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'}` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
+const movementLabel = computed(() => motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'}` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
 const effectTiles = computed(() => new Set(boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
 const effectPlayers = computed(() => new Set(boardEffect.value?.boardEffect?.moves.map(move => move.playerId) ?? []));
 const effectTileSize = computed(() => (size.value - (props.compact ? 20 : 18)) / dimensions.value.columns * zoom.value);
@@ -69,30 +68,7 @@ function effectPlayerPoint(playerId: string, position: number, after = false): {
   const point = effectPoint(position);
   return { x: point.x + offset, y: point.y };
 }
-let effectView: { zoom: number; fullMap: boolean; left: number; top: number } | null = null;
-// 多目标临时展示全图，单地块或单玩家定位生效处，结束或取消后恢复用户视野。
-watch(boardEffect, async value => {
-  const view = viewport.value;
-  if (!view) return;
-  if (!value?.boardEffect) {
-    if (!effectView) return;
-    const saved = effectView; effectView = null; zoom.value = saved.zoom; fullMap.value = saved.fullMap;
-    await nextTick();
-    if (!boardEffect.value) view.scrollTo({ left: saved.left, top: saved.top, behavior: 'instant' });
-    return;
-  }
-  effectView ??= { zoom: zoom.value, fullMap: fullMap.value, left: view.scrollLeft, top: view.scrollTop };
-  const effect = value.boardEffect;
-  const positions = [...new Set(effect.beforeTiles.length ? effect.beforeTiles.map(tile => tile.id) : effect.moves.length ? effect.moves.flatMap(move => [move.from, move.to]) : props.room.players.filter(player => (effect.playerIds?.length ? effect.playerIds : [value.playerId]).includes(player.id)).map(player => player.position))];
-  if (positions.length > 1) fitBoard();
-  else {
-    fullMap.value = false; zoom.value = 1;
-    await nextTick();
-    if (boardEffect.value?.id !== value.id || positions[0] == null) return;
-    const point = effectPoint(positions[0]);
-    view.scrollTo({ left: point.x - view.clientWidth / 2, top: point.y - view.clientHeight / 2, behavior: 'instant' });
-  }
-}, { flush: 'post' });
+// 效果沿用当前缩放与视野，不在播放前后强制切换全图或恢复地图位置。
 const rotating = ref(false);
 const displayedActivityKinds = ref<Record<number, ActivityKind>>({});
 let rotationTimer: ReturnType<typeof setTimeout> | undefined;
@@ -172,7 +148,7 @@ function tradeMarkerStyle(id: number) {
     '--trade-label-x': `${-dx * 44}px`, '--trade-label-y': `${-dy * 38}px`,
   };
 }
-/** 无入参，读取地图可用尺寸；选点时桌面适配全图、手机定位目标，其余沿用观战与游玩视野，无返回值。 */
+/** 无入参，读取地图可用尺寸；选点保留当前视野，其余沿用观战与游玩视野，无返回值。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   const availableHeight = viewport.value?.clientHeight ?? 0;
@@ -185,23 +161,17 @@ function resizeBoard(): void {
   if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  if (props.targeting) {
-    if (!props.dashboardTarget) fitBoard();
-    else {
-      const id = props.selectedTarget ?? props.eligibleTiles?.[0];
-      if (id != null) void nextTick(() => referenceTile(id, true));
-    }
-    return;
-  }
+  if (props.targeting) return;
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
   else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
   else expandBoard();
 }
-/** 无入参，恢复可读格距；手机对准本人附近，桌面沿用内圈视野，无返回值。 */
-function expandBoard(): void {
+/** 输入待定位玩家，默认使用当前移动者；恢复可读格距并调整局部视野，无返回值。 */
+function expandBoard(player = followedPlayer.value): void {
   fullMap.value = false; zoom.value = 1;
   void nextTick(() => {
-    if (props.dashboardTarget) locatePlayer(props.room.players.find(player => player.id === props.meId) ?? current.value);
+    cancelAnimationFrame(followFrame);
+    if (props.dashboardTarget) locatePlayer(player, true);
     else if (viewport.value) viewport.value.scrollLeft = Math.max(0, (size.value - availableWidth.value) / 2);
   });
 }
@@ -214,7 +184,7 @@ function locatePlayer(player?: PublicPlayer, smooth = false): void {
   viewport.value.scrollTo({ left: (inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value - viewport.value.clientWidth / 2, top: (inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value - viewport.value.clientHeight / 2, behavior: smooth ? 'smooth' : 'instant' });
 }
 /** 无入参，定位当前行动者；跟随时使用动画中的角色，避免提前跳到下一回合，无返回值。 */
-function locateCurrent(): void { locatePlayer(following.value ? followedPlayer.value : current.value, !following.value); }
+function locateCurrent(): void { cancelAnimationFrame(followFrame); locatePlayer(followedPlayer.value, true); }
 /** 输入地块编号及手机标志，强调对应地块；手机恢复可读缩放后将视窗移到地块，无返回值。 */
 async function referenceTile(id: number, mobile: boolean): Promise<void> {
   if (!props.room.board.some(tile => tile.id === id)) return;
@@ -233,29 +203,38 @@ function clearReference(event: MouseEvent): void {
   referencedTile.value = null;
 }
 defineExpose({ referenceTile });
-/** 无入参，按棋子实际过渡位置逐帧滚动视窗，覆盖当前走格动画后停止，无返回值。 */
+/** 无入参，观战跟随与玩家局部地图按棋子实际位置平滑追踪，点选、全图及特效期间暂停，无返回值。 */
 function followPawn(): void {
   cancelAnimationFrame(followFrame);
-  if (boardEffect.value || !props.spectator || !following.value || !viewport.value || referencedTile.value != null) return;
+  if (boardEffect.value || props.targeting || fullMap.value || !(following.value || !props.spectator && props.dashboardTarget) || !viewport.value || referencedTile.value != null) return;
   const view = viewport.value;
   const pawn = Array.from(view.querySelectorAll<HTMLElement>('.map-character')).find(element => element.dataset.playerId === followedPlayer.value?.id);
   if (!pawn) return;
-  const until = performance.now() + moveStepMs + 120;
-  /** 输入帧时间，按棋子当前屏幕位置调整视窗，并继续尚未结束的跟随，无返回值。 */
+  let cameraLeft = view.scrollLeft; let cameraTop = view.scrollTop;
+  let previousTime = performance.now();
+  const until = previousTime + moveStepMs + 120;
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /** 输入帧时间，按时间间隔渐近棋子中心，走格结束或切换行动者后继续收敛镜头，无返回值。 */
   const frame = (now: number): void => {
     const bounds = view.getBoundingClientRect();
     const position = pawn.getBoundingClientRect();
-    view.scrollTo({ left: view.scrollLeft + position.left + position.width / 2 - bounds.left - view.clientLeft - view.clientWidth / 2, top: view.scrollTop + position.top + position.height / 2 - bounds.top - view.clientTop - view.clientHeight / 2, behavior: 'instant' });
-    if (now < until) followFrame = requestAnimationFrame(frame);
+    const left = Math.max(0, Math.min(view.scrollWidth - view.clientWidth, view.scrollLeft + position.left + position.width / 2 - bounds.left - view.clientLeft - view.clientWidth / 2));
+    const top = Math.max(0, Math.min(view.scrollHeight - view.clientHeight, view.scrollTop + position.top + position.height / 2 - bounds.top - view.clientTop - view.clientHeight / 2));
+    const dx = left - cameraLeft; const dy = top - cameraTop;
+    const blend = reducedMotion ? 1 : 1 - Math.exp(-(now - previousTime) / 80);
+    previousTime = now;
+    cameraLeft += dx * blend; cameraTop += dy * blend;
+    view.scrollTo({ left: cameraLeft, top: cameraTop, behavior: 'instant' });
+    if (now < until || Math.abs(dx) > 1 || Math.abs(dy) > 1) followFrame = requestAnimationFrame(frame);
   };
   followFrame = requestAnimationFrame(frame);
 }
 /** 无入参，恢复局部地图并定位本人附近，无返回值。 */
-function locateMe(): void { expandBoard(); }
+function locateMe(): void { expandBoard(props.room.players.find(player => player.id === props.meId)); }
 /** 无入参，按地图视窗的宽高完整展示棋盘，无返回值。 */
 function fitBoard(): void {
   fullMap.value = true;
-  const detached = !!props.targeting || !!props.dashboardTarget || !!props.spectator && !!props.compact;
+  const detached = !!props.dashboardTarget || !!props.spectator && !!props.compact;
   const heightLimit = detached || props.bounded ? Math.max(1, (viewport.value?.clientHeight ?? height.value) - 10) / height.value : props.stretch ? Math.max(240, window.innerHeight - Math.max(0, container.value?.getBoundingClientRect().top ?? 0) - 24) / height.value : 1;
   zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
@@ -265,11 +244,7 @@ watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, 
   fullMap.value = false; lastWidth = 0;
   await nextTick(); resizeBoard();
 }, { flush: 'post' });
-watch([following, () => props.spectator, () => followedPlayer.value?.id, () => followedPlayer.value?.position, () => animatedPosition.value?.position, moving, zoom, size, height, availableWidth, availableViewportHeight], followPawn, { flush: 'post' });
-watch([() => props.room.players.find(player => player.id === props.meId)?.position, () => animatedPosition.value?.position, () => props.room.turnIndex], () => {
-  if (boardEffect.value || !props.dashboardTarget || props.spectator || fullMap.value || referencedTile.value != null) return;
-  locatePlayer(motion.value ? motionPlayer.value : props.room.players.find(player => player.id === props.meId) ?? current.value);
-}, { flush: 'post' });
+watch([following, () => props.spectator, () => props.dashboardTarget, () => props.targeting, fullMap, referencedTile, boardEffect, () => followedPlayer.value?.id, () => followedPlayer.value?.position, () => animatedPosition.value?.position, moving, zoom, size, height, availableWidth, availableViewportHeight], followPawn, { flush: 'post' });
 watch([() => props.room.roomId, () => props.room.gameId], () => { referencedTile.value = null; });
 onMounted(() => {
   observer = new ResizeObserver(resizeBoard);
@@ -282,7 +257,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 </script>
 <template>
   <div ref="container" class="board-container" :class="{ 'game-board': compact, 'dense-board': compact && dimensions.columns >= 14, 'immersive-board': stretch, 'detached-board': !!dashboardTarget }" :style="{ '--map-zoom': zoom, '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--tile-background': `url(${imageUrl('/images/board/tile-common.png')})`, '--property-levels': `url(${imageUrl('/images/board/property-levels.png')})`, '--turn-arrow': `url(${imageUrl('/images/board/turn-arrow.svg')})` }">
-    <div v-if="!stretch || dashboardTarget || spectator || targeting" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact && !spectator" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="spectator && compact" class="board-control" :aria-pressed="following" @click="emit('view', 'follow')">跟随模式</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
+    <div v-if="!stretch || dashboardTarget || spectator" class="board-tools"><span class="eyebrow">{{ room.board.length }} 格城市 <span class="board-direction">· 顺时针前进 ↻</span></span><div class="board-controls"><button v-if="compact && !spectator" class="board-control" :aria-pressed="fullMap" @click="fitBoard">全图</button><button v-if="spectator && compact" class="board-control" :aria-pressed="following" @click="emit('view', 'follow')">跟随模式</button><button v-if="dashboardTarget && !spectator && meId" class="board-control" :aria-pressed="!fullMap" @click="locateMe">我的附近</button><button v-if="compact" class="board-control" @click="locateCurrent">定位棋子</button><label v-if="!spectator || !compact">缩放 <input v-model.number="zoom" aria-label="地图缩放" type="range" :min="dashboardTarget ? 0.01 : bounded ? 0.15 : 0.3" max="1.3" step="0.01" /></label></div></div>
     <p v-if="targetHint && !stretch" class="target-map-hint" role="status">{{ targetHint }}</p>
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
@@ -296,7 +271,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span v-if="tile.barrier && tile.type !== 'property'" class="barrier-marker" title="路障">🚧</span>
             <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong><span class="tile-name">{{ tile.name }}{{ tile.type === 'property' && hasPropertyEffects(tile) ? ' ✦' : '' }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
+            <strong><span class="tile-name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :style="{ '--owner-ink': tile.ownerId ? ownerTextColor(tile) : undefined }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
               <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
               <span class="tile-owner-name">{{ tile.ownerId ? tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>
@@ -358,6 +333,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
   </div>
 </template>
 <style scoped>
+.tile .tile-name.has-property-effects { color:#b17a16; font-weight:900; }
 .board-container { position:relative; }
 .board-local-feedback { position:absolute; inset:0; pointer-events:none; z-index:13; }
 .board-local-feedback .dice-overlay { position:absolute; gap:12px; background:#fff9ebb8; backdrop-filter:blur(2px); pointer-events:none; touch-action:auto; }
