@@ -161,16 +161,16 @@ public class RoomService {
             });
         } finally { publisher.remove(connectionId); }
     }
-    /** 每秒按有效连接修复真人在线标记，机器人无需浏览器连接，保留尚未回应的报价。 */
+    /** 每秒修复真人在线标记并处理到期房主交接，机器人无需浏览器连接，保留尚未回应的报价。 */
     @Scheduled(fixedDelay = 1000)
     public void refreshDisconnectedPlayers() {
         if (closing) return;
         for (Room value : rooms.values()) {
-            if (value.players.stream().anyMatch(p -> p.botDifficulty == null && p.online && !publisher.online(value.roomId, p.id))) {
+            if (engine.turns.hostTransferDue(value) || value.players.stream().anyMatch(p -> p.botDifficulty == null && p.online && !publisher.online(value.roomId, p.id))) {
                 try { serial(value.code, () -> {
                     Room candidate = json.copy(room(value.code), Room.class); boolean changed = false;
                     for (Player p : candidate.players) if (p.botDifficulty == null && p.online && !publisher.online(candidate.roomId, p.id)) { p.online = false; changed = true; HistoryTrace.event(candidate, "disconnected", p.id, "连接状态已修复为离线", null); }
-                    if (changed) commit(candidate, null); return null;
+                    if (changed || engine.turns.hostTransferDue(candidate)) commit(candidate, null); return null;
                 }); } catch (RuntimeException error) { LOG.error("离线状态恢复保存失败，房间 {}", value.code, error); }
             }
         }
@@ -337,7 +337,7 @@ public class RoomService {
             value.players.forEach(player -> player.online = false);
             String playerId = input.playerId == null ? value.hostId : input.playerId;
             if (GameSupport.player(value, playerId) == null || GameSupport.player(value, playerId).botDifficulty != null) throw new GameError("请选择保存点中的角色", "INVALID_INPUT");
-            value.hostId = playerId; engine.turns.refresh(value); SessionVo session = issue(value, playerId);
+            value.hostId = playerId; value.hostDisconnectedAt = null; engine.turns.refresh(value); SessionVo session = issue(value, playerId);
             session.token = tokens.restored(sourceArchiveCode, input.requestId, value.roomId);
             HistoryTrace.event(value, "restored", playerId, "从保存点创建恢复房间，等待分配角色", Map.of("sourceRoomId", sourceRoomId, "sourceSnapshotId", saved.snapshotId()));
             transaction.executeWithoutResult(status -> {

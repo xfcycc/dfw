@@ -39,6 +39,8 @@ public class Room {
     public String mapSize = "large";
     /** 房主标识。 */
     public String hostId;
+    /** 房主本次离线的开始时间，毫秒；重连或转交房主后清空。 */
+    public Long hostDisconnectedAt;
     /** 本局标识。 */
     public String gameId;
     /** 新局活动轮换快照，旧局为空。 */

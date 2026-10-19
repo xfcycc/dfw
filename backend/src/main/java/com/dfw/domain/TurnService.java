@@ -180,12 +180,23 @@ public class TurnService {
             default -> { }
         }
     }
-    /** 输入房间，维持机器人在线、仅向真人交接房主并更新断线暂停，保留待处理报价。 */
+    /** 输入房间，返回房主是否离线满六十秒且有在线真人可接任；恢复分配期间不转交。 */
+    public boolean hostTransferDue(Room room) {
+        if (room.recoveryPending || room.hostDisconnectedAt == null || System.currentTimeMillis() - room.hostDisconnectedAt < 60_000) return false;
+        Player host = player(room, room.hostId);
+        return host != null && !host.online && room.players.stream().anyMatch(p -> p.online && p.botDifficulty == null);
+    }
+    /** 输入房间，为离线房主保留六十秒重连时间，维持机器人在线并更新断线暂停，无返回值。 */
     public void refresh(Room room) {
         room.players.stream().filter(p -> p.botDifficulty != null).forEach(p -> p.online = true);
         if (room.recoveryPending) { room.pausedReason = "等待房主分配角色并继续对局"; return; }
         Player host = player(room, room.hostId);
-        if (host == null || !host.online || host.botDifficulty != null) room.players.stream().filter(p -> p.online && p.botDifficulty == null).findFirst().ifPresent(p -> room.hostId = p.id);
+        if (host != null && host.botDifficulty == null && !host.online) {
+            if (room.hostDisconnectedAt == null) room.hostDisconnectedAt = System.currentTimeMillis();
+        } else room.hostDisconnectedAt = null;
+        if (host == null || host.botDifficulty != null || hostTransferDue(room)) room.players.stream().filter(p -> p.online && p.botDifficulty == null).findFirst().ifPresent(p -> {
+            room.hostId = p.id; room.hostDisconnectedAt = null;
+        });
         if (!room.status.equals("playing")) { room.pausedReason = null; return; }
         Player actor = room.pending != null ? player(room, room.pending.playerId) : room.activity != null ? null : room.runtime != null && room.runtime.globalEvent != null ? null : current(room);
         Player offline = room.players.stream().filter(p -> !p.online && ((actor != null && p.id.equals(actor.id)) || (room.trade != null && p.id.equals(room.trade.toId)))).findFirst().orElse(null);
