@@ -5,7 +5,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
 import { isKamui, hasPropertyEffects, baseRentFor, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
 import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
-import { forgetSession, readSession, useGameStore } from '../stores/game';
+import { readSession, useGameStore } from '../stores/game';
 import { useTurnSound } from '../composables/useTurnSound';
 import { playSound } from '../audio';
 import AudioSettings from '../components/AudioSettings.vue';
@@ -279,7 +279,7 @@ const actionStatus = computed(() => {
   return labels[game.room?.phase ?? 'pre_roll'] ?? '等待行动';
 });
 
-/** 输入当前房间路由，恢复已有身份；新玩家等待主动加入，观战直接申请会话。 */
+/** 输入当前房间路由，保留原身份并重新连接；新玩家等待主动加入，观战直接申请会话。 */
 async function enter(): Promise<void> {
   const generation = ++entryGeneration;
   awaitingJoin.value = false; joining.value = false;
@@ -424,12 +424,6 @@ function selectPlayer(id: string): void {
 }
 /** 输入地图规模，通过原命令通道保存房主设置，选中状态由服务端快照更新。 */
 async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({ type: 'setMapSize', mapSize }); }
-/** 用户明确重新加入时删除失效会话，返回重新认证流程。 */
-async function resetSession(): Promise<void> {
-  forgetSession(code.value, props.spectator);
-  if (!props.spectator) forgetSession(code.value, true);
-  await enter();
-}
 </script>
 <template>
   <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
@@ -459,9 +453,9 @@ async function resetSession(): Promise<void> {
         <div class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink class="button secondary" :to="`/watch/${code}`">进入观战</RouterLink><button type="submit" class="button primary" :disabled="joining">{{ joining ? '正在加入…' : '加入房间' }}</button></div>
       </form>
     </main>
-    <main v-else-if="!game.room" class="loading-page"><div class="entry-icon">🎲</div><h2>{{ game.fatalError ? '暂时无法进入房间' : '正在打开你的城市…' }}</h2><p class="muted" role="status">{{ game.fatalError || '连接房间，恢复最新的棋盘和玩家信息。' }}</p><div v-if="game.fatalError" class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink v-if="!spectator" class="button primary" :to="`/watch/${code}`">进入观战</RouterLink><button class="button ghost" @click="resetSession">重新加入</button></div></main>
+    <main v-else-if="!game.room" class="loading-page"><div class="entry-icon">🎲</div><h2>{{ game.fatalError ? '暂时无法进入房间' : '正在打开你的城市…' }}</h2><p class="muted" role="status">{{ game.fatalError || '连接房间，恢复最新的棋盘和玩家信息。' }}</p><p v-if="game.fatalError && game.session?.playerId" class="muted">已保留你的玩家身份，重新连接会继续尝试恢复原座位。</p><div v-if="game.fatalError" class="button-row"><RouterLink class="button secondary" to="/">返回首页</RouterLink><RouterLink v-if="!spectator" class="button primary" :to="`/watch/${code}`">进入观战</RouterLink><button class="button ghost" @click="enter">重新连接</button></div></main>
     <main v-else>
-      <div v-if="game.connection !== 'online'" class="notice warning connection-notice">{{ game.fatalError || '网络连接已断开，正在自动重连。当前显示最后同步的局面。' }}<button v-if="game.connection === 'replaced'" class="button small secondary" @click="enter">在此页重新连接</button></div>
+      <div v-if="game.connection !== 'online'" class="notice warning connection-notice">{{ game.fatalError || '网络连接已断开，正在自动重连。当前显示最后同步的局面。' }}<button v-if="game.connection === 'offline' || game.connection === 'replaced'" class="button small secondary" @click="enter">在此页重新连接</button></div>
       <div v-if="game.room.pausedReason" class="notice warning connection-notice">Ⅱ <PlayerText :text="game.room.pausedReason" />。对局已保存，恢复后继续当前步骤。</div>
       <RecoverySeats v-if="!spectator" />
       <section v-if="isLobby" class="lobby-layout cottage-lobby" aria-label="房间大厅">

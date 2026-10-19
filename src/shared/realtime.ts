@@ -44,7 +44,7 @@ export class RealtimeClient {
   /** 输入事件与载荷，通知本地监听器。 */
   private dispatch(type: string, payload?: unknown): void { this.listeners.get(type)?.forEach(listener => listener(payload)); }
 
-  /** 建立连接，首条消息提交身份，认证成功后才允许发送命令。 */
+  /** 无入参，建立连接并提交原身份；临时保存失败继续重连，认证成功后才允许发送命令，无返回值。 */
   connect(): void {
     this.stopped = false; this.replaced = false;
     clearTimeout(this.retry);
@@ -70,8 +70,9 @@ export class RealtimeClient {
         this.replaced = true; this.connected = false; this.dispatch(message.type);
       } else {
         if (message.type === 'room:error' && !this.connected) {
-          this.stopped = true;
-          this.dispatch('connect_error', new Error((message.payload as CommandResult).error));
+          const result = message.payload as CommandResult;
+          this.stopped = result.code !== 'SAVE_FAILED';
+          this.dispatch('connect_error', new Error(result.error));
         }
         this.dispatch(message.type, message.payload);
       }

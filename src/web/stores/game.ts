@@ -60,11 +60,6 @@ export function rememberSession(value: Session): void {
   if (value.roomId) localStorage.setItem(`dfw:room-link:${value.code}`, value.roomId);
   if (value.roomId && value.archiveCode) rememberArchive({ roomId: value.roomId, code: value.code, archiveCode: value.archiveCode });
 }
-/** 输入房间号和会话种类，同时删除旧键与永久标识键，供显式重新加入。 */
-export function forgetSession(code: string, spectator: boolean): void {
-  const roomId = localStorage.getItem(`dfw:room-link:${code}`); if (roomId) localStorage.removeItem(sessionKey(roomId, spectator)); localStorage.removeItem(sessionKey(code, spectator));
-  if (!spectator) { localStorage.removeItem(sessionKey(code, true, true)); if (roomId) localStorage.removeItem(sessionKey(roomId, true, true)); }
-}
 
 export const useGameStore = defineStore('game', () => {
   const room = ref<PublicRoomState | null>(null);
