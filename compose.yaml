@@ -26,6 +26,12 @@ services:
       DB_URL: ${DB_URL:-jdbc:mysql://mysql:3306/dfw?characterEncoding=UTF-8&connectionTimeZone=UTC&allowPublicKeyRetrieval=true&sslMode=DISABLED}
       DB_USERNAME: ${DB_USERNAME:-dfw}
       DB_PASSWORD: ${DB_PASSWORD:?请设置 DB_PASSWORD}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_ENABLED: ${DEEPSEEK_ENABLED:-true}
+      DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-flash}
+      DEEPSEEK_AUDIT_PATH: /app/data/deepseek-calls.jsonl
+    volumes:
+      - bot-model-data:/app/data
     ports:
       - "127.0.0.1:3001:3001"
     init: true
@@ -37,3 +43,4 @@ services:
       retries: 3
 volumes:
   mysql-data:
+  bot-model-data:

@@ -34,6 +34,7 @@ public class RoomService {
     private final GameEngine engine;
     private final GameWorkflow workflow;
     private final TransactionTemplate transaction;
+    private final BotDialogueService botDialogue;
     private final Map<String, Room> rooms = new ConcurrentHashMap<>();
     private final Map<String, ReentrantLock> locks = new ConcurrentHashMap<>();
     /** 各机器人失败的等待点；聊天或连接更新不清除保守兜底。 */
@@ -41,9 +42,11 @@ public class RoomService {
     private volatile boolean closing;
     /** 输入持久化与联机端口，批量恢复房间；真人等待重连，机器人恢复服务端在线状态。 */
     public RoomService(RoomRepository repository, StatePublisher publisher, JsonCodec json, SessionTokens tokens, RandomSource random,
-            GameWorkflow workflow, TransactionTemplate transaction, RuleSet rules, EconomyRules economyRules, MapRegions regions, ArchiveRepository archives) {
+            GameWorkflow workflow, TransactionTemplate transaction, RuleSet rules, EconomyRules economyRules, MapRegions regions, ArchiveRepository archives,
+            BotDialogueService botDialogue) {
         this.repository = repository; this.publisher = publisher; this.json = json; this.tokens = tokens; this.random = random;
         this.archives = archives;
+        this.botDialogue = botDialogue;
         this.workflow = workflow; this.transaction = transaction; engine = new GameEngine(random, rules, economyRules, regions);
         List<Room> restored = repository.loadRooms(); workflow.verifyRecovery(restored); archives.initialize(restored);
         for (Room room : restored) {
@@ -186,19 +189,39 @@ public class RoomService {
     public void advanceBots() {
         if (closing) return;
         for (Room snapshot : rooms.values()) {
-            if (!snapshot.status.equals("playing") || snapshot.recoveryPending || snapshot.pausedReason != null || snapshot.players.stream().noneMatch(p -> p.botDifficulty != null && !p.bankrupt)) continue;
+            if (!snapshot.status.equals("playing") || snapshot.recoveryPending || snapshot.pausedReason != null || snapshot.players.stream().noneMatch(p -> p.botDifficulty != null && !p.bankrupt)) {
+                botDialogue.suspend(snapshot); continue;
+            }
             try { serial(snapshot.code, () -> {
                 Room latest = room(snapshot.code);
                 if (closing || !latest.status.equals("playing") || latest.recoveryPending || latest.pausedReason != null) return null;
+                BotDialogueService.Poll dialogue = botDialogue.poll(latest);
+                if (dialogue.waiting()) return null;
+                if (dialogue.selection() != null) {
+                    BotDialogueService.Selection selected = dialogue.selection();
+                    try {
+                        if (selected.action() != null || selected.message() != null) applyBot(latest, selected.botId(), selected.action(), selected.message(), selected.confirmed());
+                        botDialogue.applied(selected, selected.action() == null && selected.message() == null ? "silent" : "committed");
+                        if (selected.action() != null) botFallbackDecisions.remove(selected.botId());
+                    } catch (RuntimeException error) {
+                        boolean persisted = room(latest.code).version > latest.version;
+                        if (!persisted && selected.action() != null) botFallbackDecisions.put(selected.botId(), latest.gameId + ":" + latest.runtime.decisionKey);
+                        botDialogue.applied(selected, persisted ? "committed_broadcast_failed" : "commit_failed");
+                        LOG.warn("机器人对话或议价处理失败，房间 {}，是否已提交 {}", latest.code, persisted);
+                    }
+                    return null;
+                }
                 if (latest.activity != null && latest.activity.endsAt != null && latest.pending == null) return null;
+                if (botDialogue.chat(latest)) return null;
                 String required = latest.trade != null ? latest.trade.toId : latest.pending != null ? latest.pending.playerId : latest.activity == null ? GameSupport.current(latest).id : null;
                 PublicRoomVo visible = StateViews.publicRoom(latest);
                 for (Player bot : latest.players) if (bot.botDifficulty != null && !bot.bankrupt && (required == null || required.equals(bot.id))) {
                     String decision = latest.gameId + ":" + latest.runtime.decisionKey;
                     boolean conservative = Objects.equals(botFallbackDecisions.get(bot.id), decision);
                     Action action;
+                    BotPlanner planner;
                     try {
-                        BotPlanner planner = new BotPlanner(visible, StateViews.privatePlayer(latest, bot.id), bot.botTradeQuotes, conservative);
+                        planner = new BotPlanner(visible, StateViews.privatePlayer(latest, bot.id), bot.botTradeQuotes, conservative);
                         long alive = latest.players.stream().filter(p -> !p.bankrupt).count();
                         action = planner.next(bot.botTradeTurn >= 0 && latest.turnNumber - bot.botTradeTurn <= alive);
                     } catch (RuntimeException error) {
@@ -207,6 +230,7 @@ public class RoomService {
                         break;
                     }
                     if (action == null) continue;
+                    if (!conservative && botDialogue.trade(latest, bot, action, planner)) break;
                     try { applyBot(latest, bot.id, action); botFallbackDecisions.remove(bot.id); }
                     catch (GameError error) {
                         // 失败事务的事实随本轮 capture 丢弃，下一轮再提交兜底，避免历史混入未发生操作。
@@ -221,11 +245,26 @@ public class RoomService {
     }
     /** 输入最新房间、机器人身份与意图，在房间锁内提交单步行动，失败不替换正式快照。 */
     private void applyBot(Room latest, String actorId, Action action) {
+        applyBot(latest, actorId, action, null, false);
+    }
+    /** 输入行动和安全话术，在同一事务内提交交易、确认标记与聊天；未提交交易时绝不广播承诺。 */
+    private void applyBot(Room latest, String actorId, Action action, String message, boolean confirmed) {
         Room value = json.copy(latest, Room.class);
-        String quote = action.type.equals("tradeOffer") ? BotPlanner.quoteKey(StateViews.publicRoom(latest), action) : null;
+        String quote = action != null && action.type.equals("tradeOffer") ? BotPlanner.quoteKey(StateViews.publicRoom(latest), action) : null;
         transaction.executeWithoutResult(status -> {
-            HistoryTrace.event(value, action.type, actorId, actionText(action.type), action);
-            workflow.apply(value, engine, actorId, action);
+            if (action != null) {
+                HistoryTrace.event(value, action.type, actorId, actionText(action.type), action);
+                workflow.apply(value, engine, actorId, action);
+            }
+            if (confirmed && quote != null) {
+                if (value.trade == null || !actorId.equals(value.trade.fromId)) throw new IllegalStateException("报价未建立，不能确认成交条件");
+                value.trade.botConfirmed = true;
+            }
+            if (message != null) {
+                Action speech = new Action(); speech.type = "chat";
+                speech.message = message.length() <= 300 ? message : confirmed ? "我确认这份交易条件，正式报价已发出，请在交易面板核对完整明细后确认。" : "这组条件还需讨论，请在交易面板发出明确报价，当前没有成交。";
+                workflow.apply(value, engine, actorId, speech);
+            }
             if (quote != null) {
                 Player bot = GameSupport.player(value, actorId); bot.botTradeTurn = value.turnNumber;
                 bot.botTradeQuotes.put(quote, value.turnNumber);

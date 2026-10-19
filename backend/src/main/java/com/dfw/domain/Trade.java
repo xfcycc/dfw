@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Trade {
+    /** 机器人已随正式报价原子确认条件；不因模型超时、重评分或重启而撤销。 */
+    public boolean botConfirmed;
     /** 报价标识。 */
     public String id;
     /** 发起人。 */

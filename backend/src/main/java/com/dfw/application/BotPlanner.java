@@ -16,13 +16,13 @@ public final class BotPlanner {
     private final double reserve;
     private final Map<String, Double> reserves = new HashMap<>();
     private final Map<String, double[]> futureValues = new HashMap<>();
-    private final Set<String> previousQuotes;
+    private final Map<String, Integer> previousQuotes;
     private final boolean conservative;
 
     /** 输入安全投影、本人报价记忆与降级标记；保守模式跳过策略计算，正常模式预计算有界前瞻。 */
     public BotPlanner(PublicRoomVo state, PrivatePlayerVo own, Map<String, Integer> previousQuotes, boolean conservative) {
         this.state = state; this.own = own; me = person(own.playerId);
-        this.previousQuotes = Set.copyOf(previousQuotes.keySet()); this.conservative = conservative;
+        this.previousQuotes = Map.copyOf(previousQuotes); this.conservative = conservative;
         horizon = switch (me.botDifficulty) { case "easy" -> 1; case "hard" -> 6; default -> 3; };
         economics.economy = state.economy;
         if (conservative) { reserve = 0; return; }
@@ -88,15 +88,7 @@ public final class BotPlanner {
     /** 输入报价频率和保守标记，先防御再付款；抵押筹款不足时选择卖房或整售，避免误申请清算。 */
     private Action payment(boolean offered, boolean conservative) {
         PendingDecision debt = state.pending;
-        if (!debt.defenseResolved) {
-            Action a = action("paymentDefense"); a.decisionId = debt.id; double best = 0;
-            for (Card c : own.hand) {
-                double saving = c.kind.equals("immunity") && debt.type.equals("rent") ? debt.amount : c.kind.equals("halfPayment") ? debt.amount / 2 : 0;
-                double score = saving - (conservative || me.cash < debt.amount ? 0 : keepValue(c) * .5);
-                if (score > best) { best = score; a.cardId = c.id; }
-            }
-            return a;
-        }
+        if (!debt.defenseResolved) return paymentDefense(debt);
         if (me.cash >= debt.amount) return action("payDebt");
         if (!offered && !conservative && debt.creditorId != null) { Action trade = offer(); if (trade != null) return trade; }
         /*
@@ -118,10 +110,62 @@ public final class BotPlanner {
         return action("declareBankruptcy");
     }
 
+    /** 输入当前费用，比较减免、支付后现金安全与留牌成本；均能安全支付时优先消耗保留成本较低的牌。 */
+    private Action paymentDefense(PendingDecision debt) {
+        Action a = action("paymentDefense"); a.decisionId = debt.id;
+        double best = 0, bestCost = Double.POSITIVE_INFINITY;
+        double safety = conservative ? 0 : Math.min(reserve, me.cash * .25);
+        boolean bestSafe = false;
+        for (Card c : own.hand) {
+            long saving = c.kind.equals("immunity") && debt.type.equals("rent") ? debt.amount : c.kind.equals("halfPayment") ? debt.amount / 2 : 0;
+            if (saving <= 0) continue;
+            long copies = own.hand.stream().filter(card -> card.kind.equals(c.kind)).count();
+            double cost = conservative ? 0 : keepValue(c) / Math.sqrt(copies);
+            if (own.hand.size() >= (me.handLimit == null ? 6 : me.handLimit)) cost *= .8;
+            double urgency = Math.max(0, Math.min(1, (safety - me.cash + debt.amount) / Math.max(1, safety)));
+            cost *= 1 - urgency * .85;
+            double after = me.cash - debt.amount + saving;
+            double relief = Math.max(0, safety - me.cash + debt.amount) - Math.max(0, safety - after);
+            double score = conservative || me.cash < debt.amount ? saving : saving + relief * .75 - cost;
+            if (score <= 0) continue;
+            boolean safe = after >= safety;
+            boolean better = safe == bestSafe && (safe && cost < bestCost || (!safe || cost == bestCost) && score > best);
+            if (a.cardId == null || safe && !bestSafe || better) {
+                best = score; bestCost = cost; bestSafe = safe; a.cardId = c.id;
+            }
+        }
+        return a;
+    }
+
     /** 输入本人收到的报价，使用与主动报价相同的现金、排名及交易后连片评分决定是否接受。 */
     private boolean acceptTrade(Trade t) { return tradeScore(t, me) >= tradeMargin(t, me); }
 
-    /** 无入参，枚举买卖、互换和抵债，按同一评估挑选本人有收益且对方可能接受的一份报价。 */
+    /** 输入对方、明确引用的地产及现金候选，返回通过惜售和现金校验的有限报价；主动报价另受动机约束。 */
+    public List<Action> dialogueOffers(String otherId, List<Integer> tileIds, List<Long> prices, boolean proactive) {
+        PublicPlayerVo other = person(otherId);
+        if (conservative || other.bankrupt || !other.online || other.id.equals(me.id)) return List.of();
+        Action assets = trade(otherId);
+        List<Tile> tiles = tileIds.stream().distinct().filter(id -> id >= 0 && id < state.board.size()).map(state.board::get)
+                .filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)).toList();
+        if (tiles.size() != tileIds.stream().distinct().count()) return List.of();
+        assets.giveTiles = tiles.stream().filter(t -> me.id.equals(t.ownerId)).map(t -> t.id).toList();
+        assets.wantTiles = tiles.stream().filter(t -> otherId.equals(t.ownerId)).map(t -> t.id).toList();
+        if (tiles.isEmpty() || assets.giveTiles.size() + assets.wantTiles.size() != tiles.size()) return List.of();
+        Map<String, Action> result = new LinkedHashMap<>();
+        for (long price : prices) if (price >= 0) for (boolean pay : new boolean[] {true, false}) {
+            if (pay && assets.wantTiles.isEmpty() || !pay && assets.giveTiles.isEmpty()) continue;
+            Action candidate = trade(otherId); candidate.giveTiles = assets.giveTiles; candidate.wantTiles = assets.wantTiles;
+            if (pay) candidate.giveCash = price; else candidate.wantCash = price;
+            Trade t = quote(candidate); double gain = tradeScore(t, me);
+            if (gain >= (proactive ? offerMargin(t) : tradeMargin(t, me)) && (!proactive || !repeated(candidate) && tradeMotive(t, gain)))
+                result.putIfAbsent(quoteKey(state, candidate), candidate);
+        }
+        Action suggested = negotiate(assets, other, false);
+        if (suggested != null) result.putIfAbsent(quoteKey(state, suggested), suggested);
+        return result.values().stream().limit(4).toList();
+    }
+
+    /** 无入参，枚举买卖、互换和抵债，仅挑选有明确动机、收益足够且对方可能接受的一份报价。 */
     private Action offer() {
         Action best = null; double bestGain = startIncome() * .025;
         boolean debt = state.pending != null && Set.of("rent", "debt").contains(state.pending.type);
@@ -154,7 +198,7 @@ public final class BotPlanner {
         return best;
     }
 
-    /** 输入交换资产、对方及是否抵债，围绕双方基础估值和综合评分的中点试算有限价格，返回最佳可接受报价。 */
+    /** 输入交换资产、对方及是否抵债，试算有限价格，返回符合主动交易动机及双方评分的最佳报价。 */
     private Action negotiate(Action assets, PublicPlayerVo other, boolean credit) {
         Trade base = quote(assets);
         double mine = tradeScore(base, me), theirs = tradeScore(base, other);
@@ -177,9 +221,27 @@ public final class BotPlanner {
             else candidate.wantCash = price;
             if (repeated(candidate)) continue;
             Trade t = quote(candidate); double gain = tradeScore(t, me);
-            if (gain >= tradeMargin(t, me) && gain > bestGain && tradeScore(t, other) >= tradeMargin(t, other)) { best = candidate; bestGain = gain; }
+            if (gain >= offerMargin(t) && gain > bestGain && tradeMotive(t, gain) && tradeScore(t, other) >= tradeMargin(t, other)) { best = candidate; bestGain = gain; }
         }
         return best;
+    }
+
+    /** 输入报价，返回高于被动接受要求的主动报价收益门槛；当前欠款筹资沿用较低门槛。 */
+    private double offerMargin(Trade t) {
+        boolean debt = state.pending != null && me.id.equals(state.pending.playerId) && t.debtId != null;
+        double paid = t.giveCash + tileValues(t.giveTiles, me.id);
+        return Math.max(tradeMargin(t, me), Math.max(startIncome() * (debt ? .025 : .12), paid * (debt ? .02 : .08)));
+    }
+
+    /** 输入报价及综合收益，只为补现金缺口、改善连片或收入、明显高收益的机会主动交易。 */
+    private boolean tradeMotive(Trade t, double gain) {
+        double shortage = Math.max(0, paymentNeed(me) - me.cash);
+        if (shortage > 0 && cashChange(t, me) + t.debtCredit > 0) return true;
+        if (clusterValue(me, t) - clusterValue(me, null) >= startIncome() * .08) return true;
+        double incomeGain = rentalIncome(me, t) - rentalIncome(me, null);
+        if (me.cash + cashChange(t, me) >= reserve && incomeGain >= Math.max(startIncome() * .04, rentalIncome(me, null) * .15)) return true;
+        double assets = t.giveCash + tileValues(t.giveTiles, me.id) + tileValues(t.wantTiles, me.id);
+        return gain >= Math.max(startIncome() * .3, assets * .18);
     }
 
     /** 输入报价与评估者，综合本人收益、对方收益及双方排名变化；现金不足时返回不可接受分数。 */
@@ -199,7 +261,7 @@ public final class BotPlanner {
         return mine - Math.max(0, theirs) * threat * tradeWeight(actor, .02, .08, .18) - rankCost;
     }
 
-    /** 输入报价与一方，返回现金、地产、抵债、资金压力及连片变化带来的主观收益，不改变实际资产或租金。 */
+    /** 输入报价与一方，返回现金、地产、抵债、资金压力、连片及失去核心收入的主观收益。 */
     private double tradeBenefit(Trade t, PublicPlayerVo actor) {
         boolean from = actor.id.equals(t.fromId);
         double property = tileValues(from ? t.wantTiles : t.giveTiles, actor.id) - tileValues(from ? t.giveTiles : t.wantTiles, actor.id);
@@ -207,7 +269,26 @@ public final class BotPlanner {
         double beforeNeed = paymentNeed(actor), afterNeed = beforeNeed;
         if (state.pending != null && actor.id.equals(state.pending.playerId) && Objects.equals(t.debtId, state.pending.id)) afterNeed -= t.debtCredit;
         double liquidity = (Math.max(0, beforeNeed - actor.cash) - Math.max(0, afterNeed - actor.cash - cashChange(t, actor))) * tradeWeight(actor, .3, .7, 1.1);
-        return cashChange(t, actor) + property + debt + liquidity + clusterValue(actor, t) - clusterValue(actor, null);
+        return cashChange(t, actor) + property + debt + liquidity + clusterValue(actor, t) - clusterValue(actor, null) - retentionCost(t, actor);
+    }
+
+    /** 输入玩家及可选报价，返回公开地产的预计租金总收入，抵押和冻结地产不计入。 */
+    private double rentalIncome(PublicPlayerVo actor, Trade t) {
+        return state.board.stream().filter(tile -> ownedAfter(tile, actor.id, t)).mapToDouble(tile -> rent(tile, tile.level) * traffic(tile, actor.id)).sum();
+    }
+
+    /** 输入报价与持有人，按失去的收入占比和高租金计算惜售补偿；换回收入资产、资金紧张时降低代价。 */
+    private double retentionCost(Trade t, PublicPlayerVo actor) {
+        boolean from = actor.id.equals(t.fromId);
+        List<Integer> give = from ? t.giveTiles : t.wantTiles, want = from ? t.wantTiles : t.giveTiles;
+        double before = rentalIncome(actor, null), lostIncome = Math.max(0, before - rentalIncome(actor, t));
+        double totalRent = state.board.stream().filter(tile -> actor.id.equals(tile.ownerId)).mapToDouble(tile -> rent(tile, tile.level)).sum();
+        double lostRent = Math.max(0, give.stream().mapToDouble(id -> rent(state.board.get(id), state.board.get(id).level)).sum()
+                - want.stream().mapToDouble(id -> rent(state.board.get(id), state.board.get(id).level)).sum());
+        double share = Math.max(lostIncome / Math.max(1, before), lostRent / Math.max(1, totalRent));
+        double capital = Math.max(0, tileValues(give, actor.id) - tileValues(want, actor.id));
+        return (capital * share * tradeWeight(actor, .15, .4, .6) + lostRent * tradeWeight(actor, .25, .7, 1)
+                + lostIncome * tradeWeight(actor, .3, .8, 1.2)) * (1 - cashPressure(actor) * .85);
     }
 
     /** 输入玩家与可选报价，按交易前后真实相邻地产计算策略价值；特殊格中断，抵押地产折减，不增加实际租金。 */
@@ -220,7 +301,7 @@ public final class BotPlanner {
             result += Math.min(current.price, next.price) * active;
             if (ownedAfter(previous, actor.id, t)) result += Math.min(previous.price, Math.min(current.price, next.price)) * active * (previous.mortgaged ? .175 : .5);
         }
-        return result * tradeWeight(actor, .04, .12, .24);
+        return result * tradeWeight(actor, .06, .18, .3);
     }
 
     /** 输入地产、玩家与可选报价，判断交易后归属；仅查看本次报价列明的地产与公开产权。 */
@@ -553,17 +634,23 @@ public final class BotPlanner {
     private double tileValues(List<Integer> ids, String owner) { return ids.stream().mapToDouble(id -> value(state.board.get(id), owner)).sum(); }
     /** 输入玩家，返回其公开实力对策略的影响权重。 */
     private double threat(PublicPlayerVo p) { return horizon == 1 ? .35 : .4 + .4 * Math.min(2, p.netWorth / (double) Math.max(1, me.netWorth)); }
-    /** 输入本人卡牌，根据用途、金额及稀缺性返回保留的机会价值。 */
+    /** 输入本人卡牌，根据用途、金额及稀缺性返回保留价值；防御卡同时考虑公开地产的下一级租金风险。 */
     private double keepValue(Card c) {
         double base = startIncome() * .25;
         return switch (c.kind) {
             case "cash" -> parameter(c, "amount", 0);
-            case "immunity" -> Math.max(base, state.board.stream().filter(t -> t.ownerId != null && !me.id.equals(t.ownerId)).mapToDouble(t -> rent(t, t.level)).max().orElse(0) * .6);
-            case "halfPayment", "release", "remote" -> base * 1.5;
+            case "immunity", "halfPayment" -> defenseKeepValue(c);
+            case "release", "remote" -> base * 1.5;
             case "freeUpgrade", "fullUpgrade" -> Math.max(base, state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && !t.mortgaged && t.level < Rules.MAX_LEVEL).mapToDouble(t -> upgradeValue(t, c.kind.equals("fullUpgrade") ? Rules.MAX_LEVEL : t.level + 1)).max().orElse(0));
             case "fullDemolish" -> Math.max(base, state.board.stream().filter(t -> t.ownerId != null && !me.id.equals(t.ownerId) && t.level > 0).mapToDouble(t -> value(t, t.ownerId) - valueAtLevel(t, t.ownerId, 0)).max().orElse(0));
             default -> base;
         };
+    }
+    /** 输入本人防御卡，返回经济规模及当前、可升级地产租金形成的保留价值；减半卡保留通用费用用途。 */
+    private double defenseKeepValue(Card c) {
+        double risk = state.board.stream().filter(t -> t.ownerId != null && !me.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t))
+                .mapToDouble(t -> Math.max(rent(t, t.level), rentWhenActive(t, Math.min(Rules.MAX_LEVEL, t.level + 1)) * .6)).max().orElse(0);
+        return c.kind.equals("immunity") ? Math.max(startIncome() * .5, risk * .8) : Math.max(startIncome() * .35, risk * .4);
     }
     /** 输入已公开的赌博参数，依据期望收益和现金储备决定是否承担下注。 */
     private boolean gamble(ContentResult c) { return bet(parameter(c, "wager", 0), parameter(c, "prize", 0) * parameter(c, "probability", 0) / 100.0); }
@@ -583,8 +670,15 @@ public final class BotPlanner {
     private static Action tileAction(String type, int tile) { Action a = action(type); a.tileId = tile; return a; }
     /** 输入接收人，返回默认零现金与空地产列表的合法报价容器。 */
     private static Action trade(String to) { Action a = action("tradeOffer"); a.toId = to; a.giveCash = 0L; a.wantCash = 0L; a.giveTiles = List.of(); a.wantTiles = List.of(); a.debtCredit = 0L; return a; }
-    /** 输入候选报价，仅与本人已发报价比较，屏蔽同一接收人、条件和资产状态的重复报价。 */
-    private boolean repeated(Action action) { return previousQuotes.contains(quoteKey(state, action)); }
+    /** 输入候选报价，屏蔽完全重复报价，并在三轮内屏蔽同一对象和地产状态的换价重报。 */
+    private boolean repeated(Action action) {
+        String key = quoteKey(state, action);
+        if (previousQuotes.containsKey(key)) return true;
+        long interval = state.players.stream().filter(p -> !p.bankrupt).count() * 3;
+        String assets = key.substring(key.indexOf('|'));
+        return previousQuotes.entrySet().stream().anyMatch(entry -> state.turnNumber - entry.getValue() <= interval
+                && entry.getKey().startsWith(action.toId + ":") && entry.getKey().substring(entry.getKey().indexOf('|')).equals(assets));
+    }
     /** 输入安全公开局面和报价，返回与随机数、聊天和房间版本无关的报价条件键。 */
     public static String quoteKey(PublicRoomVo state, Action action) {
         StringBuilder key = new StringBuilder().append(action.toId).append(':').append(action.giveCash).append(':').append(action.wantCash).append(':').append(action.debtCredit);
