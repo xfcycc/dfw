@@ -110,3 +110,9 @@
   .card-reveal-modal .card-reveal-footer .button { width: auto; min-width: 100px; }
   .card-reveal-modal .card-reveal-close { top: 12px; right: 12px; }
 }
+
+/* 经典布局复用原面板演出：标题在上，卡面居中，操作在下。 */
+.card-reveal-embedded .card-reveal-caption { display: contents; }
+.card-reveal-embedded .card-reveal-heading { order: 0; }
+.card-reveal-embedded .card-reveal-viewport { order: 1; }
+.card-reveal-embedded .card-reveal-footer { order: 2; }

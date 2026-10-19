@@ -162,3 +162,12 @@
   .modern-room.game-session.desktop-single-screen .immersive-board .workbench-center { padding: 5px; }
   .modern-room.desktop-single-screen .workbench-actions { gap: 4px; }
 }
+
+/* 两种布局共用工具栏，窄屏保留易点按的布局图标。 */
+.modern-room .game-utilities .layout-toggle { display: inline-flex; align-items: center; justify-content: center; gap: 5px; background: linear-gradient(#fff8e7, #f2dfbb); border-color: #d5b884; color: #806344; }
+.layout-toggle svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.8; }
+.classic-workbench-slot { display: contents; }
+@media (max-width: 480px) {
+  .modern-room .game-utilities .layout-toggle { min-width: 32px; padding: 4px; }
+  .layout-toggle span { display: none; }
+}

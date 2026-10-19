@@ -15,7 +15,7 @@ import { activityArt } from '../activity-art';
 import { playSound } from '../audio';
 import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
-const props = defineProps<{ room: PublicRoomState; dashboardTarget?: string; statusTarget?: string; diceTarget?: string; desktopDice?: boolean; spectator?: boolean; spectatorFollow?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; incomingTrade?: Trade | null; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
+const props = defineProps<{ room: PublicRoomState; classicLayout?: boolean; dashboardTarget?: string; statusTarget?: string; diceTarget?: string; desktopDice?: boolean; spectator?: boolean; spectatorFollow?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; incomingTrade?: Trade | null; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; live?: boolean; presentationEpoch?: number }>();
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string]; view: [mode: 'follow' | 'landscape'] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
@@ -36,7 +36,7 @@ let lastViewportHeight = 0;
 let followFrame = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
-const desktopSingleScreen = computed(() => !!props.stretch && !props.spectator && !props.dashboardTarget);
+const desktopSingleScreen = computed(() => !!props.stretch && !props.classicLayout && !props.spectator && !props.dashboardTarget);
 /** 输入地图格数和可用宽高，桌面按长方形排布闭环，返回行列数；不改变格号顺序。 */
 const dimensions = computed(() => {
   const standard = boardDimensions(props.room.board.length);
@@ -261,7 +261,7 @@ function fitBoard(): void {
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
 }
 // 输入布局、观战模式与地图规模变化，重新测量可用区域。
-watch([() => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length, following], async () => {
+watch([() => props.classicLayout, () => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length, following], async () => {
   fullMap.value = false; lastWidth = 0;
   await nextTick(); resizeBoard();
 }, { flush: 'post' });

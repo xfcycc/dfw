@@ -99,8 +99,18 @@ const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
 const dashboardView = ref<HTMLElement>();
+const classicLayout = ref(localStorage.getItem('dfw:room-layout') === 'classic');
+/** 无入参，切换布局并记住本机偏好，不改变对局或当前行动，无返回值。 */
+function toggleLayout(): void { classicLayout.value = !classicLayout.value; localStorage.setItem('dfw:room-layout', classicLayout.value ? 'classic' : 'single'); }
+const classicMobileQuery = window.matchMedia('(max-width: 800px), (max-width: 1000px) and (max-height: 500px)');
+const classicMobileViewport = ref(classicMobileQuery.matches);
+/** 输入经典布局的屏幕匹配结果，更新其手机断点，无返回值。 */
+function updateClassicViewport(event: MediaQueryListEvent): void { classicMobileViewport.value = event.matches; }
+classicMobileQuery.addEventListener('change', updateClassicViewport);
+onBeforeUnmount(() => classicMobileQuery.removeEventListener('change', updateClassicViewport));
 const mobileQuery = window.matchMedia('(max-width: 1100px), (max-height: 579px)');
-const mobileViewport = ref(mobileQuery.matches);
+const singleMobileViewport = ref(mobileQuery.matches);
+const mobileViewport = computed(() => classicLayout.value ? classicMobileViewport.value : singleMobileViewport.value);
 const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow' : 'landscape');
 const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
 const detachedDashboard = computed(() => spectatorFollowing.value || !props.spectator && mobileViewport.value);
@@ -109,7 +119,7 @@ const workbenchTab = ref<'cards' | 'ranking'>('cards');
 function openMobileWorkbench(section: 'cards' | 'ranking'): void { workbenchTab.value = section; modal.value = 'workbench'; }
 watch(detachedDashboard, mobile => { if (!mobile && (modal.value === 'workbench' || modal.value === 'more')) modal.value = null; });
 /** 输入可用视口匹配结果，在窄屏或低高度时切换紧凑布局；浏览器缩放与横竖屏切换沿用同一份游戏面板，无返回值。 */
-function updateMobileViewport(event: MediaQueryListEvent): void { mobileViewport.value = event.matches; }
+function updateMobileViewport(event: MediaQueryListEvent): void { singleMobileViewport.value = event.matches; }
 mobileQuery.addEventListener('change', updateMobileViewport);
 onBeforeUnmount(() => mobileQuery.removeEventListener('change', updateMobileViewport));
 const selectedDefense = ref('');
@@ -163,7 +173,7 @@ const decisionTitle = computed(() => payment.value ? '选择支付方式' : choi
 const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
 const handCount = computed(() => game.privateData?.hand.length ?? 0);
 /** 根据桌面布局与手牌数量返回当前页，每页三张；移动端保留完整手牌。 */
-const pagedHand = computed(() => isSingleScreen.value && !props.spectator && !detachedDashboard.value);
+const pagedHand = computed(() => !classicLayout.value && isSingleScreen.value && !props.spectator && !detachedDashboard.value);
 const handPage = ref(0);
 const handPages = computed(() => Math.max(2, Math.ceil(handCount.value / 3)));
 const visibleHand = computed(() => pagedHand.value ? game.privateData?.hand.slice(handPage.value * 3, handPage.value * 3 + 3) : game.privateData?.hand);
@@ -435,7 +445,7 @@ function selectPlayer(id: string): void {
 async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({ type: 'setMapSize', mapSize }); }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'desktop-single-screen': isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'classic-layout': classicLayout, 'desktop-single-screen': !classicLayout && isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
@@ -445,6 +455,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <button v-if="spectator && !spectatorFollowing" type="button" class="button" @click="switchSpectatorView('follow')">跟随模式</button>
         <button v-if="spectator" type="button" class="button spectator-fullscreen" :aria-pressed="fullscreenActive && !spectatorFollowing" @click="switchSpectatorView(fullscreenActive && !spectatorFollowing ? 'follow' : 'landscape')">{{ fullscreenActive && !spectatorFollowing ? '退出横屏' : '横屏模式' }}</button>
         <AudioSettings class="room-audio-control" />
+        <button v-if="!spectator" type="button" class="button layout-toggle" :aria-label="classicLayout ? '切换为单屏布局' : '切换为经典布局'" :title="classicLayout ? '当前经典布局，点击切换单屏布局' : '当前单屏布局，点击切换经典布局'" :aria-pressed="classicLayout" @click="toggleLayout"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path :d="classicLayout ? 'M3 14h18M14 4v10' : 'M9 4v16M16 4v16M9 14h7'"/></svg><span>{{ classicLayout ? '经典' : '单屏' }}</span></button>
         <button class="button game-tools-trigger" aria-label="打开游戏工具" aria-haspopup="dialog" @click="modal = 'tools'">
           <svg viewBox="0 0 32 32" aria-hidden="true"><path d="m13 4 1-2h4l1 2 3 2 3-.2 2 3-1 3v4l1 3-2 3-3-.2-3 2-1 3h-4l-1-3-3-2-3 .2-2-3 1-3v-4l-1-3 2-3 3 .2Z" /><circle cx="16" cy="14.5" r="5" /></svg>
           工具
@@ -491,7 +502,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board ref="board" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board ref="board" :classic-layout="classicLayout" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <template v-if="game.me && !spectator && !game.settling && !boardAnimating">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card' && (!mapTargeting || mapConfirmOpen)" @click="switchTargetMode(false); modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
@@ -505,7 +516,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                 <dl v-if="game.me && !spectator" class="turn-wallet" aria-label="我的资产概况"><div v-if="game.me.assetRank" class="turn-wallet-rank" :title="`净资产排名：第${game.me.assetRank}名`"><dt class="sr-only">我的排名</dt><dd><ChibiLettering kind="rank" :rank="game.me.assetRank" /></dd></div><div><dt class="sr-only">我的现金</dt><dd><CashBalance :presentation-epoch="game.presentationEpoch" :room="game.room" :player-id="game.me.id" :live="game.connection === 'online' && !game.room.recoveryPending" /></dd></div><div class="turn-wallet-worth"><dt class="sr-only">我的净资产</dt><dd><AssetStatIcon kind="worth" /><span>{{ game.me.netWorth === undefined ? '—' : `¥${game.me.netWorth.toLocaleString()}` }}</span></dd></div></dl>
               </template>
               <template #controls>
-                <FitPanel :disabled="detachedDashboard || spectator || isSingleScreen">
+                <FitPanel :disabled="detachedDashboard || spectator || isSingleScreen && !classicLayout">
                 <div class="dashboard-scroll">
                   <ActivityDialog :paused="boardAnimating || game.settling || !!game.cardReveals.length" :spectator="spectator" />
                   <div v-if="game.room.status === 'finished' || game.me?.bankrupt" class="hub-finish">
@@ -517,7 +528,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
+                      <Teleport to="#mobile-card-reveal" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :embedded="classicLayout" :paused="boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
                       <Teleport to="#desktop-hand-chat" :disabled="!pagedHand" defer>
@@ -528,6 +539,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <Teleport :to="detachedDashboard && !spectator ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard || spectator" defer>
                       <aside class="dashboard-ranking workspace-panel"><PanelFrame variant="ranking" ornament="right" /><div class="workspace-heading"><div><h2>资产排行</h2></div><span class="workspace-count">{{ game.room.players.filter(p => !p.bankrupt).length }} 人</span></div><PublicLeaderboard compact :room="game.room" :me-id="game.me?.id" :can-remove="game.isHost && !spectator" :busy="game.busy" @select="selectTile" @remove="game.act({ type: 'removePlayer', playerId: $event })" /></aside>
                       </Teleport>
+                      <div id="classic-workbench" v-show="classicLayout" class="classic-workbench-slot"></div>
                     </aside>
                   </div>
                   <Teleport :to="detachedDashboard ? '#mobile-workbench-cards' : 'body'" :disabled="!detachedDashboard" defer>
@@ -538,6 +550,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 
                   <div v-show="pagedHand" id="desktop-hand-chat" class="desktop-hand-chat"></div>
 
+                  <Teleport to="#classic-workbench" :disabled="!classicLayout" defer>
                   <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
                     <PanelFrame variant="workbench" ornament="right" />
                     <div class="workbench-actions">
@@ -549,6 +562,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       </template>
                     </div>
                   </section>
+                  </Teleport>
                 </div>
                 </FitPanel>
               </template>

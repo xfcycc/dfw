@@ -5,7 +5,7 @@ import CardFrame from './CardFrame.vue';
 import Modal from './Modal.vue';
 import type { CardReveal } from '../stores/game';
 import { useGameStore } from '../stores/game';
-const props = defineProps<{ paused?: boolean; preview?: CardReveal }>();
+const props = defineProps<{ paused?: boolean; embedded?: boolean; preview?: CardReveal }>();
 const emit = defineEmits<{ close: [] }>();
 const game = useGameStore();
 const reveal = computed(() => props.preview ?? game.cardReveals[0]);
@@ -21,7 +21,7 @@ function dismiss(): void {
   if (props.preview) emit('close');
   else game.dismissCardReveal();
 }
-/** 输入揭卡标识和暂停状态，全屏展示原揭卡动画；事件与已用道具六秒后关闭，新获道具由玩家收起，无返回值。 */
+/** 输入揭卡标识和暂停状态，按布局在新鲜事或全屏展示原揭卡动画；事件与已用道具六秒后关闭，新获道具由玩家收起，无返回值。 */
 watch([() => reveal.value?.key, () => props.paused], ([key, paused], _, onCleanup) => {
   if (!key || paused) return;
   shownKey.value = key;
@@ -53,8 +53,8 @@ watch([viewport, stage], ([area, card], _, onCleanup) => {
 }, { flush: 'post' });
 </script>
 <template>
-  <Modal v-if="reveal && (shownKey === reveal.key || !paused)" :open="!paused" :title="`${reveal.actor} · ${title}`" hide-heading panel-class="card-reveal-modal" @close="dismiss">
-  <section :key="reveal.key" class="card-reveal-panel card-reveal-split" :class="[`reveal-${reveal.content.rarity ?? 'R'}`, { 'card-draw-reveal': !preview && reveal.mode === 'draw' }]" :style="{ visibility: paused ? 'hidden' : undefined }" :inert="paused" :aria-hidden="paused" :aria-label="`${reveal.actor} · ${title}`" tabindex="-1" @keydown.esc.stop="dismiss">
+  <component :is="embedded ? 'div' : Modal" v-if="reveal && (shownKey === reveal.key || !paused)" :open="!paused" :title="`${reveal.actor} · ${title}`" hide-heading panel-class="card-reveal-modal" @close="dismiss">
+  <section :key="reveal.key" class="card-reveal-panel" :class="[`reveal-${reveal.content.rarity ?? 'R'}`, { 'card-reveal-split': !embedded, 'card-reveal-embedded': embedded, 'card-draw-reveal': !preview && reveal.mode === 'draw' }]" :style="{ visibility: paused ? 'hidden' : undefined }" :inert="paused" :aria-hidden="paused" :aria-label="`${reveal.actor} · ${title}`" tabindex="-1" @keydown.esc.stop="dismiss">
     <div class="card-reveal-content">
     <button class="icon-button card-reveal-close" :aria-label="dismissLabel" @click="dismiss">✕</button>
     <div class="card-reveal-particles" aria-hidden="true"><i v-for="index in 18" :key="index" :style="{ '--x': `${(index * 37) % 100}%`, '--delay': `${(index % 7) * -.4}s` }"></i></div>
@@ -62,9 +62,9 @@ watch([viewport, stage], ([area, card], _, onCleanup) => {
     <div ref="viewport" class="card-reveal-viewport"><div class="card-reveal-fit" :style="{ width: `${cardSize.width}px`, height: `${cardSize.height}px` }"><div ref="stage" class="card-reveal-stage" :style="{ transform: `scale(${cardSize.scale})` }"><div v-if="!preview && reveal.mode === 'draw'" class="card-draw-back" aria-hidden="true"><CardFrame :rarity="reveal.content.rarity" /><div class="card-surface"><span class="card-back-label">{{ isItem ? '道具卡' : reveal.content.pool === 'chance' ? '机会卡' : '财富卡' }}</span></div></div><ContentCard :content="reveal.content" /></div></div></div>
     <aside class="card-reveal-caption">
     <div class="card-reveal-heading"><h3>{{ title }}</h3><p>{{ `${reveal.actor}${reveal.mode === 'play' ? ' 使用了这张道具' : ' 抽到了这张卡'}` }}</p></div>
-    <div class="card-reveal-footer"><button class="button primary" @click="dismiss">{{ !preview && game.cardReveals.length > 1 ? `下一张 · 还有 ${game.cardReveals.length - 1} 张` : `${dismissLabel} →` }}</button></div>
+    <div v-if="!embedded || isItem || preview" class="card-reveal-footer"><button class="button primary" @click="dismiss">{{ !preview && game.cardReveals.length > 1 ? `下一张 · 还有 ${game.cardReveals.length - 1} 张` : `${dismissLabel} →` }}</button></div>
     </aside>
     </div>
   </section>
-  </Modal>
+  </component>
 </template>
