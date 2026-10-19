@@ -43,6 +43,10 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
 
 <style scoped>
 .modal-backdrop { padding: 24px; background: #52614980; backdrop-filter: blur(5px); }
+/* 卡牌演出与历史回看共用全屏外壳，复用焦点约束及关闭行为。 */
+.modal-backdrop:has(> .card-reveal-modal) { padding: 0; z-index: 200; background: #3b30294d; backdrop-filter: blur(12px) saturate(.8); -webkit-backdrop-filter: blur(12px) saturate(.8); }
+.modal.chibi-modal.card-reveal-modal { width: 100%; height: 100dvh; max-height: 100dvh; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.card-reveal-modal > .modal-content { flex: 1; position: relative; margin: 0; padding: 0; overflow: hidden; scrollbar-gutter: auto; }
 /* 公共外壳覆盖各页面旧的白色弹框，内容与业务操作仍由原组件承载。 */
 .modal.chibi-modal { --dialog-padding: 24px; display: flex; flex-direction: column; min-width: 0; width: min(100%, 520px); max-height: calc(100dvh - 48px); overflow: hidden; padding: var(--dialog-padding); border: 3px solid #cfb58e; border-radius: 30px; background: #fff9eb; color: #705a43; box-shadow: inset 0 0 0 5px #fffdf5, 0 7px 0 #9c7c4e38, 0 24px 70px #43361c30; }
 /* 滚动限制在正文内，给圆角边框及内容焦点、按钮阴影留出间距。 */

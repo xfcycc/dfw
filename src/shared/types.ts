@@ -161,7 +161,7 @@ export interface Trade {
 export interface PlayerMention { id?: string; name: string; color: string }
 /** 显式 @ 引用；UTF-16 偏移对应消息正文，发送后对应含发送者前缀的公开文案。 */
 export interface ChatReference { start: number; end: number; playerId?: string; tileId?: number; color?: string }
-export interface PublicLog { type?: string; actorId?: string; references?: ChatReference[]; mentions?: PlayerMention[]; id: string; text: string; at: number }
+export interface PublicLog { content?: ContentResult | null; type?: string; actorId?: string; references?: ChatReference[]; mentions?: PlayerMention[]; id: string; text: string; at: number }
 /** 服务端记录的棋盘演出事实，外观与位移只用于展示，不重新计算结算。 */
 export interface BoardEffect {
   kind: 'swap' | 'swapAny' | 'shuffle' | 'gravity' | 'kamui' | 'kamuiRelease' | 'blackhole' | 'meteor' | 'tornado'
@@ -259,7 +259,7 @@ export interface SeatClaim { id: string; playerId: string; name: string; at: num
 export interface ArchiveSnapshot { snapshotId: string; gameId: string | null; version: number; turnNumber: number; at: number; status: string; manual: boolean; label: string | null; restorable: boolean; restoreError: string | null; state: PublicRoomState | null }
 export interface ArchiveGame { gameId: string | null; firstAt: number; lastAt: number; turnNumber: number; snapshots: number }
 export interface RoomArchive { roomId: string; archiveCode: string; code: string; sourceArchiveCode: string | null; sourceSnapshotId: string | null; latest: ArchiveSnapshot; games: ArchiveGame[]; bookmarks: ArchiveSnapshot[]; nextCursor: number | null }
-export interface HistoryEntry { references?: ChatReference[]; mentions?: PlayerMention[]; logId?: string | null; sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
+export interface HistoryEntry { content?: ContentResult | null; references?: ChatReference[]; mentions?: PlayerMention[]; logId?: string | null; sequence: number; snapshotId: string; gameId: string | null; version: number; turnNumber: number | null; phase: string | null; actorId: string | null; actorName: string | null; type: string; text: string; at: number }
 export interface HistoryPage { entries: HistoryEntry[]; nextCursor: number | null }
 /** 服务端操作结果。 */
 export interface CommandResult { ok: boolean; version?: number; error?: string; code?: string }

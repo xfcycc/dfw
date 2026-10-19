@@ -41,7 +41,7 @@ const artwork = computed(() => {
     <CardFrame :rarity="content.rarity" />
     <div class="card-surface">
       <div class="card-artwork">
-        <svg class="card-illustration" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
+        <svg class="card-illustration" :preserveAspectRatio="thumbnail ? 'xMidYMid slice' : 'xMidYMid meet'" :viewBox="artwork.viewBox" :width="artwork.width" :height="artwork.height" aria-hidden="true"><image :href="artwork.source" :width="artwork.sourceWidth" :height="artwork.sourceHeight" /></svg>
         <ShinraCardScene v-if="shinraAnimated" />
         <UrCardScene v-else-if="urScene" :key="urScene.skinId" :scene="urScene" />
         <span v-else-if="content.rarity === 'UR' && animated !== false" class="ur-card-light" aria-hidden="true"><i v-for="spark in 6" :key="spark" :style="{ '--spark': spark }"></i></span>

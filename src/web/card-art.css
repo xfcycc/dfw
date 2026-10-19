@@ -76,3 +76,37 @@
 @keyframes card-foil { 0% { opacity: 0; transform: translateX(-120%); } 35% { opacity: .6; } 100% { opacity: 0; transform: translateX(120%); } }
 @keyframes card-spark { from { opacity: 0; transform: translateY(0) rotate(0); } 20% { opacity: .8; } to { opacity: 0; transform: translateY(-400px) rotate(180deg); } }
 @media (prefers-reduced-motion: reduce) { .card-reveal-stage .illustrated-card, .card-draw-reveal .card-reveal-stage .illustrated-card, .card-reveal-stage::before, .card-reveal-stage::after, .card-reveal-particles i { animation: none; } .card-reveal-particles, .card-draw-back { display: none; } }
+
+/* 桌面左侧保留完整卡面，右侧集中展示获得提示与收起操作。 */
+.card-reveal-split .card-reveal-content { display: grid; grid-template-columns: minmax(0, 1fr) 110px; grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 10px; align-items: stretch; }
+.card-reveal-split .card-reveal-viewport { grid-column: 1; grid-row: 1 / 3; height: 100%; margin: 0; }
+.card-reveal-split .card-reveal-heading { grid-column: 2; grid-row: 1; align-self: end; padding: 0; }
+.card-reveal-split .card-reveal-heading h3 { font-size: 18px; margin-bottom: 10px; }
+.card-reveal-split .card-reveal-heading p { font-size: 14px; line-height: 1.6; overflow-wrap: anywhere; }
+.card-reveal-split .card-reveal-footer { grid-column: 2; grid-row: 2; align-self: start; }
+.card-reveal-split .card-reveal-footer .button { width: 100%; min-width: 0; padding: 8px 6px; font-size: 14px; }
+.card-reveal-split .card-description, .card-reveal-split .content-effect { font-size: 18px; line-height: 1.5; }
+.card-reveal-split .card-copy blockquote { font-size: 16px; line-height: 1.5; }
+
+/* 透出棋盘的磨砂舞台；卡面与旁侧提示组成紧凑的一组。 */
+.card-reveal-modal .card-reveal-panel { background: transparent; }
+.card-reveal-modal .card-reveal-content { inset: 28px max(24px, calc((100vw - 700px) / 2)); padding: 12px; grid-template-columns: minmax(0, 1fr) 220px; grid-template-rows: minmax(0, 1fr); gap: 28px; }
+.card-reveal-modal .card-reveal-viewport { grid-row: 1; justify-items: end; }
+.card-reveal-caption { grid-column: 2; grid-row: 1; align-self: center; display: flex; flex-direction: column; gap: 22px; padding: 24px 20px; border: 1px solid #fff8e5b3; border-radius: 22px; background: linear-gradient(135deg, #fffaf0ed, #fff4e0d6); box-shadow: inset 0 1px 0 #ffffffc9, 0 12px 36px #30221c24; backdrop-filter: blur(16px); }
+.card-reveal-modal .card-reveal-heading { align-self: stretch; text-align: left; }
+.card-reveal-modal .card-reveal-footer { align-self: stretch; }
+.card-reveal-modal .card-reveal-heading h3 { font-size: 22px; margin: 0 0 10px; color: #715237; }
+.card-reveal-modal .card-reveal-heading p { font-size: 14px; line-height: 1.75; color: #8b7056; }
+.card-reveal-modal .card-reveal-caption .card-reveal-footer .button.primary { width: 100%; font-size: 14px; min-height: 42px; border-color: color-mix(in srgb, var(--reveal-color) 55%, #d6be94); background: linear-gradient(#fffaf0, color-mix(in srgb, var(--reveal-color) 18%, #fff4df)); color: #705238; box-shadow: inset 0 1px 0 #fff, 0 2px 0 #70523820; }
+.card-reveal-modal .card-reveal-close { position: fixed; top: 20px; right: 24px; width: 36px; height: 36px; background: #fff8e5dc; border-color: #fff5dfc4; }
+@media (max-width: 700px) {
+  .card-reveal-modal .card-reveal-content { inset: 12px; padding: 10px; display: flex; gap: 12px; }
+  .card-reveal-modal .card-reveal-viewport { height: auto; justify-items: center; }
+  .card-reveal-caption { flex-shrink: 0; width: min(100%, 420px); flex-direction: row; align-items: center; gap: 16px; padding: 12px 16px; border-radius: 16px; }
+  .card-reveal-modal .card-reveal-heading { flex: 1; min-width: 0; }
+  .card-reveal-modal .card-reveal-heading h3 { font-size: 18px; margin: 0 0 4px; }
+  .card-reveal-modal .card-reveal-heading p { font-size: 12px; margin: 0; }
+  .card-reveal-modal .card-reveal-footer { align-self: center; }
+  .card-reveal-modal .card-reveal-footer .button { width: auto; min-width: 100px; }
+  .card-reveal-modal .card-reveal-close { top: 12px; right: 12px; }
+}

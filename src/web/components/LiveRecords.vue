@@ -2,8 +2,8 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
 import type { HistoryEntry, HistoryPage, PublicLog, PublicRoomState } from '../../shared/types';
 import { postJson } from '../http';
-import PlayerText from './PlayerText.vue';
 import ChatText from './ChatText.vue';
+import CardRecordText from './CardRecordText.vue';
 const props = defineProps<{ room: PublicRoomState; token?: string; compact?: boolean; journal?: boolean; chatOnly?: boolean; active?: boolean }>();
 const emit = defineEmits<{ tile: [id: number] }>();
 const stored = ref(new Map<number, HistoryEntry>());
@@ -26,7 +26,7 @@ const rows = computed(() => {
   const ids = new Set(history.map(entry => entry.logId).filter(Boolean));
   const legacy = new Set(history.filter(entry => !entry.logId).map(entry => `${entry.at}:${entry.text}`));
   const live = [...streamed.value.values()].filter(entry => !ids.has(entry.id) && !legacy.has(`${entry.at}:${entry.text}`));
-  return [...history.map(entry => ({ id: `history-${entry.sequence}`, at: entry.at, text: entry.text, type: entry.type, mentions: entry.mentions, references: entry.references })), ...live].sort((a, b) => a.at - b.at).filter(entry => (!props.chatOnly || entry.type === 'chat') && entry.text.includes(search.value.trim()));
+  return [...history.map(entry => ({ id: `history-${entry.sequence}`, at: entry.at, text: entry.text, type: entry.type, actorId: entry.actorId, actorName: entry.actorName, content: entry.content, mentions: entry.mentions, references: entry.references })), ...live.map(entry => ({ ...entry, actorName: undefined }))].sort((a, b) => a.at - b.at).filter(entry => (!props.chatOnly || entry.type === 'chat') && entry.text.includes(search.value.trim()));
 });
 /** 输入是否翻页，读取本局完整公开动态；头页更新与旧页合并，不清空已查记录。 */
 async function load(more = false): Promise<void> {
@@ -93,7 +93,7 @@ onBeforeUnmount(() => { generation++; clearTimeout(timer); resizeObserver?.disco
     <p v-if="error" class="notice warning">{{ error }}。已同步动态仍可查阅。</p>
     <div ref="feed" class="live-record-feed" @scroll="observeScroll">
       <button v-if="cursor != null" class="button secondary full" :disabled="loading" @click="load(true)">加载更早的本局记录</button>
-    <article v-for="entry in rows" :key="entry.id" class="live-record-row" :class="{ 'chat-record': entry.type === 'chat' }"><time>{{ new Date(entry.at).toLocaleTimeString('zh-CN') }}</time><small v-if="entry.type === 'chat'" class="chat-record-tag">聊天</small><p><ChatText v-if="entry.type === 'chat'" :text="entry.text" :references="entry.references" :players="entry.mentions?.length ? entry.mentions : room.players" interactive @tile="emit('tile', $event)" /><PlayerText v-else :text="entry.text" :players="entry.mentions?.length ? entry.mentions : room.players" /></p></article>
+    <article v-for="entry in rows" :key="entry.id" class="live-record-row" :class="{ 'chat-record': entry.type === 'chat' }"><time>{{ new Date(entry.at).toLocaleTimeString('zh-CN') }}</time><small v-if="entry.type === 'chat'" class="chat-record-tag">聊天</small><p><ChatText v-if="entry.type === 'chat'" :text="entry.text" :references="entry.references" :players="entry.mentions?.length ? entry.mentions : room.players" interactive @tile="emit('tile', $event)" /><CardRecordText v-else :actor-id="entry.actorId" :actor-name="entry.actorName" :content="entry.content" :text="entry.text" :players="entry.mentions?.length ? entry.mentions : room.players" /></p></article>
     <p v-if="!rows.length" class="muted">{{ loading ? '正在读取动态…' : chatOnly ? '还没有聊天消息。' : '没有匹配的记录。' }}</p>
     </div>
     <button v-if="!following" class="latest-record-button" @click="scrollLatest">回到最新动态 ↓</button>

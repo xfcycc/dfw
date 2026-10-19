@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { imageUrl } from '../image-assets';
-const props = defineProps<{ count: number; limit?: number | null }>();
-/** 输入当前手牌数量和服务端上限，保留原六个卡位中未占用的位置；超限整理时不遮住已有手牌。 */
+const props = defineProps<{ count: number; limit?: number | null; page?: number }>();
+/** 输入当前手牌数量和服务端上限，保留原六个卡位中未占用的位置；可选页码仅展示该页三个卡位；超限整理时不遮住已有手牌。 */
 const slots = computed(() => Array.from({ length: Math.max(0, 6 - props.count) }, (_, index) => {
   const position = props.count + index + 1;
   return { position, sealed: position > (props.limit ?? 6) };
-}));
+}).filter(slot => props.page === undefined || Math.floor((slot.position - 1) / 3) === props.page));
 </script>
 
 <template>

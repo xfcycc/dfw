@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class HistoryEntryVo {
+    /** 当时公开的原卡牌展示快照，旧记录或私人事件缺省为空。 */
+    public com.dfw.domain.ContentResult content;
     /** 聊天中显式选中的引用，旧记录缺省为空。 */
     public java.util.List<com.dfw.domain.ChatReference> references = new java.util.ArrayList<>();
     /** 记录中当时玩家的公开标记，旧记录缺省为空。 */

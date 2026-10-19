@@ -142,9 +142,11 @@ public class MysqlArchiveRepository implements ArchiveRepository {
             String detail = rs.getString("details");
             if (detail != null && Set.of("log", "card_used", "chat").contains(entry.type)) {
                 Map<?, ?> publicDetail = json.read(detail, Map.class); Object id = publicDetail.get("logId"); if (id instanceof String logId) entry.logId = logId;
+                if (publicDetail.get("content") instanceof Map<?, ?> content) entry.content = GameSupport.publicCardContent(json.read(json.write(content), ContentResult.class));
                 if (publicDetail.get("mentions") instanceof List<?> mentions) entry.mentions = List.of(json.read(json.write(mentions), PlayerMention[].class));
                 if (publicDetail.get("references") instanceof List<?> references) entry.references = List.of(json.read(json.write(references), ChatReference[].class));
             }
+            if (detail != null && "event_drawn".equals(entry.type)) entry.content = GameSupport.publicCardContent(json.read(detail, ContentResult.class));
             return entry;
         }, params.toArray());
         if (page.entries.size() > 50) { page.entries.removeLast(); page.nextCursor = page.entries.getLast().sequence; } return page;

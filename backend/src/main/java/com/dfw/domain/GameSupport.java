@@ -16,12 +16,32 @@ public final class GameSupport {
     }
     /** 输入公开文案及已校验引用，同时保存快照与历史；引用偏移相对于完整文案，无返回值。 */
     private static void log(Room room, String type, String actorId, String text, List<ChatReference> references) {
+        log(room, type, actorId, text, references, null);
+    }
+    /** 输入公开事件及冻结卡面，保存可回看的公开展示字段，无返回值。 */
+    public static void contentLog(Room room, String type, String actorId, String text, ContentResult content) {
+        log(room, type, actorId, text, List.of(), publicCardContent(content));
+    }
+    /** 输入内容结果，返回公开卡面副本；私人补给及内部判定参数不对外返回。 */
+    public static ContentResult publicCardContent(ContentResult content) {
+        if (content == null || content.privateSupply) return null;
+        ContentResult copy = new ContentResult();
+        copy.id = content.id; copy.pool = content.pool; copy.kind = content.kind; copy.skinId = content.skinId;
+        copy.name = content.name; copy.rarity = content.rarity; copy.cardType = content.cardType;
+        copy.quote = content.quote; copy.description = content.description; copy.effect = content.effect;
+        return copy;
+    }
+    /** 输入日志及已脱敏卡面，一并冻结到快照和历史记录，无返回值。 */
+    private static void log(Room room, String type, String actorId, String text, List<ChatReference> references, ContentResult content) {
         SettlementService.observe(room);
         PublicLog entry = new PublicLog(); entry.id = UUID.randomUUID().toString(); entry.type = type; entry.text = text; entry.at = System.currentTimeMillis();
-        entry.actorId = actorId; entry.references = references;
+        entry.actorId = actorId; entry.references = references; entry.content = content;
         for (Player player : room.players) if (text.contains(player.name)) { PlayerMention mention = new PlayerMention(); mention.id = player.id; mention.name = player.name; mention.color = player.color; entry.mentions.add(mention); }
         room.logs.add(0, entry); if (room.logs.size() > 100) room.logs.removeLast();
-        HistoryTrace.event(room, type, actorId, text, Map.of("logId", entry.id, "mentions", entry.mentions, "references", entry.references));
+        Map<String, Object> details = new LinkedHashMap<>();
+        details.put("logId", entry.id); details.put("mentions", entry.mentions); details.put("references", entry.references);
+        if (content != null) details.put("content", content);
+        HistoryTrace.event(room, type, actorId, text, details);
     }
     /** 输入发送者及聊天参数，冻结有效目标和正文位置；失效或已被编辑的引用按普通文字保存，无返回值。 */
     public static void chatLog(Room room, Player actor, Action action) {
@@ -62,7 +82,7 @@ public final class GameSupport {
         played.name = card.name; played.rarity = card.rarity; played.cardType = card.cardType;
         played.quote = card.quote; played.description = card.description; played.effect = effect;
         room.runtime.playedCard = played; room.runtime.playedCardPlayerId = owner.id;
-        log(room, "card_used", owner.id, owner.name + " 使用道具「" + (card.name == null ? switch (card.kind) { case "remote" -> "遥控骰子"; case "barrier" -> "路障"; case "stay" -> "停留"; case "immunity" -> "免租"; case "demolish" -> "拆房"; case "swap" -> "换位"; default -> card.kind; } : card.name) + "」；目标：" + aim + "；效果：" + effect);
+        contentLog(room, "card_used", owner.id, owner.name + " 使用道具「" + (card.name == null ? switch (card.kind) { case "remote" -> "遥控骰子"; case "barrier" -> "路障"; case "stay" -> "停留"; case "immunity" -> "免租"; case "demolish" -> "拆房"; case "swap" -> "换位"; default -> card.kind; } : card.name) + "」；目标：" + aim + "；效果：" + effect, played);
     }
     /** 输入起点、目标格和棋盘格数，返回沿环形棋盘前后两个方向的最短格距。 */
     public static int nearbyDistance(int from, int to, int size) {

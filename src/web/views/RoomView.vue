@@ -50,6 +50,7 @@ import '../archive.css';
 import '../modern-room.css';
 import '../lobby-room.css';
 import '../responsive-room.css';
+import '../desktop-room.css';
 
 const props = withDefaults(defineProps<{ spectator?: boolean }>(), { spectator: false });
 const route = useRoute();
@@ -98,7 +99,7 @@ const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
 const dashboardView = ref<HTMLElement>();
-const mobileQuery = window.matchMedia('(max-width: 800px), (max-width: 1000px) and (max-height: 500px)');
+const mobileQuery = window.matchMedia('(max-width: 1100px), (max-height: 579px)');
 const mobileViewport = ref(mobileQuery.matches);
 const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow' : 'landscape');
 const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
@@ -107,7 +108,7 @@ const workbenchTab = ref<'cards' | 'ranking'>('cards');
 /** 输入手牌或排行区域，打开手机更多菜单对应的详情，无返回值。 */
 function openMobileWorkbench(section: 'cards' | 'ranking'): void { workbenchTab.value = section; modal.value = 'workbench'; }
 watch(detachedDashboard, mobile => { if (!mobile && (modal.value === 'workbench' || modal.value === 'more')) modal.value = null; });
-/** 输入屏幕匹配结果，更新手机布局；横竖屏切换沿用同一份游戏面板，无返回值。 */
+/** 输入可用视口匹配结果，在窄屏或低高度时切换紧凑布局；浏览器缩放与横竖屏切换沿用同一份游戏面板，无返回值。 */
 function updateMobileViewport(event: MediaQueryListEvent): void { mobileViewport.value = event.matches; }
 mobileQuery.addEventListener('change', updateMobileViewport);
 onBeforeUnmount(() => mobileQuery.removeEventListener('change', updateMobileViewport));
@@ -161,6 +162,14 @@ const hasCentralDecision = computed(() => !game.settling && game.canDecide && !g
 const decisionTitle = computed(() => payment.value ? '选择支付方式' : choice.value ? choice.value.content?.name ?? '处理当前选择' : game.room?.pending?.type === 'choice' ? '处理当前选择' : game.room?.phase === 'buy' ? '购买地产' : '升级建筑');
 const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
 const handCount = computed(() => game.privateData?.hand.length ?? 0);
+/** 根据桌面布局与手牌数量返回当前页，每页三张；移动端保留完整手牌。 */
+const pagedHand = computed(() => isSingleScreen.value && !props.spectator && !detachedDashboard.value);
+const handPage = ref(0);
+const handPages = computed(() => Math.max(2, Math.ceil(handCount.value / 3)));
+const visibleHand = computed(() => pagedHand.value ? game.privateData?.hand.slice(handPage.value * 3, handPage.value * 3 + 3) : game.privateData?.hand);
+/** 输入剩余页数，卡牌减少时将页码收回有效范围，无返回值。 */
+watch(handPages, pages => { handPage.value = Math.min(handPage.value, pages - 1); });
+
 const liveSelectedTile = computed(() => selectedTile.value ? game.room?.board[selectedTile.value.id] : null);
 const selectedTileOwner = computed(() => game.room?.players.find(player => player.id === liveSelectedTile.value?.ownerId));
 /** 根据详情地产及当前付款状态，返回本人是否可抵押或赎回；沿用资产页的归属、时机和现金限制。 */
@@ -426,7 +435,7 @@ function selectPlayer(id: string): void {
 async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({ type: 'setMapSize', mapSize }); }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'desktop-single-screen': isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
@@ -496,7 +505,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                 <dl v-if="game.me && !spectator" class="turn-wallet" aria-label="我的资产概况"><div v-if="game.me.assetRank" class="turn-wallet-rank" :title="`净资产排名：第${game.me.assetRank}名`"><dt class="sr-only">我的排名</dt><dd><ChibiLettering kind="rank" :rank="game.me.assetRank" /></dd></div><div><dt class="sr-only">我的现金</dt><dd><CashBalance :presentation-epoch="game.presentationEpoch" :room="game.room" :player-id="game.me.id" :live="game.connection === 'online' && !game.room.recoveryPending" /></dd></div><div class="turn-wallet-worth"><dt class="sr-only">我的净资产</dt><dd><AssetStatIcon kind="worth" /><span>{{ game.me.netWorth === undefined ? '—' : `¥${game.me.netWorth.toLocaleString()}` }}</span></dd></div></dl>
               </template>
               <template #controls>
-                <FitPanel :disabled="detachedDashboard || spectator">
+                <FitPanel :disabled="detachedDashboard || spectator || isSingleScreen">
                 <div class="dashboard-scroll">
                   <ActivityDialog :paused="boardAnimating || game.settling || !!game.cardReveals.length" :spectator="spectator" />
                   <div v-if="game.room.status === 'finished' || game.me?.bankrupt" class="hub-finish">
@@ -508,36 +517,38 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <Teleport to="#mobile-card-reveal" :disabled="!detachedDashboard || spectator" defer>
-                        <div class="mobile-city-reveal"><CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" /></div>
-                      </Teleport>
+                      <CardReveal :paused="boardAnimating || game.settling && !game.settlementRevealing" />
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
+                      <Teleport to="#desktop-hand-chat" :disabled="!pagedHand" defer>
                       <ChatComposer v-if="!spectator" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊，输入 @ 提及玩家或地块…'" />
+                      </Teleport>
                     </section>
                     <aside class="dashboard-sidebar">
                       <Teleport :to="detachedDashboard && !spectator ? '#mobile-workbench-ranking' : 'body'" :disabled="!detachedDashboard || spectator" defer>
                       <aside class="dashboard-ranking workspace-panel"><PanelFrame variant="ranking" ornament="right" /><div class="workspace-heading"><div><h2>资产排行</h2></div><span class="workspace-count">{{ game.room.players.filter(p => !p.bankrupt).length }} 人</span></div><PublicLeaderboard compact :room="game.room" :me-id="game.me?.id" :can-remove="game.isHost && !spectator" :busy="game.busy" @select="selectTile" @remove="game.act({ type: 'removePlayer', playerId: $event })" /></aside>
                       </Teleport>
-                      <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
-                        <PanelFrame variant="workbench" ornament="right" />
-                        <div class="workbench-actions">
-                          <button type="button" class="button workbench-action" :aria-label="`我的资产，${owned.length} 处地产`" :title="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><WorkbenchActionArt action="assets" /></button>
-                          <template v-if="!game.me.bankrupt && game.room.status === 'playing'">
-                            <button type="button" class="button workbench-action" :disabled="!canTrade && !game.privateData?.trade" aria-label="交易" title="交易" @click="modal = 'trade'"><WorkbenchActionArt action="trade" /></button>
-                            <button type="button" class="button workbench-action" data-dice-roll :disabled="!canRoll" aria-label="掷骰" title="掷骰" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
-                            <button type="button" class="button workbench-action" :disabled="!canEndTurn" aria-label="结束行动" title="结束行动" @click="game.act({ type: 'endTurn' })"><WorkbenchActionArt action="endTurn" /></button>
-                          </template>
-                        </div>
-                      </section>
-
                     </aside>
                   </div>
                   <Teleport :to="detachedDashboard ? '#mobile-workbench-cards' : 'body'" :disabled="!detachedDashboard" defer>
-                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail" :class="{ 'has-sealed-slots': (game.me.handLimit ?? 6) < 6 }"><button v-for="card in game.privateData?.hand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><HandSlots :count="handCount" :limit="game.me.handLimit" /></div></template>
+                  <section v-if="!spectator" class="dashboard-cards workspace-panel" aria-label="我的手牌"><PanelFrame variant="cards" /><div v-if="game.privateData?.activeCardUsed" class="workspace-heading"><span class="workspace-count">本回合已使用</span></div><template v-if="game.me && !spectator"><div class="dashboard-card-rail" :class="{ 'has-sealed-slots': (game.me.handLimit ?? 6) < 6 }"><button v-for="card in visibleHand" :key="card.id" class="dashboard-hand-card" :class="{ 'is-drafting': drafting && selectedCard?.id === card.id }" :aria-label="`${drafting && selectedCard?.id === card.id ? '继续使用' : '使用'}卡牌 ${card.name ?? ITEMS[card.kind].name}`" @click="chooseCard(card)"><ContentCard :content="card" compact thumbnail /><span v-if="drafting && selectedCard?.id === card.id" class="hand-card-in-use" aria-hidden="true">使用中</span></button><HandSlots :count="handCount" :limit="game.me.handLimit" :page="pagedHand ? handPage : undefined" /></div>
+                      <div v-if="pagedHand" class="hand-pagination"><nav aria-label="手牌翻页"><button class="button secondary small" :disabled="handPage === 0" aria-label="上一页手牌" @click="handPage--">←</button><span aria-live="polite">{{ handPage + 1 }} / {{ handPages }}</span><button class="button secondary small" :disabled="handPage === handPages - 1" aria-label="下一页手牌" @click="handPage++">→</button></nav></div></template>
                       <p v-else class="workspace-caption">手牌仅本人可见</p><p v-if="detachedDashboard && !handCount" class="workspace-caption">暂无手牌</p></section>
                   </Teleport>
 
+                  <div v-show="pagedHand" id="desktop-hand-chat" class="desktop-hand-chat"></div>
+
+                  <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
+                    <PanelFrame variant="workbench" ornament="right" />
+                    <div class="workbench-actions">
+                      <button type="button" class="button workbench-action" :aria-label="`我的资产，${owned.length} 处地产`" :title="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><WorkbenchActionArt action="assets" /></button>
+                      <template v-if="!game.me.bankrupt && game.room.status === 'playing'">
+                        <button type="button" class="button workbench-action" :disabled="!canTrade && !game.privateData?.trade" aria-label="交易" title="交易" @click="modal = 'trade'"><WorkbenchActionArt action="trade" /></button>
+                        <button type="button" class="button workbench-action" data-dice-roll :disabled="!canRoll" aria-label="掷骰" title="掷骰" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
+                        <button type="button" class="button workbench-action" :disabled="!canEndTurn" aria-label="结束行动" title="结束行动" @click="game.act({ type: 'endTurn' })"><WorkbenchActionArt action="endTurn" /></button>
+                      </template>
+                    </div>
+                  </section>
                 </div>
                 </FitPanel>
               </template>

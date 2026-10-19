@@ -7,6 +7,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PublicLog {
+    /** 当时公开的原卡牌展示快照，旧记录或私人事件缺省为空。 */
+    public com.dfw.domain.ContentResult content;
     /** 公开记录类型，旧快照可缺省；chat 表示玩家对话。 */
     public String type;
     /** 聊天发送者身份，旧记录可缺省。 */

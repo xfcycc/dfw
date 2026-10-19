@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import { boardDimensions, DISTRICTS, districtName, hasPropertyEffects, rentFor, ruleMoney, tileCoordinates } from '../../shared/rules';
+import { boardDimensions, DISTRICTS, districtName, hasPropertyEffects, rentFor, ruleMoney, tileCoordinates as standardTileCoordinates } from '../../shared/rules';
 import type { ActivityKind, PublicPlayer, PublicRoomState, Tile, Trade } from '../../shared/types';
 import City from './City.vue';
 import CharacterPawn from './CharacterPawn.vue';
@@ -36,14 +36,33 @@ let lastViewportHeight = 0;
 let followFrame = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
-const dimensions = computed(() => boardDimensions(props.room.board.length));
+const desktopSingleScreen = computed(() => !!props.stretch && !props.spectator && !props.dashboardTarget);
+/** 输入地图格数和可用宽高，桌面按长方形排布闭环，返回行列数；不改变格号顺序。 */
+const dimensions = computed(() => {
+  const standard = boardDimensions(props.room.board.length);
+  if (!desktopSingleScreen.value || !availableViewportHeight.value) return standard;
+  const total = props.room.board.length / 2 + 2;
+  // 低高度窗口让外圈地块更扁，给内圈卡牌和排行保留空间；仍保持至少约 50px 的格高。
+  const compactRows = availableViewportHeight.value < 620 ? Math.floor(availableViewportHeight.value / 50) : 0;
+  const rows = Math.max(7, Math.min(standard.rows, Math.max(compactRows, Math.ceil(total * availableViewportHeight.value / (availableWidth.value + availableViewportHeight.value)))));
+  return { rows, columns: total - rows };
+});
+/** 输入格号和总格数，返回当前布局中的顺时针网格坐标，供地块、棋子和特效共用。 */
+function tileCoordinates(index: number, length: number): { row: number; column: number } {
+  if (!desktopSingleScreen.value) return standardTileCoordinates(index, length);
+  const horizontal = dimensions.value.columns - 1; const vertical = dimensions.value.rows - 1;
+  if (index <= horizontal) return { row: 1, column: index + 1 };
+  if (index <= horizontal + vertical) return { row: index - horizontal + 1, column: horizontal + 1 };
+  if (index <= horizontal * 2 + vertical) return { row: vertical + 1, column: horizontal * 2 + vertical - index + 1 };
+  return { row: length - index + 1, column: 1 };
+}
 /** 输入本人收到的待处理报价，返回接收方将获得和失去的地产标记；观战与其他玩家不显示。 */
 const tradeMarkers = computed(() => {
   const trade = props.incomingTrade;
   if (props.spectator || !props.room.tradePending || !trade || trade.toId !== props.meId) return [];
   return [...trade.giveTiles.map(id => ({ id, gaining: true, label: '将收到' })), ...trade.wantTiles.map(id => ({ id, gaining: false, label: '将失去' }))];
 });
-const height = computed(() => { if (props.spectator && props.compact && !following.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
+const height = computed(() => { if (desktopSingleScreen.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 2); if (props.spectator && props.compact && !following.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
 const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
@@ -148,7 +167,7 @@ function tradeMarkerStyle(id: number) {
     '--trade-label-x': `${-dx * 44}px`, '--trade-label-y': `${-dy * 38}px`,
   };
 }
-/** 无入参，读取地图可用尺寸；选点保留当前视野，其余沿用观战与游玩视野，无返回值。 */
+/** 无入参，读取地图可用尺寸；桌面玩家以原字号铺满单屏，其他模式选点保留当前视野，无返回值。 */
 function resizeBoard(): void {
   const width = container.value?.clientWidth ?? 700;
   const availableHeight = viewport.value?.clientHeight ?? 0;
@@ -158,9 +177,11 @@ function resizeBoard(): void {
   availableViewportHeight.value = availableHeight;
   lastWidth = width; lastHeight = window.innerHeight; lastLength = props.room.board.length;
   lastViewportHeight = availableHeight;
-  if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
+  if (desktopSingleScreen.value) size.value = Math.max(1, width - 2);
+  else if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
+  if (desktopSingleScreen.value) { zoom.value = 1; fullMap.value = true; return; }
   if (props.targeting) return;
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
   else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
@@ -271,9 +292,10 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span v-if="tile.barrier && tile.type !== 'property'" class="barrier-marker" title="路障">🚧</span>
             <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong><span class="tile-name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
+            <strong><span class="tile-name" :title="tile.name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && !desktopSingleScreen && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :style="{ '--owner-ink': tile.ownerId ? ownerTextColor(tile) : undefined }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
               <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
+              <PropertyGrade v-if="desktopSingleScreen && tile.ownerId" :level="tile.level" />
               <span class="tile-owner-name">{{ tile.ownerId ? tileOwner(tile)?.name ?? '玩家' : '待购入' }}</span>
               <b v-if="tile.ownerId && tile.ownerId === meId && !spectator" class="tile-owner-self">我</b>
             </span>
@@ -300,7 +322,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
           <City />
           <div v-if="celebrating" class="village-confetti" aria-hidden="true"><i v-for="leaf in 18" :key="leaf" :style="{ '--leaf': leaf }">{{ leaf % 3 === 0 ? '✦' : '▰' }}</i></div>
           <Teleport :to="statusTarget || 'body'" :disabled="!statusTarget" defer>
-          <div class="turn-display"><PanelFrame v-if="stretch" variant="notice" ornament="right" /><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="action-status" /><DiceFace v-if="!diceTarget && !diceFullscreen && (!stretch || room.dice !== null)" :value="room.dice" /><slot name="summary" /></div>
+          <div class="turn-display"><PanelFrame v-if="stretch" variant="notice" ornament="right" /><CharacterPawn v-if="current" :avatar-id="current.avatarId" :color="current.color" /><div class="turn-identity"><strong><PlayerText :text="current?.name ?? '玩家'" :players="room.players" />{{ stretch ? '' : room.status === 'finished' ? '赢下了城市' : '的回合' }}</strong><small>{{ room.status === 'finished' ? '本局财富赢家' : `第 ${room.turnNumber} 次行动` }}</small></div><slot name="action-status" /><DiceFace v-if="!diceTarget && (desktopDice && stretch || !diceFullscreen && (!stretch || room.dice !== null))" :class="{ 'turn-die-placeholder': desktopDice && stretch && (diceFullscreen || room.dice === null) }" :aria-hidden="desktopDice && stretch && (diceFullscreen || room.dice === null) ? true : undefined" :value="room.dice" /><slot name="summary" /></div>
           </Teleport>
           <div v-if="$slots.controls" class="board-center-controls"><slot name="controls" /></div>
           <div class="turn-order"><span v-for="id in room.turnOrder" :key="id" :class="{ active: id === current?.id, eliminated: room.players.find(p => p.id === id)?.bankrupt }" :style="{ '--player-color': room.players.find(p => p.id === id)?.color }"><PlayerText :text="room.players.find(p => p.id === id)?.name ?? '玩家'" :players="room.players" /></span></div>
