@@ -31,13 +31,15 @@ const personBox = computed(() => { const index = themes[props.variant].person; r
 </script>
 <template>
   <span class="panel-frame" :class="`panel-frame-${variant}`" aria-hidden="true">
-    <svg v-for="piece in pieces" :key="piece.area" class="panel-frame-piece" :style="{ gridArea: piece.area }" :viewBox="piece.box" preserveAspectRatio="none" focusable="false"><image :href="source" width="1536" height="1024" /></svg>
+    <span v-for="piece in pieces" :key="piece.area" class="panel-frame-piece" :style="{ gridArea: piece.area }"><svg :viewBox="piece.box" preserveAspectRatio="none" focusable="false"><image :href="source" width="1536" height="1024" /></svg></span>
     <svg class="panel-frame-person" :class="`panel-frame-person-${ornament}`" :viewBox="personBox" focusable="false"><image :href="people" width="1536" height="1024" /></svg>
   </span>
 </template>
 <style scoped>
 .panel-frame { position: absolute; inset: 0; z-index: 3; display: grid; grid-template-columns: 24px minmax(0, 1fr) 24px; grid-template-rows: 24px minmax(0, 1fr) 24px; pointer-events: none; }
-.panel-frame-piece { display: block; width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: hidden; }
+/* 由普通元素占据网格，避免 WebKit 将 SVG 百分比高度解析为整个面板的高度。 */
+.panel-frame-piece { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
+.panel-frame-piece > svg { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .panel-frame-person { position: absolute; top: 24px; display: block; width: 60px; aspect-ratio: 1; overflow: hidden; }
 .panel-frame-person-left { left: -42px; }
 .panel-frame-person-right { right: -42px; }
