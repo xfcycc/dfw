@@ -1,0 +1,170 @@
+[
+  {
+    "code": "B01",
+    "name": "岩脊共鸣",
+    "skinId": "card_genshin_geo_resonance",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-e8af6f3b-f3a5-4dcd-8c62-52dd801db5c5.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Zhongli from Genshin Impact, tall adult man with amber eyes, brown black hair and long brown gold coat, raises a hand beside a towering stone stele. Golden geometric resonance flows left and right to two neighboring stone structures, which light up in sequence. Solemn warm amber atmosphere, accurate recognizable Genshin character design and painterly anime game illustration.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_genshin_geo_resonance.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 330448,
+    "sha256": "22ce0ce52fcc5acf01ce52e852e1a33bcd5b682c6cbc7bc84af7692013b78ce9",
+    "md5": "42355a5ba7da835412485aa79e94195d",
+    "sourceSha256": "b162ba453d974597cff5d4854015d846f00410ac8e81f8df409ae405db2000f8",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_geo_resonance-22ce0ce52fcc.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 330448,
+      "contentMd5": "QjVaW6fag1QSSFqnnpQZXQ=="
+    }
+  },
+  {
+    "code": "B02",
+    "name": "所闻遍计",
+    "skinId": "card_genshin_growth_link",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-2ea08772-d8e0-41c0-b8f9-e24a5a955dae.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Nahida from Genshin Impact, canonical small child body proportions (not chibi), white hair side ponytail with green tips, green eyes and white green dress. She connects two floating green dendro sigils with a delicate luminous vine; budding leaves on both grow together. Sumeru forest background, accurate character identity and original painterly anime game art.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_genshin_growth_link.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 308472,
+    "sha256": "86360db4dc5078f463770a2d291493e8aabc5b722d874e67b1154ed0e3fd1bd7",
+    "md5": "cf79e7fd503b8cc718f86b2c582ab2b8",
+    "sourceSha256": "232e5997e4de95950bd31e7c62d72d5740b3960161573eea105ac4a1f6a95445",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_growth_link-86360db4dc50.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 308472,
+      "contentMd5": "z3nn/VA7jMcY+GssWCqyuA=="
+    }
+  },
+  {
+    "code": "B03",
+    "name": "尘歌壶",
+    "skinId": "card_genshin_serenitea_pot",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-7b61cbe7-44d5-407e-b73d-dbf3818a3565.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Genshin Impact male Traveler Aether in canonical white gold outfit and long blond braid, together with Tubby the round blue teapot spirit. A magical teapot opens into a small floating Liyue landscape; one Chinese pavilion floats gently from a hill towards a lakeside and a second pavilion is forming from golden magic. Recognizable original character proportions, detailed painterly anime game style, one coherent scene.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_genshin_serenitea_pot.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 362752,
+    "sha256": "1d48f4199c59a132ad969804e6fd7f4f66b6b23c920682975c982f3cdf1b7d68",
+    "md5": "3c4d150868168f78acedf040d159cd6a",
+    "sourceSha256": "c9ea4663f54649d005d8f4991528f2c4a2062adbc91eb1dbcc8b2000b0d4038c",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-1d48f4199c59.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 362752,
+      "contentMd5": "PE0VCGgWj3is7fBA0VnNag=="
+    }
+  },
+  {
+    "code": "B04",
+    "name": "创",
+    "skinId": "card_sakura_create_build",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-93e6668a-b42a-43e4-ae50-daa7aed258e2.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Sakura Kinomoto from Cardcaptor Sakura, canonical young anime girl body proportions, short brown hair, green eyes, iconic pink magical costume and winged sealing wand. A glowing Clow Card floats beside her as architectural line art from a page becomes a tiny three dimensional pavilion, with Kero flying curiously around it. Faithful original 1990s hand drawn anime cel shading and soft pastel magical colors, not chibi.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_sakura_create_build.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 296132,
+    "sha256": "0196bc07cfe34617642e54c144c083884b3d4274a0c1d2e0f3a639c8d6294e13",
+    "md5": "854d616ddeb4040c458c2d964acf24f9",
+    "sourceSha256": "fce6ed0dcfcfbc5b0aad9233c0809ccae424da9d12553331653c778d13a0e91b",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_sakura_create_build-0196bc07cfe3.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 296132,
+      "contentMd5": "hU1hbd60BAxFjC2WSs8k+Q=="
+    }
+  },
+  {
+    "code": "B05",
+    "name": "基建轮班",
+    "skinId": "card_arknights_remote_construction",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-e5321960-46c9-4625-b977-5f03a062df3c.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Closure (可露希尔) from Arknights, recognizable canonical adult female Sarkaz engineer with black hair, pointed ears, small red head accessory, red eyes, black red technical outfit, operating a workshop desk and radio headset. Rhodes Island engineers install mechanical framework and illuminated modules behind her. Accurate Arknights character proportions, detailed original anime illustration style with industrial lighting, screens contain only abstract shapes.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_arknights_remote_construction.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 250172,
+    "sha256": "07be01e0fbb37c014ae1c4de83a0860ca42b3a1bfe6f5f2b43e0f3f800e7bf91",
+    "md5": "6fdac4fadda3b586bc14ccc103aa0879",
+    "sourceSha256": "b1c7d0caaa0127f614dc749bfec0fb2b0dc478c5d2250d133ba0d9cc736c3817",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_arknights_remote_construction-07be01e0fbb3.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 250172,
+      "contentMd5": "b9rE+t2jtYa8FMzBA6oIeQ=="
+    }
+  },
+  {
+    "code": "B06",
+    "name": "给我建座神社吧",
+    "skinId": "card_noragami_shrine_growth",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-49b7110f-42ee-4d93-90b3-21534edc781a.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Yato from Noragami in black tracksuit and pale scarf, blue eyes and dark hair, gently receives a tiny handcrafted wooden shrine from Hiyori Iki in her canonical school uniform. Yukine with blond hair stands beside them watching with a skeptical expression. Yato is unexpectedly moved and careful, warm emotional comedy, faithful original Noragami anime character proportions and cel shading, not chibi.",
+    "webp": "/tmp/dfw-construction-art-20261019/card_noragami_shrine_growth.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 153022,
+    "sha256": "3eaa0c4a90d3f77941b4961c19500731ad920d0470b2a33a7610019df523fc78",
+    "md5": "13e61ccce1c18a1366011295a2db7984",
+    "sourceSha256": "95142f1bd743fb52dda96272d2e234e4d1733b39a64528a62d4175a88496a03a",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_noragami_shrine_growth-3eaa0c4a90d3.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 153022,
+      "contentMd5": "E+YczOHBihNmARKVott5hA=="
+    }
+  },
+  {
+    "code": "B07",
+    "name": "樱花庄改造计划",
+    "skinId": "fortune_sakurasou_all_construction",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-267f8e35-797f-455f-b7d1-90e22086a340.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. The Pet Girl of Sakurasou anime cast renovating their familiar warm wooden dormitory. Sorata Kanda, brown short hair, coordinates moving a plank; Mashiro Shiina, very long pale blonde hair and soft amber eyes, quietly draws a beautiful design; Misaki energetically carries tools and Nanami carefully measures. Canonical adolescent anime proportions and original soft anime cel-shaded style, natural warm light, drawing plans contain abstract unreadable lines.",
+    "webp": "/tmp/dfw-construction-art-20261019/fortune_sakurasou_all_construction.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 231650,
+    "sha256": "7f83b90a17036348f9d1667cf840960e2543fd6adb105ca135ec3e1a2a86cbc8",
+    "md5": "851251b4aaa502f6ed04d3a4d7aca9d7",
+    "sourceSha256": "523677e828b2001631f8132993231ca70d468a3ee39eb55b5aa2e0adf9ec76bd",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/fortune_sakurasou_all_construction-7f83b90a1703.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 231650,
+      "contentMd5": "hRJRtKqlAvbtBNOk16yp1w=="
+    }
+  },
+  {
+    "code": "B08",
+    "name": "黄金树的恩惠",
+    "skinId": "fortune_elden_erdtree_blessing",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-9ba04bc8-125d-4fda-a3be-0b3a0d946909.png",
+    "prompt": "Create ONE independent square full-bleed illustration, no frame, no text, no title, no typography, no speech bubbles, no UI, no watermark, no collage. Preserve the original fictional characters, canonical age-appropriate body proportions, clothing, hairstyle, recognizable objects and the source work's art style. NOT chibi and NOT super-deformed. A coherent single story moment. Clear faces and signature objects inside the central safe area, readable at small card size. Do not insert money, dice or Monopoly elements unless naturally part of the scene. Elden Ring Tarnished in authentic weathered medieval armor and cloak stands before ruined stone stairs. The immense golden Erdtree glows in the distant sky, delicate golden blessing light flows over foreground ruins and another abandoned structure far away, suggesting renewal and hope. Canonical realistic human proportions, faithful Elden Ring dark fantasy painterly key art, heavy atmospheric lighting, no chibi, no anime simplification.",
+    "webp": "/tmp/dfw-construction-art-20261019/fortune_elden_erdtree_blessing.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 513048,
+    "sha256": "44682e8716bbc19b84a5ab52f7af5183c8ade3850a7fd5a14bf0182fe6aa43b0",
+    "md5": "03a913111b09c7f860a0f3066e04cf97",
+    "sourceSha256": "dafb62706e22af5c5c8fb9152b6416cd81c0f08cca7bc80a8bb03a5d81cd82d1",
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/fortune_elden_erdtree_blessing-44682e8716bb.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 513048,
+      "contentMd5": "A6kTERsJx/hgoPMGbgTPlw=="
+    }
+  }
+]

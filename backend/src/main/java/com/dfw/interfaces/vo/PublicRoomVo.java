@@ -9,6 +9,8 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PublicRoomVo {
+    /** 地产建设连接和奉纳的公开说明，不包含私人选择。 */
+    public java.util.Map<Integer,java.util.List<String>> constructionEffects = new java.util.LinkedHashMap<>();
     /** 新局活动角轮换，旧局为空。 */
     public ActivityRotationVo activityRotation;
     /** 当前多人活动的安全公开投影。 */

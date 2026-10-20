@@ -21,6 +21,18 @@ public class ArchiveRules {
     private static final String EXPANSION_RULES = "13733a2ff165c91a601ae06128896ed1f6eb89523eb1a30a5858257f8e5b7e3d";
     /** 仅精简四十六个卡名后的默认规则摘要，效果、参数和权重保持不变。 */
     private static final String RENAMED_CONTENT_RULES = "0265c821a96c52a3d1e93bbc6f9e26d659cc0087f62a99c2367265a87059c460";
+    /** 本次十六张皮肤加入前的默认规则摘要，数值与权重沿用当前本地配置。 */
+    private static final String PRE_SKIN_EXPANSION_RULES = "ba0e74d939ec42a8b2fe7942d09fa5b092e3a1ecdc20f164af03fe30a32e3e92";
+    /** 仅追加十六张皮肤后的默认规则摘要，兼容追加前保存的同规则对局。 */
+    private static final String SKIN_EXPANSION_RULES = "cc670f6c525d1a641ec6874fe5f44ff29d3bff67096b486f817bb43a21cc432f";
+    /** 动漫与建设内容加入后的默认规则摘要，仅兼容明确登记的旧默认内容。 */
+    private static final String ANIME_CONTENT_RULES = "3a8202718e597f290f2808f043fc12b59ed13f88e4acb3171559b38cae902d2f";
+    /** 超电磁炮台词及描述改写前的同机制默认摘要，仅兼容明确的文案更新。 */
+    private static final String PRE_RAILGUN_COPY_RULES = "33a62555361354f8339602e1a69fa52d45b8b8949f62bc8045ec8b54537684fa";
+    /** 全卡文案审阅前的同机制默认摘要，允许保留原卡面继续对局。 */
+    private static final String PRE_CARD_COPY_REVIEW_RULES = "3a8e4afa217ab084d1e759e97997aab29e3388862712d9969dc0f2796f1a2745";
+    /** 三重罗生门独立为三层 UR 后的默认规则，旧卡保留原参数与等级。 */
+    private static final String TRIPLE_SHIELD_RULES = "4043f8c7fb68f7ed5dc7e83506236eafd86674765e5a412bbce04202379bd580";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -36,9 +48,11 @@ public class ArchiveRules {
         }
         digest = HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(json.write(values).getBytes(StandardCharsets.UTF_8)));
     }
-    /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确的旧默认规则、扩展字段缺省与本次纯改名。 */
+    /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
         return digest.equals(savedDigest)
+                || (ANIME_CONTENT_RULES.equals(digest) || TRIPLE_SHIELD_RULES.equals(digest)) && savedDigest != null && Set.of(ANIME_CONTENT_RULES, PRE_CARD_COPY_REVIEW_RULES, PRE_RAILGUN_COPY_RULES, SKIN_EXPANSION_RULES, PRE_SKIN_EXPANSION_RULES, RENAMED_CONTENT_RULES, EXPANSION_RULES, PRE_EXPANSION_RULES).contains(savedDigest)
+                || SKIN_EXPANSION_RULES.equals(digest) && PRE_SKIN_EXPANSION_RULES.equals(savedDigest)
                 || RENAMED_CONTENT_RULES.equals(digest) && (EXPANSION_RULES.equals(savedDigest) || PRE_EXPANSION_RULES.equals(savedDigest))
                 || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);
     }

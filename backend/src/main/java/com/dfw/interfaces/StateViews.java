@@ -15,6 +15,7 @@ public final class StateViews {
         value.chanceEventDescriptions = room.chanceEventDescriptions; value.upgradedTiles=room.upgradedTiles;
         if(room.runtime!=null && room.runtime.lastContent!=null && !room.runtime.lastContent.privateSupply) { value.event=room.runtime.lastContent; value.eventPlayerId=room.runtime.contentPlayerId; }
         if(room.runtime!=null) { value.playedCard=room.runtime.playedCard; value.playedCardPlayerId=room.runtime.playedCardPlayerId; }
+        for(Tile tile:room.board) { var labels=ConstructionService.labels(room,tile.id); if(!labels.isEmpty()) value.constructionEffects.put(tile.id,labels); }
         value.pending = room.pending; value.tradePending = room.trade != null; value.pausedReason = room.pausedReason; value.dice = room.dice; value.motion = room.motion; value.winnerId = room.winnerId; value.logs = room.logs;
         var assets = new java.util.HashMap<String, Long>();
         for (Player player : room.players) assets.put(player.id, Rules.netWorth(room, player));
@@ -24,7 +25,7 @@ public final class StateViews {
             p.nextRollHalf=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_ROLL_HALF") && s.remainingTurns>0);
             p.netWorth = assets.get(player.id); p.assetRank = player.bankrupt ? null : 1 + (int) room.players.stream().filter(other -> !other.bankrupt && assets.get(other.id) > p.netWorth).count();
             p.settlement = settlement(player.matchStats);
-            p.botDifficulty = player.botDifficulty; p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
+            p.botDifficulty = player.botDifficulty; p.ready = player.ready; p.online = player.online; p.bankrupt = player.bankrupt; p.personalTurns=player.personalTurns; p.skipTurns = player.skipTurns; p.jailed = player.jailed; p.eliminationOrder = player.eliminationOrder;
             p.nextPaymentWaiver=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_PAYMENT_WAIVER"));
             p.nextRentDouble=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_RENT_DOUBLE"));
             p.nextMoveDouble=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_MOVE_DOUBLE") && s.remainingTurns>0);
@@ -50,13 +51,15 @@ public final class StateViews {
         if (room.activity != null) { value.activityId=room.activity.id; value.activityRound=room.activity.round; value.activitySelection=room.activity.choices.get(id); }
         Player owner=player(room,id); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
         if(room.runtime!=null) {
+            value.projectionAvailable=room.runtime.anime!=null && room.runtime.anime.previousCards.stream().anyMatch(c -> !"UR".equals(c.rarity) && !c.kind.equals("projection") && "主动".equals(c.cardType));
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
             ContentChoice choice=room.runtime.choice;
             if(choice!=null && choice.playerId.equals(id)) {
                 ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=ContentService.choiceTargets(room,choice); v.cards=choice.cards; v.cardId=choice.cardId;
-                v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
+                v.playerIds=choice.playerIds; v.prompt=choice.prompt; v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
             }
         }
+        value.remoteBuildAvailable=ConstructionService.remoteAvailable(room,owner);
         value.activeCardUsed = current(room) != null && current(room).id.equals(id) && room.activeCardUsed;
         value.trade = room.trade != null && (room.trade.fromId.equals(id) || room.trade.toId.equals(id)) ? room.trade : null; return value;
     }

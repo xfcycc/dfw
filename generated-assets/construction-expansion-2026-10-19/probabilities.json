@@ -1,0 +1,33 @@
+{
+  "card": {
+    "totalWeight": 32490000,
+    "enabledSkins": 141,
+    "ordinaryUpgradeProbabilityUnchanged": true,
+    "ordinaryUpgradePercent": 1.6454293628808865,
+    "newEffectPercent": {
+      "geoResonance": 2.0,
+      "growthLink": 2.0,
+      "sereniteaPot": 1.0,
+      "createBuild": 1.0,
+      "remoteConstruction": 1.0,
+      "shrineGrowth": 1.0
+    }
+  },
+  "chance": {
+    "totalWeight": 126000000,
+    "enabledSkins": 100,
+    "ordinaryUpgradeProbabilityUnchanged": true,
+    "ordinaryUpgradePercent": 1.0623809523809524,
+    "newEffectPercent": {}
+  },
+  "fortune": {
+    "totalWeight": 144100000,
+    "enabledSkins": 64,
+    "ordinaryUpgradeProbabilityUnchanged": true,
+    "ordinaryUpgradePercent": 2.022727272727273,
+    "newEffectPercent": {
+      "allConstruction": 2.0,
+      "erdtreeBlessing": 2.0
+    }
+  }
+}

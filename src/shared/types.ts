@@ -10,7 +10,7 @@ export type BotDifficulty = 'easy' | 'normal' | 'hard';
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor';
+export type ItemKind = 'geoResonance' | 'growthLink' | 'sereniteaPot' | 'createBuild' | 'remoteConstruction' | 'shrineGrowth' | 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor' | 'timeRewind' | 'projection' | 'starburst' | 'imagineBreaker' | 'timeRestore' | 'vectorReflect' | 'deathReturn' | 'explosion' | 'corruption' | 'contract' | 'commandSpell' | 'sevenSwords' | 'railgun' | 'sealCard' | 'swordRain' | 'voidTears' | 'absoluteZero';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -31,11 +31,13 @@ export interface ContentResult {
   privateSupply?: boolean;
 }
 /** 私有手牌。 */
-export interface Card extends ContentResult { kind: ItemKind }
+export interface Card extends ContentResult { kind: ItemKind; projected?: boolean; expiresAtTurn?: number; remainingUses?: number; lastUsedTurn?: number }
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit' | 'recycle' | 'discover';
+  type: `construction_${string}` | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  playerIds?: string[];
+  prompt?: string;
   tileIds: number[];
   cards: Card[];
   cardId: string | null;
@@ -91,6 +93,7 @@ export interface PublicPlayer {
   ready: boolean;
   online: boolean;
   bankrupt: boolean;
+  personalTurns?: number;
   skipTurns: number;
   jailed: boolean;
   eliminationOrder: number | null;
@@ -120,12 +123,21 @@ export interface Tile {
   mortgageBase?: number | null;
   barrier: boolean;
   demolitionShield?: boolean;
+  /** 防拆护盾剩余层数，旧快照只有布尔标记时按一层展示。 */
+  demolitionShieldCharges?: number;
   treasure?: boolean;
   concertStacks?: number;
   meteorCharges?: number;
   kamuiCasterId?: string | null;
   kamuiTurns?: number;
   kamuiAppliedTurn?: number;
+  corruptionTurns?: number;
+  zeroCasterId?: string | null;
+  zeroUntilTurn?: number;
+  damageOwnerId?: string | null;
+  damageLevel?: number;
+  damageUntilTurn?: number;
+  portalTileId?: number | null;
 }
 /** 当前需要玩家决定的公开事项。 */
 export interface PendingDecision {
@@ -176,7 +188,7 @@ export interface BoardEffect {
   afterTiles: BoardEffectTile[];
 }
 /** 演出前后的地产公开外观，可包含实际产权变化，不覆盖抵押或资金。 */
-export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn'> & { ownerId?: string | null };
+export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn'> & { ownerId?: string | null };
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   id: string; playerId: string; from: number; path: number[];
@@ -195,6 +207,7 @@ export interface MotionSegment {
 export interface Motion extends MotionSegment { segments?: MotionSegment[] }
 /** 公开房间快照，可安全发送给任意观战者。 */
 export interface PublicRoomState {
+  constructionEffects?: Record<number, string[]>;
   /** 新局活动轮换，旧局不改图。 */
   activityRotation?: ActivityRotation | null;
   /** 已移除秘密字段的活动状态。 */
@@ -238,6 +251,7 @@ export interface PublicRoomState {
 }
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState {
+  remoteBuildAvailable?: boolean;
   activityId?: string | null;
   activityRound?: number | null;
   activitySelection?: number | null;
@@ -246,6 +260,7 @@ export interface PrivatePlayerState {
   playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
   /** 本人最近报价的拒绝说明，旧快照可缺省。 */
   tradeRejection?: string | null;
+  projectionAvailable?: boolean;
   choice?: ContentChoice | null;
   event?: ContentResult | null;
   notice?: ContentResult | null;
@@ -277,11 +292,11 @@ export type GameAction =
   | { type: 'setName'; name: string }
   | { type: 'setAvatar'; avatarId: string }
   | { type: 'setMapSize'; mapSize: MapSize }
-  | { type: 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
+  | { type: 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }
   | { type: 'paymentDefense'; decisionId?: string; cardId?: string }
-  | { type: 'contentDecision'; decisionId: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[] }
-  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string }
+  | { type: 'contentDecision'; decisionId: string; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
+  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string; secondTileId?: number; tileIds?: number[]; direction?: number }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }
   | { type: 'tradeOffer'; toId: string; giveCash: number; wantCash: number; giveTiles: number[]; wantTiles: number[]; debtCredit?: number }
   | { type: 'tradeRespond'; accept: boolean }

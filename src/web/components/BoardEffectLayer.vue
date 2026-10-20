@@ -33,7 +33,7 @@ function propertyResult(before: BoardEffectTile, after: BoardEffectTile): string
 }
 /** 输入效果前的地产外观，返回黑洞实际可吞噬的附加标记。 */
 function attachments(tile: BoardEffectTile): string[] {
-  return [tile.demolitionShield ? '护盾' : '', tile.treasure ? '宝藏' : '', tile.concertStacks ? '演唱会' : '', tile.barrier ? '路障' : '', tile.meteorCharges ? '陨星' : ''].filter(Boolean);
+  return [tile.demolitionShield ? `护盾×${tile.demolitionShieldCharges || 1}` : '', tile.treasure ? '宝藏' : '', tile.concertStacks ? '演唱会' : '', tile.barrier ? '路障' : '', tile.meteorCharges ? '陨星' : ''].filter(Boolean);
 }
 /** 输入动画事件，仅整段时间轴完成时通知队列，忽略子元素动画冒泡，无返回值。 */
 function complete(event: AnimationEvent): void { if (event.target === event.currentTarget) emit('done', props.id); }

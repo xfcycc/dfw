@@ -13,7 +13,7 @@ public final class Rules {
     public static long initialCashBase(int count) { return count >= 5 ? 7500 : INITIAL_CASH; }
     /** 输入开局人数，返回每人初始手牌数量。 */
     public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
-    /** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */
+    /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过或最终停在起点时的道具补给数量。 */
     public static int startCards(int count) { return count >= 3 ? 2 : 1; }
     /** 输入人数及房间大小，返回闭环地图总格数；缺失设置沿用大地图。 */
     public static int mapLength(int count, String size) {
@@ -25,7 +25,7 @@ public final class Rules {
     /** 输入房间及地产，返回按本局基础比例计算的租金；抵押或神威停收，固定金额优先。 */
     public static long rent(Room room, Tile tile) {
         EconomyRules economy = economy(room);
-        return tile.mortgaged || PropertyEffects.frozen(tile) ? 0 : economy.derived("rent." + tile.price + "." + tile.level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * RENT_MULTIPLIERS[tile.level]);
+        return tile.mortgaged || PropertyEffects.frozen(tile) || AnimeService.iced(tile) ? 0 : economy.derived("rent." + tile.price + "." + tile.level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * RENT_MULTIPLIERS[tile.level]);
     }
     /** 输入房间及地产，返回一级建筑成本。 */
     public static long buildCost(Room room, Tile tile) { return economy(room).derived("buildCost." + tile.price, tile.price / 2); }

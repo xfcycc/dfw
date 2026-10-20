@@ -78,7 +78,7 @@ public final class ExpansionService {
         target.contentNotice=card; target.contentNoticeText="这张道具被转移给 "+actor.name;
         log(room,actor.name+" 从 "+target.name+" 处偷走一张私人手牌"); content.overflow(room);
     }
-    /** 输入当前主动卡及目标，完成校验后才消费并执行，私人选择暂不消费。 */
+    /** 输入房间、施放者、主动卡及目标命令，校验目标后消费并执行，暗影步限前后六格，神威持续三个后续个人回合，无返回值。 */
     public void use(Room room,Player actor,Card card,Action action) {
         Tile target=tile(room,action.tileId); Player opponent=player(room,action.playerId);
         switch(card.kind) {
@@ -95,20 +95,20 @@ public final class ExpansionService {
                 require(target!=null && target.type.equals("property") && !PropertyEffects.frozen(target),"请选择未处于神威中的地产");
                 if(card.kind.equals("shield")) require(Objects.equals(target.ownerId,actor.id) && !target.demolitionShield,"请选择尚无护盾的自家地产");
                 if(card.kind.equals("homeTeleport")) require(Objects.equals(target.ownerId,actor.id),"请选择自家地产");
-                if(card.kind.equals("blackhole")) require(target.barrier || target.meteorCharges>0 || target.demolitionShield || target.treasure || target.concertStacks>0,"该地产没有可清除的附加效果");
+                if(card.kind.equals("blackhole")) require(target.barrier || target.meteorCharges>0 || target.demolitionShield || target.treasure || target.concertStacks>0 || !ConstructionService.labels(room,target.id).isEmpty(),"该地产没有可清除的附加效果");
                 Player landlord=player(room,target.ownerId); long price=PropertyEffects.baseRent(room,target);
                 if(card.kind.equals("exchange")) require(landlord!=null && !landlord.bankrupt && landlord!=actor && actor.cash>=price,"请选择付得起无修正租金的对手地产");
                 ContentService.consume(room,actor,card,true,action);
                 MotionSegment presentation=Set.of("kamui","blackhole","shield","exchange").contains(card.kind) ? BoardEffect.begin(card.kind,actor) : null;
                 if(presentation!=null) presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
                 switch(card.kind) {
-                    case "shield" -> target.demolitionShield=true;
+                    case "shield" -> { target.demolitionShield=true; target.demolitionShieldCharges=card.parameters.getOrDefault("charges",1L).intValue(); }
                     case "exchange" -> {
                         actor.cash-=price; landlord.cash=Math.addExact(landlord.cash,price); target.ownerId=actor.id;
                         log(room,actor.name+" 支付 "+landlord.name+" ¥"+price+"，取得 "+target.name+"（"+target.id+"号），承接建筑、抵押和附加效果");
                     }
                     case "kamui" -> { target.kamuiCasterId=actor.id; target.kamuiTurns=3; target.kamuiAppliedTurn=room.turnNumber; }
-                    case "blackhole" -> { target.barrier=false; target.meteorCharges=0; target.demolitionShield=false; target.treasure=false; target.concertStacks=0; }
+                    case "blackhole" -> { ConstructionService.clear(room,target); target.barrier=false; target.meteorCharges=0; target.demolitionShield=false; target.demolitionShieldCharges=0; target.treasure=false; target.concertStacks=0; }
                     case "homeTeleport" -> teleport(room,actor,target.id);
                     default -> throw new IllegalStateException("未处理的地产道具");
                 }
@@ -117,6 +117,7 @@ public final class ExpansionService {
             case "sap","slow","reaper","shadowstep" -> {
                 require(opponent!=null && !opponent.bankrupt && opponent!=actor,"请选择其他未破产玩家");
                 if(card.kind.equals("sap")) require(opponent.position==actor.position,"闷棍只能作用于同格玩家");
+                if(card.kind.equals("shadowstep")) require(nearbyDistance(actor.position,opponent.position,room.board.size())<=6,"暗影步只能选择前后 6 格内的其他玩家");
                 if(card.kind.equals("reaper")) require(PropertyEffects.handLimit(actor)>1 && PropertyEffects.handLimit(opponent)>1,"双方手牌上限须大于一张");
                 ContentService.consume(room,actor,card,true,action);
                 switch(card.kind) {

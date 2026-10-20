@@ -33,14 +33,32 @@ public class Tile {
     public Long mortgageBase;
     /** 是否有路障。 */
     public boolean barrier;
-    /** 一次建筑拆除保护，随地产保存和转移。 */
+    /** 是否存在建筑拆除护盾，随地产保存和转移；保留旧快照字段。 */
     public boolean demolitionShield;
+    /** 防拆护盾剩余层数；旧快照仅有布尔标记时按一层处理。 */
+    public int demolitionShieldCharges;
     /** 首位正常落点玩家可领取的宝藏标记。 */
     public boolean treasure;
     /** 下一次正租金的演唱会层数，每层乘以 1.2。 */
     public int concertStacks;
     /** 独立于普通路障的剩余陨星截停次数。 */
     public int meteorCharges;
+    /** 猩红腐败剩余触发次数，随地产保存。 */
+    public int corruptionTurns;
+    /** 零域施术者，空表示未冰封。 */
+    public String zeroCasterId;
+    /** 零域结束的施术者个人回合。 */
+    public int zeroUntilTurn;
+    /** 最近建筑损坏前业主，产权变化后失效。 */
+    public String damageOwnerId;
+    /** 最近建筑损坏前等级。 */
+    public int damageLevel;
+    /** 四之弹修复窗口结束的业主个人回合。 */
+    public int damageUntilTurn;
+    /** 防止转手后再转回恢复旧损坏记录的产权观察值。 */
+    public String observedOwnerId;
+    /** 虚空之泪另一端，空表示无裂隙。 */
+    public Integer portalTileId;
     /** 神威施术者，空值表示未封入异空间。 */
     public String kamuiCasterId;
     /** 神威剩余施术者个人回合。 */

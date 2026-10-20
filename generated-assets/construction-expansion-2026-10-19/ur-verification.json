@@ -1,0 +1,32 @@
+{
+  "skinId": "card_genshin_serenitea_pot",
+  "typecheck": "passed",
+  "diffCheck": "passed",
+  "assets": {
+    "count": 2,
+    "sizeBytes": 813324,
+    "width": 1254,
+    "height": 1254,
+    "foregroundAlphaPreserved": true,
+    "ossHeadChecks": "status, content type, length, MD5 all matched"
+  },
+  "browser": {
+    "url": "http://127.0.0.1:5175/ur-preview.html?skin=card_genshin_serenitea_pot",
+    "sceneReady": true,
+    "runningAnimations": 14,
+    "pauseResume": "verified",
+    "secondaryTransformBefore": "matrix(1, 0, 0, 1, -6.18987, 3.05792)",
+    "secondaryTransformAfter": "matrix(1, 0, 0, 1, -6.15417, 2.7389)",
+    "freshReloadWarningOrErrorCount": 0,
+    "screenshot": "/tmp/dfw-serenitea-ur-preview.png"
+  },
+  "notExecuted": [
+    "frontend build",
+    "unit tests",
+    "smoke tests",
+    "real multiplayer game",
+    "deployment",
+    "git staging/commit/push"
+  ],
+  "scope": "construction expansion UR Serenitea Pot only; other ongoing changes preserved"
+}

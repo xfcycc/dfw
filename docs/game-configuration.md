@@ -57,26 +57,28 @@
     "content.card.cash.amount-300.amount": 1200,
     "content.card.cash.amount-500.amount": 1600,
     "content.card.cash.amount-800.amount": 2400,
-    "content.chance.bottom_income.amount-500.amount": 3000,
-    "content.chance.bottom_income.amount-300.amount": 3000,
-    "content.chance.bottom_income.amount-200.amount": 3000,
-    "content.chance.bottom_income.amount-800.amount": 3000,
-    "content.fortune.bottom_bonus.amount-400_bonus-600.bonus": 3000,
-    "content.fortune.bottom_bonus.amount-400_bonus-800.bonus": 3000
+    "content.chance.bottom_income.amount-500.amount": 2000,
+    "content.chance.bottom_income.amount-300.amount": 2000,
+    "content.chance.bottom_income.amount-200.amount": 2000,
+    "content.chance.bottom_income.amount-800.amount": 2000,
+    "content.fortune.bottom_bonus.amount-400_bonus-600.bonus": 2000,
+    "content.fortune.bottom_bonus.amount-400_bonus-800.bonus": 2000,
+    "content.fortune.talent.amount-5000_count-2.amount": 2000,
+    "activity.rpsPrize": 2000
   }
 }
 ```
 
 `moneyMultiplier` 为正有限数，现金常量按倍率四舍五入为整数。固定金额均为最终值，优先于倍率，不再次放大。百分比、概率、步数、回合数、牌数和玩家交易输入不乘倍率。新局按开局人数确定每人初始现金基数：2～4 人为 6000，5～6 人为 7500；默认 ×2 后分别为 12000、15000，与地图大小无关。初始手牌为 2 人每人 2 张，3 人及以上每人 3 张。起点收入仍为 2000；基准地价为 400／600／800／1200／1600，默认 ×2 后为 800／1200／1600／2400／3200。
 
-默认配置通过上述固定覆盖，将 R 现金道具的两档实际到账提高到 1200／1600，SR 现金道具提高到 2400；机会事件的榜底救济四档统一实际到账 3000，财富事件的榜底额外补助两档统一实际到账 3000。财富事件落格者的基准 400 不变，默认到账 800；落格者也是榜底时，两笔合计到账 3800。原参数 ID、分档、皮肤及抽取概率保持不变，不增加按资产差距翻倍的效果。`docs/content/` 与行为 JSON 中的金额仍表示原基准参数，实际卡面和结算以本局经济覆盖后的金额为准。
+默认配置通过上述固定覆盖，将 R 现金道具的两档实际到账提高到 1200／1600，SR 现金道具提高到 2400；机会事件的榜底救济四档统一实际到账 2000，财富事件的榜底额外补助两档统一实际到账 2000。财富事件落格者的基准 400 不变，默认到账 800；落格者也是榜底时，两笔合计到账 2800。人才引进通过原参数键固定生活费为 2000，赠地及两张道具规则不变。原参数 ID、分档、皮肤及抽取概率保持不变，不增加按资产差距翻倍的效果。`docs/content/` 与行为 JSON 中的金额仍表示原基准参数，实际卡面和结算以本局经济覆盖后的金额为准。
 
 `rentBasePercent` 为 0～100 的整数百分比，默认文件为 25。基础租金为 `floor(实际地价 × rentBasePercent ÷ 100)`，再乘 0～3 级倍率 `[1,3,6,10]`。每边先打乱五档顺序，再尽量均衡分配并打乱位置；不足完整五档的一组随机选择剩余价档，不固定优先低价档。已有外部配置缺失比例字段时沿用原 10%，使用新口径需显式补入 `rentBasePercent: 25`。
 
 | 配置键 | 作用 | 无覆盖时 |
 | --- | --- | --- |
 | `initialCash` | 每人初始现金 | 按开局人数：2～4 人 6000、5～6 人 7500，再 × 倍率；与地图大小无关 |
-| `startIncome` | 向前或后退经过、到达起点或原地停留 | 基准 1000 × 倍率 |
+| `startIncome` | 正向经过起点或最终停在起点（含后退到达、原地停留）；后退经过不奖励 | 基准 1000 × 倍率 |
 | `landPrice.0`、`.1`、`.2`、`.3`、`.4` | 五档地价 | 基准 400／600／800／1200／1600 × 倍率 |
 | `buildCost.<实际地价>` | 每级建筑成本 | 实际地价 ÷ 2 |
 | `sellBuilding.<实际地价>` | 出售一级未抵押建筑 | 实际建筑成本 ÷ 2 |
@@ -104,6 +106,12 @@
   }
 }
 ```
+
+猜拳冠军与少数派夜市中奖者共用 `activity.rpsPrize: 2000`，每场唯一获奖者实际到账2000，额外道具规则不变。
+
+小游戏最终奖金通过 `activity.horsePrize: 3000` 固定覆盖，赛马与三关玻璃桥共用此键；每位获奖者总到账3000，不再乘经济倍率。本金和额外道具规则保持不变，新局冻结此金额，已有对局保留原活动金额快照。
+
+命运硬币的新参数身份为 `prize-10000_probability-50_wager-5000`。默认 `fixedAmounts` 为 `content.card.gamble.prize-10000_probability-50_wager-5000.wager` 和 `.prize` 分别配置最终金额 5000、10000，不再乘经济倍率；成功概率仍为 50%。已有对局保留经济快照，已有手牌保留保存的金额，新局使用更新后的默认覆盖。
 
 各文件在服务启动时加载、校验，不在游戏中热替换。基础地价必须大于零；金额非负且需处于 JavaScript 安全整数范围内。字段名写错不会自动推断为另一个金额键，配置时应与规则 ID 和步骤顺序核对。
 

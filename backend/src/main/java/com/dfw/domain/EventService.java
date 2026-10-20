@@ -24,28 +24,30 @@ public final class EventService {
         effects.register("GRANT_MONEY", this::grant);
         effects.register("LOWER_ALL_BUILDINGS", this::lowerAll);
     }
-    /** 输入全图降级及补偿比例，逐地产降低一级并按降级前租金赔付；同段提交，不触发全毁订阅。 */
+    /** 输入房间及补偿效果，全图随机选取不重复的1～5块可降级地产，无目标时为0；降低一级并按原租金赔付。 */
     private void lowerAll(Room room, GameEffect effect) {
         require(effect.compensationPercent>=0 && effect.compensationPercent<=100,"补偿比例不可用");
         var owners=new java.util.HashMap<String,Player>();
         for (Player owner : room.players) if (!owner.bankrupt) owners.put(owner.id,owner);
+        var candidates=new java.util.ArrayList<>(room.board.stream().filter(target -> target.type.equals("property") && target.level>0 && owners.containsKey(target.ownerId) && !PropertyEffects.frozen(target)).toList());
+        int targetCount=candidates.isEmpty() ? 0 : random.nextInt(Math.min(5,candidates.size()))+1;
         MotionSegment segment=BoardEffect.begin("tornado",player(room,effect.playerId));
         segment.beforeEvent=effect.content;
         int affected=0;
-        for (Tile target : room.board) {
+        for (int i=0; i<targetCount; i++) {
+            Tile target=candidates.remove(random.nextInt(candidates.size()));
             Player owner=owners.get(target.ownerId);
-            if (!target.type.equals("property") || target.level<=0 || owner==null || PropertyEffects.frozen(target)) continue;
             segment.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
             if (PropertyEffects.preventDemolition(room,target)) { segment.boardEffect.afterTiles.add(BoardEffect.appearance(target)); continue; }
             int previousLevel=target.level; long rent=Rules.rent(room,target);
             long compensation=Math.multiplyExact(rent,effect.compensationPercent)/100;
-            target.level--; owner.cash=Math.addExact(owner.cash,compensation); affected++;
+            AnimeService.recordDamage(room,target); target.level--; owner.cash=Math.addExact(owner.cash,compensation); affected++;
             segment.boardEffect.afterTiles.add(BoardEffect.appearance(target));
             log(room,"log",owner.id,target.name+"（"+target.id+"号）建筑从 "+previousLevel+" 级降至 "+target.level+" 级，"+owner.name+" 获得租金补偿 ¥"+compensation);
             HistoryTrace.event(room,"building_downgrade",owner.id,"龙卷风降级与补偿已结算",java.util.Map.of("effectId",effect.id,"tileId",target.id,"previousLevel",previousLevel,"level",target.level,"rent",rent,"compensation",compensation));
         }
         BoardEffect.publish(room,segment);
-        log(room,"龙卷风摧毁停车场：共 "+affected+" 块地产建筑降低一级");
+        log(room,"龙卷风摧毁停车场：随机选中 "+targetCount+" 块地产，共 "+affected+" 块地产建筑降低一级");
     }
     /** 输入全体费用效果，固定座位目标并展开子效果，原 pending 之外保存返回位置。 */
     private void chargeAll(Room room, GameEffect effect) {
@@ -91,7 +93,7 @@ public final class EventService {
         DisasterResult result = new DisasterResult(); result.effectId = effect.id; result.tileId = target.id; result.ownerId = owner.id;
         result.destroyedLevels = target.level; result.loss = Math.multiplyExact(Rules.buildCost(room, target), target.level);
         result.rent = Rules.rent(room, target);
-        target.level = 0; result.eventId = random.id(); room.runtime.lastDisaster = result;
+        AnimeService.recordDamage(room,target); target.level = 0; result.eventId = random.id(); room.runtime.lastDisaster = result;
         log(room, target.name + " 的 " + result.destroyedLevels + " 级建筑被摧毁，" + owner.name + " 损失 " + result.loss);
         if (effect.content == null || !"card".equals(effect.content.pool) || !"fullDemolish".equals(effect.content.mechanism)) publishDestroyed(room, result, owner);
         HistoryTrace.event(room, "disaster", owner.id, "建筑灾害结果已确定", result);

@@ -9,6 +9,8 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PrivatePlayerVo {
+    /** 本回合是否可以打开七五折远程施工选择。 */
+    public boolean remoteBuildAvailable;
     /** 本人活动选择，仅本人可见，未提交为空。 */
     public Integer activitySelection;
     /** 私人选择对应的活动身份。 */
@@ -20,6 +22,8 @@ public class PrivatePlayerVo {
     public String archiveCode;
     /** 仅房主可见的待批准角色申请。 */
     public List<SeatClaimVo> seatClaims = new ArrayList<>();
+    /** 上一个人回合是否存在可投影的非UR主动牌。 */
+    public boolean projectionAvailable;
     /** 本人的完整内容选择。 */
     public ContentChoiceVo choice;
     /** 本人获得的私人事件卡面。 */

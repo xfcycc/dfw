@@ -26,5 +26,29 @@
   "card_naruto_reaper_seal": {
     "foreground": "https://pic.caiguoyu.cn/typora/20261018200914306.webp",
     "background": "https://pic.caiguoyu.cn/typora/20261018200915037.webp"
+  },
+  "fortune_wukong_heaven_riot": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261019190303434.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261019190304449.webp"
+  },
+  "fortune_three_visits": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261019190309044.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261019190310161.webp"
+  },
+  "fortune_three_little_pigs": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261019190314495.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261019190317335.webp"
+  },
+  "card_dragonball_shenron_wish": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261019190321842.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261019190322625.webp"
+  },
+  "card_onepunch_serious_punch": {
+    "foreground": "https://pic.caiguoyu.cn/typora/20261019190324628.webp",
+    "background": "https://pic.caiguoyu.cn/typora/20261019190325465.webp"
+  },
+  "card_genshin_serenitea_pot": {
+    "foreground": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-foreground-2457558e49ab.webp",
+    "background": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-background-c40a7b3fd737.webp"
   }
 }

@@ -1,0 +1,60 @@
+{
+  "purpose": "用户2026-10-19要求以原图重绘七剑合璧、将超电磁炮改为御坂美琴LV5正常击发；参考图仅作生成输入，不作为最终卡图复用。",
+  "references": [
+    {
+      "name": "蓝兔央视原作剧照",
+      "page": "https://www.cntv.cn/program/yhjc/20070301/102564.shtml",
+      "url": "https://www.cntv.cn/program/yhjc/20070301/images/102564_7.jpg",
+      "localPath": "/tmp/dfw-anime-references/hongmao-cctv.jpg",
+      "usedFor": "蓝兔原作脸型、耳朵、毛色、头身比例",
+      "sha256": "8f3ae2eb74f083fdb2f3e9eec23816af30030474edda566d15167da63caf3388"
+    },
+    {
+      "name": "2006版七侠宣传图转载",
+      "page": "https://www.sohu.com/a/208425293_100056879",
+      "url": "https://5b0988e595225.cdn.sohucs.com/q_70%2Cc_zoom%2Cw_640/images/20171204/d497b4530f3d4244bd1569ec851737db.jpeg",
+      "localPath": "/tmp/dfw-anime-references/hongmao-poster.jpg",
+      "usedFor": "七位剑主的原作造型、配色与头身比例",
+      "sha256": "361a556da6c056c71e26c1cde9c905808ec7c8584b0c6ca0ecdfad848746c65f"
+    },
+    {
+      "name": "七剑合璧原动画画面转载",
+      "page": "https://wapbaike.baidu.com/tashuo/browse/content?id=0973544b921bb626d67cdc03",
+      "url": "https://bkimg.cdn.bcebos.com/pic/4bed2e738bd4b31c8701e3373084307f9e2f060852a6",
+      "localPath": "/tmp/dfw-anime-references/hongmao-original.jpg",
+      "usedFor": "合璧队形、原作平涂线条与服装",
+      "sha256": "05c0f8727d2e7692cfad3f9eb6c6cfe102f095fa9bd8bcec58e857e6dd1c7c2e"
+    },
+    {
+      "name": "御坂美琴动画官方角色设定图",
+      "page": "https://toaru-project.com/railgun/chara/01.html",
+      "url": "https://toaru-project.com/railgun/core_sys/images/contents/00000004/base/001.jpg",
+      "localPath": "/tmp/dfw-anime-references/misaka-official.jpg",
+      "usedFor": "LV5常态脸型、茶色短发与常盘台制服",
+      "sha256": "e92f31e9af12c734a1fe148cb57e5dcee41381ad7dc25a3dd48ff64e689eb300"
+    }
+  ],
+  "currentRevision": {
+    "U13": "七剑合璧更名火舞旋风，使用原版海报中的虹猫作角色参考，保留三道剑气机制",
+    "U14": "官方LV5常态形象，强化橙金炮击、冲击环、密集电弧与风压尘屑"
+  },
+  "railgunCopyReferences": [
+    {
+      "url": "https://ws-tcg.com/cardlist/?cardno=ID%2FW13-002",
+      "purpose": "官方授权卡牌“お姉さま”美琴收录的台词，卡面采用中文译写",
+      "original": "ねぇ、超電磁砲って、知ってる？",
+      "translation": "呐，你知道超电磁炮吗？"
+    },
+    {
+      "url": "https://toaru-project.com/index_3/chara/mikoto.html",
+      "purpose": "动画官方角色设定：电磁力加速硬币至三倍音速；常态LV5电击使"
+    }
+  ],
+  "cardCopyReview": {
+    "file": "copy-review.json",
+    "reviewed": 46,
+    "rewrittenDescriptions": 45,
+    "rewrittenQuotes": 40,
+    "policy": "仅有直接证据的句子标为官方/授权台词译写；其余按人物口吻、原作场景或招式名改写，不宣称是逐字原句。所有描述均为本游戏创作的叙事文案，不把游戏专属效果宣称为原作能力。"
+  }
+}

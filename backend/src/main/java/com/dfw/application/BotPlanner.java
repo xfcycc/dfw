@@ -31,6 +31,39 @@ public final class BotPlanner {
         reserve = reserves.get(me.id);
     }
 
+    /** 输入保守标记，按本人候选完成建设选择，材料只来自本人手牌，事件不能阻塞机器人回合。 */
+    private Action constructionChoice(boolean conservative) {
+        ContentChoiceVo c=own.choice; Action a=action("contentDecision"); a.decisionId=c.id; a.accept=false;
+        String kind=c.type.substring("construction_".length());
+        if(kind.equals("remoteConstruction")) { a.accept=!conservative; return a; }
+        List<Tile> candidates=c.tileIds.stream().map(id -> state.board.get(id)).toList();
+        if(candidates.isEmpty()) return a;
+        if(kind.equals("sereniteaPot")) {
+            double best=Double.NEGATIVE_INFINITY;
+            for(int i=0;i<candidates.size();i++) for(int j=i+1;j<candidates.size();j++) {
+                Tile first=candidates.get(i),second=candidates.get(j); int total=first.level+second.level+1;
+                for(int level=0;level<=Rules.MAX_LEVEL;level++) {
+                    int other=total-level; if(other<0 || other>Rules.MAX_LEVEL) continue;
+                    double value=conservative ? 0 : valueAtLevel(first,me.id,level)+valueAtLevel(second,me.id,other)-value(first,me.id)-value(second,me.id);
+                    if(value>best) { best=value; a.accept=true; a.tileIds=List.of(first.id,second.id); a.selection=level; a.tileId=level>0?first.id:second.id; }
+                }
+            }
+            return a;
+        }
+        List<Tile> ordered=conservative ? candidates : candidates.stream().sorted(Comparator.comparingDouble((Tile t) -> upgradeValue(t,t.level+1)).reversed()).toList();
+        a.tileId=ordered.getFirst().id; a.tileIds=List.of(a.tileId); a.accept=true;
+        if(kind.equals("growthLink")) { if(ordered.size()<2) a.accept=false; else a.tileIds=List.of(ordered.get(0).id,ordered.get(1).id); }
+        if(kind.equals("createBuild")) {
+            List<Card> materials=conservative ? c.cards.stream().limit(1).toList() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue)).limit(Math.min(2,ordered.size())).toList();
+            a.accept=!materials.isEmpty(); a.discardCardIds=materials.stream().map(card -> card.id).toList(); a.tileIds=ordered.stream().limit(materials.size()).map(t -> t.id).toList();
+        }
+        if(kind.equals("remote")) {
+            Tile target=ordered.getFirst(); long cost=ConstructionService.remoteCost(economics,target);
+            a.accept=me.cash>=cost && (conservative || me.cash-cost>=reserve && upgradeValue(target,target.level+1)>cost);
+        }
+        return a;
+    }
+
     /** 输入近期是否已主动报价，返回下一合法意图；非本人等待点返回空。 */
     public Action next(boolean offered) {
         if (state.recoveryPending || state.pausedReason != null || !state.status.equals("playing") || me.bankrupt) return null;
@@ -51,7 +84,8 @@ public final class BotPlanner {
             return action(!conservative && me.cash >= cost && me.cash - cost >= reserve && gain >= cost * (horizon == 1 ? .8 : .95) ? state.phase : "pass");
         }
         if (!conservative) {
-            if (state.phase.equals("pre_roll") && !own.activeCardUsed) { Action card = activeCard(); if (card != null) return card; }
+            if (own.remoteBuildAvailable && state.phase.equals("manage")) return action("constructionBuild");
+            if (state.phase.equals("pre_roll") && (!own.activeCardUsed || own.hand.stream().anyMatch(c -> c.projected && c.expiresAtTurn==state.turnNumber))) { Action card = activeCard(); if (card != null) return card; }
             if (!offered) { Action trade = offer(); if (trade != null) return trade; }
             Tile redeem = state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && t.mortgaged && me.cash - Rules.redeemCost(t) >= reserve)
                     .max(Comparator.comparingDouble(t -> rentWhenActive(t, t.level) * traffic(t, me.id) / Math.max(1, Rules.redeemCost(t)))).orElse(null);
@@ -62,6 +96,7 @@ public final class BotPlanner {
 
     /** 输入保守标记，完成本人七类内容选择；未知类型作为规划错误报告。 */
     private Action choice(boolean conservative) {
+        if(own.choice.type.startsWith("construction_")) return constructionChoice(conservative);
         ContentChoiceVo c = own.choice; Action a = action("contentDecision"); a.decisionId = c.id; a.accept = true;
         switch (c.type) {
             case "hand_limit" -> a.keepCardIds = (conservative ? c.cards.stream() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue).reversed())).limit(c.handLimit > 0 ? c.handLimit : 6).map(card -> card.id).toList();
@@ -78,6 +113,10 @@ public final class BotPlanner {
                 if(conservative) a.accept=false;
                 else { a.discardCardIds=c.cards.stream().filter(card -> keepValue(card)<=startIncome()*.3).map(card -> card.id).toList(); if(a.discardCardIds.isEmpty()) a.discardCardIds=List.of(c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).orElseThrow().id); }
             }
+            case "anime_projection" -> a.cardId=c.cards.stream().max(Comparator.comparingDouble(this::keepValue)).orElseThrow().id;
+            case "anime_defense" -> a.cardId=c.cards.stream().findFirst().orElseThrow().id;
+            case "anime_rewind" -> { a.accept=!conservative && state.dice!=null && state.dice<=2; if(a.accept) a.cardId=c.cards.getFirst().id; }
+            case "anime_vote" -> { a.playerId=c.playerIds.stream().max(Comparator.comparingLong(id -> person(id).netWorth)).orElse(null); a.accept=a.playerId!=null; }
             case "gamble" -> a.accept = !conservative && gamble(c.content);
             case "release" -> { a.cardId = own.hand.stream().filter(card -> card.kind.equals("release")).map(card -> card.id).findFirst().orElse(null); a.accept = a.cardId != null; }
             default -> throw new GameError("机器人尚未支持的私人选择：" + c.type);
@@ -89,6 +128,8 @@ public final class BotPlanner {
     private Action payment(boolean offered, boolean conservative) {
         PendingDecision debt = state.pending;
         if (!debt.defenseResolved) return paymentDefense(debt);
+        Card recovery=own.hand.stream().filter(c -> c.kind.equals("deathReturn")).findFirst().orElse(null);
+        if(recovery!=null && (debt.creditorId!=null || state.board.stream().noneMatch(t -> me.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t))) && me.cash + state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t)).mapToLong(t -> Rules.propertyLiquidationValue(economics,t)).sum()<debt.amount) { Action recover=action("card"); recover.cardId=recovery.id; return recover; }
         if (me.cash >= debt.amount) return action("payDebt");
         if (!offered && !conservative && debt.creditorId != null) { Action trade = offer(); if (trade != null) return trade; }
         /*
@@ -337,8 +378,18 @@ public final class BotPlanner {
     private Action activeCard() {
         Action best = null; double bestScore = 0;
         for (Card c : own.hand) {
+            if(own.activeCardUsed && !(c.projected && c.expiresAtTurn==state.turnNumber)) continue;
+            if(AnimeService.DEFENSE.contains(c.kind) || c.kind.equals("swordRain") && c.lastUsedTurn==state.turnNumber) continue;
             Action candidate = action("card"); candidate.cardId = c.id; double score = Double.NEGATIVE_INFINITY;
             switch (c.kind) {
+                case "geoResonance", "growthLink", "sereniteaPot", "createBuild", "remoteConstruction", "shrineGrowth" -> {
+                    List<Tile> targets=state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && !AnimeService.iced(t) && !t.mortgaged && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id)).toList();
+                    if(!targets.isEmpty() && (!Set.of("growthLink","sereniteaPot").contains(c.kind) || targets.size()>=2) && (!c.kind.equals("createBuild") || own.hand.size()>1)) {
+                        score=targets.stream().mapToDouble(t -> upgradeValue(t,t.level+1)).max().orElse(0);
+                        if(c.kind.equals("geoResonance")) for(Tile t:targets) { double gain=0; for(Tile n:targets) if(n.id==t.id || n.id==Math.floorMod(t.id-1,state.board.size()) || n.id==(t.id+1)%state.board.size()) gain+=upgradeValue(n,n.level+1); score=Math.max(score,gain); }
+                        if(c.kind.equals("remoteConstruction")) score*=.6;
+                    }
+                }
                 case "remote" -> {
                     for (int point = 1; point <= 6; point++) {
                         double gain = movementValue(me, me.position, point) - rollValue(me, me.position, 0);
@@ -400,10 +451,42 @@ public final class BotPlanner {
         return best;
     }
 
-    /** 输入新增主动卡和待填命令，仅按公开地产、位置、手牌数量和本人牌面评分并设置合法目标。 */
+    /** 输入新增主动卡和待填命令，按公开局面评分并设置合法目标，暗影步限前后六格；返回最高收益评分。 */
     private double expansionCard(Card card, Action action) {
         double best=Double.NEGATIVE_INFINITY, base=startIncome()*.25;
         switch(card.kind) {
+            case "projection" -> { return own.projectionAvailable ? base : best; }
+            case "contract" -> { return (me.handLimit==null?6:me.handLimit)>1 ? 3000-base*2 : best; }
+            case "starburst", "corruption", "sevenSwords" -> {
+                List<Tile> candidates=state.board.stream().filter(t -> t.type.equals("property") && t.ownerId!=null && !me.id.equals(t.ownerId) && t.level>0 && !PropertyEffects.frozen(t)).sorted(Comparator.comparingDouble((Tile t) -> Rules.buildCost(economics,t)*t.level).reversed()).toList();
+                if(candidates.isEmpty()) return best; Tile t=candidates.getFirst(); action.tileId=t.id;
+                if(card.kind.equals("sevenSwords")) action.tileIds=java.util.Collections.nCopies(Math.min(3,t.level+PropertyEffects.shieldCharges(t)),t.id);
+                return Rules.buildCost(economics,t)*Math.min(t.level,card.kind.equals("starburst")?2:3);
+            }
+            case "timeRestore" -> {
+                Tile t=state.board.stream().filter(v -> me.id.equals(v.ownerId) && me.id.equals(v.damageOwnerId) && v.damageLevel>v.level && me.personalTurns<=v.damageUntilTurn && !PropertyEffects.frozen(v)).max(Comparator.comparingLong(v -> Rules.buildCost(economics,v)*(v.damageLevel-v.level))).orElse(null);
+                if(t!=null) { action.tileId=t.id; return Rules.buildCost(economics,t)*(t.damageLevel-t.level); }
+            }
+            case "swordRain", "commandSpell" -> {
+                for(PublicPlayerVo p:state.players) if(!p.bankrupt && !p.id.equals(me.id)) {
+                    if(card.kind.equals("swordRain")) { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6 || p.skipTurns>0) continue; double gain=base*threat(p); if(gain>best) { best=gain; action.playerId=p.id; } }
+                    else for(int point=1;point<=6;point++) { double gain=-threat(p)*movementValue(p,p.position,point); if(gain>best) { best=gain; action.playerId=p.id; action.point=point; } }
+                }
+            }
+            case "railgun" -> {
+                for(int direction:List.of(-1,1)) { double gain=0; for(int i=1;i<=6;i++) { Tile t=state.board.get(Math.floorMod(me.position+direction*i,state.board.size())); if(!PropertyEffects.frozen(t) && t.ownerId!=null && !me.id.equals(t.ownerId)) gain+=t.level>0?Rules.buildCost(economics,t):0; } if(gain>best) { best=gain; action.direction=direction; } }
+            }
+            case "explosion" -> {
+                for(Tile start:state.board) { double gain=0; for(int i=0;i<3;i++) { Tile t=state.board.get((start.id+i)%state.board.size()); if(t.type.equals("property") && !PropertyEffects.frozen(t)) gain+=Rules.buildCost(economics,t)*t.level*(me.id.equals(t.ownerId)?-1:1); } if(gain>best) { best=gain; action.tileId=start.id; } } return best-base;
+            }
+            case "absoluteZero" -> {
+                for(Tile start:state.board) { double gain=state.board.stream().filter(t -> t.type.equals("property") && AnimeService.boardSide(state.board.size(),t.id)==AnimeService.boardSide(state.board.size(),start.id) && !me.id.equals(t.ownerId) && !PropertyEffects.frozen(t)).mapToDouble(t -> rent(t,t.level)*traffic(t,me.id)).sum(); if(gain>best) { best=gain; action.tileId=start.id; } }
+            }
+            case "voidTears" -> {
+                Tile from=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)).min(Comparator.comparingInt(t -> GameSupport.nearbyDistance(me.position,t.id,state.board.size()))).orElse(null);
+                Tile to=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && t!=from).max(Comparator.comparingDouble(t -> landingValue(me,t.id))).orElse(null);
+                if(from!=null && to!=null) { action.tileId=from.id; action.secondTileId=to.id; return Math.max(0,landingValue(me,to.id)-landingValue(me,from.id)); }
+            }
             case "discover" -> { return base*1.5; }
             case "recycle" -> { return own.hand.stream().anyMatch(c -> !c.id.equals(card.id) && keepValue(c)<=base) ? base : best; }
             case "handDestruction" -> { return base * (state.players.stream().filter(p -> !p.bankrupt && !p.id.equals(me.id)).mapToInt(p -> p.cardCount==null?0:p.cardCount).average().orElse(0) - Math.max(0,own.hand.size()-1) + .5); }
@@ -429,7 +512,7 @@ public final class BotPlanner {
                             gain=0; for(int point=1;point<=6;point++) gain+=threat(p)*(movementValue(p,p.position,point)-movementValue(p,p.position,Math.floorDiv(point,2)))/6;
                         }
                         case "reaper" -> { if((me.handLimit==null?6:me.handLimit)<=1 || (p.handLimit==null?6:p.handLimit)<=1) continue; gain=base*(threat(p)+.5); }
-                        case "shadowstep" -> gain=landingValue(me,p.position)+(p.position==0?startIncome():0)-rollValue(me,me.position,0);
+                        case "shadowstep" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6) continue; gain=landingValue(me,p.position)+(p.position==0?startIncome():0)-rollValue(me,me.position,0); }
                         default -> throw new IllegalStateException("未处理的新增玩家道具");
                     }
                     if(gain>best) { best=gain; action.playerId=p.id; }
@@ -439,7 +522,7 @@ public final class BotPlanner {
                 for(Tile t:state.board) if(t.type.equals("property") && !PropertyEffects.frozen(t)) {
                     boolean self=me.id.equals(t.ownerId); double gain;
                     switch(card.kind) {
-                        case "shield" -> { if(!self || t.demolitionShield || t.level==0) continue; gain=Rules.buildCost(economics,t)*t.level*.5; }
+                        case "shield" -> { if(!self || t.demolitionShield || t.level==0) continue; gain=Rules.buildCost(economics,t)*t.level*.5*card.parameters.getOrDefault("charges",1L); }
                         case "exchange" -> { long cost=PropertyEffects.baseRent(economics,t); if(t.ownerId==null || self || me.cash<cost) continue; gain=value(t,me.id)-cost; }
                         case "kamui" -> { if(t.ownerId==null || self) continue; gain=rent(t,t.level)*traffic(t,t.ownerId); }
                         case "blackhole" -> {
@@ -538,16 +621,17 @@ public final class BotPlanner {
         return landingValue(p, to) + movementIncome(p, from, steps, true) + (horizon == 1 ? 0 : .85 * future(p)[to]);
     }
 
-    /** 输入玩家、起点与步数，逐格估计起点奖励，遵守路障和向后离开起点不领奖的规则。 */
+    /** 输入玩家、起点、基础步数及首次移动标记，返回遵守路障的起点收入；仅正向经过或最终停留领奖。 */
     private double movementIncome(PublicPlayerVo p, int from, int steps, boolean first) {
         int base = first && p.nextRollHalf ? Math.floorDiv(steps,2) : steps;
         int count = first && p.nextMoveDouble ? base * 2 : base, position = from; double income = 0;
         if (count == 0) return from == 0 ? startIncome() : 0;
         for (int i = 0; i < Math.abs(count); i++) {
             position = Math.floorMod(position + Integer.signum(count), state.board.size());
-            if (position == 0) income += startIncome();
+            if (position == 0 && count > 0) income += startIncome();
             if (p.trapImmunityTurns == 0 && !PropertyEffects.frozen(state.board.get(position)) && (state.board.get(position).barrier || state.board.get(position).meteorCharges>0)) break;
         }
+        if (count < 0 && position == 0) income += startIncome();
         return income;
     }
     /** 输入公开玩家，动态规划其后续公平移动的折扣收益，比较当前行动对后续位置的影响。 */

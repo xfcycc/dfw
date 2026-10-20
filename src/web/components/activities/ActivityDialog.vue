@@ -80,7 +80,8 @@ watch(() => `${activity.value?.id}:${activity.value?.round}:${activity.value?.st
 onBeforeUnmount(() => { clearInterval(hoof); });
 </script>
 <template>
-  <div v-if="activity" class="activity-entry"><div><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div><button v-if="activity.stage !== 'payment'" class="button primary small" :disabled="paused" @click="open = true">进入活动</button><small v-else>请先处理工作台的费用待办</small></div>
+  <button v-if="activity && activity.stage !== 'payment'" type="button" class="turn-action-status turn-action-link activity-action" :disabled="paused" aria-haspopup="dialog" :aria-expanded="open && !paused && !game.room?.recoveryPending" :title="progress || '点击进入活动'" @click="open = true"><span class="activity-action-copy"><strong>当前行动：{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></span><span class="activity-action-enter">进入活动 <span aria-hidden="true">↗</span></span></button>
+  <slot v-else />
   <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="open = false">
     <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div>

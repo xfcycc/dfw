@@ -48,6 +48,8 @@ public class BoardEffect {
         public boolean barrier;
         /** 拆除护盾。 */
         public boolean demolitionShield;
+        /** 防拆护盾剩余层数。 */
+        public int demolitionShieldCharges;
         /** 宝藏标记。 */
         public boolean treasure;
         /** 演唱会层数。 */
@@ -73,7 +75,7 @@ public class BoardEffect {
     /** 输入目标地产，返回独立的公开外观快照，后续业务写入不会改动该快照。 */
     public static TileState appearance(Tile tile) {
         TileState state = new TileState(); state.id = tile.id; state.ownerId = tile.ownerId; state.level = tile.level;
-        state.barrier = tile.barrier; state.demolitionShield = tile.demolitionShield; state.treasure = tile.treasure;
+        state.barrier = tile.barrier; state.demolitionShield = tile.demolitionShield; state.demolitionShieldCharges = PropertyEffects.shieldCharges(tile); state.treasure = tile.treasure;
         state.concertStacks = tile.concertStacks; state.meteorCharges = tile.meteorCharges;
         state.kamuiCasterId = tile.kamuiCasterId; state.kamuiTurns = tile.kamuiTurns; state.kamuiAppliedTurn = tile.kamuiAppliedTurn;
         return state;

@@ -50,9 +50,11 @@ public final class InputValidation {
                     }
                 }
             }
-            case "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
+            case "constructionBuild", "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
-            case "contentDecision" -> { uuid(action,"decisionId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
+            case "contentDecision" -> { uuid(action,"decisionId");
+                if(action.has("tileIds")) { JsonNode ids=action.get("tileIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=2); for(JsonNode id:ids) number(id,0,Rules.MAX_TILES-1); }
+                if(action.has("selection")) number(action.get("selection"),0,Rules.MAX_LEVEL); if(action.has("playerId")) uuid(action,"playerId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
                 if(action.has("keepCardIds")) { JsonNode ids=action.get("keepCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=6); for(JsonNode id:ids) check(id.isString() && (id.asString().matches(UUID_PATTERN) || id.asString().equals("00000000-0000-0000-0000-000000000000") || id.asString().equalsIgnoreCase("ffffffff-ffff-ffff-ffff-ffffffffffff"))); }
                 if(action.has("discardCardIds")) { JsonNode ids=action.get("discardCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=6); for(JsonNode id:ids) check(id.isString() && id.asString().matches(UUID_PATTERN)); }
             }
@@ -65,7 +67,7 @@ public final class InputValidation {
             case "tradeRespond" -> bool(action, "accept");
             case "removePlayer" -> uuid(action, "playerId");
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> number(action.get("tileId"), 0, Rules.MAX_TILES - 1);
-            case "card" -> { uuid(action, "cardId"); if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, Rules.MAX_TILES - 1); if (action.has("playerId")) uuid(action, "playerId"); if (action.has("secondPlayerId")) uuid(action, "secondPlayerId"); }
+            case "card" -> { uuid(action, "cardId"); if(action.has("secondTileId")) number(action.get("secondTileId"),0,Rules.MAX_TILES-1); if(action.has("direction")) { number(action.get("direction"),-1,1); if(action.get("direction").asInt()==0) throw new GameError("方向必须为1或-1"); } if(action.has("tileIds")) { if(!action.get("tileIds").isArray() || action.get("tileIds").size()>3) throw new GameError("最多分配三道剑气"); for(var id:action.get("tileIds")) number(id,0,Rules.MAX_TILES-1); } if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, Rules.MAX_TILES - 1); if (action.has("playerId")) uuid(action, "playerId"); if (action.has("secondPlayerId")) uuid(action, "secondPlayerId"); }
             case "tradeOffer" -> { uuid(action, "toId"); number(action.get("giveCash"), 0, 9007199254740991L); number(action.get("wantCash"), 0, 9007199254740991L); tiles(action.get("giveTiles")); tiles(action.get("wantTiles")); if (action.has("debtCredit")) number(action.get("debtCredit"), 0, 9007199254740991L); }
             default -> check(false);
         }
@@ -75,7 +77,7 @@ public final class InputValidation {
             case "activityInput" -> List.of("activityId","activityRound","selection","point","playerId");
             case "chat" -> List.of("message", "references");
             case "assignSeat" -> List.of("claimId");
-            case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds","discardCardIds");
+            case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds","discardCardIds","tileIds","selection","playerId");
             case "paymentDefense" -> List.of("decisionId","cardId");
             case "ready" -> List.of("value");
             case "setName" -> List.of("name");
@@ -85,7 +87,7 @@ public final class InputValidation {
             case "tradeRespond" -> List.of("accept");
             case "removePlayer" -> List.of("playerId");
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> List.of("tileId");
-            case "card" -> List.of("cardId", "point", "tileId", "playerId", "secondPlayerId");
+            case "card" -> List.of("cardId", "point", "tileId", "playerId", "secondPlayerId", "secondTileId", "tileIds", "direction");
             case "tradeOffer" -> List.of("toId", "giveCash", "wantCash", "giveTiles", "wantTiles", "debtCredit");
             default -> List.of();
         };

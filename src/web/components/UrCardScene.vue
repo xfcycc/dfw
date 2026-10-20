@@ -40,6 +40,14 @@ function imageFailed(): void { failed.value = true; }
     </svg>
     <svg v-else-if="scene.theme === 'reaper'" class="scene-energy" viewBox="0 0 1000 1000"><g class="seal-ribbons"><path d="M-80 335C160 350 200 670 480 590S760 620 1080 810M-80 780C190 520 380 830 640 730S850 450 1080 530" /><path d="M-80 335C160 350 200 670 480 590S760 620 1080 810M-80 780C190 520 380 830 640 730S850 450 1080 530" /></g></svg>
     <svg v-else-if="scene.theme === 'coin'" class="scene-energy" viewBox="0 0 1000 1000"><path class="coin-thunder" d="M790 30 740 150 800 170 705 310 760 340 690 470" /></svg>
+    <svg v-else-if="scene.theme === 'punch'" class="scene-energy" viewBox="0 0 1000 1000"><g class="punch-wave"><circle cx="780" cy="270" r="125" /><circle cx="780" cy="270" r="210" /><path d="M780 270 1000 50M780 270 1000 270M780 270 980 520M780 270 550 20" /></g></svg>
+    <svg v-else-if="scene.theme === 'wish'" class="scene-energy" viewBox="0 0 1000 1000"><ellipse class="wish-aura" cx="500" cy="795" rx="320" ry="90" /></svg>
+    <svg v-else-if="scene.theme === 'teapot'" class="scene-energy teapot-energy" viewBox="0 0 1000 1000">
+      <ellipse class="teapot-aura" cx="640" cy="735" rx="280" ry="80" />
+      <path class="teapot-route" d="M545 710C925 660 1010 490 835 435S500 390 635 240" />
+      <path class="teapot-route teapot-return" d="M635 240C430 325 650 410 835 435S1005 680 545 710" />
+      <g class="teapot-build"><path d="M692 235 775 192 858 235 846 246 704 246ZM713 252V317H838V252M740 252V317M810 252V317M702 322H850" /></g>
+    </svg>
     <span v-for="spark in 6" :key="spark" class="scene-mote" :style="{ '--spark': spark }"></span>
   </div>
 </template>
@@ -111,5 +119,59 @@ function imageFailed(): void { failed.value = true; }
 @keyframes reaper-spirit { 0%, 100% { transform: scale(1.025) translateY(.6%); } 50% { transform: scale(1.04) translateY(-1.2%); } }
 @keyframes reaper-cast { 0%, 100% { transform: rotate(-1deg); } 50% { transform: translate(.8%, -.6%) rotate(1deg); } }
 @keyframes seal-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -308; } }
+.wukong { --scene-accent: #ffd076; }
+.wukong .scene-actor { transform-origin: 52% 80%; animation: wukong-swing 5s ease-in-out infinite; }
+.wukong .scene-background { animation: palace-shake 5s ease-in-out infinite; }
+.wukong .scene-light { background: radial-gradient(ellipse at 55% 50%, #ffe09970, transparent 65%); }
+.wukong .scene-mote { width: 7px; height: 10px; border-radius: 1px; background: #66a79a; box-shadow: none; animation: falling-tile 5s ease-in infinite; }
+.visits { --scene-accent: #ffe4a1; }
+.visits .scene-actor { transform-origin: 50% 82%; animation: visits-bow 7s ease-in-out infinite; }
+.visits .scene-light { background: linear-gradient(120deg, #ffe8ae80, transparent 55%); }
+.visits .scene-mote { width: 5px; height: 8px; background: #bfd66c; box-shadow: none; animation-duration: 9s; }
+.pigs { --scene-accent: #ffce87; }
+.pigs .scene-actor { transform-origin: 50% 85%; animation: pigs-build 4s ease-in-out infinite; }
+.pigs .scene-background { transform-origin: 40% 85%; animation: house-rise 8s ease-in-out infinite; }
+.pigs .scene-light { background: radial-gradient(ellipse at 45% 45%, #fff2b760, transparent 65%); }
+.pigs .scene-mote { width: 6px; height: 8px; border-radius: 1px; background: #bd754e; box-shadow: none; animation-name: wood-chip; }
+.wish { --scene-accent: #ffdb68; }
+.wish .scene-background { transform-origin: 50% 36%; animation: dragon-hover 9s ease-in-out infinite; }
+.wish .scene-actor { transform-origin: 52% 84%; animation: wish-reach 6s ease-in-out infinite; }
+.wish .scene-light { background: radial-gradient(ellipse at 50% 79%, #ffcb21b0, transparent 57%); animation: wish-glow 6s ease-in-out infinite; }
+.wish-aura { stroke-width: 5; transform-origin: 50% 79.5%; animation: wish-glow 6s ease-in-out infinite; }
+.punch { --scene-accent: #fff0ce; }
+.punch .scene-actor { transform-origin: 53% 79%; animation: punch-strike 5s ease-in-out infinite; }
+.punch .scene-background { animation: palace-shake 5s ease-in-out infinite; }
+.punch .scene-light { background: radial-gradient(ellipse at 78% 27%, #fff3c8b0, transparent 64%); animation: punch-flash 5s ease-in-out infinite; }
+.punch .scene-mote { width: 9px; height: 7px; border-radius: 0; background: #8f827b; box-shadow: none; animation-name: wood-chip; }
+.punch-wave { transform-origin: 78% 27%; animation: punch-ring 5s ease-out infinite; }
+@keyframes wukong-swing { 0%, 100% { transform: rotate(-1deg); } 38% { transform: translate(-.6%, .5%) rotate(-2deg); } 55% { transform: translate(.7%, -.7%) rotate(1.5deg); } }
+@keyframes palace-shake { 0%, 38%, 70%, 100% { transform: scale(1.035); } 46% { transform: translate(.35%, -.2%) scale(1.04); } 52% { transform: translate(-.3%, .25%) scale(1.04); } 58% { transform: translate(.15%, -.1%) scale(1.04); } }
+@keyframes falling-tile { 0% { opacity: 0; transform: translate(0, -150px) rotate(-35deg); } 20%, 70% { opacity: .8; } 100% { opacity: 0; transform: translate(20px, 70px) rotate(120deg); } }
+@keyframes visits-bow { 0%, 100% { transform: rotate(-.35deg); } 45% { transform: translateY(.6%) rotate(.6deg); } 65% { transform: translateY(-.25%) rotate(-.2deg); } }
+@keyframes pigs-build { 0%, 100% { transform: none; } 35% { transform: translateY(.6%) scaleY(.99); } 55% { transform: translateY(-.7%) rotate(.5deg); } }
+@keyframes house-rise { 0%, 100% { transform: scale(1.035); } 55% { transform: translateY(-.5%) scale(1.045); } }
+@keyframes dragon-hover { 0%, 100% { transform: translateY(.3%) scale(1.035) rotate(-.35deg); } 50% { transform: translateY(-.8%) scale(1.055) rotate(.4deg); } }
+@keyframes wish-reach { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: translateY(-.8%) rotate(.7deg); } }
+@keyframes wish-glow { 0%, 100% { opacity: .2; } 50% { opacity: .65; } }
+@keyframes punch-strike { 0%, 30%, 100% { transform: none; } 42% { transform: translate(-.4%, .5%) scale(.995); } 53%, 58% { transform: translate(.9%, -.7%) scale(1.018); } 72% { transform: none; } }
+@keyframes punch-flash { 0%, 35%, 75%, 100% { opacity: .1; } 52% { opacity: .65; } }
+@keyframes punch-ring { 0%, 39%, 100% { opacity: 0; transform: scale(.55); } 48% { opacity: .7; } 68% { opacity: 0; transform: scale(1.6); } }
+.teapot { --scene-accent: #ffe6a0; }
+.teapot .scene-actor { transform-origin: 30% 90%; animation: teapot-breathe 8s ease-in-out infinite; }
+.teapot .scene-secondary { transform-origin: 75% 28%; animation: teapot-relocate 8s ease-in-out infinite; }
+.teapot .scene-light { background: radial-gradient(ellipse at 64% 72%, #ffcf6280, transparent 62%); animation: teapot-glow 8s ease-in-out infinite; }
+.teapot .scene-mote { top: 74%; left: calc(42% + var(--spark) * 7%); width: 5px; height: 8px; border-radius: 70% 0 70% 0; animation: teapot-leaf 6s linear infinite; animation-delay: calc(var(--spark) * -1s); }
+.teapot-energy { filter: drop-shadow(0 0 4px #eeb54c); }
+.teapot-aura { transform-origin: 64% 73.5%; stroke-width: 4; animation: teapot-ring 8s ease-out infinite; }
+.teapot-route { stroke-width: 4; stroke-dasharray: 95 1150; animation: teapot-flow 4s linear infinite; }
+.teapot-return { stroke-width: 2; animation-delay: -2s; }
+.teapot-build { transform-origin: 77.5% 32%; stroke-width: 2; animation: teapot-build 8s ease-in-out infinite; }
+@keyframes teapot-breathe { 0%, 100% { transform: none; } 50% { transform: translateY(-.6%) rotate(.3deg); } }
+@keyframes teapot-relocate { 0%, 100% { transform: translate(-2%, 1%); } 35% { transform: translate(3%, -2%); } 65% { transform: translate(1%, -3%); } }
+@keyframes teapot-glow { 0%, 100% { opacity: .18; } 40%, 65% { opacity: .55; } }
+@keyframes teapot-ring { 0%, 100% { opacity: 0; transform: scale(.8); } 20% { opacity: .65; } 75% { opacity: 0; transform: scale(1.2); } }
+@keyframes teapot-flow { from { stroke-dashoffset: 1245; } to { stroke-dashoffset: 0; } }
+@keyframes teapot-build { 0%, 15%, 85%, 100% { opacity: 0; transform: translateY(12px) scaleY(.7); } 40%, 60% { opacity: .7; transform: translateY(-12px) scaleY(1); } }
+@keyframes teapot-leaf { 0% { opacity: 0; transform: translate(0, 0) rotate(-35deg) scale(.4); } 25%, 60% { opacity: .85; } 100% { opacity: 0; transform: translate(25px, -125px) rotate(100deg) scale(.8); } }
 @media (prefers-reduced-motion: reduce) { .ur-scene { display: none; } }
 </style>

@@ -9,6 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameRuntime {
+    /** 建设扩展的连接、施工机会和多人奖励，旧快照可缺省。 */
+    public ConstructionState construction;
     /** 当前阶段所属的回合编号。 */
     public int stageTurnNumber;
     /** 当前配置阶段序列的执行位置。 */
@@ -45,6 +47,8 @@ public class GameRuntime {
     public String playedCardPlayerId;
     /** 本次骰子的加码，只作用于同一次连续移动。 */
     public int rollBonus;
+    /** 动漫扩展的回合记录、攻击响应和秘密投票，仅保存在内部快照。 */
+    public AnimeState anime = new AnimeState();
     /** 本局已完成的效果数量。 */
     public long settledEffects;
 }

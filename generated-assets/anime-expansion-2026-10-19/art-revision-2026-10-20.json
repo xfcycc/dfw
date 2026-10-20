@@ -1,0 +1,78 @@
+{
+  "date": "2026-10-20",
+  "status": "bound; original art breathing and sheen retained",
+  "items": [
+    {
+      "code": "U08",
+      "skinId": "card_anime_u08",
+      "name": "死亡回归",
+      "artDesign": "菜月昴攥紧胸前运动服，嫉妒魔女莎缇拉以银发黑纱虚影浮现身后；黑色手臂从暗影中包围并触及胸口，微弱红色心跳光与紫黑雾气交织，熟悉街景在裂隙中重叠，表现回归与魔女禁忌的压迫感。",
+      "prompt": "REDESIGN the attached Re:Zero Return by Death card illustration to make the WITCH OF ENVY unmistakably present and the image dramatically richer. Use attachment as Subaru character likeness, tracksuit and original Re:Zero 2D anime style reference; composition and lighting should be entirely redesigned. Preserve original natural anime character proportions, original costumes, sharp emotional expressive cel shading and meticulous 2D anime illustration, NOT chibi, NOT 3D or live action. One coherent square full-bleed scene without panels. Natsuki Subaru in the lower-central foreground, recognizable short spiky black hair, expressive scared wide eyes, black white and orange sports tracksuit, one trembling normal human hand clutching the fabric over his chest, breath caught, sweating lightly, desperately determined rather than a confident spell-caster. His face stays clearly visible and dominates foreground. Behind and above him looms the large ominous SILHOUETTE OF SATELLA, the Witch of Envy: long flowing SILVER hair, BLACK flowing dress and BLACK VEIL, ethereal shadowed face with a faint violet eye under veil, never Emilia's white-purple outfit. She is visible enough to recognize as a female silver-haired witch, not just a vague black blot or generic hooded monster. Her veiled form and silver hair occupy upper center/right, as if leaning close to Subaru, with the black gown dissolving into dark violet smoke. Several long slender black SHADOW HANDS with distinct five-finger silhouettes emerge from the lower sides and behind her, curving around Subaru in a possessive enclosing gesture, one ghostlike shadow palm reaching toward his chest. Show a small concentrated scarlet heartbeat GLOW THROUGH the intact opaque tracksuit under that shadow hand, a symbolic pulsation / thin red contour, NO exposed or anatomical heart, no gore, injury or torn flesh. Layer midnight black, indigo, violet backlight and red heart accent; iridescent purple edges define shadow hands and silhouette while cold light keeps Subaru's eyes readable. A recognizable Lugunica medieval market street recedes behind him, fragmented and subtly repeated with translucent temporal echo outlines and angular glasslike cracks, one warm familiar street corner persisting through a rift while darkness swallows the rest. This is an evocative visual metaphor for involuntary return and the witch's taboo, not Subaru consciously casting a portal spell. No generic clock face, no hourglass, no spell staff, no UI. Rich directional light, shadow tendrils, hair strands, drifting purple motes and depth, dramatic tension, clear separation of foreground and witch. No readable text, speech, captions, logos, watermark, frame, rarity badge, dice or money.",
+      "outputPath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-c6bb492a-e30b-4c15-be10-0469c78d3c9f.png",
+      "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe as /Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-c6bb492a-e30b-4c15-be10-0469c78d3c9f.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "sourceSha256": "886b3914a4ac9fb613b0604e4ea8a5650c1ed6e0ad8edcf7cace81a84ba4ed15",
+      "webpPath": "/tmp/dfw-anime-art-revision-20261020/U08.webp",
+      "webpSha256": "89cdcc6db09f729c0174fceb7f966e792f63fd02acff6a48368c1e9c4a4e5d57",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 303080,
+      "localMD5": "rN+BW5ZFot5+C7sp/QqCIA==",
+      "url": "https://pic.caiguoyu.cn/typora/20261020003647155.webp",
+      "httpStatus": 200,
+      "contentType": "image/webp",
+      "contentLength": 303080,
+      "contentMD5": "rN+BW5ZFot5+C7sp/QqCIA==",
+      "referenceImagePath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-2da6088b-0cca-461f-aec7-0d25b6b4b765.png",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-c6bb492a-e30b-4c15-be10-0469c78d3c9f.png",
+      "artDirection": "Subaru clutches his chest amid the Witch of Envy Satella's black veil, flowing silver hair and enclosing shadow hands; red heartbeat light under intact clothes, fractured echoes of the Lugunica street, original Re Zero anime proportions and dark violet cel-animation atmosphere."
+    },
+    {
+      "code": "U09",
+      "skinId": "card_anime_u09",
+      "name": "爆裂魔法",
+      "artDesign": "惠惠在前景高举法杖发动爆裂魔法，巨型红色多重法阵与白炽爆炸占据画面主体；同心冲击环、翻卷火海、碎石与风压强化威力，和真仅作为远处躲避的次要人物。",
+      "prompt": "REDESIGN the attached Konosuba game card illustration into the ACTUAL CLIMAX OF EXPLOSION MAGIC. Use the attachment ONLY as the established character, outfit and anime art-style reference. Completely replace the exhausted seated pose and quiet distant explosion composition. Keep authentic original Konosuba anime character proportions, crisp expressive 2D cel-animation linework, original costumes and faces; NOT chibi, NOT 3D, NOT photorealistic. One spectacular square full-bleed unified action scene, no panels. Megumin is the recognizable primary caster in the lower-left foreground, about 40 percent of the picture, standing firmly on a rocky hill with a dynamic confident shouting expression, short dark-brown hair, crimson eyes, iconic large black wizard hat with red band and yellow cross designs, red mage dress, black cape with yellow trim, black fingerless gloves. Both hands control her long original wooden staff with the large red orb, staff raised diagonally toward the upper-right target, cape and hat ribbons whipping backward. Preserve natural anime body proportions, wholesome action with modest clothing, no fanservice. The real HERO of the composition is the immense EXPLOSION: a towering white-hot detonation sphere and surging orange/crimson fire pillar dominate the upper-right and middle TWO THIRDS, clearly much larger than the caster, with a spectacular nested sequence of red geometric magic circles high across the sky (rings, triangles, radial ticks, no readable lettering), brilliant straight energy converging into the impact, concentric expanding shockwave discs, incandescent filaments, rolling fire-cloud petals, airborne rock shards, blast wind bending the hilltop grass, vivid warm rim-light outlining Megumin against cool violet foreground shadows. Epic original-anime spell scale with detailed drawn effects; keep the caster's face and staff legible at small card size. A very small Kazuma in green cloak can be far lower-right shielding his eyes from the blast, secondary and not blocking the magic. Bright high contrast and dense but purposeful energy, strong depth from caster to blast; do not reduce magic to a small mushroom far in the background. No blood, wounds or dying people. No text, captions, logos, watermark, card frame, rarity symbol, interface, money, dice or board-game symbols.",
+      "outputPath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-65b16742-79f8-4c88-a633-e89dab447058.png",
+      "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe as /Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-65b16742-79f8-4c88-a633-e89dab447058.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "sourceSha256": "e9042c4cd6fd10ddb17e8641bd2573330ebb08bed2d1693086500ad50fec007e",
+      "webpPath": "/tmp/dfw-anime-art-revision-20261020/U09.webp",
+      "webpSha256": "27de65b63b2f8071de4e93eb2e30ded9ae3667d662e65aa83ce3eb89ae043029",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 461754,
+      "localMD5": "YpRbqpJlsMmDvxFDLCu2zw==",
+      "url": "https://pic.caiguoyu.cn/typora/20261020003647156.webp",
+      "httpStatus": 200,
+      "contentType": "image/webp",
+      "contentLength": 461754,
+      "contentMD5": "YpRbqpJlsMmDvxFDLCu2zw==",
+      "referenceImagePath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-58ff472d-2e03-4466-afa3-537c0eb1d222.png",
+      "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a153c4-9bfe-7a40-950c-a2d83bd43ffe/exec-65b16742-79f8-4c88-a633-e89dab447058.png",
+      "artDirection": "Megumin stands and unleashes Explosion with her original staff, massive crimson nested magic circles, white-hot detonation, surging fire and concentric blast waves dominating the image; a small Kazuma braces in the distance, original Konosuba anime proportions and action cel-animation style."
+    }
+  ],
+  "references": [
+    {
+      "code": "U08",
+      "url": "https://re-zero-anime.jp/tv/character/",
+      "purpose": "原作角色与作品设定参考，插画为本游戏重新设计"
+    },
+    {
+      "code": "U09",
+      "url": "https://konosuba.com/1st/story/",
+      "purpose": "爆裂魔法作品参考，插画选择施法高潮瞬间"
+    }
+  ],
+  "uploadAuthorization": "User explicitly approved upload and replacement of these two illustrations to https://pic.caiguoyu.cn/ on 2026-10-20",
+  "checks": {
+    "dimensionsAndWebpTranscode": "passed; no crop or resize",
+    "remoteHeadTypeLengthMd5": "2/2 passed",
+    "bindingsGalleryProtectedFields": "passed",
+    "galleryJavaScriptSyntax": "passed",
+    "gitDiffCheck": "passed",
+    "browserComponentReview": "not executed; automatic approval service returned 403 Forbidden",
+    "frontendBuild": "not executed",
+    "unitOrSmokeTests": "not executed",
+    "serverDeployment": "not executed"
+  }
+}

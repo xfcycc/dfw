@@ -17,7 +17,7 @@ public class ItemService {
         effects.register("WAIVE_RENT", this::resolve);
     }
     /** 输入房间、玩家和道具操作，按当前配置验证、消耗并入队。 */
-    public void use(Room room, Player player, Action action) { if (player.hand.stream().anyMatch(c -> c.id.equals(action.cardId) && c.skinId != null)) content.use(room, player, action); else ruleRuntime.useCard(room, player, action); }
+    public void use(Room room, Player player, Action action) { if (player.hand.stream().anyMatch(c -> c.id.equals(action.cardId) && (c.skinId != null || AnimeService.attacks(c.kind)))) content.use(room, player, action); else ruleRuntime.useCard(room, player, action); }
     /** 输入付款选择，旧免租卡保持已配置效果组合，新卡按取得时冻结的参数执行。 */
     public void defense(Room room, Player player, Action action) {
         Card legacy=player.hand.stream().filter(c -> c.id.equals(action.cardId) && c.skinId==null && c.kind.equals("immunity")).findFirst().orElse(null);
@@ -31,7 +31,7 @@ public class ItemService {
         Player player = player(room, effect.playerId); Tile tile = tile(room, effect.tileId);
         switch (effect.type) {
             case "PLACE_BARRIER" -> { require(tile != null && !PropertyEffects.frozen(tile) && !tile.barrier, "路障目标不可用"); tile.barrier = true; log(room, player.name + " 在 " + tile.name + " 设置了路障"); }
-            case "DEMOLISH" -> { require(tile != null && tile.ownerId != null && tile.level > 0, "建筑目标不可用"); if (!PropertyEffects.preventDemolition(room, tile)) { tile.level--; log(room, tile.name + " 的建筑降低一级"); } }
+            case "DEMOLISH" -> { require(tile != null && tile.ownerId != null && tile.level > 0, "建筑目标不可用"); if (!PropertyEffects.preventDemolition(room, tile)) { AnimeService.recordDamage(room,tile); tile.level--; log(room, tile.name + " 的建筑降低一级"); } }
             case "SWAP_POSITION" -> {
                 Player target = player(room, effect.targetId); require(target != null && !target.bankrupt && !target.id.equals(player.id), "换位目标不可用");
                 MotionSegment segment = BoardEffect.begin("swap", player);

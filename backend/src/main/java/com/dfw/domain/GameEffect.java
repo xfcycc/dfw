@@ -9,6 +9,10 @@ import lombok.Setter;
 public class GameEffect {
     /** 已抽取的完整内容，不重新抽取参数或皮肤。 */
     public ContentResult content;
+    /** 动漫主动效果分段的固定目标位置，-1表示未使用。 */
+    public int destination = -1;
+    /** 此分段是否作用于地产，由主动防御分开处理。 */
+    public boolean propertyTarget;
     /** 本次效果标识。 */
     public String id;
     /** 注册的处理器名称。 */

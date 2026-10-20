@@ -12,7 +12,7 @@ export const RULES = {
 export function initialCashBase(count: number): number { return count >= 5 ? 7500 : RULES.initialCash; }
 /** 输入开局人数，返回每人初始手牌数量。 */
 export function initialCards(count: number): number { return count >= 3 ? 3 : RULES.initialCards; }
-/** 输入本局玩家人数（含已淘汰玩家），返回每次经过或原地停留在起点时的道具补给数量。 */
+/** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过或最终停在起点时的道具补给数量。 */
 export function startCards(count: number): number { return count >= 3 ? 2 : 1; }
 export const COLORS = ['#ef6c68', '#4287e5', '#e6ad32', '#47ae88', '#a078d3', '#e982b2'];
 export const DISTRICTS = ['花园社区', '滨海街区', '星光商圈', '旧城风情'];
@@ -24,6 +24,29 @@ export function mapLength(count: number, size: MapSize = 'large'): number { retu
 /** 输入闭环地图格数，返回整数行列；34／46 格使用相邻长度的矩形边。 */
 export function boardDimensions(length: number): { rows: number; columns: number } { return { rows: Math.floor(length / 4) + 1, columns: Math.ceil(length / 4) + 1 }; }
 export const ITEMS: Record<ItemKind, { name: string; icon: string; description: string }> = {
+  geoResonance: { name: "岩脊共鸣", icon: '✦', description: "选择自己一处合法地产免费升一级；左右紧邻格子若也是自己的合法地产，各免费升一级，最多三处。" },
+  growthLink: { name: "所闻遍计", icon: '✦', description: "连接两处自家合法地产，持续三个后续个人回合；其中一处正常付费建造时，另一处合法则免费升一级，最多成功两次；免费建造不触发。" },
+  sereniteaPot: { name: "尘歌壶", icon: '✦', description: "选择两处自家合法地产，重新分配它们现有建筑总等级，随后其中一处免费升一级；每处最高三级，变动计入本回合建造。" },
+  createBuild: { name: "创", icon: '✦', description: "弃置一至两张其他手牌，每张换一处不同自家合法地产免费升一级；弃牌不折现，确认后消耗。" },
+  remoteConstruction: { name: "基建轮班", icon: '✦', description: "本回合和下一个本人回合的资产管理阶段，各可远程选择一处自家合法地产按标准建造费75%升一级，向下取整，无需停留。" },
+  shrineGrowth: { name: "给我建座神社吧", icon: '✦', description: "选择一处自家合法地产标记奉纳；其他玩家正常停留并完成原等级落点结算后免费升一级，最多成功两次；不合法时保留次数。" },
+  timeRewind: { name: "时间溯行", icon: '✦', description: "普通骰点公开后、移动前可作废并重掷一次，必须接受第二次结果；不适用替代移动。" },
+  projection: { name: "投影魔术", icon: '✦', description: "投影上一个已结束个人回合实际使用的一张非UR主动道具，不能投影自身；复制牌本回合额外可使用一次，回合结束消失。" },
+  starburst: { name: "星爆气流斩", icon: '✦', description: "指定对手一处有建筑地产连续降低两次一级，护盾逐击处理，无退款。" },
+  imagineBreaker: { name: "幻想杀手", icon: '✦', description: "阻挡一张任意等级主动道具对自己及自己地产的全部效果，群体效果仅取消本人部分，对方卡和主动次数仍消耗。" },
+  timeRestore: { name: "刻刻帝·四之弹", icon: '✦', description: "在自己下一个人回合结束前，修复一处近期受损的自家地产到最近一次敌方或事件损坏前等级；不恢复卖房、产权变更及其他状态。" },
+  vectorReflect: { name: "矢量反射", icon: '✦', description: "反弹一张任意等级主动道具针对自身的全部主动效果给施术者；不保护地产，群体仅反弹本人部分，不连续反射。" },
+  deathReturn: { name: "死亡回归", icon: '✦', description: "满足破产清算条件时取消当前剩余强制债务，回到最近本人回合开始位置，实际奖励3000，随后休息一回合；已完成交易与付款不回滚，传送无奖励落点。" },
+  explosion: { name: "爆裂魔法", icon: '✦', description: "选择连续三个格子摧毁其中所有可受影响地产全部建筑，可误伤自己，逐地护盾，保留产权抵押不补偿；本人随后休息一回合，无目标保留。" },
+  corruption: { name: "猩红腐败", icon: '✦', description: "指定对手有建筑地产，在之后三个业主个人回合开始各降一级；护盾逐次处理，重复刷新，零级结束，可清除，封印暂停。" },
+  contract: { name: "契约成立", icon: '✦', description: "实际获得3000，本局手牌上限永久减一最低一张；已为一张不能使用，超限按现有选留整理。" },
+  commandSpell: { name: "令咒", icon: '✦', description: "指定另一玩家立即额外移动1～6格，点数由施术者决定，正常结算路径及落点，不占其正常行动，奖励费用归移动者。" },
+  sevenSwords: { name: "火舞旋风", icon: '✦', description: "三道剑气自由分配给对手有建筑地产，每道降一级，护盾逐道处理；一次确认分配，未用不保留。" },
+  railgun: { name: "超电磁炮", icon: '✦', description: "从自己位置选择顺或逆时针贯穿前方六格，本人不动；清路障陨星护盾，沿途对手地产各降一级，先破盾后损坏，跳过封印，无落点奖励。" },
+  sealCard: { name: "回到你原来的样子", icon: '✦', description: "封印另一玩家仅针对自己或自己一处地产的单目标主动道具，取消目标全部效果并收为自己的同效果手牌，可收UR；按正常时机次数使用，不适用群体范围。" },
+  swordRain: { name: "剑雨", icon: '✦', description: "指定前后六格一名对手休息一回合可解控。本牌两次使用，每本人回合一次，首次冷却至下次本人回合，第二次消失，防御也耗次数，转移不刷新。" },
+  voidTears: { name: "虚空之泪", icon: '✦', description: "两处不同未封印普通地产建立公共裂隙；首位正常步行入任一端传到另一端继续剩余步数，两端随后消失；跳跃无沿途起点奖励，传送换位不触发。" },
+  absoluteZero: { name: "绝对零域", icon: '✦', description: "冰封一条边所有未封印地产至本人下个个人回合结束，自己也受影响；不能收租升级，其他附加效果及交易抵押出售正常。" },
   shield: { name: 'A.T.力场', icon: '✦', description: '保护自家地产，抵挡一次任何建筑拆除。' },
   recycle: { name: '制衡', icon: '✦', description: '其他手牌任意数量弃置并等量重抽。' },
   discover: { name: '发现', icon: '✦', description: '三张不同效果道具中选一张。' },
@@ -31,11 +54,11 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   exchange: { name: '等价交换', icon: '✦', description: '支付无修正租金，夺取对手地产。' },
   slow: { name: '迟缓光线', icon: '✦', description: '下次基础骰点减半，向下取整。' },
   swapAny: { name: '斗转星移', icon: '✦', description: '任意两名玩家换位，不结算落点。' },
-  kamui: { name: '神威', icon: '✦', description: '冻结地产三个施术者个人回合。' },
+  kamui: { name: '神威', icon: '✦', description: '冻结地产三个施术者后续个人回合。' },
   handDestruction: { name: '手牌抹杀', icon: '✦', description: '全员手牌等量重抽，不包括本牌。' },
   gravity: { name: '地爆天星', icon: '✦', description: '其他玩家聚集到自己，不结算落点。' },
   reaper: { name: '尸鬼封尽', icon: '✦', description: '双方本局手牌上限各减一，最低一张。' },
-  shadowstep: { name: '暗影步', icon: '✦', description: '传送到另一玩家并结算，替代掷骰。' },
+  shadowstep: { name: '暗影步', icon: '✦', description: '传送到前后6格内另一玩家并结算（含同格），替代掷骰。' },
   homeTeleport: { name: '传送', icon: '✦', description: '传送到自家地产并结算，替代掷骰。' },
   blackhole: { name: '黑洞', icon: '✦', description: '清除地产全部附加效果，神威除外。' },
   meteor: { name: '陨星', icon: '✦', description: '一至三处随机地产各增加一次截停。' },
@@ -142,12 +165,12 @@ export function ruleMoney(economy: EconomySettings | null | undefined, key: stri
 function derivedMoney(economy: EconomySettings | null | undefined, key: string, actual: number): number { return economy?.fixedAmounts[key] ?? actual; }
 /** 输入地产及本局经济参数，返回按基础比例计算的租金；旧对局缺省 10%，抵押不收费。 */
 export function rentFor(tile: Tile, economy?: EconomySettings | null): number {
-  return tile.mortgaged || isKamui(tile) ? 0 : concertRent(baseRentFor(tile,economy), tile.concertStacks ?? 0);
+  return tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile,economy), tile.concertStacks ?? 0);
 }
 /** 输入地产，返回是否处于神威冻结中。 */
 export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }
 /** 输入地产，返回是否需要在名称后显示统一附加效果标记。 */
-export function hasPropertyEffects(tile: Tile): boolean { return !!(tile.barrier || tile.demolitionShield || tile.treasure || tile.concertStacks || tile.meteorCharges || isKamui(tile)); }
+export function hasPropertyEffects(tile: Tile, construction?: Record<number, string[]>): boolean { return !!(construction?.[tile.id]?.length || tile.barrier || tile.demolitionShield || tile.treasure || tile.concertStacks || tile.meteorCharges || tile.corruptionTurns || tile.zeroCasterId || tile.portalTileId != null || isKamui(tile)); }
 /** 输入地产和经济快照，返回忽略抵押、房东及临时修正的等级租金，无主按零级。 */
 export function baseRentFor(tile: Tile, economy?: EconomySettings | null): number {
   const level = tile.ownerId ? tile.level : 0;

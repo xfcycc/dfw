@@ -50,6 +50,12 @@ public class GameAction {
     public String playerId;
     /** 斗转星移的第二名玩家，其他操作留空。 */
     public String secondPlayerId;
+    /** 剑气分配的地产列表，可重复。 */
+    public List<Integer> tileIds;
+    /** 空间裂隙另一端。 */
+    public Integer secondTileId;
+    /** 贯穿攻击方向。 */
+    public Integer direction;
     /** 交易接收人。 */
     public String toId;
     /** 发起人现金。 */

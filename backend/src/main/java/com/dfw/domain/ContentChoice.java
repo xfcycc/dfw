@@ -14,6 +14,10 @@ public class ContentChoice {
     public String type;
     /** 实际做选择的玩家。 */
     public String playerId;
+    /** 仅选择者可见的玩家候选。 */
+    public List<String> playerIds = new ArrayList<>();
+    /** 私人选择的补充提示。 */
+    public String prompt;
     /** 可选地产，确认时再次校验合法性。 */
     public List<Integer> tileIds = new ArrayList<>();
     /** 超限、制衡或发现的完整候选牌，补给结果已确定。 */

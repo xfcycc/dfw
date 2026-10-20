@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ThemedSelect from './ThemedSelect.vue';
+import ConstructionChoice from './ConstructionChoice.vue';
 import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
@@ -11,18 +12,21 @@ const game = useGameStore();
 const keep = ref<string[]>([]);
 const releaseCard = ref('');
 const discovered = ref('');
+const vote = ref('');
 const limit = computed(() => props.choice.handLimit ?? game.me?.handLimit ?? 6);
 const releaseCards = computed(() => game.privateData?.hand.filter(c => c.kind === 'release') ?? []);
 const enabled = computed(() => game.canAct && game.canDecide && !game.room?.tradePending);
 const wager = computed(() => props.choice.content?.parameters?.wager ?? 0);
 const upgrading = computed(() => ['free_upgrade', 'full_upgrade'].includes(props.choice.type));
-const choosingCards = computed(() => ['hand_limit', 'recycle', 'discover'].includes(props.choice.type));
-watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; }, { immediate: true });
+const choosingCards = computed(() => ['hand_limit', 'recycle', 'discover', 'anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type));
+watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; }, { immediate: true });
 /** 输入是否确认，提交已保存选择的身份及地产或解控卡，失败保留输入。 */
 async function decide(accept: boolean): Promise<void> {
   const action: Extract<GameAction, { type: 'contentDecision' }> = { type: 'contentDecision', decisionId: props.choice.id, accept };
   if (props.choice.type === 'hand_limit') action.keepCardIds = keep.value;
   if (props.choice.type === 'recycle') action.discardCardIds = keep.value;
+  if (props.choice.type === 'anime_vote') { if (accept && !vote.value) return; if (accept) action.playerId = vote.value; }
+  if (['anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type) && accept) action.cardId = discovered.value;
   if (props.choice.type === 'discover' && accept) action.cardId = discovered.value;
   if (['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(props.choice.type)) {
     if (accept && (props.tileId == null || !props.choice.tileIds.includes(props.tileId))) return;
@@ -33,9 +37,20 @@ async function decide(accept: boolean): Promise<void> {
 }
 </script>
 <template>
-  <div class="content-choice" :class="{ 'card-selection': choosingCards }">
+  <ConstructionChoice v-if="choice.type.startsWith('construction_')" :choice="choice" @done="emit('done')" />
+  <div v-else class="content-choice" :class="{ 'card-selection': choosingCards }">
     <ContentCard v-if="choice.content && !compact && !choosingCards" :content="choice.content" />
-    <template v-if="choice.type === 'hand_limit'">
+    <p v-if="choice.prompt" class="notice">{{ choice.prompt }}</p>
+    <template v-if="['anime_projection', 'anime_rewind', 'anime_defense'].includes(choice.type)">
+      <ContentCard v-if="choice.content && choice.type === 'anime_defense'" :content="choice.content" />
+      <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: discovered === card.id }"><input v-model="discovered" type="radio" :name="choice.id" :value="card.id" /><ContentCard :content="card" compact thumbnail /></label></div>
+      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ choice.type === 'anime_projection' ? '取消并保留投影魔术' : choice.type === 'anime_rewind' ? '接受原骰点' : '不使用防御' }}</button><button class="button primary" :disabled="!enabled || !discovered" @click="decide(true)">{{ choice.type === 'anime_projection' ? '确认投影' : choice.type === 'anime_rewind' ? '使用时间溯行' : '使用所选防御' }}</button></div>
+    </template>
+    <template v-else-if="choice.type === 'anime_vote'">
+      <label class="field">秘密投票<ThemedSelect v-model="vote" label="秘密投票" :options="[{ value: '', label: '请选择其他玩家', disabled: true }, ...(choice.playerIds ?? []).map(id => ({ value: id, label: game.room?.players.find(p => p.id === id)?.name ?? id }))]" /></label>
+      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">弃权</button><button class="button primary" :disabled="!enabled || !vote" @click="decide(true)">确认秘密投票</button></div>
+    </template>
+    <template v-else-if="choice.type === 'hand_limit'">
       <p>从原有道具和本次全部补给中恰好保留 {{ limit }} 张，其他每张折现 ¥{{ choice.discardCash.toLocaleString() }}。</p>
       <p class="notice">已选择 {{ keep.length }} / {{ limit }} 张，确认后折现 ¥{{ ((choice.cards.length - limit) * choice.discardCash).toLocaleString() }}。</p>
       <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: keep.includes(card.id) }"><input v-model="keep" type="checkbox" :value="card.id" :disabled="!keep.includes(card.id) && keep.length >= limit" /><ContentCard :content="card" compact thumbnail /></label></div>

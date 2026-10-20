@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-19",
+  "newSkins": 16,
+  "urSkins": 5,
+  "assets": 26,
+  "verifiedOssAssets": 26,
+  "transparentLayers": 5,
+  "rules": "Compared all 6 rule JSON files with task-start snapshot; only 16 appended skins differ.",
+  "sourceSync": "All three Markdown sources regenerate byte-identical runtime JSON.",
+  "text": "All 16 runtime names, rarities, quotes, stories and mechanisms match approved generation briefs.",
+  "coverage": "Every enabled skin has an illustration URL. All new URLs match verified manifest.",
+  "counts": {
+    "card-events.json": {
+      "total": 98,
+      "enabled": 98
+    },
+    "fortune-events.json": {
+      "total": 69,
+      "enabled": 57
+    },
+    "chance-events.json": {
+      "total": 96,
+      "enabled": 96
+    }
+  },
+  "frontendTypecheck": "passed",
+  "backendCompile": "passed with -Dmaven.test.skip=true",
+  "notRun": [
+    "unit tests",
+    "smoke tests",
+    "frontend build",
+    "live game validation",
+    "deployment"
+  ],
+  "archiveCompatibility": {
+    "before": "ba0e74d939ec42a8b2fe7942d09fa5b092e3a1ecdc20f164af03fe30a32e3e92",
+    "after": "cc670f6c525d1a641ec6874fe5f44ff29d3bff67096b486f817bb43a21cc432f",
+    "scope": "Only the exact pre-skin default digest is accepted by the new skin-expanded default digest."
+  },
+  "browserPreview": {
+    "method": "Local Vite, actual ContentCard and UrCardScene components; no game/database actions.",
+    "galleryImagesLoaded": 16,
+    "galleryImageSize": "1254x1254",
+    "urScenesReady": [
+      "wukong",
+      "visits",
+      "pigs",
+      "wish",
+      "punch"
+    ],
+    "urConsoleErrors": 0,
+    "pauseResume": "paused class and button state verified; resumed before delivery.",
+    "visualReview": "Inspected all 16 generated complete illustrations and five UR compositions.",
+    "screenshot": "artifacts/skin-expansion-2026-10-19/ur-preview.png",
+    "limits": "Reduced-motion and failed-load fallback checked in source; not simulated in browser. No live game validation."
+  }
+}

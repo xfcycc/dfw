@@ -13,6 +13,10 @@ public class ContentChoiceVo {
     public String id;
     /** 选择类型。 */
     public String type;
+    /** 仅本人可见的玩家候选。 */
+    public List<String> playerIds;
+    /** 本次选择提示。 */
+    public String prompt;
     /** 合法地产候选。 */
     public List<Integer> tileIds;
     /** 超限、制衡或发现时仅提供选择者本人的候选牌。 */

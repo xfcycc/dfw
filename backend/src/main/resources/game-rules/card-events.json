@@ -274,9 +274,25 @@
                     "quote": "哆啦A梦！",
                     "description": "大雄哭着扑进房间，一把抱住哆啦A梦，鼻涕眼泪蹭得满脸都是。哆啦A梦叹了口气，从口袋里掏出一扇粉红色的门：好啦，这次你想去哪里？大雄的哭声立刻停了，手已经搭上门把。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_yugioh_destiny_draw",
+                    "name": "神抽",
+                    "rarity": "SSR",
+                    "quote": "这一抽，就是我要的答案！",
+                    "description": "场上的局势已经被逼到最后一步，游戏却把手轻轻搭上了牌组。对手抱着手臂等他认输，他低下头，像是在确认什么。下一刻，抽出的卡划过半空。游戏抬起眼睛，对面那副胜券在握的表情，终于停住了。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g17",
+                    "name": "这就是「空白」",
+                    "rarity": "SSR",
+                    "quote": "我们两个，才是「空白」。",
+                    "description": "白在脑中推演棋盘上的变化，空则注视着对手迟疑的表情。精密的计算与对人心的判断在兄妹之间接上，最后一枚棋子落下，两人共用的名字仍留在胜者的位置。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 792
+                "weight": 118800
               }
             ]
           }
@@ -313,7 +329,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps-4",
@@ -345,9 +361,17 @@
                     "quote": "珍珠扔了，落点别坑我啊！",
                     "description": "珍珠划过半空，你下一秒就出现在它落下的地方。落地姿势没选好，脸先亲了地，旁边的羊嚼着草看得很投入。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g13",
+                    "name": "翔",
+                    "rarity": "R",
+                    "quote": "翔（FLY）！",
+                    "description": "小樱让封印之杖轻触“翔”的卡面，白色羽翼随即从杖的两侧展开。她坐稳杖身，小可飞在身旁提醒方向；夜风掠过友枝町，屋顶与街灯渐渐落到脚下。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps-3",
@@ -373,7 +397,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps-2",
@@ -391,7 +415,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps-6",
@@ -409,7 +433,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps-5",
@@ -427,7 +451,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps--3",
@@ -445,7 +469,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               },
               {
                 "id": "steps--2",
@@ -471,7 +495,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 198
+                "weight": 29700
               }
             ]
           }
@@ -544,9 +568,25 @@
                     "quote": "等一下，我突然不想走了。",
                     "description": "你刚才还说赶时间，迎面看见漂亮姐姐，脚步立刻从快走切成了慢动作。朋友拽了两次袖子都没拽动，回头一看，你连路边那块毫无内容的告示牌都看得格外认真。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g16",
+                    "name": "七之弹",
+                    "rarity": "SSR",
+                    "quote": "刻刻帝——七之弹（Zayin）！",
+                    "description": "狂三微笑着举起枪，刻刻帝为弹丸注入停止时间的力量。七之弹命中，对方的动作凝在尚未完成的那一瞬。她从停滞的身影旁从容走过，裙摆仍随步伐轻轻晃动。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g22",
+                    "name": "禁止通行",
+                    "rarity": "SSR",
+                    "quote": "想从这里过去？先过我这一关。",
+                    "description": "一方通行挡在路中央，脚尖轻轻点向地面。沿地表传开的冲击掀起碎石，将追来的脚步逼停。他没有退开，视线始终盯着还想继续向前的人。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 660
+                "weight": 99000
               }
             ]
           }
@@ -603,9 +643,17 @@
                     "quote": "砸不到小朋友，砸到花花草草也不好嘛。",
                     "description": "唐僧追着孙悟空讲道理，从乱扔东西一路讲到花草也有生命。悟空攥着金箍棒，额头上的筋跳了又跳。旁边刚飞过去一件东西，唐僧又转过头，认真地准备从头讲一遍。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g23",
+                    "name": "风之伤",
+                    "rarity": "SR",
+                    "quote": "风之伤！",
+                    "description": "犬夜叉嗅见了两股妖气相撞时显露的缝隙。铁碎牙化作巨刃，顺着那道“风之伤”猛然斩下，金色冲击撕开地面，沿着剑锋指向奔涌而去。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 1452
+                "weight": 217800
               }
             ]
           }
@@ -664,7 +712,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 660
+                "weight": 99000
               }
             ]
           }
@@ -737,9 +785,25 @@
                     "quote": "马什么梅啊？",
                     "description": "夏洛扶着车把问了半天，楼下大爷始终只听清其中两个字。马冬梅三个字来来回回拆了几遍，问路的人已经开始怀疑自己会不会说话。大爷倒很热情，还准备再听一遍。",
                     "cardType": "防御"
+                  },
+                  {
+                    "id": "card_anime_g03",
+                    "name": "风王结界",
+                    "rarity": "SSR",
+                    "quote": "请退后。这里由我守住。",
+                    "description": "Saber双手握剑，缠绕剑身的风隐去了圣剑的形状。对手只能从她的站姿猜测锋刃的长度，试探的进攻接连被无形之剑挡住。她始终没有让出身后的那一步。",
+                    "cardType": "防御"
+                  },
+                  {
+                    "id": "card_anime_g24",
+                    "name": "存在感消失",
+                    "rarity": "SSR",
+                    "quote": "安艺君，你是不是又把我忘了？",
+                    "description": "伦也热火朝天地讨论着理想中的女主角，惠就在同一张桌边听着。她放下手机，平静地补上一句被忽略的意见。那份淡淡的存在感，总要等他说错话时才显得格外清楚。",
+                    "cardType": "防御"
                   }
                 ],
-                "weight": 792
+                "weight": 118800
               }
             ]
           }
@@ -768,7 +832,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 264
+                "weight": 39600
               },
               {
                 "id": "steps-1",
@@ -794,7 +858,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 264
+                "weight": 39600
               },
               {
                 "id": "steps-3",
@@ -810,9 +874,25 @@
                     "quote": "别看身高，看刀。",
                     "description": "利威尔借着钢索掠过墙头，双刃在半空划出连续的圆弧。巨人还没来得及转身，他已经落在另一侧收刀。地上的新兵仰着头看了半天，终于把那句关于身高的话咽了回去。",
                     "cardType": "持续"
+                  },
+                  {
+                    "id": "card_anime_g15",
+                    "name": "超频加速",
+                    "rarity": "R",
+                    "quote": "Burst Link！",
+                    "description": "春雪呼出加速指令，现实的喧闹沉入青蓝色的寂静。进入对战后，银色之鸦在背后展开金属羽翼，振翅冲上建筑之间的高空。曾经总是低着头的少年，如今终于能从天空俯瞰战场。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g29",
+                    "name": "靖妖傩舞",
+                    "rarity": "R",
+                    "quote": "靖妖傩舞！",
+                    "description": "降魔傩面覆上面庞，魈握紧长枪，青色风元素裹住身形。他跃向高处，又循枪锋俯冲而下，妖邪在风中退散。傩面之下，护法夜叉仍独自承受着长久征战留下的业障。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 264
+                "weight": 39600
               }
             ]
           }
@@ -827,13 +907,13 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "SR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_onepiece_shipwright",
                     "name": "SUPER！",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "Super！",
                     "description": "弗兰奇把可乐补进身体，两只大手啪地合在一起，摆出那套谁也拦不住的招牌姿势。乌索普和乔巴立刻跟着喊，罗宾在旁边平静地看了一眼。船还没修完，甲板上先热闹起来。",
                     "cardType": "主动"
@@ -841,7 +921,7 @@
                   {
                     "id": "card_wow_goblin_engineer",
                     "name": "改车消星",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "换个颜色，警察就不认识了。",
                     "description": "你把冒着烟的车开进改装店，卷帘门缓缓落下。几分钟后，凹下去的车门修好了，车漆也换了，街上的警笛还在四处转。你从出口慢慢开出去，刚才追得最凶的警车从旁边直接路过。",
                     "cardType": "主动"
@@ -849,7 +929,7 @@
                   {
                     "id": "card_naruto_shadow_clone",
                     "name": "多重影分身",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "多重影分身之术！",
                     "description": "训练场上烟雾炸开，数不清的鸣人挤满了空地，每个人都拍着胸口说交给我。树上的卡卡西合起书，还没来得及点名，分身们已经为了谁最像本体吵成一团。",
                     "cardType": "主动"
@@ -857,7 +937,7 @@
                   {
                     "id": "card_zhenhuan_promotion",
                     "name": "熹妃回宫",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "熹妃回宫！",
                     "description": "宫门缓缓打开，仪仗一路排到长阶之下。甄嬛扶着人走下轿辇，抬眼望向那座曾经离开的宫城。沿途众人一齐低头，往日熟悉的称呼，这回谁也不敢再叫。",
                     "cardType": "主动"
@@ -865,13 +945,21 @@
                   {
                     "id": "card_eldenring_blessing",
                     "name": "一步一步走到最高",
-                    "rarity": "SSR",
+                    "rarity": "SR",
                     "quote": "我要一步一步，走到最高！",
                     "description": "赵高站在阶下，抬头望着那把所有人都不敢久看的椅子。他把腰背一点点挺直，话也一句比一句响。旁边的人还想劝他低头，他已经踏上了第一级台阶。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_hp_reparo",
+                    "name": "修复如初",
+                    "rarity": "SR",
+                    "quote": "别急，碎的还能拼回去！",
+                    "description": "赫敏举起魔杖，散落的砖块和木板便从地面升了起来。断开的楼梯重新接合，歪斜的窗框自己摆正，连碎掉的玻璃都争先恐后地回到了原位。罗恩刚伸手去扶一块木板，整面墙已经从他掌边飞了过去。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 396
+                "weight": 59400
               }
             ]
           }
@@ -938,7 +1026,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 792
+                "weight": 118800
               }
             ]
           }
@@ -995,9 +1083,17 @@
                     "quote": "多比是一个自由的小精灵！",
                     "description": "马尔福庄园的吊灯轰然坠下，多比冲进混乱之中，紧紧抓住哈利和同伴的手。追来的咒语擦过耳边，幻影移形的响声骤然炸开。屋里的人再伸手时，原地只剩扬起的灰尘。",
                     "cardType": "即时"
+                  },
+                  {
+                    "id": "card_anime_g04",
+                    "name": "约定的钥匙",
+                    "rarity": "SR",
+                    "quote": "等长大以后，再用这把钥匙打开它。",
+                    "description": "童年的少女把钥匙收好，一条乐则将那把锁留在胸前。许多年过去，相同的约定与不同的钥匙再次相遇；千棘和小咲的反应，让他愈发难以拼回那段记忆。",
+                    "cardType": "即时"
                   }
                 ],
-                "weight": 528
+                "weight": 79200
               }
             ]
           }
@@ -1054,9 +1150,33 @@
                     "quote": "东西我收下了，下次见。",
                     "description": "鲁邦刚把战利品装进口袋，窗外就响起钱形警部熟悉的怒吼。他冲对方挥了挥手，翻身跳上等在楼下的车。次元压低帽檐踩下油门，警部的声音追了半条街。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_wuxia_sleight_hand",
+                    "name": "移花接木",
+                    "rarity": "SR",
+                    "quote": "你再摸摸，东西还在不在？",
+                    "description": "两人错身而过时，侠盗伸手扶了扶对方快滑落的包袱。失主连声道谢，还顺手拍了拍腰间，确认东西都在。等他低头细看，袋口不知何时多了一枝小花。街角那人已经走远，袖口里，一只刚到手的锦囊轻轻晃了一下。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g07",
+                    "name": "虚空抽取",
+                    "rarity": "SR",
+                    "quote": "祈，把你的力量借给我。",
+                    "description": "集伸出拥有“王之能力”的右手，祈的虚空在光中逐渐显形。那把来自她内心的巨剑落入掌中，他迟疑的目光随之坚定，终于向原本不敢面对的敌人走去。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g30",
+                    "name": "偷窃",
+                    "rarity": "SR",
+                    "quote": "Steal！",
+                    "description": "和真抬手使出从克莉丝那里学来的偷窃技能，掌心立刻多出一件战利品。他靠着高幸运值得意地扬起嘴角，阿库娅凑过来一看，催他先确认这东西究竟值不值钱。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 660
+                "weight": 99000
               }
             ]
           }
@@ -1101,7 +1221,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 264
+                "weight": 14330
               },
               {
                 "id": "amount-300",
@@ -1119,7 +1239,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 1188
+                "weight": 64485
               },
               {
                 "id": "amount-500",
@@ -1153,7 +1273,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 1188
+                "weight": 64485
               }
             ]
           }
@@ -1167,12 +1287,12 @@
             "id": "default",
             "parameters": [
               {
-                "id": "prize-5000_probability-50_wager-1000",
+                "id": "prize-10000_probability-50_wager-5000",
                 "rarity": "UR",
                 "values": {
-                  "wager": 1000,
+                  "wager": 5000,
                   "probability": 50,
-                  "prize": 5000
+                  "prize": 10000
                 },
                 "skins": [
                   {
@@ -1182,7 +1302,19 @@
                     "quote": "来个回血，别又劈我！",
                     "description": "血条只剩一丝，你咬牙点下命运硬币。硬币在半空转了几圈，队友已经默默退开。圣光和落雷到底哪个先到，全看这枚硬币愿不愿意把你当自己人。",
                     "cardType": "主动"
-                  },
+                  }
+                ],
+                "weight": 8664
+              },
+              {
+                "id": "prize-5000_probability-20_wager-1000",
+                "rarity": "UR",
+                "values": {
+                  "wager": 1000,
+                  "probability": 20,
+                  "prize": 5000
+                },
+                "skins": [
                   {
                     "id": "card_all_in_ticket",
                     "name": "孤注一掷",
@@ -1192,7 +1324,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 228
+                "weight": 8664
               }
             ]
           }
@@ -1219,7 +1351,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 396
+                "weight": 59400
               }
             ]
           }
@@ -1244,9 +1376,17 @@
                     "quote": "我魔神芙卡洛斯，就连这世间的诸神都可以审判！",
                     "description": "欧庇克莱歌剧院的灯光亮起，芙宁娜站在高处，张开双臂向满座观众宣告自己的神名。聚光灯随她的手势转向被告席，方才还喧闹的剧场骤然安静。她得意地抬起下巴，仿佛下一场审判的主角，已经由她亲手选定。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g14",
+                    "name": "黑白熊登场",
+                    "rarity": "SSR",
+                    "quote": "噗呼呼……特别课程开始啦！",
+                    "description": "广播屏幕忽然亮起，黑白熊笑着宣布自己的学园长身份。校规被一条条念出，走廊尽头的门缓缓闭合。它热情地欢迎新同学，黑白两半的笑脸却让人一点也放松不下来。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 396
+                "weight": 59400
               }
             ]
           }
@@ -1271,9 +1411,17 @@
                     "quote": "让世界感受痛苦吧！神罗天征！",
                     "description": "黑底红云的衣袍在高空翻动，佩恩俯视着脚下的木叶，缓缓张开双臂。喧闹的村落仿佛在这一刻静止，随即，无形的斥力从天而降。街道、房屋与尘土被一并推向远方，只留下巨大的凹坑，以及烟尘中那道悬空的身影。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_onepunch_serious_punch",
+                    "name": "认真一拳",
+                    "rarity": "UR",
+                    "quote": "说好了，就一拳。",
+                    "description": "埼玉往前迈了一步，平平常常地挥出拳头。杰诺斯刚翻开记录本，扑面的风已经把纸页吹得哗啦作响。烟尘散去，远处的建筑只剩下空荡荡的轮廓。埼玉收回手，看了眼时间，突然想起超市的特卖还没结束。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 228
+                "weight": 17328
               }
             ]
           }
@@ -1298,9 +1446,17 @@
                     "quote": "木遁·连柱家之术！",
                     "description": "赶了一天的路，众人正准备找地方过夜，大和已经走到空地中央，双手结印。木柱接连破土，梁架自行交错，一排木屋转眼拔地而起。别人执行任务还要考虑露宿，他随队出发，连住宿都能当场解决——木遁的用途，在大和队长手里格外实在。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_dragonball_shenron_wish",
+                    "name": "神龙许愿",
+                    "rarity": "UR",
+                    "quote": "先说好，这次谁也不许抢愿望！",
+                    "description": "七颗龙珠亮起，神龙从盘旋的光芒中升上夜空。悟空抬起头，正要开口，乌龙已经踮起脚往前挤。布尔玛眼疾手快地拽住他的衣领，把人拖了回来。神龙等了片刻，低下头，看着地上还在争先后的几个人。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 114
+                "weight": 8664
               }
             ]
           }
@@ -1325,9 +1481,35 @@
                     "quote": "A.T.力场，全开！",
                     "description": "橙色的光壁在初号机面前层层展开。迎面而来的冲击撞上屏障，空气随之扭曲，身后的建筑却依然安静地立在那里。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g02",
+                    "name": "缎带结界",
+                    "rarity": "SSR",
+                    "quote": "别怕，站到我身后。",
+                    "description": "麻美抬起戴着手套的手，金色缎带从腕边延展，在同伴身前交织成防护。她稳住帽檐，确认身后的人已经安全，才从容地转向结界深处的魔女。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
+              },
+              {
+                "id": "charges-3",
+                "rarity": "UR",
+                "values": {
+                  "charges": 3
+                },
+                "skins": [
+                  {
+                    "id": "card_naruto_triple_rashomon",
+                    "name": "三重罗生门",
+                    "rarity": "UR",
+                    "quote": "先过这三道门，再来碰我。",
+                    "description": "大蛇丸按下手掌，地面随之一震。第一道巨门破土而出，后方紧接着又立起两道狰狞的门影。迎面的冲击撞上门面，卷起一层层尘土。他站在最后一道门后，缓缓抬起眼睛，嘴角仍挂着那点从容的笑。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
               }
             ]
           }
@@ -1352,9 +1534,25 @@
                     "quote": "容我三思。",
                     "description": "孙权将案上的几封奏报移到一旁，又从余下的文书中抽出新的几封。群臣还在争论方才的安排，他已经重新审视起整盘局势。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g10",
+                    "name": "UMR上线",
+                    "rarity": "SR",
+                    "quote": "TSF，下一局也一起赢吧！",
+                    "description": "游戏厅的屏幕上，UMR与TSF的名字并排亮起。小埋压低帽檐，收起在家懒散的一面，和兴致高昂的希尔芬一起盯住下一关。两个游戏伙伴的默契，在按键声中越来越熟练。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g25",
+                    "name": "从零开始",
+                    "rarity": "SR",
+                    "quote": "昴是雷姆的英雄。",
+                    "description": "雷姆听完昴想要逃走的话，仍认真说起自己眼中的那个少年。她记得他曾经伸出的手，也愿意相信他还能够站起来。昴终于抬起头，把这份信任带回尚未走完的路，从零开始。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
               }
             ]
           }
@@ -1381,7 +1579,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
               }
             ]
           }
@@ -1408,7 +1606,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 380
+                "weight": 57000
               }
             ]
           }
@@ -1435,7 +1633,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 95
+                "weight": 7220
               }
             ]
           }
@@ -1462,7 +1660,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
               }
             ]
           }
@@ -1487,9 +1685,17 @@
                     "quote": "以彼之道，还施彼身。",
                     "description": "慕容复侧身接住来势，手腕轻轻一转。出招的人只觉眼前一晃，原本对准别人的方向，转眼便成了自己最不愿面对的处境。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g19",
+                    "name": "红线续缘",
+                    "rarity": "SSR",
+                    "quote": "道士哥哥，我们一起把这段缘续上吧！",
+                    "description": "苏苏抱着天书追上白月初，认真核对委托中的信物与线索。前世的约定还藏在遗失的记忆里，她却已经相信那份心意能够传达。苦情树下，一段未完的缘分等待着红线仙重新牵起。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 380
+                "weight": 57000
               }
             ]
           }
@@ -1514,9 +1720,17 @@
                     "quote": "这里，已经不属于这个世界了。",
                     "description": "写轮眼中的纹样缓缓转动，眼前的空间随之卷成漩涡。整座建筑被无声地吸入中心，原地只剩一道逐渐合拢的扭曲。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g08",
+                    "name": "封绝",
+                    "rarity": "UR",
+                    "quote": "封绝。",
+                    "description": "火线在地面勾出赤红纹章，阳炎般的壁将战场与外界隔开。普通人的动作停在半途，炎发灼眼的少女却仍握着贽殿遮那走向前方。封绝之中，红世的战斗刚刚开始。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 190
+                "weight": 14440
               }
             ]
           }
@@ -1543,7 +1757,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 285
+                "weight": 42750
               }
             ]
           }
@@ -1570,7 +1784,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 285
+                "weight": 42750
               }
             ]
           }
@@ -1597,7 +1811,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 95
+                "weight": 7220
               }
             ]
           }
@@ -1624,7 +1838,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
               }
             ]
           }
@@ -1649,9 +1863,33 @@
                     "quote": "守住，我到了。",
                     "description": "紫色光柱在远处的建筑旁亮起，旋转的符文越来越清晰。守在原地的人还没看清来者，一道身影已经落在光芒中央。",
                     "cardType": "主动"
+                  },
+                  {
+                    "id": "card_wow_hearthstone_home",
+                    "name": "炉石回城",
+                    "rarity": "SSR",
+                    "quote": "炉石好了，回家！",
+                    "description": "冒险者在泥地里坐下，终于从背包底翻出了那块熟悉的石头。淡绿色的光绕着指尖亮起，耳边的风雨声慢慢远去。再睁眼时，壁炉烧得正旺，旅店老板刚擦好一只杯子。冒险者松了口气，背包上的泥水却已经滴了一地。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g01",
+                    "name": "赐福指引",
+                    "rarity": "SSR",
+                    "quote": "循着赐福，继续前行。",
+                    "description": "幽微的金光在地面汇聚，细长的光束指向远方。褪色者在赐福旁起身，沿着指引踏入交界地的风沙。即使王座尚在远方，那道微光仍为失路之人留下方向。",
+                    "cardType": "主动"
+                  },
+                  {
+                    "id": "card_anime_g06",
+                    "name": "转移水晶",
+                    "rarity": "SSR",
+                    "quote": "转移——起始之城！",
+                    "description": "桐人举起转移水晶，清楚地报出目的地的城镇名。亚丝娜也取出自己的水晶，两道传送光先后亮起；随着道具发动，熟悉的城镇取代了眼前的景色。",
+                    "cardType": "主动"
                   }
                 ],
-                "weight": 380
+                "weight": 57000
               }
             ]
           }
@@ -1678,7 +1916,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 380
+                "weight": 57000
               }
             ]
           }
@@ -1705,7 +1943,628 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 570
+                "weight": 85500
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "timeRewind",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u01",
+                    "name": "时间溯行",
+                    "rarity": "SSR",
+                    "quote": "无论重来多少次，我都会救你。",
+                    "description": "沙漏翻转，熟悉的病房再次出现在眼前。晓美焰记得接下来一个月的每一次相遇，也记得小圆走向的结局。她握紧圆盾，再一次把那句约定带回时间的起点。",
+                    "cardType": "即时"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "projection",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u02",
+                    "name": "投影魔术",
+                    "rarity": "SSR",
+                    "quote": "投影，开始。",
+                    "description": "士郎闭目解析见过的武器，构造与材质在意识中逐层成形。魔术回路亮起，想象中的剑逐渐有了重量与锋刃。他握紧重现的武器，向前迈出一步。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "starburst",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u03",
+                    "name": "星爆气流斩",
+                    "rarity": "SSR",
+                    "quote": "星爆——气流斩！",
+                    "description": "桐人同时拔出阐释者与逐暗者，挡在青眼恶魔面前。二刀流的连续斩击几乎连成一道不间断的剑光，一剑接上另一剑，直到最后一击才肯停下。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "imagineBreaker",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u04",
+                    "name": "幻想杀手",
+                    "rarity": "UR",
+                    "quote": "首先，打碎你那幻想！",
+                    "description": "面对压来的魔法与超能力，当麻迎着攻击伸出右手。异能在触及那只手的地方失去效力，原本无可逾越的术式出现了缺口。他没有停下，继续向被困在后方的人跑去。",
+                    "cardType": "防御"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "timeRestore",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u06",
+                    "name": "刻刻帝·四之弹",
+                    "rarity": "SSR",
+                    "quote": "刻刻帝——四之弹（Dalet）！",
+                    "description": "刻刻帝在狂三身后显现，枪弹承载着回溯时间的力量。四之弹命中，目标刚刚留下的伤损沿时间逆流消退。她仍旧含笑，金色时钟眼中的指针映着枪口的余光。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "vectorReflect",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u07",
+                    "name": "矢量反射",
+                    "rarity": "UR",
+                    "quote": "就这点能耐，还想碰到我？",
+                    "description": "弹道逼近，一方通行却连躲避的动作都省下了。触及体表的力量被重新指定方向，攻击沿着相反的轨迹折返。他抬起眼，迎着骤然变色的对手露出笑容。",
+                    "cardType": "防御"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "deathReturn",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u08",
+                    "name": "死亡回归",
+                    "rarity": "UR",
+                    "quote": "下一次，我一定会改变结局。",
+                    "description": "昴再次在熟悉的街口睁开眼，摊主说出与记忆里一模一样的话。上一轮的痛楚仍留在意识中，周围的人却什么也不知道。他把快要脱口而出的话咽回去，记住这一次必须改变的分岔。",
+                    "cardType": "防御"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "explosion",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u09",
+                    "name": "爆裂魔法",
+                    "rarity": "UR",
+                    "quote": "Explosion！",
+                    "description": "惠惠高举法杖，把所有魔力倾注进这一发爆裂魔法。巨大的火光与轰鸣吞没远处的目标，她满意地看着烟柱升起，随后耗尽力气倒下。和真叹了口气，熟练地走过去把她背起。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "corruption",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u10",
+                    "name": "猩红腐败",
+                    "rarity": "SSR",
+                    "quote": "现在，腐败吧。",
+                    "description": "猩红花蕾在玛莲妮亚周身舒展，花瓣与腐败蝶一同涌出。金色义肢从雾中缓缓抬起，腐败已随着绽放的余波侵入战场。即使花光渐暗，侵蚀仍未停止。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "contract",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u11",
+                    "name": "契约成立",
+                    "rarity": "SSR",
+                    "quote": "和我签订契约，成为魔法少女吧。",
+                    "description": "丘比平静地提出邀请：一个愿望，换取成为魔法少女的契约。它等待少女说出心中最想实现的事，仿佛只是在确认一项理所当然的交换。灵魂宝石的光芒，映亮了那双始终没有变化的红眼睛。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "commandSpell",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u12",
+                    "name": "令咒",
+                    "rarity": "UR",
+                    "quote": "以令咒之名，命令你——",
+                    "description": "御主抬起刻有令咒的手背，说出无法轻易收回的命令。一道红色纹路随之消退，契约中的魔力化为强制的力量，推动从者完成眼前的行动。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sevenSwords",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u13",
+                    "name": "火舞旋风",
+                    "rarity": "UR",
+                    "quote": "火舞旋风！",
+                    "description": "虹猫握紧长虹剑，剑锋随着旋身划出炽热的圆弧。火光层层回旋，卷成冲向前方的旋风；纷乱的杀意与杂念渐渐退去，只余长虹剑不断向前的剑势。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "railgun",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u14",
+                    "name": "超电磁炮",
+                    "rarity": "UR",
+                    "quote": "呐，你知道超电磁炮吗？",
+                    "description": "御坂美琴将一枚游戏币抵在拇指上，蓝白色电弧沿指尖聚拢。下一瞬，硬币被电磁力加速至三倍音速，橙色光轨笔直贯穿街道，轰鸣与风压紧随而至。她站在尚未散去的电光里，目光仍牢牢锁着前方。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sealCard",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u15",
+                    "name": "回到你原来的样子",
+                    "rarity": "UR",
+                    "quote": "恢复你原来的样子——库洛牌！",
+                    "description": "小可在旁提醒，小樱握稳封印之杖，直面失控的库洛牌。鸟首杖头点向展开的魔法阵，散乱的魔力被封印之力收拢，重新凝成落入她手中的卡牌。",
+                    "cardType": "防御"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "swordRain",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u16",
+                    "name": "剑雨",
+                    "rarity": "SSR",
+                    "quote": "别挡路。",
+                    "description": "雨水划过刀锋，德克萨斯迎着叙拉古的街灯切入战场。剑影接连坠下，逼近的敌人在交错的锋芒中停住。她没有多作解释，只收紧手中的剑，走向下一处必须解决的麻烦。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "voidTears",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u17",
+                    "name": "虚空之泪",
+                    "rarity": "SSR",
+                    "quote": "虚空之泪！",
+                    "description": "一滴泪在白月初眼角凝起，映出的空间随之扭曲。泪光掠过，原本连成一片的景物骤然错开，挡在前方的阻隔被撕出裂隙。他抬起头，视线追向泪光消失的方向。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 90250
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "absoluteZero",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_anime_u18",
+                    "name": "绝对零域",
+                    "rarity": "UR",
+                    "quote": "绝对零域。",
+                    "description": "雅雅抬起无尽酒葫，饮下酒后，寒性妖气在身周骤然攀升。九尾舒展，霜雪无声地吞没四周，连撕裂空间的泪光也被封在冰中。她冷冷望着前方，凝结的寒雾久久未散。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 7220
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "geoResonance",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_genshin_geo_resonance",
+                    "name": "岩脊共鸣",
+                    "rarity": "SSR",
+                    "quote": "此地，正宜立基。",
+                    "description": "钟离抬起手，金色纹路从岩脊底部向两侧延伸。相邻的岩造物依次回应，原本分散的轮廓在共鸣中连成一片。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 72200
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "growthLink",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_genshin_growth_link",
+                    "name": "所闻遍计",
+                    "rarity": "SSR",
+                    "quote": "让它们，一起成长吧。",
+                    "description": "纳西妲伸出手，绿色印记分别落在两处轮廓上。细小的光线将它们连接，一侧刚刚发生变化，另一侧便也绽出了新的枝叶。",
+                    "cardType": "持续"
+                  }
+                ],
+                "weight": 72200
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "sereniteaPot",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_genshin_serenitea_pot",
+                    "name": "尘歌壶",
+                    "rarity": "UR",
+                    "quote": "这座搬过去，那边再添一间。",
+                    "description": "旅行者展开洞天布局，阿圆在旁边认真看着。刚才还立在山脚的屋舍，转眼便出现在水边；空出来的位置上，一座新亭子已经搭起了轮廓。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 36100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "createBuild",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_sakura_create_build",
+                    "name": "创",
+                    "rarity": "SR",
+                    "quote": "把想象中的样子，变出来！",
+                    "description": "小樱握住法杖，注视着卡牌浮现出的光。纸面上的线条慢慢立起，门窗、屋顶和阶梯逐一成形，小可已经绕着新出现的轮廓飞了一圈。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 36100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "remoteConstruction",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_arknights_remote_construction",
+                    "name": "基建轮班",
+                    "rarity": "SR",
+                    "quote": "人可以没到，施工不能停。",
+                    "description": "可露希尔把新的施工安排推到桌前，通讯器另一头接连传来确认。干员们换好班，尚未完工的设施重新亮起灯，工具声很快又响了起来。",
+                    "cardType": "持续"
+                  }
+                ],
+                "weight": 36100
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "shrineGrowth",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_noragami_shrine_growth",
+                    "name": "给我建座神社吧",
+                    "rarity": "SR",
+                    "quote": "不用太大！先有个屋顶就行！",
+                    "description": "夜斗把理想中的神社比画得越来越大，雪音已经开始怀疑预算。日和捧着刚做好的小小神社走过来，他的声音忽然停住，接过去时比谁都小心。",
+                    "cardType": "持续"
+                  }
+                ],
+                "weight": 36100
               }
             ]
           }

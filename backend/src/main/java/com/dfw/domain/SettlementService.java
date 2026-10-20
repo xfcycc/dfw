@@ -12,6 +12,7 @@ public final class SettlementService {
     /** 输入房间，采集当前资产峰值与个人回合；旧局从首次观察起统计并标明不完整。 */
     public static void observe(Room room) {
         if (!room.status.equals("playing")) return;
+        AnimeService.observeOwnership(room);
         Player actor = current(room);
         for (Player p : room.players) {
             if (p.bankrupt || p.matchStats != null && p.matchStats.settled) continue;

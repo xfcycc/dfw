@@ -20,11 +20,14 @@ public final class PropertyEffects {
     public static long concertRent(long base, int stacks) {
         return BigInteger.valueOf(base).multiply(BigInteger.valueOf(6).pow(stacks)).divide(BigInteger.valueOf(5).pow(stacks)).longValueExact();
     }
-    /** 输入房间及将受损地产，返回是否挡住本次建筑损失；冻结不消费护盾。 */
+    /** 输入地产，返回剩余护盾层数，兼容旧快照的一次护盾标记。 */
+    public static int shieldCharges(Tile tile) { return Math.max(tile.demolitionShieldCharges, tile.demolitionShield ? 1 : 0); }
+    /** 输入房间及将受损地产，返回是否挡住本次建筑损失；每次消耗一层，冻结不消费。 */
     public static boolean preventDemolition(Room room, Tile tile) {
         if (frozen(tile)) return true;
-        if (tile.level > 0 && tile.demolitionShield) {
-            tile.demolitionShield = false; log(room, tile.name + " 的 A.T.力场抵挡了本次建筑拆除，护盾已消耗"); return true;
+        if (tile.level > 0 && shieldCharges(tile) > 0) {
+            tile.demolitionShieldCharges = shieldCharges(tile) - 1; tile.demolitionShield = tile.demolitionShieldCharges > 0;
+            log(room, tile.name + " 的防拆护盾抵挡了本次建筑拆除，剩余 " + tile.demolitionShieldCharges + " 层"); return true;
         }
         return false;
     }
@@ -36,7 +39,10 @@ public final class PropertyEffects {
     }
     /** 输入房间和已淘汰施术者，立即解除其全部神威。 */
     public static void eliminateCaster(Room room, String id) {
-        for (Tile tile : room.board) if (Objects.equals(tile.kamuiCasterId, id)) release(room, tile);
+        for (Tile tile : room.board) {
+            if (Objects.equals(tile.kamuiCasterId, id)) release(room, tile);
+            if(Objects.equals(tile.zeroCasterId,id)) { tile.zeroCasterId=null; tile.zeroUntilTurn=0; }
+        }
     }
     /** 输入房间及到期地产，恢复保留的附加效果并公开记录。 */
     private static void release(Room room, Tile tile) {

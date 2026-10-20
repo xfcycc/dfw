@@ -1,0 +1,50 @@
+[
+  {
+    "code": "UR-foreground",
+    "name": "尘歌壶 foreground",
+    "skinId": "card_genshin_serenitea_pot",
+    "layer": "foreground",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-872a8a92-1ba3-45fa-aac9-b94840f1cff2.png",
+    "webp": "/tmp/dfw-construction-ur-20261019/foreground.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 471594,
+    "sha256": "2457558e49abad775fd4dd8bad7f2371f5d58960d6da8d6a936b21db595b8a38",
+    "md5": "b0cbd25cbafe3ec19690daff3cf032f0",
+    "sourceSha256": "4957214910d0bc6e4b1a6efc112bb1072716acffadfd7d57d179af1665f74652",
+    "alphaPreserved": true,
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-foreground-2457558e49ab.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 471594,
+      "contentMd5": "sMvSXLr+PsGWkNr/PPAy8A=="
+    },
+    "referenceSource": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-7b61cbe7-44d5-407e-b73d-dbf3818a3565.png",
+    "generationInstructions": "基于尘歌壶原插画编辑，保持原作正常人物比例与构图；保留左侧空、左下阿圆、右下尘歌壶及壶内庭院。右上单独保留一座浮岛亭阁，其他天空山体和桌面全部移除为真透明，金色流光由运行时绘制。"
+  },
+  {
+    "code": "UR-background",
+    "name": "尘歌壶 background",
+    "skinId": "card_genshin_serenitea_pot",
+    "layer": "background",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-3411b6ab-6e93-4bed-8d49-ce0510234455.png",
+    "webp": "/tmp/dfw-construction-ur-20261019/background.webp",
+    "width": 1254,
+    "height": 1254,
+    "bytes": 341730,
+    "sha256": "c40a7b3fd737a46a69467f54772e28ad85c0f9abbb6a74390684b07e2e203afe",
+    "md5": "899328674cc361582bcf774199e969f0",
+    "sourceSha256": "c3fe3f7785e7278e8711f228eacb8cab6574a438fec728e333ab768841a602c2",
+    "alphaPreserved": null,
+    "url": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-background-c40a7b3fd737.webp",
+    "verification": {
+      "status": 200,
+      "contentType": "image/webp",
+      "contentLength": 341730,
+      "contentMd5": "iZMoZ0zDYVgrz3dBmelp8A=="
+    },
+    "referenceSource": "/Users/caiguoyu/.codex/generated_images/01a1540b-945f-77e3-a5b0-0015aa27b3a2/exec-7b61cbe7-44d5-407e-b73d-dbf3818a3565.png",
+    "generationInstructions": "基于尘歌壶原插画补全背景：移除人物、阿圆、尘歌壶、全部亭阁和金色流光；以璃月洞天云海、浮空石峰、金色树木和瀑布填满，保留左侧虚化木柱和底部桌面，保持同画风同色调。"
+  }
+]

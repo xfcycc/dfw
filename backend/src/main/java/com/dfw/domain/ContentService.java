@@ -11,11 +11,15 @@ public final class ContentService {
     private final EffectResolver effects;
     private final RandomSource random;
     private final ExpansionService expansion;
+    /** 动漫扩展使用同一选择及效果队列。 */
+    public final AnimeService anime;
     /** 输入已校验目录及结算器，注册需要选择的内容效果。 */
     public ContentService(ContentCatalog catalog, EffectResolver effects, RandomSource random) {
         this.catalog = catalog; this.effects = effects; this.random = random;
         this.expansion = new ExpansionService(this, effects, random, catalog);
+        this.anime = new AnimeService(this, effects, random);
         effects.register("CONTENT_EVENT", this::resolveEvent);
+        effects.register("CONSTRUCTION_SHRINE", (room,effect) -> ConstructionService.shrine(room,effect));
         effects.register("FREE_UPGRADE", this::freeUpgrade);
         effects.register("FULL_UPGRADE", this::freeUpgrade);
         effects.register("SELF_DESTROY", this::selfDestroy);
@@ -71,6 +75,8 @@ public final class ContentService {
     private void resolveEvent(Room room, GameEffect source) {
         ContentResult r=source.content; Player owner=player(room,source.playerId); var p=r.parameters;
         switch (r.mechanism) {
+            case "allConstruction", "erdtreeBlessing" -> ConstructionService.event(this,room,owner,r,random);
+            case "classTrial" -> anime.trial(room,owner,r);
             case "income" -> submit(room,"GRANT_MONEY",owner,p.get("amount"));
             case "fee" -> submitFee(room,"PAY_FEE",owner,p.get("amount"),r);
             case "forward","back" -> {
@@ -113,7 +119,7 @@ public final class ContentService {
         HistoryTrace.event(room,"land_granted",owner.id,"人才引进地产已确定",target);
     }
     /** 输入作用人，返回其本回合尚未升级的未抵押、未满级地产。 */
-    private static List<Integer> upgradeTargets(Room room, Player owner) { return room.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && Objects.equals(t.ownerId,owner.id) && !t.mortgaged && t.level<Rules.MAX_LEVEL && !room.upgradedTiles.contains(t.id)).map(t -> t.id).toList(); }
+    private static List<Integer> upgradeTargets(Room room, Player owner) { return room.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && Objects.equals(t.ownerId,owner.id) && !t.mortgaged && !AnimeService.iced(t) && t.level<Rules.MAX_LEVEL && !room.upgradedTiles.contains(t.id)).map(t -> t.id).toList(); }
     /** 输入普通或满级升级事件，无目标才给固定替代现金，否则保存可放弃的合法地产选择。 */
     private void freeUpgrade(Room room,GameEffect effect) {
         Player owner=player(room,effect.playerId); List<Integer> targets=upgradeTargets(room,owner);
@@ -163,6 +169,8 @@ public final class ContentService {
     public void decide(Room room,Player owner,Action action) {
         ContentChoice choice=room.runtime.choice;
         require(choice!=null && choice.playerId.equals(owner.id) && choice.id.equals(action.decisionId),"此选择已失效，请同步最新局面");
+        if(choice.type.startsWith("construction_")) { ConstructionService.decide(this,room,owner,choice,action); return; }
+        if(anime.decide(room,owner,choice,action)) return;
         if(Set.of("free_upgrade","full_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
         switch(choice.type) {
             case "recycle", "discover" -> expansion.decide(room, owner, choice, action);
@@ -224,8 +232,10 @@ public final class ContentService {
     }
     /** 输入房间、持牌者及主动卡操作，校验附近路障地块或其他目标，确认后消费，无返回值。 */
     public void use(Room room,Player owner,Action action) {
-        Card card=find(owner,action.cardId); require(card.skinId!=null,"请使用兼容道具路径");
-        require(room.phase.equals("pre_roll") && room.pending==null && !room.activeCardUsed && !Set.of("immunity","halfPayment","release").contains(card.kind),"每回合掷骰前最多主动使用一张道具");
+        Card card=find(owner,action.cardId); require(card.skinId!=null || AnimeService.attacks(card.kind),"请使用兼容道具路径");
+        require(room.phase.equals("pre_roll") && room.pending==null && AnimeService.usable(room,card) && !AnimeService.DEFENSE.contains(card.kind) && !Set.of("immunity","halfPayment","release").contains(card.kind),"每回合掷骰前最多主动使用一张道具");
+        if(ConstructionService.CARDS.contains(card.kind)) { ConstructionService.use(this,room,owner,card); return; }
+        if(anime.use(room,owner,card,action)) return;
         Tile target=tile(room,action.tileId); Player opponent=player(room,action.playerId);
         switch(card.kind) {
             case "gamble" -> {
@@ -291,5 +301,5 @@ public final class ContentService {
     /** 输入手牌身份，返回仅属于调用者的真实卡牌。 */
     static Card find(Player owner,String id) { return owner.hand.stream().filter(c -> Objects.equals(c.id,id)).findFirst().orElseThrow(() -> new GameError("该道具已不在你的手牌中")); }
     /** 输入已验证的卡牌及发动参数，消费并登记主动次数，记录已使用卡的目标和效果。 */
-    static void consume(Room room,Player owner,Card card,boolean active,Action action) { owner.hand.remove(card); if(active) room.activeCardUsed=true; cardLog(room,owner,card,action); }
+    static void consume(Room room,Player owner,Card card,boolean active,Action action) { owner.hand.remove(card); if(active) { room.activeCardUsed=true; AnimeService.played(room,card); } cardLog(room,owner,card,action); }
 }

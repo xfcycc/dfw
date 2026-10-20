@@ -45,6 +45,8 @@ public class PublicPlayerVo {
     public boolean online;
     /** 是否已破产。 */
     public boolean bankrupt;
+    /** 已开始的个人回合数，用于公开的修复窗口。 */
+    public int personalTurns;
     /** 待跳过回合数。 */
     public int skipTurns;
     /** 是否服刑。 */

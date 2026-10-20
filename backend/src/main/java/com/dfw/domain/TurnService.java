@@ -55,6 +55,8 @@ public class TurnService {
     /** 输入房间，切换下一行动者并重置回合标志。 */
     public void advance(Room room) {
         HistoryTrace.event(room, "turn_end", current(room) == null ? null : current(room).id, "行动结束", null);
+        ConstructionService.endTurn(room,current(room));
+        AnimeService.endTurn(room,current(room));
         StatusService.endTurn(room, current(room));
         if (checkWinner(room)) return;
         activities.endTurn(room);
@@ -86,7 +88,7 @@ public class TurnService {
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.stream().skip(first).filter(segment -> segment.boardEffect == null).findFirst().ifPresent(segment -> segment.beforeEvent = effect.content);
         if (effect.message != null) log(room, effect.message);
     }
-    /** 输入房间、玩家及最终有符号步数，消费塔塔开后翻倍，再处理路障、起点奖励和路径，无返回值。 */
+    /** 输入房间、玩家及最终有符号步数，处理翻倍、路障与路径；正向经过或最终停在起点时发奖，无返回值。 */
     public void move(Room room, Player player, int steps) {
         if (StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); BoardEffect.cue(room,"morale",player); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
@@ -97,8 +99,15 @@ public class TurnService {
         if (steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (player.position == 0) { rewardStart(room, player, steps > 0 ? "向前经过起点" : "后退经过起点"); rewarded = true; }
+            if (player.position == 0 && steps > 0) { rewardStart(room, player, "向前经过起点"); rewarded = true; }
             Tile tile = room.board.get(player.position);
+            if(!PropertyEffects.frozen(tile) && tile.portalTileId!=null) {
+                Tile exit=tile(room,tile.portalTileId);
+                if(exit!=null && !PropertyEffects.frozen(exit) && Objects.equals(exit.portalTileId,tile.id)) {
+                    tile.portalTileId=null; exit.portalTileId=null; player.position=exit.id; motion.path.add(exit.id); tile=exit;
+                    log(room,player.name+" 通过虚空之泪到达 "+exit.name+"，继续剩余步数");
+                }
+            }
             if (PropertyEffects.frozen(tile)) continue;
             if ((tile.barrier || tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); immune = true; continue; }
             if (tile.barrier || tile.meteorCharges>0) {
@@ -107,6 +116,7 @@ public class TurnService {
                 log(room, player.name + " 在 " + tile.name + " 被路障或陨星拦下，每次仅消耗一层"); break;
             }
         }
+        if (steps < 0 && player.position == 0) { rewardStart(room, player, "后退停在起点"); rewarded = true; }
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         if (rewarded) { BoardEffect.cue(room,"income",player); BoardEffect.cue(room,"supply",player); }
         if (immune) BoardEffect.cue(room,"trapImmune",player);
@@ -172,10 +182,11 @@ public class TurnService {
                 if(found) { long reward=PropertyEffects.baseRent(room,tile); tile.treasure=false; player.cash=Math.addExact(player.cash,reward); log(room,player.name+" 在 "+tile.name+" 领取宝藏 ¥"+reward+"，本次不收租且保留全部租金状态"); }
                 if (tile.ownerId == null) { room.phase = "buy"; room.pending = pending("buy", player, tile.id, tile.price, null); }
                 else if (tile.ownerId.equals(player.id)) {
-                    if (!tile.mortgaged && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }
+                    if (!tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }
                 } else if (!found && !tile.mortgaged) {
                     charge(room, player, Rules.rent(room, tile), tile.ownerId, tile.id);
                 }
+                ConstructionService.landing(room,player,tile,effects);
             }
             default -> { }
         }

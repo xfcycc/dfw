@@ -50,6 +50,12 @@ public class Action {
     public String playerId;
     /** 斗转星移的第二名玩家，其他操作留空。 */
     public String secondPlayerId;
+    /** 七剑三道剑气的地产分配，可重复表示集火。 */
+    public List<Integer> tileIds;
+    /** 虚空之泪第二个地产端点。 */
+    public Integer secondTileId;
+    /** 贯穿雷击方向，1顺时针，-1逆时针。 */
+    public Integer direction;
     /** 交易接收人。 */
     public String toId;
     /** 提供现金。 */

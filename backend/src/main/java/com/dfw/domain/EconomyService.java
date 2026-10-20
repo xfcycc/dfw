@@ -52,7 +52,7 @@ public class EconomyService {
         }
         if (tileId != null && creditorId != null) {
             Tile property = tile(room,tileId);
-            if (PropertyEffects.frozen(property)) return;
+            if (PropertyEffects.frozen(property) || AnimeService.iced(property)) return;
             if (property.concertStacks > 0) {
                 BoardEffect.Observation presentation = BoardEffect.watch(room,"concertRent",player);
                 amount = PropertyEffects.concertRent(amount,property.concertStacks);
@@ -100,6 +100,7 @@ public class EconomyService {
         switch (action) {
             case "sellBuilding" -> {
                 require(tile.level > 0 && !tile.mortgaged, "地产没有可出售建筑，或建筑已随地产抵押"); tile.level--;
+                tile.damageOwnerId=null; tile.damageLevel=0; tile.damageUntilTurn=0;
                 long cash = Rules.sellBuildingValue(room, tile); player.cash += cash;
                 log(room, "log", player.id, player.name + " 出售 " + land + " 的一级建筑，建筑从 " + (tile.level + 1) + " 级降至 " + tile.level + " 级，银行返款 ¥" + String.format("%,d", cash) + "，现金余额 ¥" + String.format("%,d", player.cash));
             }

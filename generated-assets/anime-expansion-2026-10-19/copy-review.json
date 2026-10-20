@@ -1,0 +1,1810 @@
+{
+  "scope": "本批46张中的其余45张；U14超电磁炮复核保留上一轮确认文案",
+  "reviewed": 46,
+  "rewrittenDescriptions": 45,
+  "rewrittenQuotes": 40,
+  "retainedCard": "U14",
+  "boundaries": [
+    "效果原文逐字保留",
+    "参数、稀有度、卡名、分类、数量与权重保留",
+    "图片地址、原图与生成提示词保留",
+    "当前卡面文案与历史图片修订记录分开保留"
+  ],
+  "quotePolicy": "仅有直接证据的句子标为官方/授权台词译写；其余按人物口吻、原作场景或招式名改写，不宣称是逐字原句。所有描述均为本游戏创作的叙事文案，不把游戏专属效果宣称为原作能力。",
+  "referenceLimit": "官方人物页或分集简介仅支持对应人物与背景；刻刻帝弹种及雅雅冰系能力的细分补充明确标为非官方设定整理；未完成逐集字幕、漫画每页或所有游戏语音的逐字核验。",
+  "changes": [
+    {
+      "code": "U01",
+      "skinId": "card_anime_u01",
+      "name": "时间溯行",
+      "pool": "card",
+      "before": {
+        "quote": "这一次，换一条路。",
+        "description": "晓美焰看了一眼前方，手指缓缓搭上盾牌。齿轮重新转动，刚刚发生的一切退回原处。旁人还在讨论下一步，她已经记住了那条路的结局。"
+      },
+      "after": {
+        "quote": "无论重来多少次，我都会救你。",
+        "description": "沙漏翻转，熟悉的病房再次出现在眼前。晓美焰记得接下来一个月的每一次相遇，也记得小圆走向的结局。她握紧圆盾，再一次把那句约定带回时间的起点。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "晓美焰",
+        "quoteKind": "原作约定的缩写意译",
+        "basis": "以反复回到与小圆相遇前的时间点为叙事，不把停时与整段回溯混为眼前几秒倒放。",
+        "referenceIds": [
+          "homura",
+          "madoka"
+        ],
+        "references": [
+          {
+            "id": "homura",
+            "title": "小圆十周年官方名场面与晓美焰的约定",
+            "url": "https://10th.madoka-magica.com/special/best-scene/?type=10",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "madoka",
+            "title": "小圆动画官方角色页",
+            "url": "https://www.madoka-magica.com/tv/archives/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U02",
+      "skinId": "card_anime_u02",
+      "name": "投影魔术",
+      "pool": "card",
+      "before": {
+        "quote": "结构，解析。",
+        "description": "士郎注视着刚刚见过的武器，蓝色纹路沿手臂亮起。轮廓、材质与结构一点点重现，掌中的光逐渐凝成实体，边缘仍有细碎的魔力剥落。"
+      },
+      "after": {
+        "quote": "投影，开始。",
+        "description": "士郎闭目解析见过的武器，构造与材质在意识中逐层成形。魔术回路亮起，想象中的剑逐渐有了重量与锋刃。他握紧重现的武器，向前迈出一步。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "卫宫士郎",
+        "quoteKind": "授权台词中文译写",
+        "basis": "授权卡牌收录“投影、开始”；描述强调解析构造与以魔力重现武器。",
+        "referenceIds": [
+          "projection",
+          "fate"
+        ],
+        "references": [
+          {
+            "id": "projection",
+            "title": "授权卡牌“投影开始”士郎 FS/S36-001",
+            "url": "https://ws-tcg.com/cardlist/?cardno=FS%2FS36-001",
+            "sourceType": "official_or_publisher_material",
+            "accessNote": "台词证据来自官方卡牌检索返回，按公开卡号给出独立链接；独立卡页的正文抓取未成功。"
+          },
+          {
+            "id": "fate",
+            "title": "Fate UBW动画官方人物页",
+            "url": "https://www.fate-sn.com/ubw/sp/chara/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U03",
+      "skinId": "card_anime_u03",
+      "name": "星爆气流斩",
+      "pool": "card",
+      "before": {
+        "quote": "还没结束！",
+        "description": "黑白双剑在桐人手中交错，第一道剑光尚未散去，下一次斩击已经接上。对手刚挡住迎面的一击，侧面的锋芒便再次逼近。"
+      },
+      "after": {
+        "quote": "星爆——气流斩！",
+        "description": "桐人同时拔出阐释者与逐暗者，挡在青眼恶魔面前。二刀流的连续斩击几乎连成一道不间断的剑光，一剑接上另一剑，直到最后一击才肯停下。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "桐人",
+        "quoteKind": "招式呼喊译写",
+        "basis": "采用原作二刀流及第74层青眼恶魔的代表场景，纠正笼统的“黑白双剑”。",
+        "referenceIds": [
+          "sao",
+          "starburst"
+        ],
+        "references": [
+          {
+            "id": "sao",
+            "title": "SAO官方第9话：青眼恶魔",
+            "url": "https://www.swordart-online.net/aincrad/story/09.html",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "starburst",
+            "title": "授权卡牌：星爆气流斩呼喊",
+            "url": "https://ws-tcg.com/cardlist/?cardno=SAO%2FS100-099R",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U04",
+      "skinId": "card_anime_u04",
+      "name": "幻想杀手",
+      "pool": "card",
+      "before": {
+        "quote": "这个幻想，就由我来打碎。",
+        "description": "铺天盖地的能力已经逼到面前，当麻仍向前踏了一步。右手触及的地方骤然碎裂，耀眼的光与复杂的术式同时失去形状。"
+      },
+      "after": {
+        "quote": "首先，打碎你那幻想！",
+        "description": "面对压来的魔法与超能力，当麻迎着攻击伸出右手。异能在触及那只手的地方失去效力，原本无可逾越的术式出现了缺口。他没有停下，继续向被困在后方的人跑去。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "上条当麻",
+        "quoteKind": "授权台词节选意译",
+        "basis": "依据“まずはその幻想をぶち殺す”的尾句意译；右手接触消除异能，不描写成全身反射屏障。",
+        "referenceIds": [
+          "touma"
+        ],
+        "references": [
+          {
+            "id": "touma",
+            "title": "授权卡牌“幻想杀手”当麻 ID/W10-006",
+            "url": "https://ws-tcg.com/cardlist/?cardno=ID%2FW10-006",
+            "sourceType": "official_or_publisher_material",
+            "accessNote": "台词证据来自官方卡牌检索返回，按公开卡号给出独立链接；独立卡页的正文抓取未成功。"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U05",
+      "skinId": "chance_anime_u05",
+      "name": "学级裁判",
+      "pool": "chance",
+      "before": {
+        "quote": "那么，开始投票吧！",
+        "description": "争论声在环形裁判席间来回碰撞，每个人都指着不同方向。黑白熊愉快地敲下按钮，刚才还在解释的人，忽然发现所有目光都转向了自己。"
+      },
+      "after": {
+        "quote": "噗呼呼……那么，开始学级裁判吧！",
+        "description": "证言与证物在环形裁判席间交错，每一句矛盾都可能成为新的言弹。黑白熊坐在高处，兴致勃勃地催促众人给出答案。争论结束，投票按钮终于亮起。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "黑白熊",
+        "quoteKind": "人物口吻创作",
+        "basis": "保留学级裁判、证言、言弹与投票的原作辨识度，不将游戏的休息惩罚说成原作规则。",
+        "referenceIds": [
+          "trial",
+          "dangan"
+        ],
+        "references": [
+          {
+            "id": "trial",
+            "title": "弹丸论破官方：学级裁判的证言与言弹",
+            "url": "https://www.danganronpa.com/pages/vr/",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "dangan",
+            "title": "弹丸论破V3官方系统说明",
+            "url": "https://www.danganronpa.com/v3/sp/system/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U06",
+      "skinId": "card_anime_u06",
+      "name": "刻刻帝·四之弹",
+      "pool": "card",
+      "before": {
+        "quote": "把时间，稍微拨回去一点。",
+        "description": "狂三抬起枪口，背后的时钟缓缓倒转。弹道掠过的地方，散落的碎片重新拼合，裂开的表面恢复如初，仿佛损坏从未发生。"
+      },
+      "after": {
+        "quote": "刻刻帝——四之弹（Dalet）！",
+        "description": "刻刻帝在狂三身后显现，枪弹承载着回溯时间的力量。四之弹命中，目标刚刚留下的伤损沿时间逆流消退。她仍旧含笑，金色时钟眼中的指针映着枪口的余光。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "时崎狂三",
+        "quoteKind": "招式名呼喊改写",
+        "basis": "四之弹回溯被命中对象的时间；官方人物页确认天使与时空能力，弹种细分采用补充设定整理，不作为逐字台词。",
+        "referenceIds": [
+          "kurumi",
+          "kurumi-detail"
+        ],
+        "references": [
+          {
+            "id": "kurumi",
+            "title": "约战V官方：时崎狂三、时空能力与刻刻帝",
+            "url": "https://cn.date-a-live5th-anime.com/character/kurumi.php",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "kurumi-detail",
+            "title": "四之弹与七之弹细分设定补充（非官方整理）",
+            "url": "https://gp03s9992220.pixnet.net/blog/posts/8174609864",
+            "sourceType": "secondary_setting_summary"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U07",
+      "skinId": "card_anime_u07",
+      "name": "矢量反射",
+      "pool": "card",
+      "before": {
+        "quote": "方向，反了。",
+        "description": "一方通行站在原地，甚至没有抬起脚。迎面而来的攻击在他身前骤然折返，地面的裂纹和扬起的碎石，一起朝来者延伸。"
+      },
+      "after": {
+        "quote": "就这点能耐，还想碰到我？",
+        "description": "弹道逼近，一方通行却连躲避的动作都省下了。触及体表的力量被重新指定方向，攻击沿着相反的轨迹折返。他抬起眼，迎着骤然变色的对手露出笑容。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "一方通行",
+        "quoteKind": "人物口吻创作",
+        "basis": "突出矢量操作与反射，以及面对低估者时的轻蔑口吻；不以游戏反射规则冒充原作全部能力边界。",
+        "referenceIds": [
+          "accelerator"
+        ],
+        "references": [
+          {
+            "id": "accelerator",
+            "title": "一方通行动画官方：矢量操作与反射",
+            "url": "https://toaru-project.com/accelerator/special/game/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U08",
+      "skinId": "card_anime_u08",
+      "name": "死亡回归",
+      "pool": "card",
+      "before": {
+        "quote": "我记得……这里已经来过一次了。",
+        "description": "昴猛地抬起头，熟悉的街口、叫卖声和擦肩而过的人，全都与记忆中一样。他攥紧发抖的手，身边的人却还不知道刚才发生过什么。"
+      },
+      "after": {
+        "quote": "下一次，我一定会改变结局。",
+        "description": "昴再次在熟悉的街口睁开眼，摊主说出与记忆里一模一样的话。上一轮的痛楚仍留在意识中，周围的人却什么也不知道。他把快要脱口而出的话咽回去，记住这一次必须改变的分岔。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "菜月昴",
+        "quoteKind": "人物口吻创作",
+        "basis": "强调回归后只有昴记得上一轮，以及他承受的恐惧和改变结局的意志，不写成自由选存档点。",
+        "referenceIds": [
+          "rezero"
+        ],
+        "references": [
+          {
+            "id": "rezero",
+            "title": "Re:0官方第一季第18话：从零开始",
+            "url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U09",
+      "skinId": "card_anime_u09",
+      "name": "爆裂魔法",
+      "pool": "card",
+      "before": {
+        "quote": "Explosion——！……和真，背我。",
+        "description": "巨大的魔法阵照亮天空，爆炸将远处吞进火光。惠惠满意地看完这一击，随即软倒在地，法杖也滚到一旁。和真看了看她，又看了看还没散去的烟。"
+      },
+      "after": {
+        "quote": "Explosion！",
+        "description": "惠惠高举法杖，把所有魔力倾注进这一发爆裂魔法。巨大的火光与轰鸣吞没远处的目标，她满意地看着烟柱升起，随后耗尽力气倒下。和真叹了口气，熟练地走过去把她背起。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "惠惠",
+        "quoteKind": "招式呼喊",
+        "basis": "保留爆裂魔法的单发投入、施术后动弹不得与和真背回去的日常梗。",
+        "referenceIds": [
+          "explosion",
+          "konosuba"
+        ],
+        "references": [
+          {
+            "id": "explosion",
+            "title": "官方第一季第4话：和真陪惠惠练习爆裂魔法",
+            "url": "https://konosuba.com/1st/story/",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "konosuba",
+            "title": "为美好世界献上祝福官方角色页",
+            "url": "https://konosuba.com/legend_of_crimson/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U10",
+      "skinId": "card_anime_u10",
+      "name": "猩红腐败",
+      "pool": "card",
+      "before": {
+        "quote": "它还在蔓延。",
+        "description": "猩红花瓣落到地面，细小的腐败沿裂缝悄然扩散。玛莲妮亚站在雾气深处，没有追击，远处的结构却仍在一点点剥落。"
+      },
+      "after": {
+        "quote": "现在，腐败吧。",
+        "description": "猩红花蕾在玛莲妮亚周身舒展，花瓣与腐败蝶一同涌出。金色义肢从雾中缓缓抬起，腐败已随着绽放的余波侵入战场。即使花光渐暗，侵蚀仍未停止。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "玛莲妮亚",
+        "quoteKind": "场景语气改写",
+        "basis": "以猩红花开与持续腐败为题材；短句按战斗场景改写，本记录不将其标作已经逐字核实的游戏对白。",
+        "referenceIds": [
+          "rot"
+        ],
+        "references": [
+          {
+            "id": "rot",
+            "title": "FromSoftware官方手册：猩红腐败持续损伤",
+            "url": "https://www.fromsoftware.jp/manual/eldenring/ps4/screen.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U11",
+      "skinId": "card_anime_u11",
+      "name": "契约成立",
+      "pool": "card",
+      "before": {
+        "quote": "愿望已经实现了。至于代价……",
+        "description": "丘比安静地蹲在面前，像是在等待一句再普通不过的回答。伸出的手掌间亮起宝石，愿望终于有了回应，契约者却还没来得及问完最后一个问题。"
+      },
+      "after": {
+        "quote": "和我签订契约，成为魔法少女吧。",
+        "description": "丘比平静地提出邀请：一个愿望，换取成为魔法少女的契约。它等待少女说出心中最想实现的事，仿佛只是在确认一项理所当然的交换。灵魂宝石的光芒，映亮了那双始终没有变化的红眼睛。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "丘比",
+        "quoteKind": "官方台词中文译写",
+        "basis": "采用官方角色页中的契约邀请，保留丘比平静、理性而缺少人类情感的态度，去除刻意卖关子的反派腔。",
+        "referenceIds": [
+          "madoka"
+        ],
+        "references": [
+          {
+            "id": "madoka",
+            "title": "小圆动画官方角色页",
+            "url": "https://www.madoka-magica.com/tv/archives/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U12",
+      "skinId": "card_anime_u12",
+      "name": "令咒",
+      "pool": "card",
+      "before": {
+        "quote": "以令咒之名——",
+        "description": "御主抬起手，手背上的红色纹路骤然发亮。一道令咒逐渐消失，原本准备停下的人重新迈步，魔力的牵引已经先于回答抵达。"
+      },
+      "after": {
+        "quote": "以令咒之名，命令你——",
+        "description": "御主抬起刻有令咒的手背，说出无法轻易收回的命令。一道红色纹路随之消退，契约中的魔力化为强制的力量，推动从者完成眼前的行动。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "御主",
+        "quoteKind": "令咒发动公式改写",
+        "basis": "围绕御主、从者、令咒消耗与契约中的强制命令创作，不指定未经确认的角色与剧情。",
+        "referenceIds": [
+          "fate"
+        ],
+        "references": [
+          {
+            "id": "fate",
+            "title": "Fate UBW动画官方人物页",
+            "url": "https://www.fate-sn.com/ubw/sp/chara/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U13",
+      "skinId": "card_anime_u13",
+      "name": "火舞旋风",
+      "pool": "card",
+      "before": {
+        "quote": "火舞旋风！",
+        "description": "虹猫旋身挥动长虹剑，炽烈的剑光卷起层层火浪。白衣在烈风中翻飞，火焰沿剑势盘旋而上，最终化作三道灼热剑气，撕开前方的夜色。"
+      },
+      "after": {
+        "quote": "火舞旋风！",
+        "description": "虹猫握紧长虹剑，剑锋随着旋身划出炽热的圆弧。火光层层回旋，卷成冲向前方的旋风；纷乱的杀意与杂念渐渐退去，只余长虹剑不断向前的剑势。"
+      },
+      "quoteChanged": false,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "虹猫",
+        "quoteKind": "招式呼喊",
+        "basis": "回到虹猫单人、长虹剑与火舞旋风的意象；不再把本游戏三道剑气分配写成原作招式的固定数量。",
+        "referenceIds": [
+          "hongmao"
+        ],
+        "references": [
+          {
+            "id": "hongmao",
+            "title": "火舞旋风：第105集发行目录及分集介绍",
+            "url": "https://watch.plex.tv/zh/show/hong-mao-lan-tu-qi-xia-chuan/season/1/episode/105",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U15",
+      "skinId": "card_anime_u15",
+      "name": "回到你原来的样子",
+      "pool": "card",
+      "before": {
+        "quote": "以小樱之名，封印！",
+        "description": "失控的力量在空中翻涌，小樱握紧法杖，脚下的魔法阵随之亮起。随着杖尖落下，庞大的轮廓被一点点收拢，最终化作一张安静悬浮的卡牌。"
+      },
+      "after": {
+        "quote": "恢复你原来的样子——库洛牌！",
+        "description": "小可在旁提醒，小樱握稳封印之杖，直面失控的库洛牌。鸟首杖头点向展开的魔法阵，散乱的魔力被封印之力收拢，重新凝成落入她手中的卡牌。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "木之本樱",
+        "quoteKind": "封印公式中文意译",
+        "basis": "采用“恢复原本姿态、库洛牌”的封印公式，明确小樱、初代封印杖、小可与库洛牌之间的关系。",
+        "referenceIds": [
+          "sakura",
+          "sakura-tool"
+        ],
+        "references": [
+          {
+            "id": "sakura",
+            "title": "CLAMP官方25周年库洛牌与封印场景介绍",
+            "url": "https://ccsakura-official.com/25th/core_sys/images/main/special/sp_vol04.pdf",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "sakura-tool",
+            "title": "小樱官方：封印之杖与库洛牌",
+            "url": "https://ccsakura-official.com/core_sys/images/main/fes2017/list_takaratomy.pdf",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U16",
+      "skinId": "card_anime_u16",
+      "name": "剑雨",
+      "pool": "card",
+      "before": {
+        "quote": "处理完了。下一个。",
+        "description": "德克萨斯落地时，周围的剑影同时展开。对方刚停下动作，她已经转身离开；片刻后，熟悉的身影又从另一侧切入。"
+      },
+      "after": {
+        "quote": "别挡路。",
+        "description": "雨水划过刀锋，德克萨斯迎着叙拉古的街灯切入战场。剑影接连坠下，逼近的敌人在交错的锋芒中停住。她没有多作解释，只收紧手中的剑，走向下一处必须解决的麻烦。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "缄默德克萨斯",
+        "quoteKind": "人物口吻创作",
+        "basis": "以叙拉古背景、沉默直接的行动方式与落下的剑影为核心，去除为贴合两次使用而编出的重复出入场。",
+        "referenceIds": [
+          "texas",
+          "siracusa"
+        ],
+        "references": [
+          {
+            "id": "texas",
+            "title": "明日方舟官方：缄默德克萨斯预告",
+            "url": "https://www.youtube.com/watch?v=7VQZtulccvk",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "siracusa",
+            "title": "官方动画制作方：叙拉古人预告",
+            "url": "https://yostar-pictures.co.jp/works/detail/2294/?lang=en",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U17",
+      "skinId": "card_anime_u17",
+      "name": "虚空之泪",
+      "pool": "card",
+      "before": {
+        "quote": "你以为，路只有眼前这一条？",
+        "description": "泪珠悬在眼角，映出的景物却与身后截然不同。它划过空气，眼前的道路像被切开一道缝，另一处空间就在缝隙后清晰起来。"
+      },
+      "after": {
+        "quote": "虚空之泪！",
+        "description": "一滴泪在白月初眼角凝起，映出的空间随之扭曲。泪光掠过，原本连成一片的景物骤然错开，挡在前方的阻隔被撕出裂隙。他抬起头，视线追向泪光消失的方向。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "白月初",
+        "quoteKind": "招式名呼喊",
+        "basis": "采用虚空之泪撕裂空间的意象，不把本游戏的一次性双向传送门写成原作固定用法；参考原作25～42话相关章节目录。",
+        "referenceIds": [
+          "fox"
+        ],
+        "references": [
+          {
+            "id": "fox",
+            "title": "腾讯动漫原作：狐妖小红娘，含25～42话章节目录",
+            "url": "https://ac.qq.com/Comic/comicInfo/id/518333",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "U18",
+      "skinId": "card_anime_u18",
+      "name": "绝对零域",
+      "pool": "card",
+      "before": {
+        "quote": "这片地方，先安静一会儿。",
+        "description": "雅雅抬起眼，街上的声音渐渐沉下去。寒气从脚边铺开，霜纹攀上远处的墙面，整片区域在白雾中变得寂静。"
+      },
+      "after": {
+        "quote": "绝对零域。",
+        "description": "雅雅抬起无尽酒葫，饮下酒后，寒性妖气在身周骤然攀升。九尾舒展，霜雪无声地吞没四周，连撕裂空间的泪光也被封在冰中。她冷冷望着前方，凝结的寒雾久久未散。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "涂山雅雅",
+        "quoteKind": "招式名呼喊",
+        "basis": "突出无尽酒葫、寒性妖气与冰封虚空之泪的原作特征；人物语气保持冷峻，补充资料明确标为非官方索引。",
+        "referenceIds": [
+          "fox",
+          "yaya-detail"
+        ],
+        "references": [
+          {
+            "id": "fox",
+            "title": "腾讯动漫原作：狐妖小红娘，含25～42话章节目录",
+            "url": "https://ac.qq.com/Comic/comicInfo/id/518333",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "yaya-detail",
+            "title": "雅雅的冰系法术与无尽酒葫（非官方原作索引）",
+            "url": "https://bkso.baidu.com/item/%E6%B6%82%E5%B1%B1%E9%9B%85%E9%9B%85/18204677",
+            "sourceType": "secondary_setting_summary"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G01",
+      "skinId": "card_anime_g01",
+      "name": "赐福指引",
+      "pool": "card",
+      "before": {
+        "quote": "先回赐福，其他的待会儿再说。",
+        "description": "远处的敌人还在徘徊，褪色者已经在微弱的金光前停下。伸出的手触到赐福，身后的风声与追赶渐渐远去。"
+      },
+      "after": {
+        "quote": "循着赐福，继续前行。",
+        "description": "幽微的金光在地面汇聚，细长的光束指向远方。褪色者在赐福旁起身，沿着指引踏入交界地的风沙。即使王座尚在远方，那道微光仍为失路之人留下方向。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "旁白",
+        "quoteKind": "原作意象旁白创作",
+        "basis": "采用赐福金光、指引方向与褪色者旅途，不给寡言的玩家角色强加“先回去再说”的现代吐槽。",
+        "referenceIds": [
+          "grace"
+        ],
+        "references": [
+          {
+            "id": "grace",
+            "title": "FromSoftware官方手册：赐福与赐福指引",
+            "url": "https://www.fromsoftware.jp/manual/eldenring/xbo/basic.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G02",
+      "skinId": "card_anime_g02",
+      "name": "缎带结界",
+      "pool": "card",
+      "before": {
+        "quote": "别怕，站到我身后。",
+        "description": "麻美抬起手，金色缎带从四周展开。迎面的冲击撞上层层交织的屏障，她身后的人终于放下了挡在面前的手臂。"
+      },
+      "after": {
+        "quote": "别怕，站到我身后。",
+        "description": "麻美抬起戴着手套的手，金色缎带从腕边延展，在同伴身前交织成防护。她稳住帽檐，确认身后的人已经安全，才从容地转向结界深处的魔女。"
+      },
+      "quoteChanged": false,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "巴麻美",
+        "quoteKind": "人物口吻创作",
+        "basis": "保留已有温柔可靠的台词，描述加入缎带魔法、帽饰与照顾后辈的原作特点。",
+        "referenceIds": [
+          "madoka"
+        ],
+        "references": [
+          {
+            "id": "madoka",
+            "title": "小圆动画官方角色页",
+            "url": "https://www.madoka-magica.com/tv/archives/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G03",
+      "skinId": "card_anime_g03",
+      "name": "风王结界",
+      "pool": "card",
+      "before": {
+        "quote": "想看清这把剑，可没那么容易。",
+        "description": "对手盯着Saber的握剑姿势，始终判断不出剑锋的位置。空气在她手中旋转，下一步攻势尚未开始，来者已经先退了半步。"
+      },
+      "after": {
+        "quote": "请退后。这里由我守住。",
+        "description": "Saber双手握剑，缠绕剑身的风隐去了圣剑的形状。对手只能从她的站姿猜测锋刃的长度，试探的进攻接连被无形之剑挡住。她始终没有让出身后的那一步。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "Saber",
+        "quoteKind": "人物口吻创作",
+        "basis": "风王结界的重点是以风隐藏剑形；台词采用克制、守护他人的骑士口吻，避免对敌炫耀的语气。",
+        "referenceIds": [
+          "fate"
+        ],
+        "references": [
+          {
+            "id": "fate",
+            "title": "Fate UBW动画官方人物页",
+            "url": "https://www.fate-sn.com/ubw/sp/chara/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G04",
+      "skinId": "card_anime_g04",
+      "name": "约定的钥匙",
+      "pool": "card",
+      "before": {
+        "quote": "等等，这次真的能打开吗？",
+        "description": "锁被小心地托在手中，钥匙刚靠近，旁边的人便同时屏住呼吸。一条乐抬头看了一眼，每个人的表情都比锁本身更难读懂。"
+      },
+      "after": {
+        "quote": "等长大以后，再用这把钥匙打开它。",
+        "description": "童年的少女把钥匙收好，一条乐则将那把锁留在胸前。许多年过去，相同的约定与不同的钥匙再次相遇；千棘和小咲的反应，让他愈发难以拼回那段记忆。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "童年约定中的少女",
+        "quoteKind": "约定场景创作",
+        "basis": "突出童年约定、乐的锁与少女们的钥匙，不提前指定谜底或写成钥匙已经打开锁的既成事实。",
+        "referenceIds": [
+          "nisekoi"
+        ],
+        "references": [
+          {
+            "id": "nisekoi",
+            "title": "伪恋官方人物介绍",
+            "url": "https://www.nisekoi.jp/sp/chara/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G05",
+      "skinId": "fortune_anime_g05",
+      "name": "五元神明",
+      "pool": "fortune",
+      "before": {
+        "quote": "五元就行！各种委托都接！",
+        "description": "夜斗郑重地接过五元硬币，笑得像刚拿到一笔大订单。雪音在旁边看着那张写满联系方式的纸，日和已经开始替下一位委托人担心。"
+      },
+      "after": {
+        "quote": "只要五元钱，夜斗神随叫随到！",
+        "description": "没有神社，也没有固定住处，夜斗先把自己的手机号贴满街角。接到委托后，他郑重地收下五元香火钱，转身就要带雪音开工。日和看着忙前忙后的两人，忍不住又跟了上去。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "夜斗",
+        "quoteKind": "人物口吻创作",
+        "basis": "围绕五元香火钱、手机号与“宅配神”的委托日常，保留夜斗贫穷而积极的喜剧感。",
+        "referenceIds": [
+          "noragami"
+        ],
+        "references": [
+          {
+            "id": "noragami",
+            "title": "野良神官方：五元委托、宅配神与雪音",
+            "url": "https://www.noragami-anime.net/1/story.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G06",
+      "skinId": "card_anime_g06",
+      "name": "转移水晶",
+      "pool": "card",
+      "before": {
+        "quote": "准备好了？转移！",
+        "description": "桐人举起水晶，亚丝娜向他点了点头。蓝色光芒从掌心铺开，两人的轮廓逐渐被传送光包围，远处的战斗声随之变轻。"
+      },
+      "after": {
+        "quote": "转移——起始之城！",
+        "description": "桐人举起转移水晶，清楚地报出目的地的城镇名。亚丝娜也取出自己的水晶，两道传送光先后亮起；随着道具发动，熟悉的城镇取代了眼前的景色。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "桐人",
+        "quoteKind": "道具发动口令的场景化译写",
+        "basis": "转移水晶以城镇名指定目的地；口令为场景化写法，不宣称逐字引自某一集，也不把自家地产说成原作传送目标。 两人各自使用水晶，不与可供多人通过的回廊水晶混写。",
+        "referenceIds": [
+          "sao"
+        ],
+        "references": [
+          {
+            "id": "sao",
+            "title": "SAO官方第9话：青眼恶魔",
+            "url": "https://www.swordart-online.net/aincrad/story/09.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G07",
+      "skinId": "card_anime_g07",
+      "name": "虚空抽取",
+      "pool": "card",
+      "before": {
+        "quote": "把你的力量，借给我。",
+        "description": "集伸出手，祈胸前浮现出结晶般的光。长剑从光中缓缓显现，他握住剑柄时，原本迟疑的目光终于转向前方。"
+      },
+      "after": {
+        "quote": "祈，把你的力量借给我。",
+        "description": "集伸出拥有“王之能力”的右手，祈的虚空在光中逐渐显形。那把来自她内心的巨剑落入掌中，他迟疑的目光随之坚定，终于向原本不敢面对的敌人走去。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "樱满集",
+        "quoteKind": "人物口吻创作",
+        "basis": "明确虚空是心的具现与王之能力的抽取，不写成随手从别人身上偷走普通物品。",
+        "referenceIds": [
+          "guilty"
+        ],
+        "references": [
+          {
+            "id": "guilty",
+            "title": "罪恶王冠官方：王之能力与虚空",
+            "url": "https://guilty-crown.jp/introduction/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G08",
+      "skinId": "card_anime_g08",
+      "name": "封绝",
+      "pool": "card",
+      "before": {
+        "quote": "这里的时间，暂时停下。",
+        "description": "红色光幕沿地面展开，四周的人与落叶停在原处。夏娜站在静止的街道中央，炎发在封绝中扬起，只有刀锋仍映着流动的火光。"
+      },
+      "after": {
+        "quote": "封绝。",
+        "description": "火线在地面勾出赤红纹章，阳炎般的壁将战场与外界隔开。普通人的动作停在半途，炎发灼眼的少女却仍握着贽殿遮那走向前方。封绝之中，红世的战斗刚刚开始。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "夏娜",
+        "quoteKind": "术式名呼喊",
+        "basis": "采用因果孤立空间、火线纹章与普通人静止的特征，不声称封绝会冻结火雾战士或红世之徒。",
+        "referenceIds": [
+          "shana"
+        ],
+        "references": [
+          {
+            "id": "shana",
+            "title": "夏娜官方术语：封绝与因果孤立空间",
+            "url": "https://www.shakugan.com/contents/hp0042/index01300000.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G09",
+      "skinId": "fortune_anime_g09",
+      "name": "找到你了",
+      "pool": "fortune",
+      "before": {
+        "quote": "找到你了！",
+        "description": "大家朝着熟悉的地方一次次喊出名字，声音从迟疑变得哽咽。面码在呼唤中回过头，终于露出那个一直等待着的笑。"
+      },
+      "after": {
+        "quote": "面码，找到你了！",
+        "description": "最后的捉迷藏还没有结束，伙伴们一遍遍喊着面码的名字。那些没能说出口的心意，终于在带泪的呼唤中传达过去。她在晨光里回以笑容，超和平Busters再一次找到了彼此。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "仁太与超和平Busters的伙伴们",
+        "quoteKind": "结局场景呼喊改写",
+        "basis": "明确“找到你了”由寻找面码的伙伴们说出，保留最后捉迷藏的告别意象，不将该句误配为面码自述。",
+        "referenceIds": [
+          "anohana"
+        ],
+        "references": [
+          {
+            "id": "anohana",
+            "title": "未闻花名官方最终话",
+            "url": "https://www.anohana.jp/tv/story/11.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G10",
+      "skinId": "card_anime_g10",
+      "name": "UMR上线",
+      "pool": "card",
+      "before": {
+        "quote": "这局，认真一点好了。",
+        "description": "游戏厅的屏幕亮起，UMR把帽檐往下压了压。旁边的希尔芬已经摆好架势，上一局的结果还没翻篇，两个人又同时按下了开始。"
+      },
+      "after": {
+        "quote": "TSF，下一局也一起赢吧！",
+        "description": "游戏厅的屏幕上，UMR与TSF的名字并排亮起。小埋压低帽檐，收起在家懒散的一面，和兴致高昂的希尔芬一起盯住下一关。两个游戏伙伴的默契，在按键声中越来越熟练。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "UMR（土间埋）",
+        "quoteKind": "人物口吻创作",
+        "basis": "使用UMR与TSF的游戏身份和伙伴关系，不让日常台词变成泛用的强者宣言。",
+        "referenceIds": [
+          "umaru",
+          "umaru-interview"
+        ],
+        "references": [
+          {
+            "id": "umaru",
+            "title": "小埋官方：希尔芬的性格与竞争关系",
+            "url": "https://umaru-ani.me/sp/character/silphin.html",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "umaru-interview",
+            "title": "小埋官方：希尔芬演员访谈",
+            "url": "https://umaru-ani.me/sp/staffcast/sylphyn.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G11",
+      "skinId": "chance_anime_g11",
+      "name": "不幸啊！",
+      "pool": "chance",
+      "before": {
+        "quote": "不幸啊！",
+        "description": "当麻拎着刚买好的晚餐，塑料袋偏偏在门口裂开。茵蒂克丝看了一眼地上的食材，又看向他，他已经开始摸口袋里剩下的零钱。"
+      },
+      "after": {
+        "quote": "不幸啊！",
+        "description": "当麻拎着打折买来的晚餐赶回宿舍，购物袋偏偏在门口裂开。茵蒂克丝已经等着开饭，他蹲下去收拾食材，又摸了摸所剩无几的零钱。今天的不幸，显然还没结束。"
+      },
+      "quoteChanged": false,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "上条当麻",
+        "quoteKind": "角色惯用语",
+        "basis": "保留已有口头禅，描写宿舍、生活费与茵蒂克丝的日常，不将幻想杀手写成主动招来霉运的已证实因果。",
+        "referenceIds": [
+          "touma"
+        ],
+        "references": [
+          {
+            "id": "touma",
+            "title": "授权卡牌“幻想杀手”当麻 ID/W10-006",
+            "url": "https://ws-tcg.com/cardlist/?cardno=ID%2FW10-006",
+            "sourceType": "official_or_publisher_material",
+            "accessNote": "台词证据来自官方卡牌检索返回，按公开卡号给出独立链接；独立卡页的正文抓取未成功。"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G13",
+      "skinId": "card_anime_g13",
+      "name": "翔",
+      "pool": "card",
+      "before": {
+        "quote": "翔，带我过去！",
+        "description": "羽翼从法杖两侧展开，小樱抓稳杖身，小可已经先飞到了前面。她低头确认了一眼方向，迎着夜风升向屋顶上方。"
+      },
+      "after": {
+        "quote": "翔（FLY）！",
+        "description": "小樱让封印之杖轻触“翔”的卡面，白色羽翼随即从杖的两侧展开。她坐稳杖身，小可飞在身旁提醒方向；夜风掠过友枝町，屋顶与街灯渐渐落到脚下。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "木之本樱",
+        "quoteKind": "库洛牌发动呼喊",
+        "basis": "对应初代翔牌在封印杖两侧生出羽翼的飞行表现，不与后期其他形态混写。",
+        "referenceIds": [
+          "sakura",
+          "sakura-tool"
+        ],
+        "references": [
+          {
+            "id": "sakura",
+            "title": "CLAMP官方25周年库洛牌与封印场景介绍",
+            "url": "https://ccsakura-official.com/25th/core_sys/images/main/special/sp_vol04.pdf",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "sakura-tool",
+            "title": "小樱官方：封印之杖与库洛牌",
+            "url": "https://ccsakura-official.com/core_sys/images/main/fes2017/list_takaratomy.pdf",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G14",
+      "skinId": "card_anime_g14",
+      "name": "黑白熊登场",
+      "pool": "card",
+      "before": {
+        "quote": "特别待遇，已经给你准备好了！",
+        "description": "黑白熊从广播画面里探出头，笑着按下按钮。门后的机关依次亮起，被点到名字的人还没来得及抗议，周围已经响起了整齐的关门声。"
+      },
+      "after": {
+        "quote": "噗呼呼……特别课程开始啦！",
+        "description": "广播屏幕忽然亮起，黑白熊笑着宣布自己的学园长身份。校规被一条条念出，走廊尽头的门缓缓闭合。它热情地欢迎新同学，黑白两半的笑脸却让人一点也放松不下来。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "黑白熊",
+        "quoteKind": "人物口吻创作",
+        "basis": "突出伪装成校园管理者的黑色幽默与封闭学园，不把普通入狱效果说成原作的处刑程序。",
+        "referenceIds": [
+          "dangan"
+        ],
+        "references": [
+          {
+            "id": "dangan",
+            "title": "弹丸论破V3官方系统说明",
+            "url": "https://www.danganronpa.com/v3/sp/system/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G15",
+      "skinId": "card_anime_g15",
+      "name": "超频加速",
+      "pool": "card",
+      "before": {
+        "quote": "Burst Link！",
+        "description": "周围的声音像被拉长，光线在视野中停滞。春雪抬起头，银色身影已经先一步冲出，展开的羽翼擦过凝固般的空气。"
+      },
+      "after": {
+        "quote": "Burst Link！",
+        "description": "春雪呼出加速指令，现实的喧闹沉入青蓝色的寂静。进入对战后，银色之鸦在背后展开金属羽翼，振翅冲上建筑之间的高空。曾经总是低着头的少年，如今终于能从天空俯瞰战场。"
+      },
+      "quoteChanged": false,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "有田春雪",
+        "quoteKind": "原作系统指令",
+        "basis": "区分现实中的思维加速与对战虚拟角色的飞行，不写成现实肉身随口令高速冲刺。",
+        "referenceIds": [
+          "accel"
+        ],
+        "references": [
+          {
+            "id": "accel",
+            "title": "动画制作方Sunrise：银色之鸦的飞行能力",
+            "url": "https://www.sunrise-world.net/titles/pickup_324.php",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G16",
+      "skinId": "card_anime_g16",
+      "name": "七之弹",
+      "pool": "card",
+      "before": {
+        "quote": "请在这里，稍等片刻。",
+        "description": "狂三微笑着抬起枪，表盘上的指针与枪口同时停稳。枪声响起，前方的身影像被钉在了那一瞬，她则从容地走过。"
+      },
+      "after": {
+        "quote": "刻刻帝——七之弹（Zayin）！",
+        "description": "狂三微笑着举起枪，刻刻帝为弹丸注入停止时间的力量。七之弹命中，对方的动作凝在尚未完成的那一瞬。她从停滞的身影旁从容走过，裙摆仍随步伐轻轻晃动。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "时崎狂三",
+        "quoteKind": "招式名呼喊改写",
+        "basis": "七之弹停止被命中对象的时间，与四之弹的回溯区分；不把地块路障称为原作固有能力。",
+        "referenceIds": [
+          "kurumi",
+          "kurumi-detail"
+        ],
+        "references": [
+          {
+            "id": "kurumi",
+            "title": "约战V官方：时崎狂三、时空能力与刻刻帝",
+            "url": "https://cn.date-a-live5th-anime.com/character/kurumi.php",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "kurumi-detail",
+            "title": "四之弹与七之弹细分设定补充（非官方整理）",
+            "url": "https://gp03s9992220.pixnet.net/blog/posts/8174609864",
+            "sourceType": "secondary_setting_summary"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G17",
+      "skinId": "card_anime_g17",
+      "name": "这就是「空白」",
+      "pool": "card",
+      "before": {
+        "quote": "答案，已经算出来了。",
+        "description": "对手还在观察局势，白已经把最后一枚棋子推到位置。空靠在椅背上笑了笑，兄妹之间只交换了一个眼神，便同时看向结果。"
+      },
+      "after": {
+        "quote": "我们两个，才是「空白」。",
+        "description": "白在脑中推演棋盘上的变化，空则注视着对手迟疑的表情。精密的计算与对人心的判断在兄妹之间接上，最后一枚棋子落下，两人共用的名字仍留在胜者的位置。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "空",
+        "quoteKind": "人物关系意象创作",
+        "basis": "强调空与白的互补合作与不败游戏身份，去除只剩“已经算好”的泛用智将口吻。",
+        "referenceIds": [
+          "ngnl",
+          "shiro"
+        ],
+        "references": [
+          {
+            "id": "ngnl",
+            "title": "游戏人生官方：空白兄妹的游戏传说",
+            "url": "https://ngnl.jp/tv/special/",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "shiro",
+            "title": "游戏人生官方：白",
+            "url": "https://ngnl.jp/tv/character/chara02.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G18",
+      "skinId": "fortune_anime_g18",
+      "name": "樱花庄欢迎会",
+      "pool": "fortune",
+      "before": {
+        "quote": "先别收拾，大家还没到齐呢！",
+        "description": "桌上的食物刚摆好，屋里已经热闹得停不下来。空太忙着腾位置，真白安静地坐在一旁，其他人还在为谁来主持欢迎会争论。"
+      },
+      "after": {
+        "quote": "欢迎来到樱花庄！今晚就热闹起来吧！",
+        "description": "空太刚把桌子拼好，美咲已经宣布欢迎会开始。真白暂时放下画笔，仁笑着接过话头，七海忙着照应满屋的吵闹。这个住着一群怪人的宿舍，又为新伙伴腾出了一个位置。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "上井草美咲",
+        "quoteKind": "宿舍日常口吻创作",
+        "basis": "结合樱花庄群像与各自性格构造欢迎会，不标作某集原封不动的对白或事件。",
+        "referenceIds": [
+          "sakurasou"
+        ],
+        "references": [
+          {
+            "id": "sakurasou",
+            "title": "樱花庄官方电视台：宿舍与真白",
+            "url": "https://www.mbs.jp/sakurasou/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G19",
+      "skinId": "card_anime_g19",
+      "name": "红线续缘",
+      "pool": "card",
+      "before": {
+        "quote": "这一次，可别再走错了。",
+        "description": "苏苏攥着信物，追上正准备离开的白月初。红线在两人之间轻轻绷直，他低头看了一眼，原本迈出的脚步终于停下。"
+      },
+      "after": {
+        "quote": "道士哥哥，我们一起把这段缘续上吧！",
+        "description": "苏苏抱着天书追上白月初，认真核对委托中的信物与线索。前世的约定还藏在遗失的记忆里，她却已经相信那份心意能够传达。苦情树下，一段未完的缘分等待着红线仙重新牵起。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "涂山苏苏",
+        "quoteKind": "人物口吻创作",
+        "basis": "采用苏苏“道士哥哥”的称呼、红线仙工作与转世续缘主题，不把字面红线绑人或换位当原作招式。",
+        "referenceIds": [
+          "fox"
+        ],
+        "references": [
+          {
+            "id": "fox",
+            "title": "腾讯动漫原作：狐妖小红娘，含25～42话章节目录",
+            "url": "https://ac.qq.com/Comic/comicInfo/id/518333",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G20",
+      "skinId": "chance_anime_g20",
+      "name": "God knows…",
+      "pool": "chance",
+      "before": {
+        "quote": "下一首，继续！",
+        "description": "春日握紧麦克风，台下的议论已经被欢呼盖过。长门的手指仍在琴弦间稳定移动，原本只是路过的人，也不知不觉停在舞台前。"
+      },
+      "after": {
+        "quote": "把这首歌，好好唱到最后吧！",
+        "description": "文化祭的体育馆里，春日替没能登台的主唱握住麦克风，长门接过吉他。ENOZ的旋律响起，原本只是路过的学生渐渐停下脚步。临时接下的舞台，她们也认真唱到了最后。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "凉宫春日",
+        "quoteKind": "原作演出场景口吻创作",
+        "basis": "对应Live Alive文化祭替补演出及ENOZ，不引用歌词，不写成职业巡演或凭空改变现实的术式。",
+        "referenceIds": [
+          "haruhi"
+        ],
+        "references": [
+          {
+            "id": "haruhi",
+            "title": "凉宫官方音乐目录：Live Alive、ENOZ与God knows…",
+            "url": "https://www.haruhi.tv/fanclub/goods_cd.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G22",
+      "skinId": "card_anime_g22",
+      "name": "禁止通行",
+      "pool": "card",
+      "before": {
+        "quote": "谁允许你从这里过去了？",
+        "description": "一方通行抬起手，碎石从地面缓缓升起。来者刚准备绕开，前方的空气便发出沉闷的震动，脚步只能停在原处。"
+      },
+      "after": {
+        "quote": "想从这里过去？先过我这一关。",
+        "description": "一方通行挡在路中央，脚尖轻轻点向地面。沿地表传开的冲击掀起碎石，将追来的脚步逼停。他没有退开，视线始终盯着还想继续向前的人。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "一方通行",
+        "quoteKind": "人物口吻创作",
+        "basis": "以矢量操作改变地面冲击为场景，保持强硬拦截的角色气质，不创造无形空气墙这一固定新能力。",
+        "referenceIds": [
+          "accelerator"
+        ],
+        "references": [
+          {
+            "id": "accelerator",
+            "title": "一方通行动画官方：矢量操作与反射",
+            "url": "https://toaru-project.com/accelerator/special/game/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G23",
+      "skinId": "card_anime_g23",
+      "name": "风之伤",
+      "pool": "card",
+      "before": {
+        "quote": "风之伤！",
+        "description": "铁碎牙在犬夜叉手中化为巨刃，他盯住气流交错的缝隙，猛然挥下。金色冲击沿地面奔走，前方的障碍在轰鸣中裂开。"
+      },
+      "after": {
+        "quote": "风之伤！",
+        "description": "犬夜叉嗅见了两股妖气相撞时显露的缝隙。铁碎牙化作巨刃，顺着那道“风之伤”猛然斩下，金色冲击撕开地面，沿着剑锋指向奔涌而去。"
+      },
+      "quoteChanged": false,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "犬夜叉",
+        "quoteKind": "招式呼喊",
+        "basis": "突出风之伤与妖气缝隙、嗅觉及铁碎牙的关系，不只描写普通气流斩击。",
+        "referenceIds": [
+          "inuyasha"
+        ],
+        "references": [
+          {
+            "id": "inuyasha",
+            "title": "犬夜叉动画官方：铁碎牙与风之伤相关集数",
+            "url": "https://www.sunrise-inc.co.jp/work/detail.php?cid=29",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G24",
+      "skinId": "card_anime_g24",
+      "name": "存在感消失",
+      "pool": "card",
+      "before": {
+        "quote": "我一直都在这里哦。",
+        "description": "伦也忙着解释自己的安排，视线从桌边扫过好几次。惠就坐在离他不远的地方，等到他说完，才平静地举起手里的杯子。"
+      },
+      "after": {
+        "quote": "安艺君，你是不是又把我忘了？",
+        "description": "伦也热火朝天地讨论着理想中的女主角，惠就在同一张桌边听着。她放下手机，平静地补上一句被忽略的意见。那份淡淡的存在感，总要等他说错话时才显得格外清楚。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "加藤惠",
+        "quoteKind": "人物口吻创作",
+        "basis": "贴合惠平静、低存在感而能轻轻吐槽的性格，不把“存在感消失”写成超自然隐身能力。",
+        "referenceIds": [
+          "saenai"
+        ],
+        "references": [
+          {
+            "id": "saenai",
+            "title": "路人女主官方：加藤惠的普通、低存在感与平静反应",
+            "url": "https://www.saenai.tv/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G25",
+      "skinId": "card_anime_g25",
+      "name": "从零开始",
+      "pool": "card",
+      "before": {
+        "quote": "那就，再来一次。",
+        "description": "昴低着头，攥紧的手迟迟没有松开。雷姆安静地等在旁边，直到他重新抬起眼，才陪他一起看向还没有走完的路。"
+      },
+      "after": {
+        "quote": "昴是雷姆的英雄。",
+        "description": "雷姆听完昴想要逃走的话，仍认真说起自己眼中的那个少年。她记得他曾经伸出的手，也愿意相信他还能够站起来。昴终于抬起头，把这份信任带回尚未走完的路，从零开始。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "雷姆",
+        "quoteKind": "第18话场景语意改写",
+        "basis": "围绕雷姆倾听与鼓励、昴重新出发的代表场景；该短句按场景语意改写，不标作已逐字核对的字幕。",
+        "referenceIds": [
+          "rezero"
+        ],
+        "references": [
+          {
+            "id": "rezero",
+            "title": "Re:0官方第一季第18话：从零开始",
+            "url": "https://re-zero-anime.jp/tv/story/tv1r.html",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G26",
+      "skinId": "fortune_anime_g26",
+      "name": "旅途的报酬",
+      "pool": "fortune",
+      "before": {
+        "quote": "报酬确认，接下来去哪里呢？",
+        "description": "伊蕾娜接过委托的报酬，低头认真数了一遍。确认没有少，她才重新戴好帽子，视线已经落到远处城门外的道路上。"
+      },
+      "after": {
+        "quote": "当然，报酬可不能少哦。",
+        "description": "伊蕾娜完成委托，先认真确认报酬，再把见闻写进旅行日记。魔女徽章在胸前轻轻晃动，她收好旅费，骑上扫帚。下一座城里，或许又有值得驻足的风景和故事。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "伊蕾娜",
+        "quoteKind": "人物口吻创作",
+        "basis": "保留旅行者、魔女身份、日记与现实的旅费意识，不将报酬剧情绑定为原作某次不存在的明确任务。",
+        "referenceIds": [
+          "elaina"
+        ],
+        "references": [
+          {
+            "id": "elaina",
+            "title": "角川动画官方：伊蕾娜的旅行与相遇",
+            "url": "https://kadokawa-animation.jp/lineup/majotabi",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G27",
+      "skinId": "chance_anime_g27",
+      "name": "万事屋开张",
+      "pool": "chance",
+      "before": {
+        "quote": "委托可以接，报酬先说清楚。",
+        "description": "新八刚准备认真记录委托，银时已经把话题带到了报酬。神乐从旁边探过头，问了一句管不管饭，三个人的态度忽然都变得积极起来。"
+      },
+      "after": {
+        "quote": "万事屋银酱，今天也接委托！",
+        "description": "登势的催租声刚从楼下传来，银时便放下《JUMP》，懒洋洋地看向新委托。新八忙着记录，神乐先问管不管饭；万事屋的招牌晃了晃，今天的麻烦也跟着进了门。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "坂田银时",
+        "quoteKind": "人物口吻创作",
+        "basis": "用银时、新八、神乐的分工与万事屋日常营造喜剧，不用泛用商店开张广告代替角色。",
+        "referenceIds": [
+          "gintama"
+        ],
+        "references": [
+          {
+            "id": "gintama",
+            "title": "东京电视台官方：万事屋三人角色介绍",
+            "url": "https://www.tv-tokyo.co.jp/anime/gintama/chara/yorozu/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G28",
+      "skinId": "fortune_anime_g28",
+      "name": "罗德岛救援",
+      "pool": "fortune",
+      "before": {
+        "quote": "补给到了，先照顾最需要的人。",
+        "description": "阿米娅确认完名单，示意干员将补给继续送往后方。有人刚想推辞，她已经把那份物资放到对方手里，转身去确认下一处情况。"
+      },
+      "after": {
+        "quote": "博士，不能把他们留在这里。",
+        "description": "阿米娅向受困的感染者伸出手，医疗干员与护卫一同为撤离开路。罗德岛的补给被送到伤者身边，她确认最后一队人已经跟上，才重新走向前方。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "阿米娅",
+        "quoteKind": "人物口吻创作",
+        "basis": "回到罗德岛的医疗与救助感染者定位，以及阿米娅温和而坚定的责任感；现金补助仍只是本游戏的通用效果。",
+        "referenceIds": [
+          "arknights"
+        ],
+        "references": [
+          {
+            "id": "arknights",
+            "title": "明日方舟官方漫画企划：医疗机构罗德岛与感染者",
+            "url": "https://amiyaapprentice.arknights.jp/",
+            "sourceType": "official_or_publisher_material",
+            "accessNote": "官方检索摘要确认罗德岛医疗机构与感染者主题；正文需要JavaScript，具体救援场景为本游戏文案创作。"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G29",
+      "skinId": "card_anime_g29",
+      "name": "靖妖傩舞",
+      "pool": "card",
+      "before": {
+        "quote": "听召，前来。",
+        "description": "魈抬手覆上面具，青色气流在脚边骤然聚拢。下一瞬，他已经跃至高处，衣摆与飘带在身后拉出短促的弧线。"
+      },
+      "after": {
+        "quote": "靖妖傩舞！",
+        "description": "降魔傩面覆上面庞，魈握紧长枪，青色风元素裹住身形。他跃向高处，又循枪锋俯冲而下，妖邪在风中退散。傩面之下，护法夜叉仍独自承受着长久征战留下的业障。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "魈",
+        "quoteKind": "技能名呼喊",
+        "basis": "突出降魔傩面、跃起下落、风元素与护法夜叉身份，不仅写成普通赶路加速。",
+        "referenceIds": [
+          "xiao",
+          "xiao-skill"
+        ],
+        "references": [
+          {
+            "id": "xiao",
+            "title": "米哈游官方开发者访谈：魈与傩面",
+            "url": "https://genshin.hoyoverse.com/m/en/news/detail/8642",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "xiao-skill",
+            "title": "HoYoWiki：魈与靖妖傩舞",
+            "url": "https://wiki.hoyolab.com/pc/genshin/entry/51",
+            "sourceType": "official_platform_community_wiki",
+            "accessNote": "HoYoWiki为官方平台上的社区角色资料，用于技能表现参考，不作为逐字语音证据。"
+          }
+        ]
+      }
+    },
+    {
+      "code": "G30",
+      "skinId": "card_anime_g30",
+      "name": "偷窃",
+      "pool": "card",
+      "before": {
+        "quote": "偷窃！……这次总该有用了吧？",
+        "description": "和真伸出手，掌心忽然多出一件东西。他还没来得及得意，旁边的人已经凑过来看战利品，对面则终于发现自己少了什么。"
+      },
+      "after": {
+        "quote": "Steal！",
+        "description": "和真抬手使出从克莉丝那里学来的偷窃技能，掌心立刻多出一件战利品。他靠着高幸运值得意地扬起嘴角，阿库娅凑过来一看，催他先确认这东西究竟值不值钱。"
+      },
+      "quoteChanged": true,
+      "descriptionChanged": true,
+      "review": {
+        "speaker": "佐藤和真",
+        "quoteKind": "技能名呼喊",
+        "basis": "保留Steal、高幸运值和与阿库娅的喜剧互动，不新增挑选战利品的规则，也不强行写入性暗示梗。",
+        "referenceIds": [
+          "steal",
+          "konosuba"
+        ],
+        "references": [
+          {
+            "id": "steal",
+            "title": "官方访谈：和真的Steal技能",
+            "url": "https://konosuba.com/1st/special/?mode=report",
+            "sourceType": "official_or_publisher_material"
+          },
+          {
+            "id": "konosuba",
+            "title": "为美好世界献上祝福官方角色页",
+            "url": "https://konosuba.com/legend_of_crimson/character/",
+            "sourceType": "official_or_publisher_material"
+          }
+        ]
+      }
+    }
+  ],
+  "references": [
+    {
+      "id": "madoka",
+      "title": "小圆动画官方角色页",
+      "url": "https://www.madoka-magica.com/tv/archives/character/"
+    },
+    {
+      "id": "homura",
+      "title": "小圆十周年官方名场面与晓美焰的约定",
+      "url": "https://10th.madoka-magica.com/special/best-scene/?type=10"
+    },
+    {
+      "id": "fate",
+      "title": "Fate UBW动画官方人物页",
+      "url": "https://www.fate-sn.com/ubw/sp/chara/"
+    },
+    {
+      "id": "projection",
+      "title": "授权卡牌“投影开始”士郎 FS/S36-001",
+      "url": "https://ws-tcg.com/cardlist/?cardno=FS%2FS36-001",
+      "accessNote": "台词证据来自官方卡牌检索返回，按公开卡号给出独立链接；独立卡页的正文抓取未成功。"
+    },
+    {
+      "id": "sao",
+      "title": "SAO官方第9话：青眼恶魔",
+      "url": "https://www.swordart-online.net/aincrad/story/09.html"
+    },
+    {
+      "id": "starburst",
+      "title": "授权卡牌：星爆气流斩呼喊",
+      "url": "https://ws-tcg.com/cardlist/?cardno=SAO%2FS100-099R"
+    },
+    {
+      "id": "touma",
+      "title": "授权卡牌“幻想杀手”当麻 ID/W10-006",
+      "url": "https://ws-tcg.com/cardlist/?cardno=ID%2FW10-006",
+      "accessNote": "台词证据来自官方卡牌检索返回，按公开卡号给出独立链接；独立卡页的正文抓取未成功。"
+    },
+    {
+      "id": "trial",
+      "title": "弹丸论破官方：学级裁判的证言与言弹",
+      "url": "https://www.danganronpa.com/pages/vr/"
+    },
+    {
+      "id": "dangan",
+      "title": "弹丸论破V3官方系统说明",
+      "url": "https://www.danganronpa.com/v3/sp/system/"
+    },
+    {
+      "id": "kurumi",
+      "title": "约战V官方：时崎狂三、时空能力与刻刻帝",
+      "url": "https://cn.date-a-live5th-anime.com/character/kurumi.php"
+    },
+    {
+      "id": "kurumi-detail",
+      "title": "四之弹与七之弹细分设定补充（非官方整理）",
+      "url": "https://gp03s9992220.pixnet.net/blog/posts/8174609864"
+    },
+    {
+      "id": "accelerator",
+      "title": "一方通行动画官方：矢量操作与反射",
+      "url": "https://toaru-project.com/accelerator/special/game/"
+    },
+    {
+      "id": "rezero",
+      "title": "Re:0官方第一季第18话：从零开始",
+      "url": "https://re-zero-anime.jp/tv/story/tv1r.html"
+    },
+    {
+      "id": "konosuba",
+      "title": "为美好世界献上祝福官方角色页",
+      "url": "https://konosuba.com/legend_of_crimson/character/"
+    },
+    {
+      "id": "explosion",
+      "title": "官方第一季第4话：和真陪惠惠练习爆裂魔法",
+      "url": "https://konosuba.com/1st/story/"
+    },
+    {
+      "id": "steal",
+      "title": "官方访谈：和真的Steal技能",
+      "url": "https://konosuba.com/1st/special/?mode=report"
+    },
+    {
+      "id": "rot",
+      "title": "FromSoftware官方手册：猩红腐败持续损伤",
+      "url": "https://www.fromsoftware.jp/manual/eldenring/ps4/screen.html"
+    },
+    {
+      "id": "grace",
+      "title": "FromSoftware官方手册：赐福与赐福指引",
+      "url": "https://www.fromsoftware.jp/manual/eldenring/xbo/basic.html"
+    },
+    {
+      "id": "hongmao",
+      "title": "火舞旋风：第105集发行目录及分集介绍",
+      "url": "https://watch.plex.tv/zh/show/hong-mao-lan-tu-qi-xia-chuan/season/1/episode/105"
+    },
+    {
+      "id": "sakura",
+      "title": "CLAMP官方25周年库洛牌与封印场景介绍",
+      "url": "https://ccsakura-official.com/25th/core_sys/images/main/special/sp_vol04.pdf"
+    },
+    {
+      "id": "sakura-tool",
+      "title": "小樱官方：封印之杖与库洛牌",
+      "url": "https://ccsakura-official.com/core_sys/images/main/fes2017/list_takaratomy.pdf"
+    },
+    {
+      "id": "texas",
+      "title": "明日方舟官方：缄默德克萨斯预告",
+      "url": "https://www.youtube.com/watch?v=7VQZtulccvk"
+    },
+    {
+      "id": "siracusa",
+      "title": "官方动画制作方：叙拉古人预告",
+      "url": "https://yostar-pictures.co.jp/works/detail/2294/?lang=en"
+    },
+    {
+      "id": "fox",
+      "title": "腾讯动漫原作：狐妖小红娘，含25～42话章节目录",
+      "url": "https://ac.qq.com/Comic/comicInfo/id/518333"
+    },
+    {
+      "id": "yaya-detail",
+      "title": "雅雅的冰系法术与无尽酒葫（非官方原作索引）",
+      "url": "https://bkso.baidu.com/item/%E6%B6%82%E5%B1%B1%E9%9B%85%E9%9B%85/18204677"
+    },
+    {
+      "id": "nisekoi",
+      "title": "伪恋官方人物介绍",
+      "url": "https://www.nisekoi.jp/sp/chara/"
+    },
+    {
+      "id": "noragami",
+      "title": "野良神官方：五元委托、宅配神与雪音",
+      "url": "https://www.noragami-anime.net/1/story.html"
+    },
+    {
+      "id": "guilty",
+      "title": "罪恶王冠官方：王之能力与虚空",
+      "url": "https://guilty-crown.jp/introduction/"
+    },
+    {
+      "id": "shana",
+      "title": "夏娜官方术语：封绝与因果孤立空间",
+      "url": "https://www.shakugan.com/contents/hp0042/index01300000.html"
+    },
+    {
+      "id": "anohana",
+      "title": "未闻花名官方最终话",
+      "url": "https://www.anohana.jp/tv/story/11.html"
+    },
+    {
+      "id": "umaru",
+      "title": "小埋官方：希尔芬的性格与竞争关系",
+      "url": "https://umaru-ani.me/sp/character/silphin.html"
+    },
+    {
+      "id": "umaru-interview",
+      "title": "小埋官方：希尔芬演员访谈",
+      "url": "https://umaru-ani.me/sp/staffcast/sylphyn.html"
+    },
+    {
+      "id": "accel",
+      "title": "动画制作方Sunrise：银色之鸦的飞行能力",
+      "url": "https://www.sunrise-world.net/titles/pickup_324.php"
+    },
+    {
+      "id": "ngnl",
+      "title": "游戏人生官方：空白兄妹的游戏传说",
+      "url": "https://ngnl.jp/tv/special/"
+    },
+    {
+      "id": "shiro",
+      "title": "游戏人生官方：白",
+      "url": "https://ngnl.jp/tv/character/chara02.html"
+    },
+    {
+      "id": "sakurasou",
+      "title": "樱花庄官方电视台：宿舍与真白",
+      "url": "https://www.mbs.jp/sakurasou/"
+    },
+    {
+      "id": "haruhi",
+      "title": "凉宫官方音乐目录：Live Alive、ENOZ与God knows…",
+      "url": "https://www.haruhi.tv/fanclub/goods_cd.html"
+    },
+    {
+      "id": "inuyasha",
+      "title": "犬夜叉动画官方：铁碎牙与风之伤相关集数",
+      "url": "https://www.sunrise-inc.co.jp/work/detail.php?cid=29"
+    },
+    {
+      "id": "saenai",
+      "title": "路人女主官方：加藤惠的普通、低存在感与平静反应",
+      "url": "https://www.saenai.tv/character/"
+    },
+    {
+      "id": "elaina",
+      "title": "角川动画官方：伊蕾娜的旅行与相遇",
+      "url": "https://kadokawa-animation.jp/lineup/majotabi"
+    },
+    {
+      "id": "gintama",
+      "title": "东京电视台官方：万事屋三人角色介绍",
+      "url": "https://www.tv-tokyo.co.jp/anime/gintama/chara/yorozu/"
+    },
+    {
+      "id": "arknights",
+      "title": "明日方舟官方漫画企划：医疗机构罗德岛与感染者",
+      "url": "https://amiyaapprentice.arknights.jp/",
+      "accessNote": "官方检索摘要确认罗德岛医疗机构与感染者主题；正文需要JavaScript，具体救援场景为本游戏文案创作。"
+    },
+    {
+      "id": "xiao",
+      "title": "米哈游官方开发者访谈：魈与傩面",
+      "url": "https://genshin.hoyoverse.com/m/en/news/detail/8642"
+    },
+    {
+      "id": "xiao-skill",
+      "title": "HoYoWiki：魈与靖妖傩舞",
+      "url": "https://wiki.hoyolab.com/pc/genshin/entry/51",
+      "accessNote": "HoYoWiki为官方平台上的社区角色资料，用于技能表现参考，不作为逐字语音证据。",
+      "sourceType": "official_platform_community_wiki"
+    }
+  ],
+  "verification": {
+    "reviewed": 46,
+    "rewrittenDescriptions": 45,
+    "rewrittenQuotes": 40,
+    "U14CopyUnchanged": true,
+    "runtimeOnlyQuoteDescriptionChanged": true,
+    "protectedCatalogFieldsUnchanged": true,
+    "imageBindingsUnchanged": true,
+    "economyUnchanged": true,
+    "sourceGalleryCatalogRuntimeManifestConsistent": true,
+    "rulesDigest": "3a8202718e597f290f2808f043fc12b59ed13f88e4acb3171559b38cae902d2f",
+    "backendCompileSkipTests": "passed",
+    "galleryJavaScriptSyntax": "passed",
+    "gitDiffCheck": "passed",
+    "runtimeAcceptance": "not executed"
+  }
+}

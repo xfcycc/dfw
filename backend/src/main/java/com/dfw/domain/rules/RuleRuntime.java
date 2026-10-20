@@ -68,7 +68,7 @@ public final class RuleRuntime {
     public boolean needsAdvance(Room room) {
         if (!room.status.equals("playing") || room.pausedReason != null || room.trade != null) return false;
         if (room.activity != null) return activities.due(room);
-        if (content.needsOverflow(room)) return true;
+        if (content.needsOverflow(room) || AnimeService.needsResume(room)) return true;
         if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
     }
@@ -76,7 +76,7 @@ public final class RuleRuntime {
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
-            if (room.activity == null) content.overflow(room);
+            if (room.activity == null) { content.anime.resume(room); if(room.pending==null) content.overflow(room); }
             effects.drain(room);
             boolean hadActivity = room.activity != null; activities.refresh(room);
             if (hadActivity && room.activity == null) { if (turns.checkWinner(room)) return; if (current(room).bankrupt) turns.advance(room); continue; }
@@ -88,6 +88,7 @@ public final class RuleRuntime {
             if ("JAIL".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
+                    if(stage.hook().equals("TURN_START")) content.anime.startTurn(room);
                     if (stage.hook().equals("TURN_START") && turns.skipCurrentTurn(room)) continue;
                     var context = new RuleExpression.Context(room, current(room), new Action());
                     List<GameEffect> planned = RuleEffects.plan(stage.steps(), context, effects, stage.id()); room.runtime.stageIndex++;
@@ -101,7 +102,12 @@ public final class RuleRuntime {
                 }
                 case "ROLL" -> {
                     require(room.runtime.rollMode != null, "缺少掷骰行动结果");
-                    if (room.runtime.rollMode.equals("RANDOM")) { room.dice = random.nextInt(6) + 1; room.runtime.movementSteps = room.dice; log(room,current(room).name+" 掷出 "+room.dice+" 点"); }
+                    AnimeState anime=AnimeService.state(room);
+                    if (room.runtime.rollMode.equals("RANDOM")) {
+                        if(!anime.rollPrepared) { room.dice=random.nextInt(6)+1; room.runtime.movementSteps=room.dice; anime.rollPrepared=true; log(room,current(room).name+" 掷出 "+room.dice+" 点"); }
+                        if(content.anime.offerRewind(room)) return;
+                    }
+                    anime.rollPrepared=false;
                     if(StatusService.consume(current(room),"NEXT_ROLL_HALF")) { room.runtime.movementSteps=Math.floorDiv(room.runtime.movementSteps,2); log(room,current(room).name+" 消耗迟缓，基础步数减为 "+room.runtime.movementSteps); BoardEffect.cue(room,"slow",current(room)); }
                     room.runtime.movementSteps=Math.addExact(room.runtime.movementSteps,room.runtime.rollBonus); room.runtime.rollBonus=0;
                     HistoryTrace.event(room, "dice", current(room).id, "本次移动点数为 " + room.dice, room.runtime.movementSteps);

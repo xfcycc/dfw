@@ -5,17 +5,21 @@ from fractions import Fraction
 from math import lcm, gcd
 from functools import reduce
 from pathlib import Path
+from construction_content import RARITIES as CONSTRUCTION_RARITIES, assign as assign_construction
 
 ROOT = Path(__file__).resolve().parents[1]
 RARITIES = {'R', 'SR', 'SSR', 'UR'}
 NEW_CARD = {'shield': '3', 'recycle': '3', 'discover': '3', 'sap': '2', 'exchange': '0.5', 'slow': '3', 'swapAny': '2', 'kamui': '1', 'handDestruction': '1.5', 'gravity': '1.5', 'reaper': '0.5', 'shadowstep': '3', 'homeTeleport': '2', 'blackhole': '2', 'meteor': '3'}
 NEW_EVENT = {'chance': {'concert': '4', 'shuffle': '4'}, 'fortune': {'treasure': '5', 'all_cards': '6'}}
+ANIME_RARITIES = {'timeRewind': 'SSR', 'projection': 'SSR', 'starburst': 'SSR', 'imagineBreaker': 'UR', 'classTrial': 'SR', 'timeRestore': 'SSR', 'vectorReflect': 'UR', 'deathReturn': 'UR', 'explosion': 'UR', 'corruption': 'SSR', 'contract': 'SSR', 'commandSpell': 'UR', 'sevenSwords': 'UR', 'railgun': 'UR', 'sealCard': 'UR', 'swordRain': 'SSR', 'voidTears': 'SSR', 'absoluteZero': 'UR'}
 NEW_RARITIES = {'shield': 'SSR', 'recycle': 'SR', 'discover': 'SSR', 'sap': 'SR', 'exchange': 'UR', 'slow': 'R', 'swapAny': 'SSR', 'kamui': 'UR', 'handDestruction': 'SSR', 'gravity': 'SSR', 'reaper': 'UR', 'shadowstep': 'SR', 'homeTeleport': 'SSR', 'blackhole': 'SSR', 'meteor': 'SSR', 'treasure': 'SSR', 'concert': 'SSR', 'shuffle': 'SSR', 'all_cards': 'SR'}
 
 
 def classify(pool, effect):
     """输入素材池和效果原文，返回已确认机制及完整参数，不改动原效果数值。"""
-    if effect.startswith('扩展:'): return effect.split()[0].split(':')[1], {}
+    if effect.startswith('扩展:'):
+        kind = effect.split()[0].split(':')[1]
+        return kind, {'charges': 3} if kind == 'shield' and effect.startswith('扩展:shield 三层 ') else {}
     nums = [int(n) for n in re.findall(r'\d+', effect)]
     if effect.startswith(('指定入狱', '自身入狱')): return 'jail', {}
     if pool == 'card':
@@ -32,7 +36,7 @@ def classify(pool, effect):
     else:
         if effect.startswith('全员振奋'): return 'all_morale', {}
         if effect.startswith('人才引进'): return 'talent', dict(amount=nums[0], count=nums[1])
-        if effect.startswith('全图建筑'): return 'global_demolition', dict(compensationPercent=nums[0])
+        if effect.startswith('全图建筑'): return 'global_demolition', dict(compensationPercent=nums[-1])
         if effect.startswith('获得现金'): return 'income', dict(amount=nums[0])
         if effect.startswith('支付现金'): return 'fee', dict(amount=nums[0])
         if effect.startswith('前进'): return 'forward', dict(steps=nums[0])
@@ -60,6 +64,10 @@ def classify(pool, effect):
 
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
+    if kind == 'shield' and values.get('charges') == 3: return 'UR'
+    if kind in CONSTRUCTION_RARITIES: return CONSTRUCTION_RARITIES[kind]
+    if kind in {'freeUpgrade', 'free_upgrade'}: return 'SR'
+    if kind in ANIME_RARITIES: return ANIME_RARITIES[kind]
     if kind in NEW_RARITIES: return NEW_RARITIES[kind]
     if pool == 'card':
         if kind in {'gamble', 'fullDemolish', 'fullUpgrade'}: return 'UR'
@@ -79,6 +87,12 @@ def impact_rarity(pool, kind, values):
 def assign_weights(pool, mechanisms):
     """输入池及去重效果，按确认的新增配额缩放原概率，使用精确分数生成整数权重，输出整数权重。"""
     candidates = [(m['id'], p) for m in mechanisms if m['enabled'] for g in m['groups'] for p in g['parameters']]
+    triple_shields = [(kind, p) for kind, p in candidates if kind == 'shield' and p['values'].get('charges') == 3]
+    candidates = [(kind, p) for kind, p in candidates if (kind, p) not in triple_shields]
+    construction_candidates = candidates
+    candidates = [(k,p) for k,p in candidates if k not in CONSTRUCTION_RARITIES]
+    all_candidates = candidates
+    candidates = [(k,p) for k,p in candidates if k not in ANIME_RARITIES]
     probabilities = []
     if pool == 'card':
         percentages = dict(cash=20, move=12, bonus=6, barrier=5, demolish=11, swap=5, immunity=6, halfPayment=6, release=4, steal=5, remote=6, blast=3, jail=3, freeUpgrade=3, gamble=2, fullDemolish=2, fullUpgrade=1)
@@ -97,7 +111,8 @@ def assign_weights(pool, mechanisms):
             if kind in NEW_EVENT[pool]:
                 probabilities.append(Fraction(NEW_EVENT[pool][kind]) / 100 / sum(k == kind for k, _ in candidates))
                 continue
-            probability = Fraction(rarities[p['rarity']], 100 * original_counts[p['rarity']])
+            baseline_rarity = 'SSR' if kind == 'free_upgrade' else p['rarity']
+            probability = Fraction(rarities[baseline_rarity], 100 * original_counts[baseline_rarity])
             if pool == 'chance':
                 if kind == 'opponent_destroy': probability = Fraction(3,100)
                 elif kind == 'income': probability *= Fraction(113,120)
@@ -109,7 +124,26 @@ def assign_weights(pool, mechanisms):
                 elif kind == 'directed': probability *= Fraction(3, sum(k == kind for k, _ in candidates))
             probability *= Fraction(92,100) if pool == 'chance' else Fraction(89,100)
             probabilities.append(probability)
-    if sum(probabilities) != 1: raise ValueError(f'{pool} 效果概率合计须为100%')
+    if sum(probabilities) != 1: raise ValueError(f'{pool} 原效果概率合计须为100%')
+    original = {(kind,p['id']): probability for (kind,p),probability in zip(candidates,probabilities)}
+    probabilities = []
+    new_ur = sum(kind in ANIME_RARITIES and p['rarity']=='UR' for kind,p in all_candidates)
+    new_regular = sum(kind in ANIME_RARITIES and p['rarity']!='UR' for kind,p in all_candidates)
+    for kind,p in all_candidates:
+        if pool == 'card':
+            probability = (Fraction(1,40)/new_ur if p['rarity']=='UR' else Fraction(1,5)/new_regular) if kind in ANIME_RARITIES else original[(kind,p['id'])] * (Fraction(1,2) if p['rarity']=='UR' else Fraction(15,19))
+        elif pool == 'chance': probability = Fraction(3,100)/new_regular if kind in ANIME_RARITIES else original[(kind,p['id'])]*Fraction(97,100)
+        else: probability = original[(kind,p['id'])]
+        probabilities.append(probability)
+    candidates, probabilities = assign_construction(pool, construction_candidates, all_candidates, probabilities)
+    if triple_shields:
+        # 三重罗生门与本批动漫 UR 均分原有额度，保留其余效果概率和道具池 UR 总概率5%。
+        sources = [i for i, (kind, p) in enumerate(candidates) if kind in ANIME_RARITIES and p['rarity'] == 'UR']
+        share = sum(probabilities[i] for i in sources) / (len(sources) + len(triple_shields))
+        for i in sources: probabilities[i] = share
+        candidates += triple_shields
+        probabilities += [share] * len(triple_shields)
+    if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))
     weights = [int(p * denominator) for p in probabilities]
     divisor = reduce(gcd, weights)
@@ -136,7 +170,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':93,'fortune':63,'card':91}[pool]
+    expected = {'chance':100,'fortune':76,'card':141}[pool]
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))

@@ -1,0 +1,27 @@
+{
+  "imagesGenerated": 8,
+  "imagesVisuallyInspected": 8,
+  "imagesUploadedAndHeadVerified": 8,
+  "imageConversion": {
+    "format": "webp",
+    "quality": 90,
+    "method": 6,
+    "resized": false,
+    "cropped": false
+  },
+  "newCards": 6,
+  "newFortuneEvents": 2,
+  "ordinaryUpgradeSkinsReclassified": 17,
+  "ordinaryUpgradeProbabilityUnchanged": true,
+  "cardUrPercent": 5,
+  "backendCompile": "passed; -o -Dmaven.test.skip=true compile",
+  "frontendTypecheck": "passed; npm run typecheck",
+  "strictProductionConfigLoader": "passed; no application or database started",
+  "gitDiffCheck": "passed",
+  "unitTests": "not written or executed",
+  "smokeTests": "not written or executed",
+  "frontendBuild": "not executed",
+  "realGameAndRecoveryVerification": "not executed",
+  "deployment": "not executed",
+  "gitCommitAndPush": "not executed"
+}

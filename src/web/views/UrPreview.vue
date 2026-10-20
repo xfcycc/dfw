@@ -2,24 +2,31 @@
 import { computed, ref } from 'vue';
 import type { ContentResult } from '../../shared/types';
 import rules from '../../../backend/src/main/resources/game-rules/card-events.json';
+import fortuneRules from '../../../backend/src/main/resources/game-rules/fortune-events.json';
 import ContentCard from '../components/ContentCard.vue';
-import { UR_CARD_SCENES } from '../ur-card-scenes';
+import { ORIGINAL_UR_SKINS, UR_CARD_SCENES } from '../ur-card-scenes';
 
 // 预览直接读取当前卡池的 UR 皮肤，仅展示卡名和插画，不生成对局或效果数值。
-const cards: ContentResult[] = rules.content.mechanisms.filter(mechanism => mechanism.enabled).flatMap(mechanism => mechanism.groups.flatMap(group => group.parameters.flatMap(parameter => parameter.skins.filter(skin => skin.rarity === 'UR').map(skin => ({ ...skin, rarity: 'UR' as const, cardType: '主动' as const, pool: 'card' as const })))));
-const selectedId = ref('card_naruto_shinra_tensei');
+const cards: ContentResult[] = [
+  ...rules.content.mechanisms.filter(mechanism => mechanism.enabled).flatMap(mechanism => mechanism.groups.flatMap(group => group.parameters.flatMap(parameter => parameter.skins.filter(skin => skin.rarity === 'UR').map(skin => ({ ...skin, rarity: 'UR' as const, cardType: '主动' as const, pool: 'card' as const }))))),
+  ...fortuneRules.content.mechanisms.filter(mechanism => mechanism.enabled).flatMap(mechanism => mechanism.groups.flatMap(group => group.parameters.flatMap(parameter => parameter.skins.filter(skin => skin.rarity === 'UR').map(skin => ({ ...skin, rarity: 'UR' as const, pool: 'fortune' as const }))))),
+];
+const requestedId = new URLSearchParams(location.search).get('skin');
+const selectedId = ref(cards.some(card => card.id === requestedId) ? requestedId! : 'card_naruto_shinra_tensei');
 const selected = computed(() => cards.find(card => card.id === selectedId.value)!);
+// 本批动漫 UR 展示原版插画与通用轻动态，预览文案与正式卡面保持一致。
+const originalArtwork = computed(() => ORIGINAL_UR_SKINS.has(selectedId.value));
 const paused = ref(false);
 </script>
 
 <template>
   <main class="ur-preview" :class="{ paused }">
-    <header><p>好友财富派对 · UR 收藏卡</p><h1>让稀有，流动起来。</h1><p>{{ selectedId === 'card_naruto_shinra_tensei' ? '人物悬浮与推掌 · 场景视差 · 斥力扩散' : UR_CARD_SCENES[selectedId]?.label ?? '呼吸插画 · 玫瑰金流光 · 上浮星尘' }}</p></header>
+    <header><p>好友财富派对 · UR 收藏卡</p><h1>{{ originalArtwork ? '本批 UR · 原版插画轻动态' : '让稀有，流动起来。' }}</h1><p>{{ originalArtwork ? '原版插画 · 轻微呼吸 · 玫瑰金流光' : selectedId === 'card_naruto_shinra_tensei' ? '人物悬浮与推掌 · 场景视差 · 斥力扩散' : UR_CARD_SCENES[selectedId]?.label ?? '呼吸插画 · 玫瑰金流光 · 上浮星尘' }}</p></header>
     <nav aria-label="选择 UR 卡面"><button v-for="card in cards" :key="card.id" :class="{ selected: selectedId === card.id }" @click="selectedId = card.id">{{ card.name }}</button></nav>
     <div class="preview-controls"><button @click="paused = !paused">{{ paused ? '继续动画' : '暂停动画' }}</button><a href="/">返回游戏 ↗</a></div>
     <section class="comparison" aria-label="静态与动态卡面对比">
       <div><h2>原版静态 <small>STATIC</small></h2><ContentCard :content="selected" :animated="false" preview /></div>
-      <div><h2>动态卡面 <small>LIVE · UR</small></h2><ContentCard :content="selected" preview /></div>
+      <div><h2>{{ originalArtwork ? '呼吸与流光' : '动态卡面' }} <small>{{ originalArtwork ? 'LIGHT · UR' : 'LIVE · UR' }}</small></h2><ContentCard :content="selected" preview /></div>
     </section>
     <footer>正式卡面中的名称与效果文字保持稳定。系统开启“减少动态效果”时，自动显示静态卡面。</footer>
   </main>
