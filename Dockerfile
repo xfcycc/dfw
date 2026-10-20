@@ -17,8 +17,7 @@ WORKDIR /app
 COPY --from=java-builder /app/backend/target/party-monopoly.jar ./party-monopoly.jar
 COPY --from=web-builder /app/dist/web ./dist/web
 RUN apt-get update && apt-get install -y --no-install-recommends curl && rm -rf /var/lib/apt/lists/* \
-    && groupadd --gid 1000 game && useradd --uid 1000 --gid game --create-home game \
-    && mkdir -p /app/data && chown game:game /app/data
+    && groupadd --gid 1000 game && useradd --uid 1000 --gid game --create-home game
 USER game
 EXPOSE 3001
 CMD ["java", "-jar", "party-monopoly.jar"]

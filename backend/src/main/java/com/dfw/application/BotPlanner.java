@@ -140,31 +140,6 @@ public final class BotPlanner {
     /** 输入本人收到的报价，使用与主动报价相同的现金、排名及交易后连片评分决定是否接受。 */
     private boolean acceptTrade(Trade t) { return tradeScore(t, me) >= tradeMargin(t, me); }
 
-    /** 输入对方、明确引用的地产及现金候选，返回通过惜售和现金校验的有限报价；主动报价另受动机约束。 */
-    public List<Action> dialogueOffers(String otherId, List<Integer> tileIds, List<Long> prices, boolean proactive) {
-        PublicPlayerVo other = person(otherId);
-        if (conservative || other.bankrupt || !other.online || other.id.equals(me.id)) return List.of();
-        Action assets = trade(otherId);
-        List<Tile> tiles = tileIds.stream().distinct().filter(id -> id >= 0 && id < state.board.size()).map(state.board::get)
-                .filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)).toList();
-        if (tiles.size() != tileIds.stream().distinct().count()) return List.of();
-        assets.giveTiles = tiles.stream().filter(t -> me.id.equals(t.ownerId)).map(t -> t.id).toList();
-        assets.wantTiles = tiles.stream().filter(t -> otherId.equals(t.ownerId)).map(t -> t.id).toList();
-        if (tiles.isEmpty() || assets.giveTiles.size() + assets.wantTiles.size() != tiles.size()) return List.of();
-        Map<String, Action> result = new LinkedHashMap<>();
-        for (long price : prices) if (price >= 0) for (boolean pay : new boolean[] {true, false}) {
-            if (pay && assets.wantTiles.isEmpty() || !pay && assets.giveTiles.isEmpty()) continue;
-            Action candidate = trade(otherId); candidate.giveTiles = assets.giveTiles; candidate.wantTiles = assets.wantTiles;
-            if (pay) candidate.giveCash = price; else candidate.wantCash = price;
-            Trade t = quote(candidate); double gain = tradeScore(t, me);
-            if (gain >= (proactive ? offerMargin(t) : tradeMargin(t, me)) && (!proactive || !repeated(candidate) && tradeMotive(t, gain)))
-                result.putIfAbsent(quoteKey(state, candidate), candidate);
-        }
-        Action suggested = negotiate(assets, other, false);
-        if (suggested != null) result.putIfAbsent(quoteKey(state, suggested), suggested);
-        return result.values().stream().limit(4).toList();
-    }
-
     /** 无入参，枚举买卖、互换和抵债，仅挑选有明确动机、收益足够且对方可能接受的一份报价。 */
     private Action offer() {
         Action best = null; double bestGain = startIncome() * .025;
