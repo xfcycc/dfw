@@ -506,7 +506,8 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       </section>
       <template v-else>
         <div class="game-layout immersive-layout">
-          <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
+          <!-- Teleport 目标在跨断点更新时必须保留，避免子组件仍向已移除的节点移动。 -->
+          <div v-show="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
             <Board ref="board" :classic-layout="classicLayout" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
@@ -576,7 +577,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
             </Board>
           </div></section>
           <aside id="room-dashboard" ref="dashboardView" v-show="detachedDashboard" class="room-dashboard game-board immersive-board" :aria-label="spectator ? '城市新鲜事与资产排行' : '城市新鲜事与聊天'"></aside>
-          <div v-if="detachedDashboard && !spectator" id="mobile-card-reveal" class="mobile-card-reveal"></div>
+          <div v-show="detachedDashboard && !spectator" id="mobile-card-reveal" class="mobile-card-reveal"></div>
           <nav v-if="detachedDashboard && !spectator" class="mobile-workbench-bar" aria-label="手机游戏操作">
             <button type="button" class="mobile-image-button mobile-more-button" aria-label="更多" aria-haspopup="dialog" :aria-expanded="modal === 'more'" @click="modal = 'more'"><MobileActionArt action="more" /><span v-if="tradeReminder" class="mobile-action-badge">有报价</span></button>
             <button type="button" class="mobile-image-button mobile-roll-button" :disabled="!canRoll" aria-label="掷骰子" @click="game.act({ type: 'roll' })"><MobileActionArt action="roll" /></button>
@@ -672,7 +673,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 
 
 
-    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null; tradeEditorVersion++"><TradeEditor ref="tradeEditor" :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; if ($event) tradeEditorVersion++" /></Modal>
+    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null"><TradeEditor ref="tradeEditor" :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; if ($event) tradeEditorVersion++" /></Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'avatar' && game.me && !spectator" title="选择角色形象" @close="modal = null"><AvatarPicker /></Modal>
     <Modal panel-class="modern-modal nickname-modal" v-if="modal === 'rename' && game.me && !spectator" title="修改昵称" :close-disabled="game.busy" @close="modal = null">
       <form class="nickname-form" @submit.prevent="saveNickname">
