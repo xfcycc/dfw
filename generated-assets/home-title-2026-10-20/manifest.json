@@ -1,0 +1,50 @@
+{
+  "date": "2026-10-20",
+  "name": "大富翁-奇迹大陆",
+  "status": "oss-uploaded",
+  "assetKey": "/images/home-title.png",
+  "method": "ImageGen 参考现有标题图与首页背景，生成一体式透明标题图；等尺寸 WebP 转码",
+  "prompt": "Redesign the homepage logo for the Chinese multiplayer board game named 大富翁-奇迹大陆. Use reference 1 for lettering material / palette, and reference 2 ONLY for the harmonious warm storybook countryside mood. Create ONE finished standalone polished transparent-background game title logo, wide horizontal composition about 2:1, tightly framed with a small safe transparent margin. All seven Chinese characters must be perfectly spelled and easily readable: top line '大富翁' (three characters), bottom line '奇迹大陆' (four characters). These two lines together are the title 大富翁-奇迹大陆; do not render any extra words, English, slogans or watermark. Make BOTH lines fully illustrated integrated typography with exactly the SAME beautiful warm cream-gold puffed 3D hand-painted lettering, honey amber beveled sides, subtle highlights, soft ochre shadows and rounded deep sage-green outer contour, not separate plain subtitle text. Top line slightly larger, lower line prominent and nearly equally wide; compact strong unified silhouette suitable at 300px wide on mobile. The overall mark should feel like a friendly magical boardgame adventure through a sunny European fairy-tale village, not a casino. Place ONE small cream-colored dice with dark green dots near upper left, TWO small overlapping magical cards near upper right, a few tiny green leaves, a tiny white daisy, and restrained golden four-point miracle sparkles around the lettering. Decorations secondary and never obscure any character strokes. Warm, cheerful, refined, readable: soft hand-painted 2.5D storybook style matching the existing artwork, high quality finished game logo, not flat vector and not photorealistic. No background landscape, no rectangular panel, no large solid plaque or ribbon, no money/coins, no characters/people. Genuine alpha transparent background, with transparent areas also between separate details and within letter counters, no checkerboard painted in the art. The logo should occupy 90 percent of the canvas width and height, not a tiny logo on an oversized canvas.",
+  "references": [
+    {
+      "path": "/tmp/dfw-home-title-20261020/old-title.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016163612893.webp",
+      "purpose": "原有奶油金字形与绿叶装饰风格"
+    },
+    {
+      "path": "/tmp/dfw-home-title-20261020/home-town.webp",
+      "url": "https://pic.caiguoyu.cn/typora/20261016163719330.webp",
+      "purpose": "首页暖色童话小镇氛围"
+    }
+  ],
+  "sourcePath": "/Users/caiguoyu/.codex/generated_images/01a15711-08f0-7093-8ef0-501f5d079676/exec-bab5e937-c6dd-4a14-978d-3b3fc12be875.png",
+  "width": 1774,
+  "height": 887,
+  "hasAlpha": true,
+  "alphaExtrema": [
+    0,
+    255
+  ],
+  "alphaVerified": true,
+  "sourceBytes": 1995174,
+  "sourceSha256": "013b01748cecfe045f1ed538856d6de04f4f28b2998b66de8ca94e36a55c19a4",
+  "bytes": 309506,
+  "sha256": "c08789cc983898243b641d6399c9c557a5a4e4c1bd62e4fbff82a4de1ddc5b64",
+  "md5": "ukt5E7CPh9UjELTqsKJO/g==",
+  "encoding": {
+    "format": "webp",
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false
+  },
+  "url": "https://pic.caiguoyu.cn/typora/20261020101649411.webp",
+  "verification": {
+    "status": 200,
+    "contentType": "image/webp",
+    "contentLength": 309506,
+    "contentMd5": "ukt5E7CPh9UjELTqsKJO/g==",
+    "sha256Verified": true
+  },
+  "note": "原图保留在工具生成图片目录，转码与远端核验文件存于系统临时目录；仓库仅保存 URL 和来源元数据。"
+}

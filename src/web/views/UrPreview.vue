@@ -21,7 +21,7 @@ const paused = ref(false);
 
 <template>
   <main class="ur-preview" :class="{ paused }">
-    <header><p>好友财富派对 · UR 收藏卡</p><h1>{{ originalArtwork ? '本批 UR · 原版插画轻动态' : '让稀有，流动起来。' }}</h1><p>{{ originalArtwork ? '原版插画 · 轻微呼吸 · 玫瑰金流光' : selectedId === 'card_naruto_shinra_tensei' ? '人物悬浮与推掌 · 场景视差 · 斥力扩散' : UR_CARD_SCENES[selectedId]?.label ?? '呼吸插画 · 玫瑰金流光 · 上浮星尘' }}</p></header>
+    <header><p>大富翁-奇迹大陆 · UR 收藏卡</p><h1>{{ originalArtwork ? '本批 UR · 原版插画轻动态' : '让稀有，流动起来。' }}</h1><p>{{ originalArtwork ? '原版插画 · 轻微呼吸 · 玫瑰金流光' : selectedId === 'card_naruto_shinra_tensei' ? '人物悬浮与推掌 · 场景视差 · 斥力扩散' : UR_CARD_SCENES[selectedId]?.label ?? '呼吸插画 · 玫瑰金流光 · 上浮星尘' }}</p></header>
     <nav aria-label="选择 UR 卡面"><button v-for="card in cards" :key="card.id" :class="{ selected: selectedId === card.id }" @click="selectedId = card.id">{{ card.name }}</button></nav>
     <div class="preview-controls"><button @click="paused = !paused">{{ paused ? '继续动画' : '暂停动画' }}</button><a href="/">返回游戏 ↗</a></div>
     <section class="comparison" aria-label="静态与动态卡面对比">

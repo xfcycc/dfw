@@ -148,7 +148,7 @@ const code = computed(() => String(route.params.code));
 /** 无入参，复制包含文案、房间号及入房链接的邀请内容，完成后无返回值。 */
 async function inviteFriends(): Promise<void> {
   modal.value = null;
-  await game.copy(`🎲 来和我一起玩《大富翁 · 好友财富派对》！\n掷骰、买地、建房、收租，看看谁能成为大富翁！\n房间号：${code.value}\n点击链接加入：${origin}/room/${code.value}`);
+  await game.copy(`🎲 来和我一起玩《大富翁-奇迹大陆》！\n掷骰、买地、建房、收租，看看谁能成为大富翁！\n房间号：${code.value}\n点击链接加入：${origin}/room/${code.value}`);
 }
 const owned = computed(() => game.room?.board.filter(tile => tile.ownerId === game.me?.id) ?? []);
 const allReady = computed(() => !!game.room && game.room.players.length >= 2 && game.room.players.every(player => player.ready && player.online));

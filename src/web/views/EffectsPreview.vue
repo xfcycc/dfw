@@ -119,7 +119,7 @@ onBeforeUnmount(() => { document.removeEventListener('visibilitychange', finishH
 
 <template>
   <main class="effects-preview">
-    <header><div><p class="eyebrow">好友财富派对 · 动画放映室</p><h1>看看，这张牌怎么生效。</h1><p>选择效果即可播放，也可以反复重看。</p></div><a href="/">返回游戏 ↗</a></header>
+    <header><div><p class="eyebrow">大富翁-奇迹大陆 · 动画放映室</p><h1>看看，这张牌怎么生效。</h1><p>选择效果即可播放，也可以反复重看。</p></div><a href="/">返回游戏 ↗</a></header>
     <div class="preview-layout">
       <aside><label class="preview-search">效果清单 · {{ kinds.length }} 种<input v-model="search" aria-label="搜索效果" placeholder="搜索效果或说明" /></label><button v-for="kind in visibleKinds" :key="kind" :class="{ selected: selected === kind }" :disabled="playing" @click="replay(kind)"><span>{{ boardEffectLabel(kind) }}</span><small>{{ boardEffectDuration(kind) ? `${(boardEffectDuration(kind) / 1000).toFixed(1)} 秒` : '无特效' }}</small></button></aside>
       <section class="preview-stage"><div class="preview-intro"><div><h2>{{ boardEffectLabel(selected) }}</h2><p>{{ BOARD_EFFECTS[selected].description }}</p></div><span>{{ boardEffectDuration(selected) ? `${duration} 秒` : '无特效' }}</span></div>

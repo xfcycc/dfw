@@ -317,7 +317,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
         <BoardEffectLayer v-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="size * zoom" :board-height="height * zoom" @done="finishBoardEffect" />
         <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
-          <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '好友财富派对' }}</span>
+          <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '大富翁-奇迹大陆' }}</span>
           <h2>{{ compact ? '把城市，' : '一步好运' }}<br /><span>{{ compact ? '变成你的主场。' : '一城财富' }}</span></h2>
           <City />
           <div v-if="celebrating" class="village-confetti" aria-hidden="true"><i v-for="leaf in 18" :key="leaf" :style="{ '--leaf': leaf }">{{ leaf % 3 === 0 ? '✦' : '▰' }}</i></div>

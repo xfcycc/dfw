@@ -57,7 +57,7 @@ async function submit(): Promise<void> {
       </button>
     </header>
     <main class="home-menu">
-      <h1 class="home-title"><img :src="imageUrl('/images/home-title.png')" alt="大富翁" width="1932" height="814" fetchpriority="high" /></h1>
+      <h1 class="home-title"><img :src="imageUrl('/images/home-title.png')" alt="大富翁-奇迹大陆" width="1774" height="887" fetchpriority="high" /></h1>
       <nav class="home-actions" aria-label="游戏入口">
         <button class="home-action home-create" @click="openEntry('create')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><g fill="currentColor" stroke="none"><circle cx="8" cy="8" r="1.4"/><circle cx="16" cy="8" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="8" cy="16" r="1.4"/><circle cx="16" cy="16" r="1.4"/></g></svg>
