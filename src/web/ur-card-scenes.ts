@@ -3,7 +3,7 @@ export interface UrCardScene {
   /** 已有卡面皮肤身份。 */
   skinId: string;
   /** 对应本张卡面的动画主题。 */
-  theme: 'coin' | 'ticket' | 'wood' | 'alchemy' | 'kamui' | 'reaper' | 'wukong' | 'visits' | 'pigs' | 'wish' | 'punch' | 'teapot';
+  theme: 'coin' | 'ticket' | 'wood' | 'alchemy' | 'kamui' | 'reaper' | 'wukong' | 'visits' | 'pigs' | 'wish' | 'punch' | 'teapot' | 'lotus';
   /** 预览页的动作说明。 */
   label: string;
   /** 人物层在画布中的位置与缩放。 */
@@ -14,6 +14,12 @@ export interface UrCardScene {
   secondaryPlacement?: string;
 }
 
+/** 本批UR仅显示已有等级外框；原画无呼吸、流光、粒子或分层动画。 */
+export const STATIC_UR_SKINS = new Set([
+  'card_neta_thunder_lord', 'card_neta_bankai', 'card_neta_ignite_sea',
+  'card_neta_senbonzakura', 'fortune_neta_genius_club',
+]);
+
 /** 登记的动漫 UR 保留原版插画，只启用通用呼吸和流光，不使用分层场景。 */
 export const ORIGINAL_UR_SKINS = new Set([
   'card_naruto_triple_rashomon', 'card_anime_u02',
@@ -22,6 +28,7 @@ export const ORIGINAL_UR_SKINS = new Set([
 ]);
 
 export const UR_CARD_SCENES: Record<string, UrCardScene> = {
+  fortune_crossover_endlessClouds: { skinId: 'fortune_crossover_endlessClouds', theme: 'lotus', label: '聚光 · 红莲展开 · 治疗光波 · 花瓣散去', placement: 'none' },
   card_genshin_serenitea_pot: { skinId: 'card_genshin_serenitea_pot', theme: 'teapot', label: '亭阁漂移 · 仙力流转 · 洞天重构', placement: 'none', secondaryPath: 'M600 0H1000V390H600Z' },
   fortune_wukong_heaven_riot: { skinId: 'fortune_wukong_heaven_riot', theme: 'wukong', label: '悟空舞棒 · 天宫震颤 · 碎瓦飘落', placement: 'none' },
   fortune_three_visits: { skinId: 'fortune_three_visits', theme: 'visits', label: '登门作揖 · 礼物摇晃 · 晨光流动', placement: 'none' },

@@ -24,6 +24,25 @@ export function mapLength(count: number, size: MapSize = 'large'): number { retu
 /** 输入闭环地图格数，返回整数行列；34／46 格使用相邻长度的矩形边。 */
 export function boardDimensions(length: number): { rows: number; columns: number } { return { rows: Math.floor(length / 4) + 1, columns: Math.ceil(length / 4) + 1 }; }
 export const ITEMS: Record<ItemKind, { name: string; icon: string; description: string }> = {
+  asunaFlash: { name: "闪光的亚丝娜", icon: '✦', description: "自选向前突进1～3格，替代掷骰；忽略路径效果并清除沿途附加效果，每处护盾只削1层，神威除外；不降建筑，正常结算终点，可被通常主动防御响应。" },
+  defenseSpecialization: { name: "怕痛就全点防御了", icon: '✦', description: "本回合及下个本人回合，抵消敌方主动牌对自己及自家地产的全部效果，含UR、不限次数；基础移动固定1，不能替代移动或主动攻击。不免租、不免债、不挡公共事件、不清已有负面状态。" },
+  revealingSwords: { name: "光的护封剑", icon: '✦', description: "指定1名对手，接下来3个个人回合禁止使用所有手牌，包含防御、解控和救援响应；掷骰、经营、收租、交易及弃牌照常，重复刷新不叠加。" },
+  fusion: { name: "融合", icon: '✦', description: "消耗本牌及额外任意2张手牌，融合为1张普通UR；优先在第一张材料的玩法类别内均分抽取，无同类UR才抽全部UR，不额外赠送使用次数。" },
+  shadowBlade: { name: "双龙魔影剑", icon: '✦', description: "选择2处紧邻、不同的对手有建筑地产，各降1级；可属于不同对手，护盾逐地抵挡，不退款，不能集火。" },
+  doubleBoost: { name: "双喷", icon: '✦', description: "普通掷骰前使用；骰子移动结束或被截停后，可依次追加两次前进1格。喷射忽略且不消耗陨星，路障仍截停并终止喷射；只结算最终落点，喷射不受翻倍与加码放大。" },
+  blueSilverBind: { name: "蓝银缠绕", icon: '✦', description: "前后6格内1名对手下个个人回合不能掷骰或替代移动；可使用其他牌、经营、交易、收租与防御，不重新结算原地，可解控，沿用连续控制保护。" },
+  goldenCore: { name: "结丹", icon: '✦', description: "掷骰前闭关，放弃本回合主动移动；回合结束结丹，手牌上限永久加1，并获得1张随机SSR道具。经营、交易及防御照常，每人每局限成功1次。" },
+  nuwaMend: { name: "女娲补天", icon: '✦', description: "下个本人回合结束前，修复最近同一次敌方攻击或灾害损坏的最多3处自家地产，恢复损坏前等级；产权须未变，不恢复主动卖房，不回滚付款、抵押和其他状态。" },
+  namelessSword: { name: "无名剑法", icon: '✦', description: "本回合蓄力，无法主动移动；下个本人回合掷骰前可对前后6格内1处对手地产连斩3次，各降1级、护盾逐击挡。释放不占主动次数，次回合正常移动；休息、监禁或放弃则失效。" },
+  kingsPressure: { name: "王的压制", icon: '✦', description: "指定1名对手，接下来3个个人回合禁止发动所有等级的主动攻击；非攻击主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。" },
+
+  keqingRush: { name: '斩尽牛杂', icon: '✦', description: "对前后6格内1处对手有建筑地产降1级，再传送到该地并正常结算，替代掷骰；护盾可抵挡降级，主动防御不取消自己的传送。" },
+  thunderLord: { name: '煌煌威灵', icon: '✦', description: "标记1处对手有建筑地产，初始2击；每名其他玩家首次消耗主动次数用牌增加1击，最多4击，下个本人回合开始逐击降级；护盾逐击抵挡，标记可清除，转手或施术者淘汰失效。" },
+  hollowfication: { name: '虚化', icon: '✦', description: "抵消1张敌方主动道具对本人的强制位移、休息和监禁；不保护地产或手牌，不抵挡事件，不占主动次数。" },
+  fireBurial: { name: '一刀火葬', icon: '✦', description: "献祭自家1级建筑，使对手1处地产降低最多2级，无视但不消耗护盾；献祭无退款、不可修复，被主动防御也不返还。" },
+  igniteSea: { name: '点燃大海', icon: '✦', description: "选择1处对手有建筑、未封印地产，先移除全部护盾，再降低1＋移除护盾层数级建筑，最多降3级；可被主动防御抵消，保留其他附加效果。" },
+  senbonzakura: { name: '千本樱', icon: '✦', description: "获得3片攻防共享花瓣，至第3个后续个人回合结束；每回合掷骰前可一次消耗1～3片，各使不同对手地产降1级，不占主动次数；防御时每片挡1次常规建筑破坏，护盾优先，穿盾攻击无视花瓣；重复补至3片但不延长。" },
+  bankai: { name: '天锁斩月', icon: '✦', description: "发动后，本回合最多再使用2张其他主动道具，含UR；期间不能再用天锁斩月或投影魔术，额外出牌统一计数；替代移动后结束出牌窗口，费用和限制照常。" },
   geoResonance: { name: "岩脊共鸣", icon: '✦', description: "选择1处自家地产，与左右紧邻的自家地产各免费升1级，最多3处。" },
   growthLink: { name: "所闻遍计", icon: '✦', description: "连接2处自家地产，持续3个后续个人回合；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。" },
   sereniteaPot: { name: "尘歌壶", icon: '✦', description: "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。" },
@@ -39,7 +58,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   deathReturn: { name: "死亡回归", icon: '✦', description: "达到破产清算条件时，免除当前剩余强制债务，回到最近本人回合开始位置，获得现金 ¥3000并休息1个个人回合；不结算落点或起点奖励，不回滚已完成的付款、卖房或交易。" },
   explosion: { name: "爆裂魔法", icon: '✦', description: "拆除连续3格内的全部建筑，包含自家地产，无补偿；每处地产可消耗1层护盾抵挡全拆；自己随后休息1个个人回合。" },
   corruption: { name: "猩红腐败", icon: '✦', description: "对手1处有建筑地产，在接下来3次业主个人回合开始时各降1级；每层护盾抵挡1次，降至0级结束，重复施加刷新次数，可清除。" },
-  contract: { name: "契约成立", icon: '✦', description: "获得现金 ¥3000，本局手牌上限永久减1，最低1张；上限为1时不可使用，超限时选择保留。" },
+  contract: { name: "契约成立", icon: '✦', description: "获得现金 ¥5000，本局手牌上限永久减1，最低1张；上限为1时不可使用，超限时选择保留。" },
   commandSpell: { name: "令咒", icon: '✦', description: "指定另一名玩家立即移动1～6格，点数自选，正常结算沿途和落点；不占其正常行动，奖励、费用及落点选择归移动者。" },
   sevenSwords: { name: "火舞旋风", icon: '✦', description: "将3道剑气分配给对手有建筑的地产，可集火或分散，每道降1级；每层护盾抵挡1道，未分配的剑气作废。" },
   railgun: { name: "超电磁炮", icon: '✦', description: "选择顺或逆时针贯穿前方6格，自己不移动；无视护盾，清除沿途路障、陨星和全部护盾，对手地产各降1级。" },
@@ -51,7 +70,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   recycle: { name: '制衡', icon: '✦', description: "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。" },
   discover: { name: '发现', icon: '✦', description: "从3张不同效果的随机道具中选1张；确认后才消耗，取消重选不刷新候选。" },
   sap: { name: '闷棍', icon: '✦', description: "前后3格内1名对手休息1个个人回合（含同格），并随机偷取其1张手牌；解控不撤销偷牌。" },
-  exchange: { name: '等价交换', icon: '✦', description: "用现有现金向对手支付该地产的无修正租金，取得产权并承接建筑、抵押及附加效果。" },
+  exchange: { name: '等价交换', icon: '✦', description: "用现有现金向对手支付该地产的无修正租金，最低为地价，取得产权并承接建筑、抵押及附加效果。" },
   slow: { name: '迟缓光线', icon: '✦', description: "指定对手，下次掷骰或替代掷骰的基础步数减半，向下取整，再计算加码与塔塔开；不叠加。" },
   swapAny: { name: '斗转星移', icon: '✦', description: "交换任意2名玩家的位置，可含自己；不结算落点或起点奖励，不解除监禁或休息。" },
   kamui: { name: '神威', icon: '✦', description: "封印同一条边1～3处地产，无需连续，可含自家、对手或无主地产；持续3个后续个人回合，暂停收租、经营和附加效果，期间不受其他地产效果影响，仍可破产清算。" },
@@ -67,10 +86,10 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   move: { name: '主动位移', icon: '↔️', description: "按卡面前进或后退并结算落点，替代掷骰。" },
   bonus: { name: '掷骰加码', icon: '🎲', description: "本次掷骰增加卡面步数，合并移动并只结算最终落点。" },
   fullUpgrade: { name: '连柱家之术', icon: '🌳', description: "1处自家地产免费直升3级，计入本回合升级；取消或无目标时保留卡和主动次数。" },
-  fullDemolish: { name: '神罗天征', icon: '💥', description: "拆除对手1处地产的全部建筑，无补偿；护盾可抵挡。" },
+  fullDemolish: { name: '神罗天征', icon: '💥', description: "拆除对手1处地产的全部建筑，无补偿；无视护盾。" },
   freeUpgrade: { name: '免费升级', icon: '🏗️', description: "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。" },
   halfPayment: { name: '付款减半', icon: '🧾', description: "本笔强制费用减免50%，减免额向下取整；不占主动次数。" },
-  release: { name: '解除监禁／休息', icon: '🔑', description: "解除刚施加的监禁或休息，不撤销入狱传送；不占主动次数。" },
+  release: { name: '解除监禁／休息', icon: '🔑', description: "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。" },
   steal: { name: '抢夺手牌', icon: '🃏', description: "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。" },
   cash: { name: '即时现金', icon: '💰', description: "获得卡面现金。" },
   gamble: { name: '命运豪赌', icon: '🪙', description: "用现有现金按卡面金额下注，按卡面概率获得奖金，本金不返还；取消不消耗。" },
@@ -80,7 +99,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   immunity: { name: '免租', icon: '🛡️', description: "免除本笔全部租金，不占主动次数。" },
   demolish: { name: '拆房', icon: '🔨', description: "对手1处有建筑地产降1级，无退款；护盾可抵挡。" },
   swap: { name: '换位', icon: '🔄', description: "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。" },
-  blast: { name: '爆破鬼才', icon: '💥', description: "指定1名玩家随机传送，可选自己；不结算落点或起点奖励，随后正常掷骰。" },
+  blast: { name: '爆破鬼才', icon: '💥', description: "指定1名玩家随机传送并结算落点，可选自己；不发起点奖励，随后正常掷骰。" },
   jail: { name: '谕示裁定', icon: '⚖️', description: "指定1名玩家入狱，可选自己；跳过下次个人行动，服刑期间不收租，可当场解控；对自己使用替代掷骰。" },
 };
 /** 输入地图种子，返回只用于地图配置的确定性随机数函数。 */
@@ -165,12 +184,12 @@ export function ruleMoney(economy: EconomySettings | null | undefined, key: stri
 function derivedMoney(economy: EconomySettings | null | undefined, key: string, actual: number): number { return economy?.fixedAmounts[key] ?? actual; }
 /** 输入地产及本局经济参数，返回按基础比例计算的租金；旧对局缺省 10%，抵押不收费。 */
 export function rentFor(tile: Tile, economy?: EconomySettings | null): number {
-  return tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile,economy), tile.concertStacks ?? 0);
+  return tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile.petalCasterId && tile.petalOwnerId === tile.ownerId ? { ...tile, level: Math.max(0, tile.level - 1) } : tile,economy), tile.concertStacks ?? 0);
 }
 /** 输入地产，返回是否处于神威冻结中。 */
 export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }
 /** 输入地产，返回是否需要在名称后显示统一附加效果标记。 */
-export function hasPropertyEffects(tile: Tile, construction?: Record<number, string[]>): boolean { return !!(construction?.[tile.id]?.length || tile.barrier || tile.demolitionShield || tile.treasure || tile.concertStacks || tile.meteorCharges || tile.corruptionTurns || tile.zeroCasterId || tile.portalTileId != null || isKamui(tile)); }
+export function hasPropertyEffects(tile: Tile, construction?: Record<number, string[]>): boolean { return !!(construction?.[tile.id]?.length || tile.barrier || tile.demolitionShield || tile.treasure || tile.concertStacks || tile.meteorCharges || tile.corruptionTurns || tile.petalCasterId || tile.zeroCasterId || tile.portalTileId != null || isKamui(tile)); }
 /** 输入地产和经济快照，返回忽略抵押、房东及临时修正的等级租金，无主按零级。 */
 export function baseRentFor(tile: Tile, economy?: EconomySettings | null): number {
   const level = tile.ownerId ? tile.level : 0;

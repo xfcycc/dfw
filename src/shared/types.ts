@@ -10,7 +10,7 @@ export type BotDifficulty = 'easy' | 'normal' | 'hard';
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'geoResonance' | 'growthLink' | 'sereniteaPot' | 'createBuild' | 'remoteConstruction' | 'shrineGrowth' | 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor' | 'timeRewind' | 'projection' | 'starburst' | 'imagineBreaker' | 'timeRestore' | 'vectorReflect' | 'deathReturn' | 'explosion' | 'corruption' | 'contract' | 'commandSpell' | 'sevenSwords' | 'railgun' | 'sealCard' | 'swordRain' | 'voidTears' | 'absoluteZero';
+export type ItemKind = 'asunaFlash' | 'defenseSpecialization' | 'revealingSwords' | 'fusion' | 'shadowBlade' | 'doubleBoost' | 'blueSilverBind' | 'goldenCore' | 'nuwaMend' | 'namelessSword' | 'kingsPressure' | 'keqingRush' | 'thunderLord' | 'hollowfication' | 'fireBurial' | 'bankai' | 'igniteSea' | 'senbonzakura' | 'geoResonance' | 'growthLink' | 'sereniteaPot' | 'createBuild' | 'remoteConstruction' | 'shrineGrowth' | 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor' | 'timeRewind' | 'projection' | 'starburst' | 'imagineBreaker' | 'timeRestore' | 'vectorReflect' | 'deathReturn' | 'explosion' | 'corruption' | 'contract' | 'commandSpell' | 'sevenSwords' | 'railgun' | 'sealCard' | 'swordRain' | 'voidTears' | 'absoluteZero';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -31,11 +31,14 @@ export interface ContentResult {
   privateSupply?: boolean;
 }
 /** 私有手牌。 */
-export interface Card extends ContentResult { kind: ItemKind; projected?: boolean; expiresAtTurn?: number; remainingUses?: number; lastUsedTurn?: number }
+export interface Card extends ContentResult { kind: ItemKind; projected?: boolean; expiresAtTurn?: number; remainingUses?: number; lastUsedTurn?: number; usesSpent?: number }
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: `construction_${string}` | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  type: `cross_${string}` | `neta_${'bankai' | 'ignite' | 'research' | 'bid' | 'reward' | 'petals' | 'petal_defense'}` | `construction_${string}` | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'movement_release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  numbers?: number[];
+  cardOptions?: Record<string, Card[]>;
+  materialIds?: string[];
   playerIds?: string[];
   prompt?: string;
   tileIds: number[];
@@ -99,6 +102,15 @@ export interface PublicPlayer {
   eliminationOrder: number | null;
   /** 剩余后续个人回合，旧服务端缺省为无免疫。 */
   trapImmunityTurns?: number;
+  /** 外部控制后的两回合保护，包含等待本次受控行动跳过的状态。 */
+  controlProtectionTurns?: number;
+  crossoverEffects?: string[];
+  handSealTurns?: number;
+  urSealTurns?: number;
+  attackSealTurns?: number;
+  defenseSpecializationTurns?: number;
+  blueBindTurns?: number;
+  cultivated?: boolean;
   nextPaymentWaiver?: boolean;
   nextRentDouble?: boolean;
   /** 塔塔开：下次移动翻倍；旧快照缺省为无。 */
@@ -106,6 +118,9 @@ export interface PublicPlayer {
 }
 /** 棋盘格公开状态。 */
 export interface Tile {
+  petalCasterId?: string | null;
+  petalOwnerId?: string | null;
+  petalUntilTurn?: number;
   id: number;
   type: 'start' | 'chance' | 'fortune' | 'jail' | 'property' | 'activity';
   /** 活动角当前玩法，旧地图缺省。 */
@@ -132,6 +147,7 @@ export interface Tile {
   kamuiTurns?: number;
   kamuiAppliedTurn?: number;
   corruptionTurns?: number;
+  nzothOwnerId?: string | null;
   zeroCasterId?: string | null;
   zeroUntilTurn?: number;
   damageOwnerId?: string | null;
@@ -207,6 +223,7 @@ export interface MotionSegment {
 export interface Motion extends MotionSegment { segments?: MotionSegment[] }
 /** 公开房间快照，可安全发送给任意观战者。 */
 export interface PublicRoomState {
+  researchCandidates?: Card[];
   constructionEffects?: Record<number, string[]>;
   /** 新局活动轮换，旧局不改图。 */
   activityRotation?: ActivityRotation | null;
@@ -251,6 +268,12 @@ export interface PublicRoomState {
 }
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState {
+  /** 卍解后所有后续出牌共用额度，耗尽时仍保持已发动标记。 */
+  bankaiActive?: boolean;
+  bankaiRemaining?: number;
+  /** 持续花瓣技能的私人可用状态。 */
+  petalsAvailable?: boolean;
+  petalsRemaining?: number;
   remoteBuildAvailable?: boolean;
   activityId?: string | null;
   activityRound?: number | null;
@@ -261,6 +284,7 @@ export interface PrivatePlayerState {
   /** 本人最近报价的拒绝说明，旧快照可缺省。 */
   tradeRejection?: string | null;
   projectionAvailable?: boolean;
+  disabledCardIds?: string[];
   choice?: ContentChoice | null;
   event?: ContentResult | null;
   notice?: ContentResult | null;
@@ -292,10 +316,10 @@ export type GameAction =
   | { type: 'setName'; name: string }
   | { type: 'setAvatar'; avatarId: string }
   | { type: 'setMapSize'; mapSize: MapSize }
-  | { type: 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
+  | { type: 'senbonzakuraStrike' | 'purifyPollution' | 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }
   | { type: 'paymentDefense'; decisionId?: string; cardId?: string }
-  | { type: 'contentDecision'; decisionId: string; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
+  | { type: 'contentDecision'; decisionId: string; cardSelections?: Record<string, string>; point?: number; direction?: number; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
   | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string; secondTileId?: number; tileIds?: number[]; direction?: number }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }
   | { type: 'tradeOffer'; toId: string; giveCash: number; wantCash: number; giveTiles: number[]; wantTiles: number[]; debtCredit?: number }

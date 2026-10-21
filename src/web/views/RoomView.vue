@@ -156,7 +156,7 @@ const allReady = computed(() => !!game.room && game.room.players.length >= 2 && 
 const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2));
 const canPlay = computed(() => !props.spectator && !boardAnimating.value && (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending);
 const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
-const defenseCards = computed(() => game.privateData?.hand.filter(card => card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent') ?? []);
+const defenseCards = computed(() => game.privateData?.hand.filter(card => !game.privateData?.disabledCardIds?.includes(card.id) && (card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent')) ?? []);
 const defenseOptions = computed(() => [{ value: '', label: '不使用道具' }, ...defenseCards.value.map(card => ({ value: card.id, label: card.name ?? ITEMS[card.kind].name }))]);
 const pendingTile = computed(() => game.room?.board[game.room.pending?.tileId ?? -1]);
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt' ? game.room.pending : null);
@@ -222,7 +222,7 @@ const targetLabel = computed(() => {
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules: Partial<Record<Card['kind'], string>> = { shield: `选择没有护盾的自家地产，添加 ${selectedCard.value?.parameters?.charges ?? 1} 层护盾。`, exchange: '选择现金足以支付无修正租金的对手地产。', blackhole: '选择有附加效果的地产。', homeTeleport: '选择自家地产。', sap: '选择前后3格内的1名对手，含同格。', slow: '选择1名对手。', reaper: '选择手牌上限大于1的对手，双方上限永久各减1。', shadowstep: '选择前后6格内的另一名玩家，含同格。', swapAny: '选择2名不同玩家，可含自己。', barrier: '选择前后6格内无路障的地块，不含当前格。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产。', swap: '选择未服刑的对手。', steal: '选择1名对手。', blast: '选择1名玩家，可选自己。', jail: '选择1名玩家，可选自己。' };
+  const rules: Partial<Record<Card['kind'], string>> = { shield: `选择没有护盾的自家地产，添加 ${selectedCard.value?.parameters?.charges ?? 1} 层护盾。`, exchange: '选择现金足以支付交换价的对手地产，最低为地价。', blackhole: '选择有附加效果的地产。', homeTeleport: '选择自家地产。', sap: '选择前后3格内的1名对手，含同格。', slow: '选择1名对手。', reaper: '选择手牌上限大于1的对手，双方上限永久各减1。', shadowstep: '选择前后6格内的另一名玩家，含同格。', swapAny: '选择2名不同玩家，可含自己。', barrier: '选择前后6格内无路障的地块，不含当前格。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产。', swap: '选择未服刑的对手。', steal: '选择1名对手。', blast: '选择1名玩家，可选自己。', jail: '选择1名玩家，可选自己。' };
   return rules[selectedCard.value!.kind] ?? cardEffect(selectedCard.value!);
 });
 /** 输入房间地块与玩家，返回合法地块及带禁用原因的玩家；地块携带价格和建筑插画。 */
@@ -258,7 +258,7 @@ function tileReason(tile: Tile): string {
     if (tile.type !== 'property') return '请选择普通地产。';
     if (kind === 'shield') return tile.ownerId !== game.me?.id ? '请选择自家地产。' : tile.demolitionShield ? '该地产已有护盾。' : '';
     if (kind === 'homeTeleport') return tile.ownerId === game.me?.id ? '' : '请选择自家地产。';
-    if (kind === 'exchange') return !tile.ownerId || tile.ownerId === game.me?.id ? '请选择对手地产。' : (game.me?.cash ?? 0) < baseRentFor(tile, game.room?.economy) ? '现金不足以支付无修正租金。' : '';
+    if (kind === 'exchange') return !tile.ownerId || tile.ownerId === game.me?.id ? '请选择对手地产。' : (game.me?.cash ?? 0) < Math.max(tile.price, baseRentFor(tile, game.room?.economy)) ? '现金不足以支付交换价（无修正租金，最低地价）。' : '';
     if (kind === 'blackhole') return hasPropertyEffects(tile, game.room?.constructionEffects) ? '' : '该地产没有附加效果。';
     return '';
   }
@@ -276,8 +276,8 @@ watch(() => game.room?.activity?.id, id => { if (id) { modal.value = null; selec
 watch(() => choice.value?.id, id => {
   selectedTarget.value = '';
   mapPicking.value = false;
-  if (id && choice.value?.type.startsWith('construction_')) { clearCard(); modal.value = 'choice'; return; }
-  if (id) { const fromCard = modal.value === 'card' && ['freeUpgrade', 'fullUpgrade', 'recycle', 'discover', 'projection'].includes(selectedCard.value?.kind ?? ''); clearCard(); selectedTile.value = null; if (fromCard) modal.value = 'choice'; }
+  if (id && (choice.value?.type.startsWith('construction_') || choice.value?.type.startsWith('cross_'))) { clearCard(); modal.value = 'choice'; return; }
+  if (id) { const fromCard = modal.value === 'card' && ['bankai', 'freeUpgrade', 'fullUpgrade', 'recycle', 'discover', 'projection'].includes(selectedCard.value?.kind ?? ''); clearCard(); selectedTile.value = null; if (fromCard) modal.value = 'choice'; }
   else if (modal.value === 'choice') modal.value = null;
 });
 watch([turnIdentity, canPrepareCard, () => game.privateData?.hand], () => {
@@ -411,7 +411,7 @@ function chooseCard(card: Card): void {
 /** 无入参，取消本地选牌并关闭其窗口，不消费手牌或主动次数。 */
 function clearCard(): void { submittingCard.value = false; selectedCard.value = null; selectedCardActive.value = false; selectedTarget.value = ''; selectedSecondTarget.value = ''; mapPicking.value = false; if (modal.value === 'card') modal.value = null; }
 /** 输入成功使用的牌型，免费升级及风险道具接续服务端选择，其他道具结束选牌。 */
-function cardUsed(kind: Card['kind']): void { clearCard(); if (choice.value?.type.startsWith('construction_')) { modal.value = 'choice'; return; } if (['recycle', 'discover', 'projection'].includes(kind) && choice.value) { modal.value = 'choice'; return; } if (['freeUpgrade', 'fullUpgrade'].includes(kind) && ['free_upgrade', 'full_upgrade'].includes(choice.value?.type ?? '') || kind === 'gamble' && choice.value?.type === 'gamble') modal.value = 'choice'; }
+function cardUsed(kind: Card['kind']): void { clearCard(); if (choice.value?.type.startsWith('construction_') || choice.value?.type.startsWith('cross_')) { modal.value = 'choice'; return; } if (['bankai', 'recycle', 'discover', 'projection'].includes(kind) && choice.value) { modal.value = 'choice'; return; } if (['freeUpgrade', 'fullUpgrade'].includes(kind) && ['free_upgrade', 'full_upgrade'].includes(choice.value?.type ?? '') || kind === 'gamble' && choice.value?.type === 'gamble') modal.value = 'choice'; }
 /** 输入目标标识和玩家槽位，按原规则更新选择；确认按钮才发送命令。 */
 function selectDialogTarget(id: string, slot: 1 | 2 = 1): void {
   if (targetKind.value === 'tile') { const tile = game.room?.board[Number(id)]; if (tile) selectTile(tile); }
@@ -485,6 +485,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       <div v-if="game.connection !== 'online'" class="notice warning connection-notice">{{ game.fatalError || '网络连接已断开，正在自动重连。当前显示最后同步的局面。' }}<button v-if="game.connection === 'offline' || game.connection === 'replaced'" class="button small secondary" @click="enter">在此页重新连接</button></div>
       <div v-if="game.room.pausedReason" class="notice warning connection-notice">Ⅱ <PlayerText :text="game.room.pausedReason" />。对局已保存，恢复后继续当前步骤。</div>
       <RecoverySeats v-if="!spectator" />
+      <section v-if="game.room.researchCandidates?.length" class="panel" aria-label="天才俱乐部公共研究"><h3>天才俱乐部 · 公共研究</h3><p class="muted">每人秘密投入0～2张手牌，或放弃；触发者额外＋1贡献。最高者胜，并列随机，仅胜者支付投入牌并自选1张UR。</p><div class="choice-card-grid"><ContentCard v-for="candidate in game.room.researchCandidates" :key="candidate.id" :content="candidate" compact thumbnail /></div></section>
       <section v-if="isLobby" class="lobby-layout cottage-lobby" aria-label="房间大厅">
         <div class="lobby-panel cottage-panel">
           <div class="cottage-heading"><h1>好友房间 <small>{{ game.room.players.length }} / 6</small></h1><button class="button secondary small" @click="inviteFriends">邀请朋友</button></div>
@@ -565,7 +566,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <button type="button" class="button workbench-action" :aria-label="`我的资产，${owned.length} 处地产`" :title="`我的资产，${owned.length} 处地产`" @click="modal = 'assets'"><WorkbenchActionArt action="assets" /></button>
                       <template v-if="!game.me.bankrupt && game.room.status === 'playing'">
                         <button type="button" class="button workbench-action" :disabled="!canTrade && !game.privateData?.trade" aria-label="交易" title="交易" @click="modal = 'trade'"><WorkbenchActionArt action="trade" /></button>
-                        <button type="button" class="button workbench-action" data-dice-roll :disabled="!canRoll" aria-label="掷骰" title="掷骰" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
+                        <button type="button" class="button workbench-action" data-dice-roll :disabled="!canRoll" :aria-label="game.me?.blueBindTurns ? '跳过移动，进入资产管理' : '掷骰'" :title="game.me?.blueBindTurns ? '蓝银缠绕：跳过移动，仍可管理资产' : '掷骰'" @click="game.act({ type: 'roll' })"><WorkbenchActionArt action="roll" /></button>
                         <button type="button" class="button workbench-action" :disabled="!canEndTurn" aria-label="结束行动" title="结束行动" @click="game.act({ type: 'endTurn' })"><WorkbenchActionArt action="endTurn" /></button>
                       </template>
                     </div>
@@ -604,6 +605,9 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
     <Modal panel-class="modern-modal decision-modal" v-if="modal === 'decision' && game.room && hasCentralDecision && !game.cardReveals.length && !game.settling" :title="decisionTitle"  @close="modal = null"><div class="action-details">
                         <template v-if="game.canDecide">
                           <template v-if="game.room.pending?.type === 'choice'">
+                            <p v-if="game.isMyTurn && game.privateData?.bankaiActive && game.room?.phase === 'pre_roll'" class="notice">天锁斩月：剩余 {{ game.privateData.bankaiRemaining }} 次后续出牌，不能使用卍解或投影。</p>
+                            <button v-if="game.isMyTurn && game.room?.phase === 'pre_roll' && !game.room?.pending && !game.room?.tradePending && game.privateData?.petalsAvailable" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'senbonzakuraStrike' })">释放千本樱 · 剩余{{ game.privateData.petalsRemaining }}片</button>
+                            <button v-if="game.isMyTurn && !game.room?.pending && !game.room?.tradePending && game.room?.board.some(t => t.nzothOwnerId === game.me?.id && t.ownerId === game.me?.id)" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'purifyPollution' })">弃牌净化污染</button>
                             <template v-if="choice"><p class="muted">{{ choice.content?.name ?? '当前选择' }} · {{ choice.type === 'hand_limit' ? '整理手牌后继续行动' : '请打开窗口处理本次选择' }}</p><button class="button primary small" :disabled="!game.canAct" @click="openWorkbench('choice')">处理当前选择</button></template>
                             <p v-else class="muted">正在同步当前选择…</p>
                           </template>

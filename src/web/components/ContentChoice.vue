@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ThemedSelect from './ThemedSelect.vue';
 import ConstructionChoice from './ConstructionChoice.vue';
+import CrossoverChoice from './CrossoverChoice.vue';
 import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
@@ -13,35 +14,73 @@ const keep = ref<string[]>([]);
 const releaseCard = ref('');
 const discovered = ref('');
 const vote = ref('');
+const point = ref(3);
+const route = ref('');
+const petalTiles = ref<number[]>([]);
+const petalBudget = ref(1);
 const limit = computed(() => props.choice.handLimit ?? game.me?.handLimit ?? 6);
-const releaseCards = computed(() => game.privateData?.hand.filter(c => c.kind === 'release') ?? []);
+const releaseCards = computed(() => (props.choice.type === 'movement_release' ? props.choice.cards : game.privateData?.hand ?? []).filter(c => c.kind === 'release' && !game.privateData?.disabledCardIds?.includes(c.id)));
 const enabled = computed(() => game.canAct && game.canDecide && !game.room?.tradePending);
 const wager = computed(() => props.choice.content?.parameters?.wager ?? 0);
 const upgrading = computed(() => ['free_upgrade', 'full_upgrade'].includes(props.choice.type));
-const choosingCards = computed(() => ['hand_limit', 'recycle', 'discover', 'anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type));
-watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; }, { immediate: true });
+const choosingCards = computed(() => ['neta_bid', 'neta_reward', 'neta_ignite', 'neta_research', 'hand_limit', 'recycle', 'discover', 'anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type));
+watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; route.value = ''; point.value = 3; petalTiles.value = []; petalBudget.value = 1; }, { immediate: true });
 /** 输入是否确认，提交已保存选择的身份及地产或解控卡，失败保留输入。 */
 async function decide(accept: boolean): Promise<void> {
   const action: Extract<GameAction, { type: 'contentDecision' }> = { type: 'contentDecision', decisionId: props.choice.id, accept };
+  if (props.choice.type === 'neta_bid' && accept && keep.value.length) action.discardCardIds = keep.value;
+  if (props.choice.type === 'neta_reward' && accept) action.cardId = discovered.value;
+  if (props.choice.type === 'neta_petals' && accept) action.tileIds = petalTiles.value;
+  if (props.choice.type === 'neta_petal_defense' && accept) action.selection = petalBudget.value;
   if (props.choice.type === 'hand_limit') action.keepCardIds = keep.value;
   if (props.choice.type === 'recycle') action.discardCardIds = keep.value;
   if (props.choice.type === 'anime_vote') { if (accept && !vote.value) return; if (accept) action.playerId = vote.value; }
   if (['anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type) && accept) action.cardId = discovered.value;
   if (props.choice.type === 'discover' && accept) action.cardId = discovered.value;
+  if (['neta_ignite', 'neta_research'].includes(props.choice.type) && accept) { action.cardId = discovered.value; action.point = point.value; }
+  if (props.choice.type === 'neta_bankai') { if (!route.value) return; action.point = Math.abs(Number(route.value)); action.direction = Math.sign(Number(route.value)); }
   if (['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(props.choice.type)) {
     if (accept && (props.tileId == null || !props.choice.tileIds.includes(props.tileId))) return;
     if (props.tileId != null) action.tileId = props.tileId;
   }
-  if (props.choice.type === 'release' && accept) action.cardId = releaseCard.value;
+  if (['release', 'movement_release'].includes(props.choice.type) && accept) action.cardId = releaseCard.value;
   if (await game.act(action)) emit('done');
 }
 </script>
 <template>
-  <ConstructionChoice v-if="choice.type.startsWith('construction_')" :choice="choice" @done="emit('done')" />
+  <CrossoverChoice v-if="choice.type.startsWith('cross_')" :choice="choice" @done="emit('done')" />
+  <ConstructionChoice v-else-if="choice.type.startsWith('construction_')" :choice="choice" @done="emit('done')" />
   <div v-else class="content-choice" :class="{ 'card-selection': choosingCards }">
     <ContentCard v-if="choice.content && !compact && !choosingCards" :content="choice.content" />
     <p v-if="choice.prompt" class="notice">{{ choice.prompt }}</p>
-    <template v-if="['anime_projection', 'anime_rewind', 'anime_defense'].includes(choice.type)">
+    <template v-if="choice.type === 'neta_bid'">
+      <p class="notice">已投入 {{ keep.length }}／2 张；可以零张参加。仅胜者弃牌，弃牌不折现。</p>
+      <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: keep.includes(card.id) }"><input v-model="keep" type="checkbox" :value="card.id" :disabled="!keep.includes(card.id) && keep.length >= 2" /><ContentCard :content="card" compact thumbnail /></label></div>
+      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">放弃竞标</button><button class="button primary" :disabled="!enabled" @click="decide(true)">锁定 {{ keep.length }} 张秘密投入</button></div>
+    </template>
+    <template v-else-if="choice.type === 'neta_reward'">
+      <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: discovered === card.id }"><input v-model="discovered" type="radio" :name="choice.id" :value="card.id" /><ContentCard :content="card" compact thumbnail /></label></div>
+      <button class="button primary full" :disabled="!enabled || !discovered" @click="decide(true)">支付竞标材料并获得所选UR</button>
+    </template>
+    <template v-else-if="choice.type === 'neta_petals'">
+      <div class="choice-card-grid"><label v-for="id in choice.tileIds" :key="id" class="keep-card" :class="{ selected: petalTiles.includes(id) }"><input v-model="petalTiles" type="checkbox" :value="id" :disabled="!petalTiles.includes(id) && petalTiles.length >= (choice.numbers?.[0] ?? 0)" /><PlayerText :text="`${id}号 ${game.room?.board[id]?.name} · ${game.room?.players.find(p => p.id === game.room?.board[id]?.ownerId)?.name} · ${game.room?.board[id]?.level}级`" /></label></div>
+      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">取消并保留花瓣</button><button class="button primary" :disabled="!enabled || !petalTiles.length" @click="decide(true)">消耗 {{ petalTiles.length }} 片并释放</button></div>
+    </template>
+    <template v-else-if="choice.type === 'neta_petal_defense'">
+      <label class="field">授权花瓣数量<ThemedSelect v-model="petalBudget" label="选择花瓣防御额度" :options="Array.from({ length: choice.numbers?.[0] ?? 0 }, (_, i) => ({ value: i + 1, label: `最多 ${i + 1} 片` }))" /></label>
+      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">保留花瓣，接受破坏</button><button class="button primary" :disabled="!enabled" @click="decide(true)">确认花瓣防御</button></div>
+    </template>
+    <template v-else-if="choice.type === 'neta_bankai'">
+      <p class="notice">固定骰点：{{ choice.numbers?.join('、') }}，选择后只移动和结算一次。</p>
+      <label class="field">移动路线<ThemedSelect v-model="route" label="选择骰点与方向" :options="[{ value: '', label: '请选择路线', disabled: true }, ...[...new Set(choice.numbers ?? [])].flatMap(n => [{ value: String(n), label: `前进 ${n} 格` }, { value: String(-n), label: `后退 ${n} 格` }])]" /></label>
+      <button class="button primary full" :disabled="!enabled || !route" @click="decide(true)">确认路线</button>
+    </template>
+    <template v-else-if="['neta_ignite', 'neta_research'].includes(choice.type)">
+      <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: discovered === card.id }"><input v-model="discovered" type="radio" :name="choice.id" :value="card.id" /><ContentCard :content="card" compact thumbnail /></label></div>
+      <label v-if="choice.type === 'neta_ignite'" class="field">前进点数<ThemedSelect v-model="point" label="选择燃烧推进点数" :options="Array.from({ length: 6 }, (_, i) => ({ value: i + 1, label: `${i + 1} 格` }))" /></label>
+      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">放弃本次机会</button><button class="button primary" :disabled="!enabled || !discovered" @click="decide(true)">{{ choice.type === 'neta_ignite' ? '弃置所选牌并前进' : '确认秘密选择' }}</button></div>
+    </template>
+    <template v-else-if="['anime_projection', 'anime_rewind', 'anime_defense'].includes(choice.type)">
       <ContentCard v-if="choice.content && choice.type === 'anime_defense'" :content="choice.content" />
       <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: discovered === card.id }"><input v-model="discovered" type="radio" :name="choice.id" :value="card.id" /><ContentCard :content="card" compact thumbnail /></label></div>
       <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ choice.type === 'anime_projection' ? '取消并保留投影魔术' : choice.type === 'anime_rewind' ? '接受原骰点' : '不使用防御' }}</button><button class="button primary" :disabled="!enabled || !discovered" @click="decide(true)">{{ choice.type === 'anime_projection' ? '确认投影' : choice.type === 'anime_rewind' ? '使用时间溯行' : '使用所选防御' }}</button></div>
@@ -77,12 +116,12 @@ async function decide(accept: boolean): Promise<void> {
       <p v-if="choice.cardId" class="muted">确认下注才消耗卡牌和本回合主动次数；取消会保留卡牌。</p>
       <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ choice.cardId ? '取消并保留卡' : '放弃赌博' }}</button><button class="button primary" :disabled="!enabled || (game.me?.cash ?? 0) < wager" @click="decide(true)">下注 ¥{{ wager.toLocaleString() }}</button></div>
     </template>
-    <template v-else-if="choice.type === 'release'">
-      <p class="notice warning">即将{{ choice.jailed ? '被监禁' : '休息' }}，跳过后续 {{ choice.skipTurns }} 次行动。现在可使用解控卡。</p>
-      <p v-if="choice.jailed" class="muted">接受监禁后暂停收租，服刑结束后恢复；其他小游戏正常参加。解控只解除休息和停租，不撤销已完成的入狱传送。</p>
+    <template v-else-if="['release', 'movement_release'].includes(choice.type)">
+      <p v-if="choice.type === 'release'" class="notice warning">即将{{ choice.jailed ? '被监禁' : '休息' }}，跳过后续 {{ choice.skipTurns }} 次行动。现在可使用解控卡。</p>
+      <p v-if="choice.type === 'release' && choice.jailed" class="muted">接受监禁后暂停收租，服刑结束后恢复；其他小游戏正常参加。此处解除本次休息和停租，不撤销此前已完成的移动。</p>
       <label class="field">选择解控卡<ThemedSelect v-model="releaseCard" label="选择解控卡" :options="[{ value: '', label: '请选择道具', disabled: true }, ...releaseCards.map(card => ({ value: card.id, label: `${card.name ?? '解除监禁／休息'} · ${card.rarity ?? 'R'}` }))]" /></label>
       <ContentCard v-if="releaseCards.find(c => c.id === releaseCard)" :content="releaseCards.find(c => c.id === releaseCard)!" />
-      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">接受本次限制</button><button class="button primary" :disabled="!enabled || !releaseCard" @click="decide(true)">使用解控卡</button></div>
+      <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ choice.type === 'movement_release' ? '接受本次位移' : '接受本次限制' }}</button><button class="button primary" :disabled="!enabled || !releaseCard" @click="decide(true)">{{ choice.type === 'movement_release' ? '使用解控卡抵消' : '使用解控卡' }}</button></div>
     </template>
   </div>
 </template>

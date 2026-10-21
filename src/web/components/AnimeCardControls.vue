@@ -2,7 +2,7 @@
 import { computed, ref, watch, watchEffect } from 'vue';
 import ThemedSelect from './ThemedSelect.vue';
 import { useGameStore } from '../stores/game';
-import { isKamui } from '../../shared/rules';
+import { isKamui, rentFor } from '../../shared/rules';
 import type { Card, GameAction, Tile } from '../../shared/types';
 const props = defineProps<{ card: Card }>();
 const emit = defineEmits<{ change: [parameters: Omit<Extract<GameAction, { type: 'card' }>, 'type' | 'cardId'>, valid: boolean] }>();
@@ -34,11 +34,25 @@ function sealOptions(index: number): { value: string; label: string }[] {
   return [{ value: '', label: '不选择此处' }, ...sealTiles.value.filter(t => !seals.value.some((id, slot) => slot !== index && id === String(t.id))).map(t => ({ value: String(t.id), label: label(t) }))];
 }
 const tiles = computed(() => {
+  if (['thunderLord', 'fireBurial', 'igniteSea'].includes(props.card.kind)) return enemies.value;
+  if (props.card.kind === 'keqingRush') return enemies.value.filter(t => { const distance = Math.abs(t.id - (game.me?.position ?? 0)); return Math.min(distance, board.value.length - distance) <= 6; });
   if (['starburst', 'corruption', 'sevenSwords'].includes(props.card.kind)) return enemies.value;
   if (props.card.kind === 'timeRestore') return board.value.filter(t => t.type === 'property' && !isKamui(t) && t.ownerId === game.me?.id && t.damageOwnerId === game.me?.id && (t.damageLevel ?? 0) > t.level && (game.me?.personalTurns ?? 0) <= (t.damageUntilTurn ?? 0));
   if (props.card.kind === 'voidTears') return board.value.filter(t => t.type === 'property' && !isKamui(t));
   if (props.card.kind === 'absoluteZero') return board.value.filter((t, index, all) => all.findIndex(v => side(v.id) === side(t.id)) === index);
   return board.value;
+});
+const sacrifices = computed(() => board.value.filter(t => t.type === 'property' && t.ownerId === game.me?.id && t.level > 0 && !t.mortgaged && !isKamui(t)));
+/** 输入当前突入目标，分别显示降级成功和被防御时的租金，仍以服务端结算为准。 */
+const rushRent = computed(() => {
+  if (props.card.kind !== 'keqingRush') return '';
+  const tile = tiles.value.find(t => String(t.id) === first.value);
+  if (!tile) return '';
+  const jailed = game.room?.players.find(p => p.id === tile.ownerId)?.jailed;
+  const multiplier = game.me?.nextRentDouble ? 2 : 1;
+  const hit = jailed ? 0 : rentFor({ ...tile, level: Math.max(0, tile.level - 1) }, game.room?.economy) * multiplier;
+  const blocked = jailed ? 0 : rentFor(tile, game.room?.economy) * multiplier;
+  return `降级成功预计租金 ¥${hit.toLocaleString()}；降级被抵挡预计 ¥${blocked.toLocaleString()}。${tile.demolitionShield ? '当前护盾可抵挡本次降级。' : ''}以上未计本人付款防御；传送始终执行。`;
 });
 const players = computed(() => game.room?.players.filter(p => !p.bankrupt && p.id !== game.me?.id && (props.card.kind !== 'swordRain' || Math.min(Math.abs(p.position - (game.me?.position ?? 0)), board.value.length - Math.abs(p.position - (game.me?.position ?? 0))) <= 6)) ?? []);
 /** 输入公开地产，返回既有选择控件可读的标签。 */
@@ -54,7 +68,8 @@ const preview = computed(() => {
 watchEffect(() => {
   const p: Omit<Extract<GameAction, { type: 'card' }>, 'type' | 'cardId'> = {};
   let valid = true;
-  if (['starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(props.card.kind)) { valid = first.value !== '' && tiles.value.some(t => String(t.id) === first.value); if (valid) p.tileId = Number(first.value); }
+  if (['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(props.card.kind)) { valid = first.value !== '' && tiles.value.some(t => String(t.id) === first.value); if (valid) p.tileId = Number(first.value); }
+  if (props.card.kind === 'fireBurial') { p.secondTileId = Number(second.value); valid = valid && second.value !== '' && sacrifices.value.some(t => String(t.id) === second.value); }
   if (props.card.kind === 'voidTears') { p.secondTileId = Number(second.value); valid = valid && second.value !== '' && second.value !== first.value && tiles.value.some(t => String(t.id) === second.value); }
   if (['commandSpell', 'swordRain'].includes(props.card.kind)) { p.playerId = player.value; valid = players.value.some(v => v.id === player.value); }
   if (props.card.kind === 'commandSpell') p.point = point.value;
@@ -71,7 +86,11 @@ watchEffect(() => {
 </script>
 <template>
   <div class="anime-card-controls">
-    <label v-if="['starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<ThemedSelect v-model="first" label="选择目标地产" :options="options" /></label>
+    <label v-if="['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<ThemedSelect v-model="first" label="选择目标地产" :options="options" /></label>
+    <template v-if="card.kind === 'fireBurial'"><label class="field">献祭自家建筑<ThemedSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label><p class="notice warning">确认后先献祭一级建筑，无退款且四之弹不可恢复；攻击被防御也不返还。</p></template>
+    <p v-if="rushRent" class="notice warning">{{ rushRent }}</p>
+    <p v-if="card.kind === 'bankai'" class="notice">{{ (card.parameters?.version ?? 0) >= 2 ? '发动后，本回合最多再出2张其他主动牌，含UR；不能再用卍解或投影。替代移动后结束出牌，其他限制和费用照常。' : '确认发动后消耗卡与主动次数，并固定两枚骰点；随后必须选一枚前进或后退。' }}</p>
+    <p v-if="card.kind === 'igniteSea' && first !== ''" class="notice warning">先移除所选地产全部护盾，再降低 {{ Math.min(3, 1 + (tiles.find(t => String(t.id) === first)?.demolitionShieldCharges || (tiles.find(t => String(t.id) === first)?.demolitionShield ? 1 : 0))) }} 级建筑（不低于0级）；对手可主动防御，其他附加效果保留。</p>
     <label v-if="card.kind === 'voidTears'" class="field">第二处空间端点<ThemedSelect v-model="second" label="选择第二端点" :options="options.filter(v => v.value !== first || v.value === '')" /></label>
     <label v-if="['commandSpell', 'swordRain'].includes(card.kind)" class="field">目标玩家<ThemedSelect v-model="player" label="选择目标玩家" :options="playerOptions" /></label>
     <label v-if="card.kind === 'commandSpell'" class="field">命令移动点数<ThemedSelect v-model="point" label="命令移动点数" :options="Array.from({ length: 6 }, (_, i) => ({ value: i + 1, label: `${i + 1} 点` }))" /></label>
@@ -84,7 +103,7 @@ watchEffect(() => {
       <p v-if="sealingOwn" class="notice warning">自家地产封印期间同样不能收租、升级、交易或变现；建筑与原有附加效果保留。</p>
     </template>
     <p v-if="preview" class="notice">作用路径：{{ preview }}</p>
-    <p v-if="card.kind === 'contract'" class="notice warning">获得现金 ¥3000，本局手牌上限永久减1，最低1张。</p>
+    <p v-if="card.kind === 'contract'" class="notice warning">获得现金 ¥5000，本局手牌上限永久减1，最低1张。</p>
     <p v-if="card.kind === 'projection' && !game.privateData?.projectionAvailable" class="notice">上一回合没有可投影的主动道具，此卡保留。</p>
     <p v-if="card.kind === 'projection'" class="muted">从上一回合使用过的主动道具中选择，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。</p>
     <p v-if="card.kind === 'swordRain'" class="muted">剩余 {{ card.remainingUses || 2 }} 次；每个个人回合限用1次。</p>

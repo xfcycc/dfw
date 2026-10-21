@@ -50,5 +50,10 @@
   "card_genshin_serenitea_pot": {
     "foreground": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-foreground-2457558e49ab.webp",
     "background": "https://pic.caiguoyu.cn/typora/dfw-construction-20261019/card_genshin_serenitea_pot-background-c40a7b3fd737.webp"
+  },
+  "fortune_crossover_endlessClouds": {
+    "background": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-background-22e058df1b77.webp",
+    "foreground": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-healer-1a8a4817b9e9.webp",
+    "lotus": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-lotus-ab30d36851f5.webp"
   }
 }

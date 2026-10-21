@@ -6,12 +6,12 @@ import illustrationSources from '../card-illustrations.json';
 import CardFrame from './CardFrame.vue';
 import ShinraCardScene from './ShinraCardScene.vue';
 import UrCardScene from './UrCardScene.vue';
-import { ORIGINAL_UR_SKINS, UR_CARD_SCENES } from '../ur-card-scenes';
+import { ORIGINAL_UR_SKINS, STATIC_UR_SKINS, UR_CARD_SCENES } from '../ur-card-scenes';
 import { cardEffect, cardSummary } from '../card-summary';
 const props = withDefaults(defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean; animated?: boolean }>(), { animated: true });
 // 已生成分层的 UR 使用专属场景，静态对比和未知皮肤继续沿用原图。
 /** 根据卡面身份、等级和展示开关返回是否播放 UR 卡面动画。 */
-const urAnimated = computed(() => props.content.rarity === 'UR' && props.animated !== false);
+const urAnimated = computed(() => props.content.rarity === 'UR' && props.animated !== false && !STATIC_UR_SKINS.has(props.content.skinId ?? props.content.id));
 /** 根据稳定卡面身份返回是否仅保留原图的呼吸与流光。 */
 const originalUrArtwork = computed(() => ORIGINAL_UR_SKINS.has(props.content.skinId ?? props.content.id));
 const shinraAnimated = computed(() => urAnimated.value && (props.content.skinId ?? props.content.id) === 'card_naruto_shinra_tensei');

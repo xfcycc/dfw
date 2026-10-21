@@ -2,6 +2,7 @@
 import { ref, useId } from 'vue';
 import type { UrCardScene } from '../ur-card-scenes';
 import sceneSources from '../ur-card-art.json';
+import RedLotusCardScene from './RedLotusCardScene.vue';
 
 const props = defineProps<{ scene: UrCardScene }>();
 const id = useId();
@@ -16,7 +17,8 @@ function imageFailed(): void { failed.value = true; }
 </script>
 
 <template>
-  <div class="ur-scene" :class="[scene.theme, { ready: loaded === 2 && !failed }]" aria-hidden="true">
+  <RedLotusCardScene v-if="scene.theme === 'lotus'" />
+  <div v-else class="ur-scene" :class="[scene.theme, { ready: loaded === 2 && !failed }]" aria-hidden="true">
     <img class="scene-background" :src="background" alt="" @load="imageLoaded" @error="imageFailed" />
     <img v-if="['wood', 'kamui', 'reaper'].includes(scene.theme)" class="scene-depth" :src="background" alt="" />
     <div class="scene-light"></div>
