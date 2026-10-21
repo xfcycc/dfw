@@ -243,6 +243,8 @@ export interface PublicRoomState {
   mapSize?: MapSize;
   hostId: string;
   gameId: string | null;
+  /** 快照生成时开场演出的剩余毫秒，旧对局缺省为零。 */
+  openingRemainingMs?: number;
   players: PublicPlayer[];
   board: Tile[];
   turnOrder: string[];

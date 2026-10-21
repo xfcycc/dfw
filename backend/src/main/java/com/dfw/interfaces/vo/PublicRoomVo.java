@@ -54,6 +54,8 @@ public class PublicRoomVo {
     public String hostId;
     /** 本局标识。 */
     public String gameId;
+    /** 快照生成时开场演出的剩余毫秒，客户端据此计时，不依赖本机时钟。 */
+    public long openingRemainingMs;
     /** 本局固定棋盘。 */
     public List<Tile> board = new ArrayList<>();
     /** 行动顺序。 */

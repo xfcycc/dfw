@@ -70,6 +70,11 @@ export const useGameStore = defineStore('game', () => {
   const settling = ref(false);
   const settlementRevealing = ref(false);
   const presentationEpoch = ref(0);
+  const opening = ref(false);
+  const openingAnimated = ref(false);
+  const openingElapsed = ref(0);
+  let openingKey = '';
+  let openingTimer: ReturnType<typeof setInterval> | undefined;
   const message = ref('');
   const fatalError = ref('');
   const cardReveals = ref<CardReveal[]>([]);
@@ -90,7 +95,28 @@ export const useGameStore = defineStore('game', () => {
   const decisionPlayer = computed(() => room.value?.pending ? room.value.players.find(player => player.id === room.value?.pending?.playerId) : current.value);
   const canDecide = computed(() => !!me.value && decisionPlayer.value?.id === me.value.id && !me.value.bankrupt);
   const isHost = computed(() => !!me.value && room.value?.hostId === me.value.id);
-  const canAct = computed(() => connection.value === 'online' && !!room.value && !room.value.pausedReason && !busy.value && !settling.value);
+  const canAct = computed(() => connection.value === 'online' && !!room.value && !room.value.pausedReason && !busy.value && !settling.value && !opening.value);
+
+  /** 输入公开快照，以服务端剩余时间和单调时钟同步开场；首次进入、重连及后台只展示顺序，无返回值。 */
+  function syncOpening(state: PublicRoomState): void {
+    clearInterval(openingTimer);
+    const key = `${state.roomId ?? state.code}:${state.gameId}`;
+    const remaining = state.status === 'playing' && !state.recoveryPending ? state.openingRemainingMs ?? 0 : 0;
+    if (key !== openingKey || publicBaseline) {
+      openingAnimated.value = !publicBaseline && room.value?.status === 'lobby' && !document.hidden && !motionPreference.matches;
+      openingKey = key;
+    }
+    const deadline = performance.now() + remaining;
+    /** 无入参，按实际经过时间刷新演出阶段，到期自动解除操作等待，无返回值。 */
+    function tick(): void {
+      const left = Math.max(0, deadline - performance.now());
+      openingElapsed.value = 5200 - left;
+      opening.value = left > 0;
+      if (!opening.value) clearInterval(openingTimer);
+    }
+    tick();
+    if (opening.value) openingTimer = setInterval(tick, 40);
+  }
 
   /** 输入公开快照，为他人的新聊天播放音效和后台通知，优先提醒艾特；同步和重连不补播。 */
   function notifyChat(state: PublicRoomState): void {
@@ -208,6 +234,7 @@ export const useGameStore = defineStore('game', () => {
   }
   /** 无入参，取消积压动画并静默同步最新收包结果，供断线、身份切换或后台使用。 */
   function syncPresentation(): void {
+    openingAnimated.value = false;
     presentationEpoch.value++;
     const pending = movementResult; movementResult = null; movementSegments.length = 0; settling.value = false; settlementRevealing.value = false;
     publicBaseline = true; privateBaseline = true;
@@ -258,6 +285,7 @@ export const useGameStore = defineStore('game', () => {
 
   /** 关闭当前网络连接并清空页面状态；不删除恢复令牌。 */
   function disconnect(): void {
+    clearInterval(openingTimer); opening.value = false; openingAnimated.value = false; openingElapsed.value = 0; openingKey = '';
     clearNotifications();
     socket?.removeAllListeners();
     socket?.disconnect();
@@ -286,6 +314,7 @@ export const useGameStore = defineStore('game', () => {
     motionPreference.addEventListener('change', onMotionPreferenceChange);
     socket.on('connect', () => { syncPresentation(); publicBaseline = true; privateBaseline = true; chatState = null; connection.value = 'online'; fatalError.value = ''; socket?.emit('room:sync'); });
     socket.on('room:snapshot', (state: PublicRoomState) => {
+      syncOpening(state);
       notifyChat(state);
       latestVersion = Math.max(latestVersion, state.version);
       if (publicBaseline || state.gameId !== room.value?.gameId || state.recoveryPending) {
@@ -320,7 +349,7 @@ export const useGameStore = defineStore('game', () => {
 
   /** 输入业务操作，发送唯一命令并等待回执，返回是否成功。 */
   async function act(action: GameAction): Promise<boolean> {
-    if (!socket?.connected || !room.value || busy.value || settling.value && action.type !== 'chat') return false;
+    if (!socket?.connected || !room.value || busy.value || (settling.value || opening.value) && action.type !== 'chat') return false;
     const command: GameCommand = { id: commandId(), expectedVersion: latestVersion, action };
     busy.value = true;
     try {
@@ -339,5 +368,5 @@ export const useGameStore = defineStore('game', () => {
     try { await navigator.clipboard.writeText(text); notify('已复制，发给朋友一起玩吧'); }
     catch { notify(`请手动复制：${text}`); }
   }
-  return { room, privateData, session, connection, busy, settling, settlementRevealing, presentationEpoch, finishMovement, message, fatalError, cardReveals, dismissCardReveal, me, current, isMyTurn, decisionPlayer, canDecide, isHost, canAct, enter, connect, disconnect, act, notify, copy };
+  return { room, privateData, session, connection, busy, settling, settlementRevealing, presentationEpoch, opening, openingAnimated, openingElapsed, finishMovement, message, fatalError, cardReveals, dismissCardReveal, me, current, isMyTurn, decisionPlayer, canDecide, isHost, canAct, enter, connect, disconnect, act, notify, copy };
 });

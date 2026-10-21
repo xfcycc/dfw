@@ -22,6 +22,7 @@ import PanelFrame from '../components/PanelFrame.vue';
 import FitPanel from '../components/FitPanel.vue';
 import Modal from '../components/Modal.vue';
 import MatchSettlement from '../components/MatchSettlement.vue';
+import OpeningOrder from '../components/OpeningOrder.vue';
 import Assets from '../components/Assets.vue';
 import CardAction from '../components/CardAction.vue';
 import PropertyEffects from '../components/PropertyEffects.vue';
@@ -173,7 +174,7 @@ const canRoll = computed(() => !drafting.value && canPlay.value && !game.room?.r
 const isGameSession = computed(() => !!game.room && game.room.status !== 'lobby');
 const isLobby = computed(() => game.room?.status === 'lobby');
 const isSingleScreen = computed(() => isGameSession.value && !game.room?.recoveryPending);
-const hasCentralDecision = computed(() => !game.settling && game.canDecide && !game.room?.tradePending && !!game.room?.pending);
+const hasCentralDecision = computed(() => !game.opening && !game.settling && game.canDecide && !game.room?.tradePending && !!game.room?.pending);
 const decisionTitle = computed(() => payment.value ? '选择支付方式' : choice.value ? choice.value.content?.name ?? '处理当前选择' : game.room?.pending?.type === 'choice' ? '处理当前选择' : game.room?.phase === 'buy' ? '购买地产' : '升级建筑');
 const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
 const handCount = computed(() => game.privateData?.hand.length ?? 0);
@@ -196,7 +197,7 @@ const canManageSelectedProperty = computed(() => {
 });
 const turnIdentity = computed(() => `${game.room?.roomId ?? code.value}:${game.room?.gameId}:${game.room?.turnNumber}`);
 /** 根据普通主动次数和卍解剩余额度，返回当前是否可以准备使用手牌。 */
-const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && (!game.privateData?.activeCardUsed || game.privateData?.bankaiActive && (game.privateData.bankaiRemaining ?? 0) > 0));
+const canPrepareCard = computed(() => !game.opening && !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && (!game.privateData?.activeCardUsed || game.privateData?.bankaiActive && (game.privateData.bankaiRemaining ?? 0) > 0));
 const drafting = computed(() => !!selectedCard.value && selectedCardActive.value);
 const mapChoice = computed(() => choice.value && ['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.value.type) ? choice.value : null);
 const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && TILE_CARDS.includes(selectedCard.value!.kind) ? 'tile' : drafting.value && PLAYER_CARDS.includes(selectedCard.value!.kind) ? 'player' : null);
@@ -240,7 +241,7 @@ const tradeReminder = computed(() => {
   const other = game.room?.players.find(player => player.id === (trade.fromId === game.me?.id ? trade.toId : trade.fromId));
   return trade.toId === game.me?.id ? `收到 ${other?.name ?? '玩家'} 的报价` : `等待 ${other?.name ?? '玩家'} 回应`;
 });
-const showMyTurn = computed(() => !props.spectator && game.connection === 'online' && game.room?.status === 'playing' && !game.room.recoveryPending && !game.room.pausedReason && game.isMyTurn);
+const showMyTurn = computed(() => !game.opening && !props.spectator && game.connection === 'online' && game.room?.status === 'playing' && !game.room.recoveryPending && !game.room.pausedReason && game.isMyTurn);
 useTurnSound(() => showMyTurn.value ? turnIdentity.value : null);
 let privateAudioBaseline = false;
 watch(() => game.connection, state => { if (state !== 'online') privateAudioBaseline = true; }, { flush: 'sync' });
@@ -539,7 +540,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <Teleport to="#mobile-card-reveal" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :embedded="classicLayout" :paused="boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
+                      <Teleport to="#mobile-card-reveal" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :embedded="classicLayout" :paused="game.opening || boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
                       <Teleport to="#desktop-hand-chat" :disabled="!pagedHand" defer>
@@ -651,7 +652,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.opening && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
       <p v-if="mapChoice && !mapTargeting" class="map-target-instructions">{{ targetHint }}</p>
       <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
       <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>
@@ -732,6 +733,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <PropertyEffects :tile="liveSelectedTile" :economy="game.room?.economy" />
       </div>
     </Modal>
+    <OpeningOrder v-if="game.opening && game.room" :players="game.room.players" :turn-order="game.room.turnOrder" :own-id="game.me?.id" :elapsed="game.openingElapsed" :animated="game.openingAnimated" />
     <footer v-if="!isLobby" class="room-footer">小小棋盘，大大野心。<span>好运和朋友，都在这里。</span></footer>
   </div>
 </template>

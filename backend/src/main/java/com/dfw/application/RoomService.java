@@ -190,6 +190,7 @@ public class RoomService {
             try { serial(snapshot.code, () -> {
                 Room latest = room(snapshot.code);
                 if (closing || !latest.status.equals("playing") || latest.recoveryPending || latest.pausedReason != null) return null;
+                if (GameSupport.openingRemainingMs(latest) > 0) return null;
                 if (latest.activity != null && latest.activity.endsAt != null && latest.pending == null) return null;
                 String required = latest.trade != null ? latest.trade.toId : latest.pending != null ? latest.pending.playerId : latest.activity == null ? GameSupport.current(latest).id : null;
                 PublicRoomVo visible = StateViews.publicRoom(latest);

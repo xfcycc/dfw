@@ -15,6 +15,7 @@ function keydown(event: KeyboardEvent): void {
   if (event.key === 'Escape' && !props.closeDisabled) emit('close');
   if (event.key !== 'Tab' || !dialog.value) return;
   const nodes = Array.from(dialog.value.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), textarea:not(:disabled), select:not(:disabled), a[href], [tabindex="0"]'));
+  if (!nodes.length) { event.preventDefault(); return; }
   const first = nodes[0]; const last = nodes.at(-1);
   if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
   else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }

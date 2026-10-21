@@ -43,6 +43,8 @@ public class Room {
     public Long hostDisconnectedAt;
     /** 本局标识。 */
     public String gameId;
+    /** 新局抽签演出的截止时间，毫秒；旧对局缺省为零。 */
+    public long openingEndsAt;
     /** 新局活动轮换快照，旧局为空。 */
     public ActivityRotation activityRotation;
     /** 当前独立多人活动，内部秘密状态不得直接公开。 */

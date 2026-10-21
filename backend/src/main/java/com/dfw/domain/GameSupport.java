@@ -4,6 +4,8 @@ import java.util.*;
 
 /** 领域内公开记录和对象查找。 */
 public final class GameSupport {
+    /** 输入房间，返回开局演出的剩余毫秒；大厅、结束或旧对局返回零。 */
+    public static long openingRemainingMs(Room room) { return room.status.equals("playing") ? Math.max(0, room.openingEndsAt - System.currentTimeMillis()) : 0; }
     /** 输入房间和玩家标识，返回玩家或空。 */
     public static Player player(Room room, String id) { return room.players.stream().filter(p -> Objects.equals(p.id, id)).findFirst().orElse(null); }
     /** 输入房间，返回当前行动者或空。 */

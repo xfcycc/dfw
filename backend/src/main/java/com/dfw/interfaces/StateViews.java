@@ -11,6 +11,7 @@ public final class StateViews {
         PublicRoomVo value = new PublicRoomVo(); value.code = room.code; value.version = room.version; value.status = room.status; value.hostId = room.hostId; value.gameId = room.gameId;
         value.roomId = room.roomId; value.recoveryPending = room.recoveryPending; value.recovered = room.recovered; value.sourceRoomId = room.sourceRoomId; value.sourceSnapshotId = room.sourceSnapshotId;
         value.activityRotation = rotation(room); value.activity = activity(room);
+        value.openingRemainingMs = openingRemainingMs(room);
         value.mapSize = room.mapSize == null ? "large" : room.mapSize; value.economy = Rules.economy(room); value.board = room.board; value.turnOrder = room.turnOrder; value.turnIndex = room.turnIndex; value.turnNumber = room.turnNumber; value.phase = room.phase;
         value.chanceEventDescriptions = room.chanceEventDescriptions; value.upgradedTiles=room.upgradedTiles;
         if(room.runtime!=null && room.runtime.lastContent!=null && !room.runtime.lastContent.privateSupply) { value.event=room.runtime.lastContent; value.eventPlayerId=room.runtime.contentPlayerId; }

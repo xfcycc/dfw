@@ -47,6 +47,7 @@ public class GameWorkflow {
     public void apply(Room room, GameEngine engine, String actorId, Action action) {
         // 聊天和改名不完成等待中的行动任务；外层房间事务仍负责保存与广播。
         if (action.type.equals("chat") || action.type.equals("setName")) { requireTransaction(); engine.apply(room, actorId, action); return; }
+        GameError.require(GameSupport.openingRemainingMs(room) == 0, "正在揭晓行动顺序，请稍候");
         requireTransaction(); refresh(room, engine);
         if (room.runtime != null && room.status.equals("playing") && !LIFECYCLE.contains(action.type)) {
             complete(room, engine, actorId, action); return;
