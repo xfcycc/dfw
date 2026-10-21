@@ -8,6 +8,7 @@ import CharacterPawn from './CharacterPawn.vue';
 import DiceFace from './DiceFace.vue';
 import DesktopDiceThrow from './DesktopDiceThrow.vue';
 import BoardEffectLayer from './BoardEffectLayer.vue';
+import TileTrapMarker from './TileTrapMarker.vue';
 import PlayerText from './PlayerText.vue';
 import PropertyGrade from './PropertyGrade.vue';
 import PanelFrame from './PanelFrame.vue';
@@ -72,6 +73,31 @@ const movementLabel = computed(() => motion.value?.teleport ? `直接传送至 $
 const effectTiles = computed(() => new Set(boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
 const effectPlayers = computed(() => new Set(boardEffect.value?.boardEffect?.moves.map(move => move.playerId) ?? []));
 const effectTileSize = computed(() => (size.value - (props.compact ? 20 : 18)) / dimensions.value.columns * zoom.value);
+const trapTiles = computed(() => props.room.board.filter(tile => tile.barrier || (tile.meteorCharges ?? 0) > 0));
+/** 输入带截停效果的地块，返回读屏说明，封印期间保留标记并说明暂停。 */
+function trapLabel(tile: Tile): string {
+  return `${tile.barrier ? '，路障，首位经过者停下' : ''}${tile.meteorCharges ? `，陨星剩余${tile.meteorCharges}次截停` : ''}${(tile.barrier || tile.meteorCharges) && tile.kamuiCasterId && tile.kamuiTurns ? '，截停效果封印暂停中' : ''}`;
+}
+/** 输入地块，返回朝内圈边缘的标记坐标与尺寸；独立于地图缩放，保留小图辨识度。 */
+function trapMarkerStyle(tile: Tile): Record<string, string> {
+  const cell = tileCoordinates(tile.id, props.room.board.length);
+  const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
+  const cellWidth = (size.value - inset * 2 + gap) / dimensions.value.columns * zoom.value;
+  const cellHeight = (height.value - inset * 2 + gap) / dimensions.value.rows * zoom.value;
+  const horizontal = cell.row === 1 || cell.row === dimensions.value.rows;
+  const direction = (horizontal ? cell.row === 1 : cell.column === 1) ? 1 : -1;
+  const corner = horizontal && (cell.column === 1 || cell.column === dimensions.value.columns);
+  const cornerDirection = cell.column === 1 ? 1 : -1;
+  const markerSize = Math.max(18, Math.min(28, Math.min(cellWidth, cellHeight) * .48));
+  const point = effectPoint(tile.id);
+  return {
+    left: `${point.x + (corner ? cornerDirection * (cellWidth + gap * zoom.value) / 2 : horizontal ? 0 : direction * (cellWidth - gap * zoom.value) / 2)}px`,
+    top: `${point.y + (horizontal ? direction * (cellHeight - gap * zoom.value) / 2 : 0)}px`,
+    transform: `translate(${corner ? cornerDirection === 1 ? '0' : '-100%' : horizontal ? '-50%' : direction === 1 ? '-35%' : '-65%'}, ${corner ? direction === 1 ? '0' : '-100%' : horizontal ? direction === 1 ? '-35%' : '-65%' : '-50%'})`,
+    '--trap-size': `${markerSize}px`,
+    '--trap-direction': horizontal ? 'row' : 'column',
+  };
+}
 /** 输入地块编号，返回与棋子一致的缩放后中心坐标，供演出定位。 */
 function effectPoint(id: number): { x: number; y: number } {
   const cell = tileCoordinates(id, props.room.board.length);
@@ -283,13 +309,12 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
-          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, effectTiles.has(tile.id) ? `effect-target-${boardEffect?.boardEffect?.kind}` : '', { 'kamui-frozen': !!tile.kamuiCasterId && !!tile.kamuiTurns, 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${tile.barrier ? '，路障，首位经过者停下' : ''}`" @click="emit('select', tile)">
+          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, effectTiles.has(tile.id) ? `effect-target-${boardEffect?.boardEffect?.kind}` : '', { 'kamui-frozen': !!tile.kamuiCasterId && !!tile.kamuiTurns, 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && selectedTarget === tile.id, 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-pressed="targeting ? selectedTarget === tile.id : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${trapLabel(tile)}`" @click="emit('select', tile)">
             <svg v-if="referencedTile === tile.id" class="chat-reference-glow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="7" pathLength="100" /></svg>
             <span v-if="compact" class="tile-ground" aria-hidden="true"></span>
             <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
             <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
-            <span v-if="tile.barrier && tile.type !== 'property'" class="barrier-marker" title="路障">🚧</span>
             <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
             <strong><span class="tile-name" :title="tile.name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile, room.constructionEffects) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && !desktopSingleScreen && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
@@ -305,6 +330,9 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span class="tile-number">{{ tile.id }}</span>
           </button>
           <div v-for="(change, index) in money" :key="change.key" class="money-float" :class="{ expense: change.amount < 0 }" :style="{ gridRow: tileCoordinates(change.tileId, room.board.length).row, gridColumn: tileCoordinates(change.tileId, room.board.length).column, '--float-offset': `${index % 3 * 14}px` }" aria-hidden="true"><small><PlayerText :text="change.name" :players="room.players" /></small>{{ change.amount > 0 ? '+' : '−' }}¥{{ Math.abs(change.amount).toLocaleString() }}</div>
+        </div>
+        <div v-if="trapTiles.length" class="trap-map-layer" aria-hidden="true">
+          <TileTrapMarker v-for="tile in trapTiles" :key="tile.id" class="trap-map-marker" :style="trapMarkerStyle(tile)" :barrier="tile.barrier" :meteor-charges="tile.meteorCharges ?? 0" :paused="!!tile.kamuiCasterId && !!tile.kamuiTurns" />
         </div>
         <div v-if="rotating" class="activity-rotation-glow" aria-hidden="true"></div>
         <div v-if="tradeMarkers.length" class="trade-map-layer">
@@ -351,11 +379,15 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
       </Transition>
     </Teleport>
     <div class="map-legend"><span v-for="(name, i) in districts" :key="i"><i :class="`district-${i}`"></i>{{ name }}</span></div>
-    <div v-if="compact" class="board-state-legend"><span>彩色边框 · 地产主人</span><span>0级土地 · 1～3级建筑</span><span>🚧 路障 · 经过即停</span><span>▨ 条纹 · 已抵押</span></div>
+    <div v-if="compact" class="board-state-legend"><span>彩色边框 · 地产主人</span><span>0级土地 · 1～3级建筑</span><span><TileTrapMarker :barrier="true" :meteor-charges="0" :paused="false" />路障 · 经过即停</span><span><TileTrapMarker :barrier="false" :meteor-charges="1" :paused="false" />陨星 · 数字为剩余截停次数</span><span>▨ 条纹 · 已抵押</span></div>
   </div>
 </template>
 <style scoped>
 .tile .tile-name.has-property-effects { color:#b17a16; font-weight:900; }
+.trap-map-layer { position:absolute; inset:0; z-index:5; pointer-events:none; }
+.trap-map-marker { position:absolute; }
+.board-state-legend > span { display:inline-flex; align-items:center; gap:4px; }
+.board-state-legend .tile-trap-marker { --trap-size:20px; }
 .board-container { position:relative; }
 .board-local-feedback { position:absolute; inset:0; pointer-events:none; z-index:13; }
 .board-local-feedback .dice-overlay { position:absolute; gap:12px; background:#fff9ebb8; backdrop-filter:blur(2px); pointer-events:none; touch-action:auto; }
