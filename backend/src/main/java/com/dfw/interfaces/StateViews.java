@@ -51,7 +51,7 @@ public final class StateViews {
         if (room.activity != null) { value.activityId=room.activity.id; value.activityRound=room.activity.round; value.activitySelection=room.activity.choices.get(id); }
         Player owner=player(room,id); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
         if(room.runtime!=null) {
-            value.projectionAvailable=room.runtime.anime!=null && room.runtime.anime.previousCards.stream().anyMatch(c -> !"UR".equals(c.rarity) && !c.kind.equals("projection") && "主动".equals(c.cardType));
+            value.projectionAvailable=room.runtime.anime!=null && room.runtime.anime.previousCards.stream().anyMatch(c -> !c.kind.equals("projection") && "主动".equals(c.cardType));
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
             ContentChoice choice=room.runtime.choice;
             if(choice!=null && choice.playerId.equals(id)) {

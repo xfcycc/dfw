@@ -77,6 +77,11 @@ public final class GameSupport {
         };
         if (card.kind.equals("barrier")) effect = "在附近 6 格内选择一个无路障地块设置路障（前后各 6 格，不含当前格），首个受影响者截停并正常结算落点";
         if (card.kind.equals("remote")) effect = "指定 " + action.point + " 点移动，替代本次掷骰";
+        if (card.kind.equals("kamui")) {
+            List<Integer> ids=action.tileIds!=null?action.tileIds:action.tileId==null?List.of():List.of(action.tileId);
+            aim=String.join("、",ids.stream().map(id -> tile(room,id)).filter(Objects::nonNull).map(t -> t.name+"（"+t.id+"号）").toList());
+            effect="封印同一条边1～3处地产，无需连续，可混选自己、对手或无主地产；持续施术者三个后续个人回合，停止收租、经营及附加效果，保留建筑产权抵押，允许破产清算";
+        }
         ContentResult played = new ContentResult(); played.id = card.id; played.pool = "card"; played.kind = card.kind;
         played.skinId = card.skinId;
         played.name = card.name; played.rarity = card.rarity; played.cardType = card.cardType;

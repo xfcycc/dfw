@@ -105,6 +105,7 @@ public class BoardEffect {
     /** 输入房间及原子效果，返回对应演出采样；未覆盖或已有专属记录的效果返回空。 */
     public static Observation watch(Room room, GameEffect effect) {
         String kind = switch (effect.type) {
+            case "ANIME_PART" -> "kamui".equals(effect.selector) ? "kamui" : null;
             case "PLACE_BARRIER" -> "barrier";
             case "DEMOLISH", "DESTROY_BUILDINGS" -> "demolish";
             case "GRANT_MONEY" -> "income";
@@ -148,7 +149,7 @@ public class BoardEffect {
 
     /** 一次原业务调用的公开外观采样；内部比较信息不会进入快照或网络。 */
     public static final class Observation {
-        private static final Set<String> TILE_KINDS = Set.of("barrier", "barrierHit", "demolish", "shield", "exchange", "upgrade", "talent", "treasure", "concert", "concertRent", "landing");
+        private static final Set<String> TILE_KINDS = Set.of("barrier", "barrierHit", "demolish", "shield", "exchange", "upgrade", "talent", "treasure", "concert", "concertRent", "landing", "kamui");
         private final MotionSegment segment;
         private final Map<Integer, TileState> tiles = new LinkedHashMap<>();
         private final Map<String, String> players = new LinkedHashMap<>();
@@ -194,7 +195,14 @@ public class BoardEffect {
             effect.playerIds = new ArrayList<>(new LinkedHashSet<>(effect.playerIds));
             if (source != null && !source.privateSupply && !"card".equals(source.pool)) segment.beforeEvent = source;
             if (prefix) { room.movementSequence.add(index, segment); refresh(room); }
-            else if (Set.of("income", "supply", "morale", "trapImmune").contains(effect.kind) && !room.movementSequence.isEmpty()
+            else if (effect.kind.equals("kamui") && !room.movementSequence.isEmpty()
+                    && room.movementSequence.getLast().boardEffect != null && room.movementSequence.getLast().boardEffect.kind.equals("kamui")
+                    && Objects.equals(room.movementSequence.getLast().playerId, segment.playerId)) {
+                BoardEffect previous = room.movementSequence.getLast().boardEffect;
+                previous.beforeTiles.addAll(effect.beforeTiles); previous.afterTiles.addAll(effect.afterTiles);
+                previous.playerIds = new ArrayList<>(new LinkedHashSet<>(java.util.stream.Stream.concat(previous.playerIds.stream(), effect.playerIds.stream()).toList()));
+                refresh(room);
+            } else if (Set.of("income", "supply", "morale", "trapImmune").contains(effect.kind) && !room.movementSequence.isEmpty()
                     && room.movementSequence.getLast().boardEffect != null && room.movementSequence.getLast().boardEffect.kind.equals(effect.kind)
                     && room.movementSequence.getLast().event == null && segment.beforeEvent == null) {
                 BoardEffect previous = room.movementSequence.getLast().boardEffect;

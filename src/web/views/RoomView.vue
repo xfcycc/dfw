@@ -27,6 +27,7 @@ import CardAction from '../components/CardAction.vue';
 import PropertyEffects from '../components/PropertyEffects.vue';
 import { TILE_CARDS, PLAYER_CARDS } from '../card-targets';
 import { RESPONSE_CARDS } from '../anime-cards';
+import { cardEffect } from '../card-summary';
 import CardTargetPicker from '../components/CardTargetPicker.vue';
 import ContentCard from '../components/ContentCard.vue';
 import HandSlots from '../components/HandSlots.vue';
@@ -82,12 +83,12 @@ async function saveNickname(): Promise<void> {
   }
 }
 const selectedCard = ref<Card | null>(null);
-/** 输入当前选牌，返回与完整卡面一致的效果及说明；路障、暗影步及神威使用当前规则说明。 */
+/** 输入当前选牌，返回与完整卡面一致的统一效果及原卡故事说明。 */
 const selectedCardCopy = computed(() => {
   const card = selectedCard.value;
   if (!card) return null;
   const fallback = ITEMS[card.kind].description;
-  return { description: card.description ?? fallback, effect: ['barrier', 'shadowstep', 'kamui'].includes(card.kind) ? fallback : card.effect ?? fallback };
+  return { description: card.description ?? fallback, effect: cardEffect(card) };
 });
 const tradeEditorVersion = ref(0);
 const tradeEditor = ref<InstanceType<typeof TradeEditor>>();
@@ -200,12 +201,12 @@ const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && T
 const targeting = computed(() => targetKind.value !== null && (modal.value === 'card' || modal.value === 'choice'));
 const mapTargeting = computed(() => mapPicking.value && targeting.value && targetKind.value === 'tile' && !game.settling && !game.cardReveals.length);
 const eligibleTiles = computed(() => targetKind.value === 'tile' ? game.room?.board.filter(tile => !tileReason(tile)).map(tile => tile.id) ?? [] : []);
-/** 输入当前牌型及公开玩家，返回满足暗影步前后六格、同格、上限与服刑规则的目标。 */
+/** 输入当前牌型及公开玩家，返回满足闷棍前后三格、暗影步前后六格、上限与服刑规则的目标。 */
 const eligiblePlayers = computed(() => targetKind.value === 'player' ? game.room?.players.filter(player => {
   const kind = selectedCard.value?.kind;
   const distance = Math.abs(player.position - (game.me?.position ?? 0));
   return !player.bankrupt && (['blast', 'jail', 'swapAny'].includes(kind ?? '') || player.id !== game.me?.id)
-    && (kind !== 'swap' || !player.jailed) && (kind !== 'sap' || player.position === game.me?.position)
+    && (kind !== 'swap' || !player.jailed) && (kind !== 'sap' || Math.min(distance, (game.room?.board.length ?? 0) - distance) <= 3)
     && (kind !== 'shadowstep' || Math.min(distance, (game.room?.board.length ?? 0) - distance) <= 6)
     && (kind !== 'reaper' || (player.handLimit ?? 6) > 1 && (game.me?.handLimit ?? 6) > 1);
 }).map(player => player.id) ?? [] : []);
@@ -221,12 +222,12 @@ const targetLabel = computed(() => {
 const targetHint = computed(() => {
   if (mapChoice.value) return ({ free_upgrade: '选择自己的未抵押、未满级且本回合未升级地产。', full_upgrade: '选择自己的未抵押、未满级且本回合未升级地产，确认后免费直升 3 级。', self_destroy: '选择自己的有建筑地产，确认后摧毁全部建筑。', opponent_destroy: '选择对手的一块有建筑地产，确认后摧毁全部建筑，土地产权保留。' } as Record<string, string>)[mapChoice.value.type];
   if (!targeting.value) return '';
-  const rules: Partial<Record<Card['kind'], string>> = { shield: `选择没有护盾的自家地产，生成 ${selectedCard.value?.parameters?.charges ?? 1} 层护盾，每层抵挡一次建筑拆除或降级。`, exchange: '选择付得起无修正租金的对手地产，承接抵押与附加效果。', kamui: '选择一处地产，暂停施术者三个后续个人回合。', blackhole: '选择有附加效果的非神威地产。', homeTeleport: '选择自家非神威地产，传送替代掷骰，可正常付费升级。', sap: '选择同格的一名对手，休息一回合并随机偷牌。', slow: '选择对手，下次基础步数减半。', reaper: '选择手牌上限大于一张的对手，双方本局上限各减一。', shadowstep: '选择前后6格内的另一名玩家（环形计距，含同格），替代掷骰并正常结算。', swapAny: '选择两名不同玩家进行换位，可包括自己；服刑者保留控制状态。', barrier: '选择附近 6 格内任意无路障地块（前后各 6 格，不含当前格）。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产，全部拆除且不补偿。', swap: '选择未服刑的其他玩家。', steal: '选择未破产的其他玩家。', blast: '选择一名未破产玩家，可以选择自己；随机直接传送，此次落点不结算。', jail: '选择一名未破产玩家，可以选择自己；直接入狱并暂停收租，对自己使用会替代本次掷骰。' };
-  return rules[selectedCard.value!.kind] ?? selectedCard.value!.effect ?? '';
+  const rules: Partial<Record<Card['kind'], string>> = { shield: `选择没有护盾的自家地产，添加 ${selectedCard.value?.parameters?.charges ?? 1} 层护盾。`, exchange: '选择现金足以支付无修正租金的对手地产。', blackhole: '选择有附加效果的地产。', homeTeleport: '选择自家地产。', sap: '选择前后3格内的1名对手，含同格。', slow: '选择1名对手。', reaper: '选择手牌上限大于1的对手，双方上限永久各减1。', shadowstep: '选择前后6格内的另一名玩家，含同格。', swapAny: '选择2名不同玩家，可含自己。', barrier: '选择前后6格内无路障的地块，不含当前格。', demolish: '选择对手有建筑的地产。', fullDemolish: '选择对手有建筑的地产。', swap: '选择未服刑的对手。', steal: '选择1名对手。', blast: '选择1名玩家，可选自己。', jail: '选择1名玩家，可选自己。' };
+  return rules[selectedCard.value!.kind] ?? cardEffect(selectedCard.value!);
 });
 /** 输入房间地块与玩家，返回合法地块及带禁用原因的玩家；地块携带价格和建筑插画。 */
 const dialogTargets = computed(() => {
-  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: `${player.name}${player.id === game.me?.id ? '（我）' : ''}`, detail: ['swap', 'swapAny', 'shadowstep', 'sap'].includes(selectedCard.value?.kind ?? '') ? `位置：${game.room?.board[player.position]?.name ?? player.position} · ${player.position}号${player.jailed ? ' · 服刑中' : ''}` : `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.bankrupt ? '该玩家已破产' : player.id === game.me?.id ? '不能选择自己' : selectedCard.value?.kind === 'shadowstep' ? '目标不在前后6格内' : '不满足本牌的同格、上限或服刑条件' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
+  if (targetKind.value === 'player') return (game.room?.players ?? []).map(player => ({ id: player.id, name: `${player.name}${player.id === game.me?.id ? '（我）' : ''}`, detail: ['swap', 'swapAny', 'shadowstep', 'sap'].includes(selectedCard.value?.kind ?? '') ? `位置：${game.room?.board[player.position]?.name ?? player.position} · ${player.position}号${player.jailed ? ' · 服刑中' : ''}` : `现金 ¥${player.cash.toLocaleString()} · 手牌 ${player.cardCount ?? '—'}`, avatarId: player.avatarId, color: player.color, reason: eligiblePlayers.value.includes(player.id) ? '' : player.bankrupt ? '该玩家已破产' : player.id === game.me?.id ? '不能选择自己' : selectedCard.value?.kind === 'sap' ? '目标不在前后3格内' : selectedCard.value?.kind === 'shadowstep' ? '目标不在前后6格内' : '不满足本牌的上限或服刑条件' })).sort((a, b) => Number(!!a.reason) - Number(!!b.reason));
   if (targetKind.value === 'tile') return (game.room?.board ?? []).filter(tile => eligibleTiles.value.includes(tile.id)).map(tile => ({ id: String(tile.id), name: `${tile.name}${hasPropertyEffects(tile, game.room?.constructionEffects) ? ' ✦' : ''} · ${tile.id}号`, detail: tile.type === 'property' ? `归属：${game.room?.players.find(p => p.id === tile.ownerId)?.name ?? '无主地产'} · ${tile.level}级${tile.mortgaged ? ' · 抵押' : ''}` : '公共地块', tile }));
   return [];
 });
@@ -253,7 +254,7 @@ function tileReason(tile: Tile): string {
   if (mapChoice.value) return mapChoice.value.tileIds.includes(tile.id) ? '' : '该地块不在本次选择的合法目标中，请点击高亮地产。';
   if (isKamui(tile)) return '神威空间中的地产无法操作或施加效果。';
   const kind = selectedCard.value?.kind;
-  if (['shield', 'exchange', 'kamui', 'blackhole', 'homeTeleport'].includes(kind ?? '')) {
+  if (['shield', 'exchange', 'blackhole', 'homeTeleport'].includes(kind ?? '')) {
     if (tile.type !== 'property') return '请选择普通地产。';
     if (kind === 'shield') return tile.ownerId !== game.me?.id ? '请选择自家地产。' : tile.demolitionShield ? '该地产已有护盾。' : '';
     if (kind === 'homeTeleport') return tile.ownerId === game.me?.id ? '' : '请选择自家地产。';

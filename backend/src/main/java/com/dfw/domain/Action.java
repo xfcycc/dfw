@@ -50,7 +50,7 @@ public class Action {
     public String playerId;
     /** 斗转星移的第二名玩家，其他操作留空。 */
     public String secondPlayerId;
-    /** 七剑三道剑气的地产分配，可重复表示集火。 */
+    /** 七剑最多三道剑气可重复集火；神威为同边1～3处不同地产，可混选归属且无需连续。 */
     public List<Integer> tileIds;
     /** 虚空之泪第二个地产端点。 */
     public Integer secondTileId;

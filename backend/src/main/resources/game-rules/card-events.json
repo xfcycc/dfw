@@ -292,7 +292,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 118800
+                "weight": 1
               }
             ]
           }
@@ -329,7 +329,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps-4",
@@ -371,7 +371,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps-3",
@@ -397,7 +397,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps-2",
@@ -415,7 +415,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps-6",
@@ -433,7 +433,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps-5",
@@ -451,7 +451,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps--3",
@@ -469,7 +469,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               },
               {
                 "id": "steps--2",
@@ -495,7 +495,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 29700
+                "weight": 1
               }
             ]
           }
@@ -586,7 +586,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 99000
+                "weight": 1
               }
             ]
           }
@@ -653,7 +653,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 217800
+                "weight": 1
               }
             ]
           }
@@ -712,7 +712,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 99000
+                "weight": 1
               }
             ]
           }
@@ -803,7 +803,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 118800
+                "weight": 1
               }
             ]
           }
@@ -832,7 +832,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 39600
+                "weight": 1
               },
               {
                 "id": "steps-1",
@@ -858,7 +858,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 39600
+                "weight": 1
               },
               {
                 "id": "steps-3",
@@ -892,7 +892,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 39600
+                "weight": 1
               }
             ]
           }
@@ -959,7 +959,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 59400
+                "weight": 1
               }
             ]
           }
@@ -1026,7 +1026,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 118800
+                "weight": 1
               }
             ]
           }
@@ -1093,7 +1093,7 @@
                     "cardType": "即时"
                   }
                 ],
-                "weight": 79200
+                "weight": 1
               }
             ]
           }
@@ -1176,7 +1176,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 99000
+                "weight": 1
               }
             ]
           }
@@ -1221,7 +1221,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 14330
+                "weight": 1
               },
               {
                 "id": "amount-300",
@@ -1239,7 +1239,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 64485
+                "weight": 1
               },
               {
                 "id": "amount-500",
@@ -1273,7 +1273,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 64485
+                "weight": 1
               }
             ]
           }
@@ -1304,7 +1304,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 8664
+                "weight": 1
               },
               {
                 "id": "prize-5000_probability-20_wager-1000",
@@ -1324,7 +1324,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 8664
+                "weight": 1
               }
             ]
           }
@@ -1351,7 +1351,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 59400
+                "weight": 1
               }
             ]
           }
@@ -1386,7 +1386,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 59400
+                "weight": 1
               }
             ]
           }
@@ -1421,7 +1421,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 17328
+                "weight": 1
               }
             ]
           }
@@ -1456,7 +1456,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 8664
+                "weight": 1
               }
             ]
           }
@@ -1491,7 +1491,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               },
               {
                 "id": "charges-3",
@@ -1509,7 +1509,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -1552,7 +1552,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               }
             ]
           }
@@ -1579,7 +1579,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               }
             ]
           }
@@ -1606,7 +1606,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 57000
+                "weight": 1
               }
             ]
           }
@@ -1633,7 +1633,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -1660,7 +1660,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               }
             ]
           }
@@ -1695,7 +1695,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 57000
+                "weight": 1
               }
             ]
           }
@@ -1730,7 +1730,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 14440
+                "weight": 1
               }
             ]
           }
@@ -1757,7 +1757,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 42750
+                "weight": 1
               }
             ]
           }
@@ -1784,7 +1784,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 42750
+                "weight": 1
               }
             ]
           }
@@ -1811,7 +1811,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -1838,7 +1838,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               }
             ]
           }
@@ -1889,7 +1889,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 57000
+                "weight": 1
               }
             ]
           }
@@ -1916,7 +1916,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 57000
+                "weight": 1
               }
             ]
           }
@@ -1943,7 +1943,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 85500
+                "weight": 1
               }
             ]
           }
@@ -1970,7 +1970,7 @@
                     "cardType": "即时"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -1985,19 +1985,19 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "UR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_anime_u02",
                     "name": "投影魔术",
-                    "rarity": "SSR",
+                    "rarity": "UR",
                     "quote": "投影，开始。",
                     "description": "士郎闭目解析见过的武器，构造与材质在意识中逐层成形。魔术回路亮起，想象中的剑逐渐有了重量与锋刃。他握紧重现的武器，向前迈出一步。",
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2024,7 +2024,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2051,7 +2051,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2078,7 +2078,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2105,7 +2105,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2132,7 +2132,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2159,7 +2159,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2186,7 +2186,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2213,7 +2213,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2240,7 +2240,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2267,7 +2267,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2294,7 +2294,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2321,7 +2321,7 @@
                     "cardType": "防御"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2348,7 +2348,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2375,7 +2375,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 90250
+                "weight": 1
               }
             ]
           }
@@ -2402,7 +2402,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 7220
+                "weight": 1
               }
             ]
           }
@@ -2429,7 +2429,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 72200
+                "weight": 1
               }
             ]
           }
@@ -2456,7 +2456,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 72200
+                "weight": 1
               }
             ]
           }
@@ -2483,7 +2483,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 36100
+                "weight": 1
               }
             ]
           }
@@ -2510,7 +2510,7 @@
                     "cardType": "主动"
                   }
                 ],
-                "weight": 36100
+                "weight": 1
               }
             ]
           }
@@ -2537,7 +2537,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 36100
+                "weight": 1
               }
             ]
           }
@@ -2564,7 +2564,7 @@
                     "cardType": "持续"
                   }
                 ],
-                "weight": 36100
+                "weight": 1
               }
             ]
           }

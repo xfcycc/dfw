@@ -16,7 +16,7 @@ export interface UrCardScene {
 
 /** 登记的动漫 UR 保留原版插画，只启用通用呼吸和流光，不使用分层场景。 */
 export const ORIGINAL_UR_SKINS = new Set([
-  'card_naruto_triple_rashomon',
+  'card_naruto_triple_rashomon', 'card_anime_u02',
   'card_anime_u04', 'card_anime_u07', 'card_anime_u08', 'card_anime_u09', 'card_anime_u12',
   'card_anime_u13', 'card_anime_u14', 'card_anime_u15', 'card_anime_u18', 'card_anime_g08',
 ]);

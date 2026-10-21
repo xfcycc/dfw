@@ -22,7 +22,7 @@ public class PrivatePlayerVo {
     public String archiveCode;
     /** 仅房主可见的待批准角色申请。 */
     public List<SeatClaimVo> seatClaims = new ArrayList<>();
-    /** 上一个人回合是否存在可投影的非UR主动牌。 */
+    /** 上一回合是否存在可投影的主动牌，含UR，不含投影魔术。 */
     public boolean projectionAvailable;
     /** 本人的完整内容选择。 */
     public ContentChoiceVo choice;

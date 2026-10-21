@@ -5,10 +5,12 @@ import java.util.*;
 import java.util.function.ToIntFunction;
 import static com.dfw.domain.GameError.require;
 
-/** 启动校验内容层，按完整效果权重抽取匹配卡面，结果进入房间快照。 */
+/** 启动校验内容层，道具按档位及完整效果均分，事件按权重抽取，结果进入房间快照。 */
 public final class ContentCatalog {
     private static final List<String> RARITIES = List.of("R","SR","SSR","UR");
     private static final Map<String, Integer> RARITY = Map.of("R",40,"SR",30,"SSR",25,"UR",5);
+    /** 保留现有道具四档总出率，档内效果数量和卡面数量不改变档位概率。 */
+    private static final Map<String, Integer> CARD_RARITY = Map.of("R",57087,"SR",102383,"SSR",183480,"UR",18050);
     private static final Set<String> CASH = Set.of("amount","wager","prize","bonus","fallback");
     private static final Set<String> CARD = Set.of("geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","fixed","remote","barrier","demolish","fullDemolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","fullUpgrade","halfPayment","release","steal","cash","gamble","shield","recycle","discover","sap","exchange","slow","swapAny","kamui","handDestruction","gravity","reaper","shadowstep","homeTeleport","blackhole","meteor","timeRewind","projection","starburst","imagineBreaker","timeRestore","vectorReflect","deathReturn","explosion","corruption","contract","commandSpell","sevenSwords","railgun","sealCard","swordRain","voidTears","absoluteZero");
     private static final Set<String> EVENT = Set.of("allConstruction","erdtreeBlessing","income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition","treasure","concert","shuffle","all_cards","classTrial");
@@ -21,20 +23,21 @@ public final class ContentCatalog {
         pools = Map.of("chance",chance,"fortune",fortune,"card",cards);
         for (var entry : pools.entrySet()) validate(entry.getKey(), entry.getValue());
     }
-    /** 输入池、可选指定机制与随机源，按完整效果权重抽取再等概率选皮肤；定向补给在指定机制内归一化。 */
+    /** 输入池、可选机制与随机源，道具先抽档位再均分完整效果，事件按权重抽取，最后等概率选卡面。 */
     public ContentResult draw(Room room, String pool, String fixedMechanism, RandomSource random) {
         return draw(room,pool,fixedMechanism,random,Set.of());
     }
-    /** 输入已排除的完整效果，按剩余权重抽取，避免发现出现同效果不同皮肤。 */
+    /** 输入已排除的完整效果，按剩余可选档位或事件权重抽取，避免发现出现同效果不同卡面。 */
     private ContentResult draw(Room room, String pool, String fixedMechanism, RandomSource random, Set<String> excluded) {
         var definition = pools.get(pool);
         var candidates = candidates(definition, fixedMechanism).stream().filter(c -> !excluded.contains(c.mechanism + ":" + c.parameter.id)).toList();
         require(!candidates.isEmpty(), "定向补给机制不可用");
         Candidate selected;
-        if (candidates.getFirst().parameter.weight != null) selected = weighted(candidates, c -> c.parameter.weight, random);
+        if (!pool.equals("card") && candidates.getFirst().parameter.weight != null) selected = weighted(candidates, c -> c.parameter.weight, random);
         else {
             var rarities = RARITIES.stream().filter(rarity -> candidates.stream().anyMatch(c -> c.parameter.rarity.equals(rarity))).toList();
-            String rarity = weighted(rarities, RARITY::get, random);
+            var weights = pool.equals("card") ? CARD_RARITY : RARITY;
+            String rarity = weighted(rarities, weights::get, random);
             var options = candidates.stream().filter(c -> c.parameter.rarity.equals(rarity)).toList();
             selected = options.get(random.nextInt(options.size()));
         }
@@ -73,93 +76,94 @@ public final class ContentCatalog {
         String key=moneyKey(pool,mechanism,parameter,field);
         return mechanism.equals("talent") ? Rules.economy(room).derived(key,base) : Rules.economy(room).money(key,base);
     }
-    /** 输入内容结果，返回卡面效果文案；传送和入狱道具使用确认的简写，具体限制仍由执行器校验。 */
+    /** 输入含冻结参数的卡面，返回统一效果说明；保留范围、代价及特殊结算，通用选中限制由交互提示。 */
     public static String describe(ContentResult r) {
         var p = r.parameters; long amount = p.getOrDefault("amount",0L), steps = p.getOrDefault("steps",0L);
         return switch (r.mechanism) {
-            case "geoResonance" -> "选择自家合法中心地产及左右紧邻自家合法地产，各免费升一级，最多三处。";
-            case "growthLink" -> "连接两处自家地产，持续三个后续个人回合；正常付费建造带动另一处免费升一级，最多成功两次，免费升级不递归。";
-            case "sereniteaPot" -> "选择两处自家合法地产，重新分配原有建筑等级后额外新增一级；每处最高三级，实际变动计入本回合建造。";
-            case "createBuild" -> "弃置一至两张其他手牌，每张换一处不同自家合法地产免费升一级；弃牌不折现，确认才消耗。";
-            case "remoteConstruction" -> "本回合及下一个人回合，资产管理阶段各可远程按标准建造费75%建一级，向下取整，无需停留。";
-            case "shrineGrowth" -> "标记自家地产；其他玩家正常停留并完成原等级落点结算后免费升一级，最多成功两次；不合法时保留次数。";
-            case "allConstruction" -> "所有未破产玩家各选择一处自家合法地产免费升一级；可放弃，无合法目标跳过且不补现金。";
-            case "erdtreeBlessing" -> "触发者与事件锁定的建筑总等级最低者各免费升一级；并列随机，同人可在同地连续升级，最高三级，无目标跳过。";
-            case "income","cash" -> "获得现金 ¥"+amount;
-            case "fee" -> "向银行支付 ¥"+amount;
-            case "fixed" -> "替代掷骰，移动 "+steps+" 格并结算落点";
-            case "remote" -> "自选 1～6 点，替代掷骰并结算落点";
-            case "move","forward","back" -> (steps < 0 ? "后退 " : "前进 ")+Math.abs(steps)+" 格并结算落点"+(r.pool.equals("card") ? "，替代本次掷骰" : "");
-            case "bonus" -> "掷骰前加码 +"+steps+" 格；合成一次连续移动";
-            case "barrier" -> "在附近 6 格内选择一个无路障地块放置路障（前后各 6 格，不含当前格），首个受影响者停下";
-            case "demolish" -> "对手的一块地产降低 1 级建筑，无退款";
-            case "fullDemolish" -> "指定对手一块有建筑的地产，拆除全部建筑，不发放补偿，保留产权、抵押状态及固定赎回费用；无合法目标时保留卡和主动次数";
-            case "swap" -> "与未服刑的对手交换位置，随后正常掷骰";
-            case "blast" -> "指定任意一名玩家，直接传送至地图随机地块。";
-            case "jail" -> r.pool.equals("card") ? "指定任意一名玩家直接入狱，跳过下一次个人行动。" : "抽到此事件的玩家自己直接入狱，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可在施加时用解控卡解除限制。直接入狱不触发沿途奖励、不消耗塔塔开";
-            case "immunity" -> "免除本笔租金，不占主动次数";
-            case "freeUpgrade" -> "自己的合法地产免费升 1 级；确认前取消保留卡";
-            case "fullUpgrade" -> "选择自己的未抵押、未满级且本回合未升级地产，免费直升 3 级，计入本回合升级；取消或无合法目标时保留卡和主动次数";
-            case "halfPayment" -> "本笔强制费用减免 50%（减免额向下取整），不占主动次数";
-            case "release" -> "监禁或休息刚施加时可解除对应限制，不占主动次数";
-            case "steal" -> "随机转移所选对手的 1 张手牌；对方无牌时保留此卡和主动次数";
-            case "cards","cards_one","cards_two" -> "获得私人道具补给";
-            case "directed" -> "定向获得 1 张"+List.of("免租卡","免费升级卡","自选骰点道具（任意门）").get(p.get("cardType").intValue());
-            case "skip" -> "休息 "+p.get("count")+" 回合；可在施加时使用解控卡";
-            case "all_income" -> "所有未破产玩家各获得 ¥"+amount;
-            case "all_fee" -> "所有未破产玩家各向银行支付 ¥"+amount;
-            case "rich_fee" -> "事件开始时锁定的净资产最高者向银行支付 ¥"+amount;
-            case "bottom_income" -> "事件开始时锁定的净资产最低者获得 ¥"+amount;
-            case "bottom_bonus" -> "落格者获得 ¥"+amount+"；事件开始时锁定的榜底另得 ¥"+p.get("bonus");
-            case "gamble" -> "可放弃，或用现有现金下注 ¥"+p.get("wager")+"；"+p.get("probability")+"% 概率获得 ¥"+p.get("prize")+"（先扣本金，不另返还）";
-            case "self_destroy" -> "选择自己的有建筑地产，摧毁其全部建筑；有 50% 概率获得摧毁前单次租金的 50% 补偿（向下取整，抵押地产租金为 0）";
-            case "opponent_destroy" -> "选择对手一块有建筑的地产，摧毁全部建筑并保留产权；有 50% 概率向受损业主补偿摧毁前单次租金的 50%（向下取整，抵押地产租金为 0）；无合法目标则结束";
-            case "disaster" -> "随机摧毁地图一块有建筑地产的全部建筑；有 50% 概率获得摧毁前单次租金的 50% 补偿（向下取整，抵押地产租金为 0）";
-            case "free_upgrade" -> "自己的合法地产免费升 1 级；可放弃，无合法目标时获得 ¥"+p.get("fallback");
-            case "full_upgrade" -> "选择自己的未抵押、未满级且本回合未升级地产，免费直升 3 级，计入本回合升级；可放弃，无合法目标时获得 ¥"+p.get("fallback");
-            case "all_morale" -> "全体未破产玩家获得塔塔开：下一次最终移动距离×2，生效后消耗，重复不叠加；传送、换位不受影响";
-            case "talent" -> "随机获得一块无主地产、生活费 ¥"+amount+" 和 "+p.get("count")+" 张随机道具；无无主地产时只跳过土地发放";
-            case "global_demolition" -> "全地图随机选取1～5块有建筑地产（含自己，不重复且不超过可选数量，无目标时为0）各降低1级，分别向业主补偿降级前单次租金的"+p.get("compensationPercent")+"%（向下取整，抵押地产补偿为0）；保留产权和抵押状态";
-            case "trap_immunity" -> "获得陷阱免疫，持续 3 个后续个人回合";
-            case "next_waiver" -> "自动免除下一笔强制费用，保留到消耗，重复不叠加";
-            case "rent_double" -> "下次实际需付租金翻倍，消耗且不叠加";
-            case "shield" -> "为自家地产附加 "+p.getOrDefault("charges",1L)+" 层防拆护盾，每层抵挡一次所有类型建筑拆除或降级，连击逐层消耗；主动卖楼及清算除外";
-            case "recycle" -> "消耗本牌后，至少选择一张其他手牌弃置，再抽相同数量；弃牌不折现，取消保留卡和主动次数";
-            case "discover" -> "从三个不同完整效果的随机道具中选择一张加入手牌；候选仅本人可见，确认前取消保留卡";
-            case "sap" -> "将同格的一名对手打晕，休息一回合，并随机偷一张牌（若有）；解控仅解除休息，不撤销偷牌";
-            case "exchange" -> "用现有现金向对手支付一笔无修正租金，强制取得该地产；保留建筑、抵押、赎回费用及附加效果";
-            case "slow" -> "指定对手，下次掷骰或替代掷骰基础步数减半，向下取整，再处理加码与塔塔开；不叠加";
-            case "swapAny" -> "交换任意两名未破产玩家的位置，可包括自己；不结算落点或起点，不解除控制状态";
-            case "kamui" -> "将一处地产封入神威，持续施术者三个后续个人回合；所有地产效果暂停，不能经营或受影响，允许破产清算";
-            case "handDestruction" -> "所有未破产玩家弃掉全部手牌，等量重抽；使用者数量不包括本牌，弃牌不折现";
-            case "gravity" -> "将所有其他未破产玩家吸到自己所在格，不结算落点、起点、路障或活动，随后仍正常掷骰";
-            case "reaper" -> "自己与指定对手的本局手牌上限永久各减一，可叠加且最低一张；超限按原规则整理";
-            case "shadowstep" -> "替代本次掷骰，传送到前后6格内另一名玩家所在格并正常结算（环形计距，含同格）；到起点领取一次现金及道具，不走沿途";
-            case "homeTeleport" -> "替代本次掷骰，传送到自有地产并正常结算，可按原规则付费升级；不能传送到神威地产";
-            case "blackhole" -> "清除一处地产的全部附加效果，包括护盾、宝藏、演唱会、路障、陨星、腐败、空间裂隙和零域；不改变建筑、产权、抵押，不影响神威";
-            case "meteor" -> "随机在一至三块不同地产各放一颗陨星；每颗截停一次，可与路障或已有陨星叠加，不损坏建筑";
-            case "treasure" -> "随机标记一处地产，首位正常停留者获得等于当前无修正租金的宝藏；此次免租且不消耗租金状态，无主按零级";
-            case "concert" -> "随机选五处不同地产，各叠加一层演唱会；下次正常正租金每层乘1.2，触发时全部消耗，之后防御仍消耗";
-            case "shuffle" -> "所有未破产玩家随机接手另一人的原位置，不结算落点或起点，不消耗移动状态";
-            case "all_cards" -> "所有未破产玩家各获得一张私人随机道具，补给后按个人当前上限整理";
-            case "timeRewind" -> "自己的普通骰点公开后、开始移动前使用，作废本次骰点并重掷一次，必须接受第二次结果；不适用自选点数或固定步数，不撤销其他已完成操作。";
-            case "projection" -> "投影上一个已结束个人回合实际使用过的一张非UR主动道具，不能投影自身；复制牌本回合可额外使用一次，本回合结束消失；没有合法记录则保留卡和主动次数。";
-            case "starburst" -> "指定对手一处有建筑地产，连续两次建筑降低一级，护盾逐击处理；最低零级，无退款，保留产权及抵押。";
-            case "imagineBreaker" -> "阻挡一张任意等级（含UR）主动道具对自己及自己地产造成的全部效果，连击与组合一起取消；群体范围仅取消本人部分，对方卡及主动次数仍消耗。";
-            case "classTrial" -> "所有未破产玩家秘密投一名其他玩家或弃权，最高票者休息一个个人回合；并列随机一人，全弃权无人休息，揭晓后可按现有规则解控，普通休息不停租。";
-            case "timeRestore" -> "在自己的下一个个人回合结束前，修复一处近期受损且产权未变化的自家地产至最近一次敌方或事件破坏前等级；不恢复主动卖房、付款、抵押及其他附加状态。";
-            case "vectorReflect" -> "将一张任意等级（含UR）主动道具针对自身造成的全部主动效果反弹给施术者；不保护地产，群体仅反弹本人部分，其余照常；反射结果不再次开启反射链。";
-            case "deathReturn" -> "满足破产清算条件、即将确认清算时，取消当前一笔剩余强制债务，回到最近本人回合开始位置，额外获得实际现金3000并休息一个个人回合；不回滚已完成付款、卖房或交易，回归无落点及起点奖励，正式淘汰后不可使用。";
-            case "explosion" -> "选择连续三个格子，摧毁其中全部可受影响地产的建筑，自己的地产也会受损；护盾逐地处理，封印地产跳过，产权抵押保留且无补偿，随后本人休息一个个人回合；无建筑目标则保留卡和主动次数。";
-            case "corruption" -> "指定对手一处有建筑地产，在接下来三个业主个人回合开始各降低一级；护盾逐次处理，零级结束，重复施加刷新三次而不叠加，可被清除附加效果移除，封印期间暂停。";
-            case "contract" -> "立即获得实际现金3000，本局手牌上限永久减一，最低一张；上限已为一张时不可使用，超限按现有规则选留。";
-            case "commandSpell" -> "指定另一名玩家立即额外移动1～6格，点数由施术者决定，正常处理路径、路障及落点，不占目标正常行动；奖励费用归移动者，其购买与付款防御仍由本人决定，可被幻想杀手阻挡或矢量反射。";
-            case "sevenSwords" -> "三道剑气自由分配给对手有建筑地产，每道降低一级，可集火或分散；护盾抵挡一道，其他剑气继续，一次确认全部分配，未用不保留。";
-            case "railgun" -> "从自己当前位置选择顺时针或逆时针，贯穿前方六格，本人不移动；清除沿途路障、陨星及地产护盾，随后沿线对手地产各降一级；封印地产跳过，不改产权抵押，无路径奖励及落点结算。";
-            case "sealCard" -> "封印另一名玩家仅针对自己或自己一处地产的单目标主动道具，取消其针对目标的全部效果，并收为自己的同效果手牌，UR也可收服；按正常时机及主动次数使用，不适用群体或范围道具。";
-            case "swordRain" -> "指定前后六格内一名对手休息一个个人回合，可按现有规则解控；本牌共可使用两次，每本人回合最多一次，首次冷却至下一本人回合，第二次消失；被防御也消耗次数，转移不刷新。";
-            case "voidTears" -> "两处不同未封印普通地产建立公共空间裂隙，首位正常步行进入任一端者传至另一端并继续剩余步数，两端随后消失；跳跃不经过中间路径、不领跳过的起点奖励，只结算最终落点，传送换位不触发。";
-            case "absoluteZero" -> "冰封棋盘一条边全部未封印地产至本人下个个人回合结束，自己的地产同样受影响；期间不收租、不能升级，其他附加效果及交易、抵押、出售正常，保留建筑产权抵押。";
+            case "geoResonance" -> "选择1处自家地产，与左右紧邻的自家地产各免费升1级，最多3处。";
+            case "growthLink" -> "连接2处自家地产，持续3个后续个人回合；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。";
+            case "sereniteaPot" -> "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。";
+            case "createBuild" -> "弃置1～2张其他手牌，每张换1处不同自家地产免费升1级；弃牌不折现，确认后才消耗。";
+            case "remoteConstruction" -> "本回合及下个个人回合，在资产管理阶段各可远程建造1次，支付标准建造费的75%，向下取整。";
+            case "shrineGrowth" -> "标记1处自家地产；其他玩家正常停留并结算后，该地产免费升1级，最多触发2次；暂不能升级时保留次数。";
+            case "allConstruction" -> "所有玩家各选1处自家地产免费升1级；可放弃，无目标则跳过。";
+            case "erdtreeBlessing" -> "自己与建筑总等级最低者各免费升1级，并列随机；若为同一人，可在同一地产连续升级，最高3级。";
+            case "income","cash" -> "获得现金 ¥"+amount+"。";
+            case "fee" -> "向银行支付 ¥"+amount+"。";
+            case "fixed" -> "移动 "+steps+" 格并结算落点，替代掷骰。";
+            case "remote" -> "自选1～6点移动并结算落点，替代掷骰。";
+            case "move" -> (steps == 0 ? "原地停留并重新结算当前格" : (steps < 0 ? "后退 " : "前进 ")+Math.abs(steps)+" 格并结算落点")+"，替代掷骰。";
+            case "forward","back" -> (steps < 0 ? "后退 " : "前进 ")+Math.abs(steps)+" 格并结算落点。";
+            case "bonus" -> "本次掷骰额外前进 "+steps+" 格，合并移动并只结算最终落点。";
+            case "barrier" -> "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。";
+            case "demolish" -> "对手1处有建筑地产降1级，无退款；护盾可抵挡。";
+            case "fullDemolish" -> "拆除对手1处地产的全部建筑，无补偿；护盾可抵挡。";
+            case "swap" -> "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。";
+            case "blast" -> "指定1名玩家随机传送，可选自己；不结算落点或起点奖励，随后正常掷骰。";
+            case "jail" -> "card".equals(r.pool) ? "指定1名玩家入狱，可选自己；跳过下次个人行动，服刑期间不收租，可当场解控；对自己使用替代掷骰。" : "自己入狱，跳过下次个人行动，服刑期间不收租，可当场解控；不领取沿途奖励。";
+            case "immunity" -> "免除本笔全部租金，不占主动次数。";
+            case "freeUpgrade" -> "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。";
+            case "fullUpgrade" -> "1处自家地产免费直升3级，计入本回合升级；取消或无目标时保留卡和主动次数。";
+            case "halfPayment" -> "本笔强制费用减免50%，减免额向下取整；不占主动次数。";
+            case "release" -> "解除刚施加的监禁或休息，不撤销入狱传送；不占主动次数。";
+            case "steal" -> "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。";
+            case "cards","cards_one","cards_two" -> "获得 "+p.get("count")+" 张随机道具。";
+            case "directed" -> "获得1张"+List.of("免租卡","免费升级卡","自选骰点道具").get(p.get("cardType").intValue())+"。";
+            case "skip" -> "休息 "+p.get("count")+" 个个人回合，可当场解控。";
+            case "all_income" -> "所有玩家各获得现金 ¥"+amount+"。";
+            case "all_fee" -> "所有玩家各向银行支付 ¥"+amount+"。";
+            case "rich_fee" -> "净资产最高者向银行支付 ¥"+amount+"，并列随机。";
+            case "bottom_income" -> "净资产最低者获得现金 ¥"+amount+"，并列随机。";
+            case "bottom_bonus" -> "自己获得现金 ¥"+amount+"，净资产最低者另得 ¥"+p.get("bonus")+"，并列随机。";
+            case "gamble" -> "用现有现金下注 ¥"+p.get("wager")+"，"+p.get("probability")+"%概率获得 ¥"+p.get("prize")+"，本金不返还；取消不消耗。";
+            case "self_destroy" -> "选择1处自家地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。";
+            case "opponent_destroy" -> "选择对手1处地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。";
+            case "disaster" -> "随机全拆1处地产的建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。";
+            case "free_upgrade" -> "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥"+p.get("fallback")+"。";
+            case "full_upgrade" -> "1处自家地产免费直升3级，计入本回合升级；可放弃，仅无目标时改获现金 ¥"+p.get("fallback")+"。";
+            case "all_morale" -> "全体玩家下次最终移动距离×2，不叠加；传送、换位不消耗。";
+            case "talent" -> "随机获得1块无主地产、现金 ¥"+amount+"及 "+p.get("count")+" 张随机道具；无主地产不足时仅跳过土地奖励。";
+            case "global_demolition" -> "随机选1～5处有建筑地产各降1级，包含自家、不重复，护盾可抵挡；逐地补偿业主降级前租金的"+p.get("compensationPercent")+"%，向下取整。";
+            case "trap_immunity" -> "获得陷阱免疫，持续3个后续个人回合。";
+            case "next_waiver" -> "自动免除下一笔强制费用，不叠加。";
+            case "rent_double" -> "下次实际需付的租金翻倍，不叠加。";
+            case "shield" -> "为1处自家地产添加 "+p.getOrDefault("charges",1L)+" 层护盾，每层抵挡1次建筑拆除或降级，连击逐层消耗；不叠加，不保护主动出售或清算。";
+            case "recycle" -> "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。";
+            case "discover" -> "从3张不同效果的随机道具中选1张；确认后才消耗，取消重选不刷新候选。";
+            case "sap" -> "前后3格内1名对手休息1个个人回合（含同格），并随机偷取其1张手牌；解控不撤销偷牌。";
+            case "exchange" -> "用现有现金向对手支付该地产的无修正租金，取得产权并承接建筑、抵押及附加效果。";
+            case "slow" -> "指定对手，下次掷骰或替代掷骰的基础步数减半，向下取整，再计算加码与塔塔开；不叠加。";
+            case "swapAny" -> "交换任意2名玩家的位置，可含自己；不结算落点或起点奖励，不解除监禁或休息。";
+            case "kamui" -> "封印同一条边1～3处地产，无需连续，可含自家、对手或无主地产；持续3个后续个人回合，暂停收租、经营和附加效果，期间不受其他地产效果影响，仍可破产清算。";
+            case "handDestruction" -> "全体玩家弃掉剩余手牌并等量重抽，包含自己；本牌不参与重抽，弃牌不折现。";
+            case "gravity" -> "将其他所有玩家传送到自己所在格，不结算落点或起点奖励；随后正常掷骰。";
+            case "reaper" -> "自己与指定对手的本局手牌上限永久各减1，最低1张；可叠加，超限时选择保留。";
+            case "shadowstep" -> "传送到前后6格内另一名玩家所在格并结算，含同格，替代掷骰；传至起点可领取奖励。";
+            case "homeTeleport" -> "传送到1处自家地产并结算，替代掷骰，可付费升级。";
+            case "blackhole" -> "清除1处地产的全部附加效果，包含护盾、宝藏、演唱会及建设标记；不改变建筑、产权或抵押。";
+            case "meteor" -> "随机在1～3处不同地产各放1颗陨星，每颗截停1次并结算落点；可叠加，不损坏建筑。";
+            case "treasure" -> "随机标记1处地产；首位正常停留者免租，并获得等于无修正租金的现金；无主地产按0级计算。";
+            case "concert" -> "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。";
+            case "shuffle" -> "所有玩家随机交换位置，每人接手另一人的原位置；不结算落点或起点奖励，不消耗移动状态。";
+            case "all_cards" -> "所有玩家各获得1张随机道具。";
+            case "timeRewind" -> "普通骰点公开后、移动前重掷1次，必须接受新结果；不适用替代掷骰，不占主动次数。";
+            case "projection" -> "复制上个已结束个人回合使用过的1张主动道具，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。";
+            case "starburst" -> "对手1处有建筑地产连续降级2次，每次降1级；每层护盾抵挡1击，无退款。";
+            case "imagineBreaker" -> "抵消1张主动道具对自己及自家地产的全部效果，含UR；群体效果只抵消自己一方，对方仍消耗卡和次数。";
+            case "classTrial" -> "所有玩家秘密投给另一人或弃权，最高票者休息1个个人回合，可解控；并列随机，全弃权则无人休息。";
+            case "timeRestore" -> "在自己的下个个人回合结束前，将1处自家地产恢复至最近一次敌方或事件破坏前的建筑等级；产权须未变化，不恢复主动卖房或其他状态。";
+            case "vectorReflect" -> "将1张主动道具对自己的效果反弹给施术者，含UR；不保护地产，群体只反弹自己部分，反弹不再触发反射。";
+            case "deathReturn" -> "达到破产清算条件时，免除当前剩余强制债务，回到最近本人回合开始位置，获得现金 ¥3000并休息1个个人回合；不结算落点或起点奖励，不回滚已完成的付款、卖房或交易。";
+            case "explosion" -> "拆除连续3格内的全部建筑，包含自家地产，无补偿；每处地产可消耗1层护盾抵挡全拆；自己随后休息1个个人回合。";
+            case "corruption" -> "对手1处有建筑地产，在接下来3次业主个人回合开始时各降1级；每层护盾抵挡1次，降至0级结束，重复施加刷新次数，可清除。";
+            case "contract" -> "获得现金 ¥3000，本局手牌上限永久减1，最低1张；上限为1时不可使用，超限时选择保留。";
+            case "commandSpell" -> "指定另一名玩家立即移动1～6格，点数自选，正常结算沿途和落点；不占其正常行动，奖励、费用及落点选择归移动者。";
+            case "sevenSwords" -> "将3道剑气分配给对手有建筑的地产，可集火或分散，每道降1级；每层护盾抵挡1道，未分配的剑气作废。";
+            case "railgun" -> "选择顺或逆时针贯穿前方6格，自己不移动；无视护盾，清除沿途路障、陨星和全部护盾，对手地产各降1级。";
+            case "sealCard" -> "抵消并收服另一玩家仅针对自己或1处自家地产的单目标主动道具，含UR；收服后按正常时机使用，不适用群体或范围效果。";
+            case "swordRain" -> "前后6格内1名对手休息1个个人回合，可解控；本牌可用2次，每个人回合限1次，被防御也消耗次数，转移不刷新次数或冷却。";
+            case "voidTears" -> "连接2处地产；首位步行进入任一端者传至另一端，再走剩余步数，随后裂隙消失；跳过的路径无奖励，只结算最终落点，传送或换位不触发。";
+            case "absoluteZero" -> "冰封一条边的全部地产至自己的下个个人回合结束，包含自家地产；期间不能收租或升级，其他效果及资产操作照常。";
             case "extra_action" -> "首版停用";
             default -> throw new IllegalStateException("未知内容机制");
         };

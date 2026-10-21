@@ -451,7 +451,7 @@ public final class BotPlanner {
         return best;
     }
 
-    /** 输入新增主动卡和待填命令，按公开局面评分并设置合法目标，暗影步限前后六格；返回最高收益评分。 */
+    /** 输入新增主动卡和待填命令，按公开局面评分并设置合法目标，神威选择同边最多三处收益最高的敌方地产；返回最高收益评分。 */
     private double expansionCard(Card card, Action action) {
         double best=Double.NEGATIVE_INFINITY, base=startIncome()*.25;
         switch(card.kind) {
@@ -482,6 +482,16 @@ public final class BotPlanner {
             case "absoluteZero" -> {
                 for(Tile start:state.board) { double gain=state.board.stream().filter(t -> t.type.equals("property") && AnimeService.boardSide(state.board.size(),t.id)==AnimeService.boardSide(state.board.size(),start.id) && !me.id.equals(t.ownerId) && !PropertyEffects.frozen(t)).mapToDouble(t -> rent(t,t.level)*traffic(t,me.id)).sum(); if(gain>best) { best=gain; action.tileId=start.id; } }
             }
+            case "kamui" -> {
+                for(int side=0;side<4;side++) {
+                    int selectedSide=side;
+                    List<Tile> targets=state.board.stream().filter(t -> t.type.equals("property") && t.ownerId!=null && !me.id.equals(t.ownerId)
+                            && !PropertyEffects.frozen(t) && AnimeService.boardSide(state.board.size(),t.id)==selectedSide && rent(t,t.level)>0)
+                            .sorted(Comparator.comparingDouble((Tile t) -> rent(t,t.level)*traffic(t,t.ownerId)).reversed()).limit(3).toList();
+                    double gain=targets.stream().mapToDouble(t -> rent(t,t.level)*traffic(t,t.ownerId)).sum();
+                    if(!targets.isEmpty() && gain>best) { best=gain; action.tileIds=targets.stream().map(t -> t.id).toList(); }
+                }
+            }
             case "voidTears" -> {
                 Tile from=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)).min(Comparator.comparingInt(t -> GameSupport.nearbyDistance(me.position,t.id,state.board.size()))).orElse(null);
                 Tile to=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && t!=from).max(Comparator.comparingDouble(t -> landingValue(me,t.id))).orElse(null);
@@ -506,7 +516,7 @@ public final class BotPlanner {
                 for(PublicPlayerVo p:state.players) if(!p.bankrupt && !p.id.equals(me.id)) {
                     double gain;
                     switch(card.kind) {
-                        case "sap" -> { if(p.position!=me.position) continue; gain=base*(1+threat(p)+(p.cardCount!=null && p.cardCount>0?1:0)); }
+                        case "sap" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>3) continue; gain=base*(1+threat(p)+(p.cardCount!=null && p.cardCount>0?1:0)); }
                         case "slow" -> {
                             if(p.nextRollHalf) continue;
                             gain=0; for(int point=1;point<=6;point++) gain+=threat(p)*(movementValue(p,p.position,point)-movementValue(p,p.position,Math.floorDiv(point,2)))/6;
@@ -518,13 +528,12 @@ public final class BotPlanner {
                     if(gain>best) { best=gain; action.playerId=p.id; }
                 }
             }
-            case "shield","exchange","kamui","blackhole","homeTeleport" -> {
+            case "shield","exchange","blackhole","homeTeleport" -> {
                 for(Tile t:state.board) if(t.type.equals("property") && !PropertyEffects.frozen(t)) {
                     boolean self=me.id.equals(t.ownerId); double gain;
                     switch(card.kind) {
                         case "shield" -> { if(!self || t.demolitionShield || t.level==0) continue; gain=Rules.buildCost(economics,t)*t.level*.5*card.parameters.getOrDefault("charges",1L); }
                         case "exchange" -> { long cost=PropertyEffects.baseRent(economics,t); if(t.ownerId==null || self || me.cash<cost) continue; gain=value(t,me.id)-cost; }
-                        case "kamui" -> { if(t.ownerId==null || self) continue; gain=rent(t,t.level)*traffic(t,t.ownerId); }
                         case "blackhole" -> {
                             gain=(self?-1:1)*(t.demolitionShield?base:0)+(self?-1:1)*(t.concertStacks>0?base*t.concertStacks:0);
                             if(t.barrier || t.meteorCharges>0) gain+=base*(self?-1:1);

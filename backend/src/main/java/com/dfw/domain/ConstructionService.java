@@ -135,7 +135,8 @@ public final class ConstructionService {
             }
             case "sereniteaPot" -> {
                 int[] levels={firstLevel,secondLevel};
-                for(int i=0;i<targets.size();i++) { Tile target=targets.get(i); if(target.level!=levels[i] || target.id==action.tileId) room.upgradedTiles.add(target.id); if(target.level>levels[i]) { target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; } target.level=levels[i]; target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; }
+                // 重新分配和额外新增一级均不占本回合升级次数，落地后仍按正常规则付费建造。
+                for(int i=0;i<targets.size();i++) { Tile target=targets.get(i); if(target.level>levels[i]) { target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; } target.level=levels[i]; target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; }
                 SettlementService.observe(room); owner.matchStats.builtLevels++; log(room,owner.name+" 调整尘歌壶布局，建筑总数新增一级，最终等级 "+firstLevel+"／"+secondLevel); BoardEffect.cue(room,"upgrade",owner);
             }
             case "createBuild" -> { owner.hand.removeAll(materials); targets.forEach(t -> build(room,owner,t)); }

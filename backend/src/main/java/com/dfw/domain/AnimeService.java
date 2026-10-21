@@ -81,8 +81,8 @@ public final class AnimeService {
     /** 输入主动牌和参数，处理投影、契约、修复或完整攻击计划；无合法目标不消费。 */
     public boolean use(Room room,Player actor,Card card,Action action) {
         if(card.kind.equals("projection")) {
-            List<Card> candidates=state(room).previousCards.stream().filter(c -> !"UR".equals(c.rarity) && !c.kind.equals("projection") && "主动".equals(c.cardType)).toList();
-            require(!candidates.isEmpty(),"上一回合没有可投影的非UR主动道具");
+            List<Card> candidates=state(room).previousCards.stream().filter(c -> !c.kind.equals("projection") && "主动".equals(c.cardType)).toList();
+            require(!candidates.isEmpty(),"上一回合没有可投影的主动道具");
             ContentChoice choice=content.open(room,actor,"anime_projection"); choice.cardId=card.id; choice.content=card; choice.cards.addAll(candidates); choice.prompt="选择上一回合使用过的道具；投影牌本回合可额外使用一次，回合结束消失。"; return true;
         }
         if(card.kind.equals("contract")) {
@@ -104,7 +104,7 @@ public final class AnimeService {
         frame.card=copy(card);
         Set<String> targets=new LinkedHashSet<>();
         for(GameEffect part:frame.parts) if(part.targetId!=null && !part.targetId.equals(actor.id)) targets.add(part.targetId);
-        frame.singleTarget=targets.size()==1 && !Set.of("handDestruction","gravity","meteor","sevenSwords","railgun","explosion","absoluteZero","voidTears","swapAny").contains(card.kind);
+        frame.singleTarget=targets.size()==1 && (!card.kind.equals("kamui") || frame.parts.size()==1) && !Set.of("handDestruction","gravity","meteor","sevenSwords","railgun","explosion","absoluteZero","voidTears","swapAny").contains(card.kind);
         frame.defenders.addAll(targets); state(room).attack=frame; offerDefense(room); return true;
     }
     /** 输入恢复或移出后的房间，继续没有待选的未完成响应，不重复已入队结果。 */
@@ -128,7 +128,10 @@ public final class AnimeService {
                 require(target!=null && !PropertyEffects.frozen(target) && !target.barrier && nearbyDistance(actor.position,target.id,room.board.size())>=1 && nearbyDistance(actor.position,target.id,room.board.size())<=6,"请选择前后六格内无路障的地块，不含当前格");
                 part(parts,room,actor,player(room,target.ownerId),target,"barrier",1);
             }
-            case "exchange","kamui","blackhole" -> {
+            case "kamui" -> {
+                for(Tile property:kamuiTargets(room,action)) part(parts,room,actor,player(room,property.ownerId),property,"kamui",0);
+            }
+            case "exchange","blackhole" -> {
                 require(target!=null && target.type.equals("property") && !PropertyEffects.frozen(target),"请选择未封印地产");
                 if(kind.equals("exchange")) require(target.ownerId!=null && !Objects.equals(target.ownerId,actor.id) && actor.cash>=PropertyEffects.baseRent(room,target),"请选择现金足以支付无修正租金的对手地产");
                 if(kind.equals("blackhole")) require(target.barrier || target.meteorCharges>0 || target.demolitionShield || target.treasure || target.concertStacks>0 || target.corruptionTurns>0 || target.portalTileId!=null || iced(target) || !ConstructionService.labels(room,target.id).isEmpty(),"地产没有可清除的附加效果");
@@ -137,7 +140,7 @@ public final class AnimeService {
             case "swap","blast","jail","steal","sap","slow","reaper","commandSpell","swordRain" -> {
                 require(other!=null && !other.bankrupt && (Set.of("blast","jail").contains(kind) || other!=actor),"请选择合法未破产玩家");
                 if(kind.equals("swap")) require(!other.jailed,"不能与服刑玩家换位");
-                if(kind.equals("sap")) require(other.position==actor.position,"闷棍限同格玩家");
+                if(kind.equals("sap")) require(nearbyDistance(actor.position,other.position,room.board.size())<=3,"闷棍限前后 3 格内的玩家，含同格");
                 if(kind.equals("swordRain")) require(nearbyDistance(actor.position,other.position,room.board.size())<=6,"剑雨限前后六格玩家");
                 if(kind.equals("steal")) require(!other.hand.isEmpty(),"对手没有手牌，卡和次数保留");
                 if(kind.equals("reaper")) require(PropertyEffects.handLimit(actor)>1 && PropertyEffects.handLimit(other)>1,"双方手牌上限须大于一张");
@@ -195,6 +198,16 @@ public final class AnimeService {
     public static int boardSide(int size,int id) {
         int horizontal=(size+3)/4, vertical=size/4;
         return id<horizontal?0:id<horizontal+vertical?1:id<2*horizontal+vertical?2:3;
+    }
+    /** 输入房间及封印命令，返回同一条边的1～3处不同合法地产；兼容旧客户端单个tileId，不限制归属或连续性。 */
+    public static List<Tile> kamuiTargets(Room room,Action action) {
+        List<Integer> ids=action.tileIds!=null?action.tileIds:action.tileId==null?List.of():List.of(action.tileId);
+        require(!ids.isEmpty() && ids.size()<=3 && ids.stream().allMatch(Objects::nonNull) && new HashSet<>(ids).size()==ids.size(),"请选择1～3处不同的地产");
+        List<Tile> targets=ids.stream().map(id -> tile(room,id)).toList();
+        require(targets.stream().allMatch(t -> t!=null && t.type.equals("property") && !PropertyEffects.frozen(t)),"请选择未封印的普通地产");
+        int selectedSide=side(room,targets.getFirst().id);
+        require(targets.stream().allMatch(t -> side(room,t.id)==selectedSide),"封印目标须在同一条边，无需连续，可混选自己和对手的地产");
+        return targets;
     }
     /** 输入目标地产与施术者，返回是否是仍有建筑的合法敌方地产。 */
     private static boolean enemyBuilding(Room room,Player actor,Tile tile) { Player owner=tile==null?null:player(room,tile.ownerId); return tile!=null && tile.type.equals("property") && !PropertyEffects.frozen(tile) && tile.level>0 && owner!=null && !owner.bankrupt && owner!=actor; }

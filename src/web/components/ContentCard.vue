@@ -7,7 +7,7 @@ import CardFrame from './CardFrame.vue';
 import ShinraCardScene from './ShinraCardScene.vue';
 import UrCardScene from './UrCardScene.vue';
 import { ORIGINAL_UR_SKINS, UR_CARD_SCENES } from '../ur-card-scenes';
-import { cardSummary } from '../card-summary';
+import { cardEffect, cardSummary } from '../card-summary';
 const props = withDefaults(defineProps<{ content: ContentResult; compact?: boolean; reveal?: boolean; thumbnail?: boolean; preview?: boolean; animated?: boolean }>(), { animated: true });
 // 已生成分层的 UR 使用专属场景，静态对比和未知皮肤继续沿用原图。
 /** 根据卡面身份、等级和展示开关返回是否播放 UR 卡面动画。 */
@@ -56,7 +56,7 @@ const artwork = computed(() => {
         <p v-if="thumbnail" class="card-summary">{{ cardSummary(content) }}</p>
         <template v-else-if="!preview">
           <p class="card-description">{{ content.description ?? fallback?.description }}</p>
-          <p class="content-effect">{{ kind === 'barrier' || kind === 'shadowstep' || kind === 'kamui' ? fallback?.description : content.effect ?? fallback?.description }}</p>
+          <p class="content-effect">{{ cardEffect(content) }}</p>
           <blockquote v-if="content.quote">“{{ content.quote }}”</blockquote>
         </template>
       </div>

@@ -9,9 +9,8 @@ from construction_content import RARITIES as CONSTRUCTION_RARITIES, assign as as
 
 ROOT = Path(__file__).resolve().parents[1]
 RARITIES = {'R', 'SR', 'SSR', 'UR'}
-NEW_CARD = {'shield': '3', 'recycle': '3', 'discover': '3', 'sap': '2', 'exchange': '0.5', 'slow': '3', 'swapAny': '2', 'kamui': '1', 'handDestruction': '1.5', 'gravity': '1.5', 'reaper': '0.5', 'shadowstep': '3', 'homeTeleport': '2', 'blackhole': '2', 'meteor': '3'}
 NEW_EVENT = {'chance': {'concert': '4', 'shuffle': '4'}, 'fortune': {'treasure': '5', 'all_cards': '6'}}
-ANIME_RARITIES = {'timeRewind': 'SSR', 'projection': 'SSR', 'starburst': 'SSR', 'imagineBreaker': 'UR', 'classTrial': 'SR', 'timeRestore': 'SSR', 'vectorReflect': 'UR', 'deathReturn': 'UR', 'explosion': 'UR', 'corruption': 'SSR', 'contract': 'SSR', 'commandSpell': 'UR', 'sevenSwords': 'UR', 'railgun': 'UR', 'sealCard': 'UR', 'swordRain': 'SSR', 'voidTears': 'SSR', 'absoluteZero': 'UR'}
+ANIME_RARITIES = {'timeRewind': 'SSR', 'projection': 'UR', 'starburst': 'SSR', 'imagineBreaker': 'UR', 'classTrial': 'SR', 'timeRestore': 'SSR', 'vectorReflect': 'UR', 'deathReturn': 'UR', 'explosion': 'UR', 'corruption': 'SSR', 'contract': 'SSR', 'commandSpell': 'UR', 'sevenSwords': 'UR', 'railgun': 'UR', 'sealCard': 'UR', 'swordRain': 'SSR', 'voidTears': 'SSR', 'absoluteZero': 'UR'}
 NEW_RARITIES = {'shield': 'SSR', 'recycle': 'SR', 'discover': 'SSR', 'sap': 'SR', 'exchange': 'UR', 'slow': 'R', 'swapAny': 'SSR', 'kamui': 'UR', 'handDestruction': 'SSR', 'gravity': 'SSR', 'reaper': 'UR', 'shadowstep': 'SR', 'homeTeleport': 'SSR', 'blackhole': 'SSR', 'meteor': 'SSR', 'treasure': 'SSR', 'concert': 'SSR', 'shuffle': 'SSR', 'all_cards': 'SR'}
 
 
@@ -85,64 +84,46 @@ def impact_rarity(pool, kind, values):
 
 
 def assign_weights(pool, mechanisms):
-    """输入池及去重效果，按确认的新增配额缩放原概率，使用精确分数生成整数权重，输出整数权重。"""
+    """输入内容池与完整效果；道具权重统一为1，事件沿用精确概率，写入参数权重。"""
     candidates = [(m['id'], p) for m in mechanisms if m['enabled'] for g in m['groups'] for p in g['parameters']]
-    triple_shields = [(kind, p) for kind, p in candidates if kind == 'shield' and p['values'].get('charges') == 3]
-    candidates = [(kind, p) for kind, p in candidates if (kind, p) not in triple_shields]
+    if pool == 'card':
+        # 道具由ContentCatalog先按固定档位概率抽取，再均分该档全部完整效果。
+        for _, parameter in candidates: parameter['weight'] = 1
+        return
     construction_candidates = candidates
     candidates = [(k,p) for k,p in candidates if k not in CONSTRUCTION_RARITIES]
     all_candidates = candidates
     candidates = [(k,p) for k,p in candidates if k not in ANIME_RARITIES]
     probabilities = []
-    if pool == 'card':
-        percentages = dict(cash=20, move=12, bonus=6, barrier=5, demolish=11, swap=5, immunity=6, halfPayment=6, release=4, steal=5, remote=6, blast=3, jail=3, freeUpgrade=3, gamble=2, fullDemolish=2, fullUpgrade=1)
-        for kind, p in candidates:
-            count = sum(k == kind for k, _ in candidates)
-            if kind in NEW_CARD: probability = Fraction(NEW_CARD[kind]) / 100 / count
-            else:
-                probability = Fraction({300:9, 500:9, 800:2}[p['values']['amount']], 100) if kind == 'cash' else Fraction(percentages[kind], 100 * count)
-                probability *= Fraction(3,5) if p['rarity'] == 'UR' else Fraction(66,95)
-            probabilities.append(probability)
-    else:
-        rarities = dict(R=40, SR=30, SSR=25, UR=5)
-        # 2026-10-18 文案删减前的参数档数量；不按删减后的档位数重分整个事件池。
-        original_counts = dict(R=7, SR=21, SSR=21, UR=3) if pool == 'chance' else dict(R=4, SR=5, SSR=11, UR=5)
-        for kind, p in candidates:
-            if kind in NEW_EVENT[pool]:
-                probabilities.append(Fraction(NEW_EVENT[pool][kind]) / 100 / sum(k == kind for k, _ in candidates))
-                continue
-            baseline_rarity = 'SSR' if kind == 'free_upgrade' else p['rarity']
-            probability = Fraction(rarities[baseline_rarity], 100 * original_counts[baseline_rarity])
-            if pool == 'chance':
-                if kind == 'opponent_destroy': probability = Fraction(3,100)
-                elif kind == 'income': probability *= Fraction(113,120)
-                elif kind in {'bottom_income', 'gamble'}:
-                    probability *= Fraction(4 if kind == 'bottom_income' else 7, sum(k == kind for k, _ in candidates))
-            else:
-                if kind == 'global_demolition': probability = Fraction(3,100)
-                elif kind == 'income': probability *= Fraction(633,655)
-                elif kind == 'directed': probability *= Fraction(3, sum(k == kind for k, _ in candidates))
-            probability *= Fraction(92,100) if pool == 'chance' else Fraction(89,100)
-            probabilities.append(probability)
+    rarities = dict(R=40, SR=30, SSR=25, UR=5)
+    # 2026-10-18 文案删减前的参数档数量；不按删减后的档位数重分整个事件池。
+    original_counts = dict(R=7, SR=21, SSR=21, UR=3) if pool == 'chance' else dict(R=4, SR=5, SSR=11, UR=5)
+    for kind, p in candidates:
+        if kind in NEW_EVENT[pool]:
+            probabilities.append(Fraction(NEW_EVENT[pool][kind]) / 100 / sum(k == kind for k, _ in candidates))
+            continue
+        baseline_rarity = 'SSR' if kind == 'free_upgrade' else p['rarity']
+        probability = Fraction(rarities[baseline_rarity], 100 * original_counts[baseline_rarity])
+        if pool == 'chance':
+            if kind == 'opponent_destroy': probability = Fraction(3,100)
+            elif kind == 'income': probability *= Fraction(113,120)
+            elif kind in {'bottom_income', 'gamble'}:
+                probability *= Fraction(4 if kind == 'bottom_income' else 7, sum(k == kind for k, _ in candidates))
+        else:
+            if kind == 'global_demolition': probability = Fraction(3,100)
+            elif kind == 'income': probability *= Fraction(633,655)
+            elif kind == 'directed': probability *= Fraction(3, sum(k == kind for k, _ in candidates))
+        probability *= Fraction(92,100) if pool == 'chance' else Fraction(89,100)
+        probabilities.append(probability)
     if sum(probabilities) != 1: raise ValueError(f'{pool} 原效果概率合计须为100%')
     original = {(kind,p['id']): probability for (kind,p),probability in zip(candidates,probabilities)}
     probabilities = []
-    new_ur = sum(kind in ANIME_RARITIES and p['rarity']=='UR' for kind,p in all_candidates)
     new_regular = sum(kind in ANIME_RARITIES and p['rarity']!='UR' for kind,p in all_candidates)
     for kind,p in all_candidates:
-        if pool == 'card':
-            probability = (Fraction(1,40)/new_ur if p['rarity']=='UR' else Fraction(1,5)/new_regular) if kind in ANIME_RARITIES else original[(kind,p['id'])] * (Fraction(1,2) if p['rarity']=='UR' else Fraction(15,19))
-        elif pool == 'chance': probability = Fraction(3,100)/new_regular if kind in ANIME_RARITIES else original[(kind,p['id'])]*Fraction(97,100)
+        if pool == 'chance': probability = Fraction(3,100)/new_regular if kind in ANIME_RARITIES else original[(kind,p['id'])]*Fraction(97,100)
         else: probability = original[(kind,p['id'])]
         probabilities.append(probability)
     candidates, probabilities = assign_construction(pool, construction_candidates, all_candidates, probabilities)
-    if triple_shields:
-        # 三重罗生门与本批动漫 UR 均分原有额度，保留其余效果概率和道具池 UR 总概率5%。
-        sources = [i for i, (kind, p) in enumerate(candidates) if kind in ANIME_RARITIES and p['rarity'] == 'UR']
-        share = sum(probabilities[i] for i in sources) / (len(sources) + len(triple_shields))
-        for i in sources: probabilities[i] = share
-        candidates += triple_shields
-        probabilities += [share] * len(triple_shields)
     if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))
     weights = [int(p * denominator) for p in probabilities]
@@ -151,14 +132,19 @@ def assign_weights(pool, mechanisms):
 
 
 def generate(pool, filename):
-    """输入素材文件，去重完整效果、分配档位及独立权重，生成运行配置。"""
+    """输入素材文件，按已有卡面身份保留机制参数，新卡解析效果，再生成档位与权重。"""
+    file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')
+    data = json.loads(file.read_text())
+    known_skins = {skin['id']: (m['id'], p['values']) for m in data['content']['mechanisms']
+                   for g in m['groups'] for p in g['parameters'] for skin in p['skins']}
     mechanisms = {}
     for line in (ROOT / 'docs/content' / filename).read_text().splitlines():
         cells = [c.strip() for c in line.split('|')[1:-1]]
         if len(cells) != 9 or not cells[0].isdigit() or cells[3] not in RARITIES: continue
         skin_id, name, rarity = cells[1:4]
         quote, description, effect = cells[5:8] if pool == 'card' else cells[4:7]
-        kind, values = classify(pool, effect)
+        known = known_skins.get(f'{pool}_{skin_id}')
+        kind, values = known if known is not None else classify(pool, effect)
         rarity = impact_rarity(pool, kind, values)
         if cells[3] != rarity: raise ValueError(f'{pool} {skin_id} 标注 {cells[3]}，实际影响应为 {rarity}')
         mechanism = mechanisms.setdefault(kind, {'id': kind, 'enabled': kind != 'extra_action', 'groups': [{'id': 'default', 'parameters': []}]})
@@ -170,12 +156,11 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':100,'fortune':76,'card':141}[pool]
+    expected = {'chance':100,'fortune':76}.get(pool)
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
-    if count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
+    if expected is not None and count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))
-    file = ROOT / 'backend/src/main/resources/game-rules' / ('card-events.json' if pool == 'card' else pool+'-events.json')
-    data = json.loads(file.read_text()); data['content'] = {'mechanisms': list(mechanisms.values())}
+    data['content'] = {'mechanisms': list(mechanisms.values())}
     file.write_text(json.dumps(data, ensure_ascii=False, indent=2)+'\n')
     enabled = [p for m in mechanisms.values() if m['enabled'] for g in m['groups'] for p in g['parameters']]
     counts = {rarity: sum(p['rarity'] == rarity for p in enabled) for rarity in ['R', 'SR', 'SSR', 'UR']}

@@ -33,6 +33,12 @@ public class ArchiveRules {
     private static final String PRE_CARD_COPY_REVIEW_RULES = "3a8e4afa217ab084d1e759e97997aab29e3388862712d9969dc0f2796f1a2745";
     /** 三重罗生门独立为三层 UR 后的默认规则，旧卡保留原参数与等级。 */
     private static final String TRIPLE_SHIELD_RULES = "4043f8c7fb68f7ed5dc7e83506236eafd86674765e5a412bbce04202379bd580";
+    /** 投影魔术升级为 UR 并可复制 UR，旧手牌保留冻结卡面及参数。 */
+    private static final String UR_PROJECTION_RULES = "c03ab21ae5cdfb4b2f0e7745cc75dcaa7411f0e7dc9f7d161fdf27a00c49c230";
+    /** 全部道具UR完整效果均分5%额度后的默认摘要，旧卡面和进度继续保留。 */
+    private static final String EQUAL_UR_RULES = "3d9daa6260811a5ca0615b87f87faa4600808c39963486ba10bee14d725e33f2";
+    /** 道具四档内完整效果均分后的默认摘要，保留原档位总出率及旧手牌。 */
+    private static final String EQUAL_CARD_TIER_RULES = "341e825c8954c3be3a0dcc3d505970a58a5cf9e0a4f3afbbd5a8c3d589a6208e";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -51,7 +57,10 @@ public class ArchiveRules {
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
         return digest.equals(savedDigest)
-                || (ANIME_CONTENT_RULES.equals(digest) || TRIPLE_SHIELD_RULES.equals(digest)) && savedDigest != null && Set.of(ANIME_CONTENT_RULES, PRE_CARD_COPY_REVIEW_RULES, PRE_RAILGUN_COPY_RULES, SKIN_EXPANSION_RULES, PRE_SKIN_EXPANSION_RULES, RENAMED_CONTENT_RULES, EXPANSION_RULES, PRE_EXPANSION_RULES).contains(savedDigest)
+                || EQUAL_CARD_TIER_RULES.equals(digest) && (EQUAL_UR_RULES.equals(savedDigest) || UR_PROJECTION_RULES.equals(savedDigest) || TRIPLE_SHIELD_RULES.equals(savedDigest))
+                || EQUAL_UR_RULES.equals(digest) && (UR_PROJECTION_RULES.equals(savedDigest) || TRIPLE_SHIELD_RULES.equals(savedDigest))
+                || UR_PROJECTION_RULES.equals(digest) && TRIPLE_SHIELD_RULES.equals(savedDigest)
+                || (ANIME_CONTENT_RULES.equals(digest) || TRIPLE_SHIELD_RULES.equals(digest) || UR_PROJECTION_RULES.equals(digest) || EQUAL_UR_RULES.equals(digest) || EQUAL_CARD_TIER_RULES.equals(digest)) && savedDigest != null && Set.of(ANIME_CONTENT_RULES, PRE_CARD_COPY_REVIEW_RULES, PRE_RAILGUN_COPY_RULES, SKIN_EXPANSION_RULES, PRE_SKIN_EXPANSION_RULES, RENAMED_CONTENT_RULES, EXPANSION_RULES, PRE_EXPANSION_RULES).contains(savedDigest)
                 || SKIN_EXPANSION_RULES.equals(digest) && PRE_SKIN_EXPANSION_RULES.equals(savedDigest)
                 || RENAMED_CONTENT_RULES.equals(digest) && (EXPANSION_RULES.equals(savedDigest) || PRE_EXPANSION_RULES.equals(savedDigest))
                 || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);

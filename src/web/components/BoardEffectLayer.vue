@@ -23,7 +23,7 @@ function captionStyle(point: { x: number; y: number }): { top: string; left: str
 /** 输入实际地产前后外观，返回等级变化或本次效果提示。 */
 function propertyResult(before: BoardEffectTile, after: BoardEffectTile): string {
   switch (props.effect.kind) {
-    case 'kamui': return '封入异空间';
+    case 'kamui': return `封印 ${after.kamuiTurns ?? 3} 回合 · 停止收租`;
     case 'kamuiRelease': return '地产恢复';
     case 'blackhole': return '附加效果清除';
     case 'meteor': return '陨星 +1';

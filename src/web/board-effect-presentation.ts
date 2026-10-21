@@ -7,7 +7,7 @@ export const BOARD_EFFECTS = {
   swapAny: { label: '斗转星移', duration: 1600, sprite: 'blackhole', description: '选中的两名玩家同时换位，不结算落点或起点。' },
   shuffle: { label: 'ROOM · 错位空间', duration: 2200, sprite: 'blackhole', description: '全员接手另一人的原位置，不触发落点。' },
   gravity: { label: '地爆天星', duration: 2200, sprite: 'blackhole', description: '其他玩家聚集到施术者所在格，完成后继续掷骰。' },
-  kamui: { label: '神威空间', duration: 1800, sprite: 'kamui', description: '地产卷入异空间，效果结束后展示冻结状态。' },
+  kamui: { label: '神威空间', duration: 1800, sprite: 'kamui', description: '所选同边地产同时卷入异空间，展示三回合封印及停止收租。' },
   kamuiRelease: { label: '神威解除', duration: 1800, sprite: 'kamui', description: '地产从异空间恢复，原有附加效果继续保留。' },
   blackhole: { label: '黑洞吞噬', duration: 2000, sprite: 'blackhole', description: '清除地产附加效果，保留建筑、产权和抵押。' },
   meteor: { label: '陨星降临', duration: 2000, sprite: 'meteor', description: '陨星落在实际命中的地产，增加截停层数。' },
