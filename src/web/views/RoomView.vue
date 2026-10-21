@@ -194,7 +194,8 @@ const canManageSelectedProperty = computed(() => {
     && (!tile.mortgaged || !payment.value && (game.me?.cash ?? 0) >= redeemCost(tile));
 });
 const turnIdentity = computed(() => `${game.room?.roomId ?? code.value}:${game.room?.gameId}:${game.room?.turnNumber}`);
-const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && !game.privateData?.activeCardUsed);
+/** 根据普通主动次数和卍解剩余额度，返回当前是否可以准备使用手牌。 */
+const canPrepareCard = computed(() => !game.room?.activity && !boardAnimating.value && !game.settling && !props.spectator && game.room?.status === 'playing' && game.isMyTurn && game.room.phase === 'pre_roll' && !game.room.pending && !game.room.tradePending && (!game.privateData?.activeCardUsed || game.privateData?.bankaiActive && (game.privateData.bankaiRemaining ?? 0) > 0));
 const drafting = computed(() => !!selectedCard.value && selectedCardActive.value);
 const mapChoice = computed(() => choice.value && ['free_upgrade', 'full_upgrade', 'self_destroy', 'opponent_destroy'].includes(choice.value.type) ? choice.value : null);
 const targetKind = computed(() => mapChoice.value ? 'tile' : drafting.value && TILE_CARDS.includes(selectedCard.value!.kind) ? 'tile' : drafting.value && PLAYER_CARDS.includes(selectedCard.value!.kind) ? 'player' : null);

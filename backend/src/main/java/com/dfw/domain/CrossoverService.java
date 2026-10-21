@@ -54,7 +54,7 @@ public final class CrossoverService {
     public static boolean activeAllowed(Room room,Player owner,Card card) {
         return NetaService.allowed(room,owner,card) && handAllowed(room,owner,card,true)
                 && (turns(owner,"DEFENSE_SPECIALIZATION")==0 || !(card.kind.equals("bankai") && !NetaService.modern(card)) && !REPLACEMENTS.contains(card.kind) && !AnimeService.attacks(card.kind))
-                && (turns(owner,"BLUE_BIND")==0 && state(room).stationaryTurn!=room.turnNumber || !(card.kind.equals("bankai") && !NetaService.modern(card)) && !REPLACEMENTS.contains(card.kind));
+                && (turns(owner,"BLUE_BIND")==0 && state(room).stationaryTurn!=room.turnNumber || !(card.kind.equals("keqingRush") || card.kind.equals("bankai") && !NetaService.modern(card)) && !REPLACEMENTS.contains(card.kind));
     }
 
     /** 输入主动使用参数，在旧牌、投影和新牌共同入口检查防御特化及主动移动代价。 */
