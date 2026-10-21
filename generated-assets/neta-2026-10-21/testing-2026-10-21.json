@@ -1,0 +1,216 @@
+{
+  "database": "dfw_neta_20261021_1433",
+  "newRooms": 10,
+  "directedFollowUpScenarios": 5,
+  "cases": [
+    {
+      "case": "护盾优先",
+      "level": 3,
+      "shields": 0,
+      "petals": 3
+    },
+    {
+      "case": "部分花瓣防御",
+      "level": 2,
+      "petals": 2
+    },
+    {
+      "case": "火葬穿透",
+      "ownLevel": 2,
+      "enemyLevel": 1,
+      "ownShields": 3,
+      "enemyShields": 3,
+      "ownPetals": 2,
+      "enemyPetals": 3
+    },
+    {
+      "case": "全拆穿透",
+      "enemyLevel": 0,
+      "enemyShields": 3,
+      "enemyPetals": 3
+    },
+    {
+      "case": "火葬被防御代价不退且不可恢复",
+      "ownLevel": 0,
+      "enemyLevel": 3,
+      "restoreRetained": true
+    },
+    {
+      "case": "刻晴降级被挡仍传送付租",
+      "position": 1,
+      "targetLevel": 3,
+      "rent": 2500
+    },
+    {
+      "case": "虚化整对换位取消",
+      "positions": [
+        2,
+        0
+      ],
+      "initialPositions": [
+        2,
+        0
+      ],
+      "unchanged": true
+    },
+    {
+      "case": "虚化不挡偷牌",
+      "skip": 0,
+      "enemyCards": 0,
+      "stolenKind": "bonus"
+    },
+    {
+      "case": "神君二蓄势及休息追击",
+      "chargeLabels": [
+        [
+          "神君蓄势 3击 · 神君二1"
+        ]
+      ],
+      "level": 2,
+      "shields": 0,
+      "casterTurns": 2,
+      "casterSkip": 0,
+      "logs": [
+        "神君二2 使用道具「时间停止」；目标：神君二2；效果：开发固定场景 时间停止",
+        "神君蓄势：庆云顶，当前 3 击",
+        "神君二1 在起点原地停留，获得 ¥1500 和 1 张道具补给",
+        "神君二1 使用道具「时间停止」；目标：神君二1；效果：开发固定场景 时间停止",
+        "「煌煌威灵」效果已结算：庆云顶",
+        "庆云顶 被神君锁定，初始2击",
+        "神君二1 使用道具「煌煌威灵」；目标：庆云顶（1号）；效果：开发固定场景 煌煌威灵",
+        "新地图已生成，2 人的财富旅程开始！"
+      ]
+    },
+    {
+      "case": "神君六蓄势及休息追击",
+      "chargeLabels": [
+        [
+          "神君蓄势 3击 · 神君六6"
+        ],
+        [
+          "神君蓄势 4击 · 神君六6"
+        ],
+        [
+          "神君蓄势 4击 · 神君六6"
+        ],
+        [
+          "神君蓄势 4击 · 神君六6"
+        ],
+        [
+          "神君蓄势 4击 · 神君六6"
+        ]
+      ],
+      "level": 1,
+      "shields": 0,
+      "casterTurns": 2,
+      "casterSkip": 0,
+      "logs": [
+        "神君六1 使用道具「时间停止」；目标：神君六1；效果：开发固定场景 时间停止",
+        "神君蓄势：晨曦酒庄，当前 3 击",
+        "神君六6 在起点原地停留，获得 ¥1500 和 2 张道具补给",
+        "神君六6 使用道具「时间停止」；目标：神君六6；效果：开发固定场景 时间停止",
+        "「煌煌威灵」效果已结算：晨曦酒庄",
+        "晨曦酒庄 被神君锁定，初始2击",
+        "神君六6 使用道具「煌煌威灵」；目标：晨曦酒庄（1号）；效果：开发固定场景 煌煌威灵",
+        "新地图已生成，6 人的财富旅程开始！"
+      ]
+    },
+    {
+      "case": "花瓣补至3但不延期不重置释放次数",
+      "before": [
+        "千本樱：1片 · 至第4个个人回合结束"
+      ],
+      "after": [
+        "千本樱：3片 · 至第4个个人回合结束"
+      ],
+      "charges": 3
+    },
+    {
+      "case": "花瓣第1个后续回合结束",
+      "personalTurns": 2,
+      "skip": 2,
+      "charges": 3,
+      "labels": [
+        "千本樱：3片 · 至第4个个人回合结束"
+      ]
+    },
+    {
+      "case": "花瓣第2个后续回合结束",
+      "personalTurns": 3,
+      "skip": 1,
+      "charges": 3,
+      "labels": [
+        "千本樱：3片 · 至第4个个人回合结束"
+      ]
+    },
+    {
+      "case": "花瓣第3个后续回合结束",
+      "personalTurns": 4,
+      "skip": 0,
+      "charges": 0,
+      "labels": []
+    },
+    {
+      "case": "研究非零投入胜者支付",
+      "winnerCorrect": true,
+      "winnerHand": 2,
+      "winnerUR": 1,
+      "loserHands": [
+        3,
+        3
+      ],
+      "cashUnchanged": true,
+      "publicBids": false
+    },
+    {
+      "case": "空手全员放弃无补偿",
+      "hands": [
+        0,
+        0
+      ],
+      "cash": [
+        100000,
+        100000
+      ],
+      "pending": null
+    },
+    {
+      "case": "黑洞清除神君不追击",
+      "level": 3,
+      "labels": []
+    },
+    {
+      "case": "追击时神威结束标记不延期",
+      "level": 3,
+      "frozen": 3,
+      "labels": []
+    },
+    {
+      "case": "产权改变清除神君",
+      "newOwnerIsActor": true,
+      "level": 3,
+      "labels": []
+    },
+    {
+      "case": "四张攻击无合法建筑目标保留",
+      "hands": 4,
+      "activeUsed": false,
+      "cash": 100000
+    },
+    {
+      "case": "施术者淘汰清除神君",
+      "status": "finished",
+      "level": 3,
+      "labels": [],
+      "casterBankrupt": true
+    },
+    {
+      "case": "新建大厅状态兼容",
+      "status": "lobby",
+      "runtimeAbsent": true,
+      "bankaiActive": false,
+      "bankaiRemaining": 0,
+      "petalsRemaining": 0
+    }
+  ]
+}

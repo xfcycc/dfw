@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-21",
+  "status": "静态检查、真实对局补测及大厅修复回归完成；并发开局超时另记为未解决问题",
+  "checks": {
+    "sourceJsonSync": "通过，重复同步文件摘要一致",
+    "rarityAndWeights": "通过；道具UR总概率5%，SSR30种、UR29种完整效果，天才俱乐部财富1/101",
+    "frontendTypecheck": "npm run typecheck，通过",
+    "backendCompile": "mvn -f backend/pom.xml -Dmaven.test.skip=true compile -q，通过",
+    "diffWhitespace": "git diff --check，通过",
+    "oss": "8张均HTTP200、image/webp、大小和MD5与本地一致",
+    "visual": "实际ContentCard组件查看流萤人形原画与UR等级外框；本批UR关闭原画动画"
+  },
+  "developmentEnvironment": {
+    "database": "dfw_neta_20261021_1433",
+    "port": 3018,
+    "productionAccessed": false,
+    "note": "沿用独立开发库，实际WebSocket玩家命令；未创建单元或冒烟测试文件"
+  },
+  "observations": [
+    {
+      "mechanism": "bankai",
+      "result": "发动剩余2次；两张后续主动牌均成功，投影连锁与第三张均被服务端拒绝，余额为0"
+    },
+    {
+      "mechanism": "igniteSea",
+      "result": "对手3级建筑、2层盾，发动后护盾0、建筑0"
+    },
+    {
+      "mechanism": "senbonzakura",
+      "result": "展开3片；主动释放1片使对手3级降2级，本回合再次释放被拒；随后面对星爆2击授权1片，余额从2降1，自家3级降2级"
+    },
+    {
+      "mechanism": "geniusClub",
+      "result": "3个候选均UR；触发者0投入与另一玩家1投入形成并列，第三人放弃；仅抽1名胜者。胜者断线重连后胜者、候选身份、窗口身份不变。零材料胜者获1张UR，败者投入牌保留，公共快照无bids秘密材料字段"
+    }
+  ],
+  "notExecuted": [
+    "单元测试",
+    "冒烟测试",
+    "前端build",
+    "自动提交",
+    "服务器部署",
+    "完整多人平衡对局"
+  ],
+  "previewScreenshot": "/tmp/dfw-neta-ur-static-preview.jpg",
+  "artworkBytes": 2619444,
+  "previousNotCovered": [
+    "千本樱跨满3个后续回合到期与所有穿盾组合的真实对局",
+    "神君两人及六人局的本轮复测",
+    "研究非零材料胜者支付的真实对局",
+    "全部无目标及淘汰组合；原四张沿已有实现和本轮编译检查"
+  ],
+  "notCoveredThisRun": [
+    "长时间多人体验与数值平衡",
+    "所有道具、事件、抵押、交易和淘汰的组合穷举",
+    "前端各尺寸与全部弹框的人工操作回归"
+  ],
+  "followUpTesting": {
+    "date": "2026-10-21",
+    "method": "专用开发库，10个新真实对局、5项后续固定边界场景，HTTP建房与WebSocket玩家命令；未编写单元或冒烟测试",
+    "results": "testing-2026-10-21.json",
+    "fixedIssue": {
+      "problem": "新建大厅room.runtime为空时，新增Neta状态读取发生空指针，创建房间事务失败",
+      "change": "NetaService.state对未开局大厅返回临时空状态，不创建对局运行时",
+      "regression": "创建、加入、准备、开局10个房间通过；新建大厅仍无runtime，私人卍解和花瓣状态为缺省值"
+    },
+    "openIssue": {
+      "problem": "十个房间同时准备、开局时出现JDBC连接池等待超时",
+      "evidence": "testing-server.log中SQLTransientConnectionException，pool total=4 active=4；Flowable DbIdGenerator.getNewBlock获取独立事务连接时等待",
+      "scope": "并发开局与流程取号链路，非卡牌结算；未修改Flowable配置和连接池",
+      "workaroundObserved": "逐房间开局全部通过",
+      "status": "待单独修复并发问题，不能据本轮卡牌通过认定并发开局通过"
+    }
+  }
+}

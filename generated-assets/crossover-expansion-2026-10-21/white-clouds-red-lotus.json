@@ -1,0 +1,158 @@
+{
+  "code": "C14",
+  "skinId": "fortune_crossover_endlessClouds",
+  "revision": "red-lotus-v1",
+  "reference": {
+    "url": "https://www.douyin.com/video/7460303445422083347",
+    "title": "燕云扇奶武学特效蝶舞飞花展示",
+    "observed": "公开玩家实录约00:29，可见亮白中心、红粉色半透明莲瓣、圆形光波与花瓣散开；本稿按用户要求加强朱红色，不宣称逐帧复刻。"
+  },
+  "previousOriginalPath": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-92955a08-62fc-44b3-a8b5-19a4fba279a4.png",
+  "prompt": "Revise the referenced card illustration for 白云无尽 from Where Winds Meet, using its fan-healing spell's radiant lotus bloom as the visual focus. Keep the same adult female wuxia healer identity, long dark hair, refined jade-white flowing hanfu, folding fan and painterly realistic Chinese wuxia game aesthetic, normal adult proportions. Recompose as a dramatic three-quarter full-body view: she stands in the CENTER, holding her open fan at shoulder height, one palm gently extended; a HUGE RED MAGICAL LOTUS, wider than her body by three times, blossoms under and around her feet and lower body. The lotus is NOT a natural pond flower or a solid throne: it is a semi-transparent spell made of layered crimson-scarlet and rose-red luminous pointed lotus petals with bright ivory-white outlines, glowing white-gold core, inner petals upright, outer petals opening outward into a wide low ellipse in perspective. Delicate red petals spiral upward, a thin circular healing ripple expands horizontally beneath it, translucent warm red light wraps sleeves and fabric. Echo the healing fan gameplay bloom: flower unfolding, healing wave radiating, scattered petals fading. She must remain clearly visible above and among the petals, face and main flower inside central safe area. Remove the large seated foreground patient to give the lotus room; a few tiny resting allies can be far in the mist. Cool misty river valley, distant Chinese mountains and bamboo silhouettes for contrast against the luminous red lotus, cinematic pale silver-jade ambient light with rich red focal glow, serene restorative energy, NOT fiery aggressive explosion, no flames, no blood, no sinister corruption. 1:1 square full-bleed illustration. NO lettering, no Chinese characters, no title, captions, logo, UI, border, frame, rarity, collage or speech bubbles. Keep original fantasy game proportions, not chibi, not anime mascot. Produce one complete standalone beautiful finished card illustration.",
+  "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a as /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-cc655c1f-fdcf-4c2f-9e71-47bc75bab720.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+  "ossUploaded": true,
+  "runtimeMappingChanged": true,
+  "layers": [
+    {
+      "id": "lotus",
+      "prompt": "Extract ONLY the gigantic luminous RED MAGICAL LOTUS from the referenced illustration as an independent transparent VFX layer. Preserve the lotus exact perspective, alignment and size on the SAME square canvas: flower occupies mostly the lower half, center around 50 percent x, 75 percent y; pointed rear petals rise to mid-height, outer front petals spread toward bottom corners. The lotus must be layered translucent crimson-scarlet petals with bright ivory-white vein-like outlines and glowing white-gold heart, airborne restorative magical light, not an ordinary pond plant or solid crystal throne. Remove the female healer and all her fabric and fan, ALL humans, scenery, ground, mountains, flying ribbons and loose floating particles; inpaint the center and rear of the lotus naturally where her body occluded it. Keep ONLY the single coherent lotus flower, beautiful fine petal edges and soft restrained glow, alpha transparent outside it and through petal gaps. No drawn checkerboard, no green foliage, no black background, no text or frame. Do not enlarge, shift or recenter the lotus on the canvas; original alignment is essential for animation.",
+      "transparent_background": true,
+      "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a as /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-29aa8d92-05da-494e-8502-0231439ed9a7.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "originalPath": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-29aa8d92-05da-494e-8502-0231439ed9a7.png",
+      "image": "art/C14-lotus.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 1797506,
+      "sha256": "1a88068bffd02c617f5d65abfb279f122645f3f7b7580bd81a3eef3c657ffae8"
+    },
+    {
+      "id": "background",
+      "prompt": "Create an exact aligned background clean plate for the referenced White Clouds Endless red-lotus card illustration. SAME 1:1 square canvas, same camera framing and perspective, same misty Chinese river valley, mountains, bamboo, distant pagodas and small resting allies. Remove ONLY the large central female healer and her fan, every large red lotus petal, glowing ribbons and floating red particles; inpaint the hidden environment naturally behind them with calm stone ground and pale mist. No large foreground figure, no large flowers, no text, no card frame, no UI. Preserve light quality, horizon positions and original background proportions. Finished detailed Chinese wuxia game painterly landscape, cool jade silver with warm sun, ready for layered animation.",
+      "transparent_background": false,
+      "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a as /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-8a6684d6-1017-4a9d-9923-7ac0ae435b82.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "originalPath": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-8a6684d6-1017-4a9d-9923-7ac0ae435b82.png",
+      "image": "art/C14-background.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 3235681,
+      "sha256": "371543644abe100056907bf626d81051dd553d6b2b1529e6c7066f3ddea39935"
+    },
+    {
+      "id": "healer",
+      "prompt": "Extract ONLY the central adult female healer from the referenced illustration as a clean transparent foreground character layer. Preserve her EXACT appearance, jade-white Chinese hanfu, black hairstyle, face, fan, sleeves, flowing sash, pose, camera angle, position and size on the SAME square canvas. Keep her hair tips, fan, all hands and complete trailing fabric. Remove all scenery, all red lotus flower petals, all red ribbons of magical energy, all floating particles, circular spell effects and all other people. Inpaint portions of her lower hem naturally where the lotus occluded it. Transparent alpha everywhere except the healer and her fan; no floor, no shadows painted on background, no checkerboard drawn in, no outline sticker border, no text. Keep original full composition alignment: face near top center and hem trailing toward lower center, do not recenter or zoom the cutout.",
+      "transparent_background": true,
+      "output_hint": "Generated images are saved to /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a as /Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-666b4ec7-ed45-4035-ae3a-ed9b089cb0b1.png by default.\nIf you need to use a generated image at another path, copy it and leave the original in place unless the user explicitly asks you to delete it.\nThe generated image is already displayed to the user. There is no need to render it in the final response as a Markdown image or file link.",
+      "originalPath": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-666b4ec7-ed45-4035-ae3a-ed9b089cb0b1.png",
+      "image": "art/C14-healer.png",
+      "width": 1254,
+      "height": 1254,
+      "bytes": 2220442,
+      "sha256": "23b0afa9277fce6a314cce8561b60c6eaa0575766de74db0a8ef0771345e6aed"
+    }
+  ],
+  "animation": {
+    "durationSeconds": 9,
+    "phases": [
+      "聚光",
+      "红莲展开",
+      "治疗光波与花瓣回旋",
+      "花瓣散去"
+    ],
+    "rendering": "本地Canvas分层合成与粒子，不是原游戏视频或逐帧复刻",
+    "referenceObserved": true
+  },
+  "userDecision": "2026-10-21 用户回复“批准”，按本版红莲方向保留；沿用先不做OSS替换的边界。",
+  "preview": "white-clouds-red-lotus.html",
+  "exportedFrame": "artifacts/crossover-expansion-2026-10-21/white-clouds-red-lotus-frame.png",
+  "exportedVideo": "artifacts/crossover-expansion-2026-10-21/white-clouds-red-lotus.webm",
+  "ossAssets": [
+    {
+      "id": "fortune_crossover_endlessClouds",
+      "code": "C14",
+      "name": "白云无尽",
+      "role": "illustration",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-cc655c1f-fdcf-4c2f-9e71-47bc75bab720.png",
+      "width": 1254,
+      "height": 1254,
+      "alphaPreserved": false,
+      "webp": "/tmp/dfw-crossover-oss-20261021/fortune_crossover_endlessClouds.webp",
+      "bytes": 447000,
+      "sha256": "df48a19d45d48bf04cbfd1b2738c503c97fd67a351a5dde590786a2d338ff9d4",
+      "md5": "61eb1363959c2d1ab6ea81e339577892",
+      "sourceSha256": "5d7944239a42d62a3e7caebe7bc33ea78ea11d779fb3979b4e98dc259a70bc78",
+      "url": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-df48a19d45d4.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 447000,
+        "contentMd5": "YesTY5WcLRq26oHjOVd4kg=="
+      }
+    },
+    {
+      "id": "fortune_crossover_endlessClouds-lotus",
+      "code": "C14-lotus",
+      "name": "白云无尽 lotus",
+      "role": "lotus",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-29aa8d92-05da-494e-8502-0231439ed9a7.png",
+      "width": 1254,
+      "height": 1254,
+      "alphaPreserved": true,
+      "webp": "/tmp/dfw-crossover-oss-20261021/fortune_crossover_endlessClouds-lotus.webp",
+      "bytes": 434122,
+      "sha256": "ab30d36851f5252c36a368864e0a7c4902a2f564ab08979f261d318bdafbfc31",
+      "md5": "9f61a64510360ad0efc61c5a9603b177",
+      "sourceSha256": "1a88068bffd02c617f5d65abfb279f122645f3f7b7580bd81a3eef3c657ffae8",
+      "url": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-lotus-ab30d36851f5.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 434122,
+        "contentMd5": "n2GmRRA2CtDvxhxalgOxdw=="
+      }
+    },
+    {
+      "id": "fortune_crossover_endlessClouds-background",
+      "code": "C14-background",
+      "name": "白云无尽 background",
+      "role": "background",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-8a6684d6-1017-4a9d-9923-7ac0ae435b82.png",
+      "width": 1254,
+      "height": 1254,
+      "alphaPreserved": false,
+      "webp": "/tmp/dfw-crossover-oss-20261021/fortune_crossover_endlessClouds-background.webp",
+      "bytes": 497066,
+      "sha256": "22e058df1b77bc9a6d0348aeb6f48ef3eb08dab206c47d0fcccff77d34be2ee0",
+      "md5": "34dd86f6c8a1273891421a4732cbcf36",
+      "sourceSha256": "371543644abe100056907bf626d81051dd553d6b2b1529e6c7066f3ddea39935",
+      "url": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-background-22e058df1b77.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 497066,
+        "contentMd5": "NN2G9sihJziRQhpHMsvPNg=="
+      }
+    },
+    {
+      "id": "fortune_crossover_endlessClouds-healer",
+      "code": "C14-healer",
+      "name": "白云无尽 healer",
+      "role": "healer",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a15c80-99e7-75a0-b44e-dd84e4a5ac9a/exec-666b4ec7-ed45-4035-ae3a-ed9b089cb0b1.png",
+      "width": 1254,
+      "height": 1254,
+      "alphaPreserved": true,
+      "webp": "/tmp/dfw-crossover-oss-20261021/fortune_crossover_endlessClouds-healer.webp",
+      "bytes": 484448,
+      "sha256": "1a8a4817b9e9bf8a9f73c2083cde563d44b51ad2595dabf790b7a10f916b7375",
+      "md5": "da7538834506f612a5df715a22021795",
+      "sourceSha256": "23b0afa9277fce6a314cce8561b60c6eaa0575766de74db0a8ef0771345e6aed",
+      "url": "https://pic.caiguoyu.cn/typora/dfw-crossover-20261021/fortune_crossover_endlessClouds-healer-1a8a4817b9e9.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 484448,
+        "contentMd5": "2nU4g0UG9hKl33FaIgIXlQ=="
+      }
+    }
+  ]
+}

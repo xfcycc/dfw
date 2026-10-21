@@ -5,10 +5,12 @@ from fractions import Fraction
 from math import lcm, gcd
 from functools import reduce
 from pathlib import Path
+from crossover_content import RARITIES as CROSSOVER_RARITIES, assign as assign_crossover
 from construction_content import RARITIES as CONSTRUCTION_RARITIES, assign as assign_construction
 
 ROOT = Path(__file__).resolve().parents[1]
 RARITIES = {'R', 'SR', 'SSR', 'UR'}
+NETA_RARITIES = {'keqingRush': 'SSR', 'thunderLord': 'UR', 'hollowfication': 'SSR', 'fireBurial': 'SSR', 'bankai': 'UR', 'igniteSea': 'UR', 'geniusClub': 'UR', 'senbonzakura': 'UR'}
 NEW_EVENT = {'chance': {'concert': '4', 'shuffle': '4'}, 'fortune': {'treasure': '5', 'all_cards': '6'}}
 ANIME_RARITIES = {'timeRewind': 'SSR', 'projection': 'UR', 'starburst': 'SSR', 'imagineBreaker': 'UR', 'classTrial': 'SR', 'timeRestore': 'SSR', 'vectorReflect': 'UR', 'deathReturn': 'UR', 'explosion': 'UR', 'corruption': 'SSR', 'contract': 'SSR', 'commandSpell': 'UR', 'sevenSwords': 'UR', 'railgun': 'UR', 'sealCard': 'UR', 'swordRain': 'SSR', 'voidTears': 'SSR', 'absoluteZero': 'UR'}
 NEW_RARITIES = {'shield': 'SSR', 'recycle': 'SR', 'discover': 'SSR', 'sap': 'SR', 'exchange': 'UR', 'slow': 'R', 'swapAny': 'SSR', 'kamui': 'UR', 'handDestruction': 'SSR', 'gravity': 'SSR', 'reaper': 'UR', 'shadowstep': 'SR', 'homeTeleport': 'SSR', 'blackhole': 'SSR', 'meteor': 'SSR', 'treasure': 'SSR', 'concert': 'SSR', 'shuffle': 'SSR', 'all_cards': 'SR'}
@@ -64,6 +66,8 @@ def classify(pool, effect):
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
     if kind == 'shield' and values.get('charges') == 3: return 'UR'
+    if kind in NETA_RARITIES: return NETA_RARITIES[kind]
+    if kind in CROSSOVER_RARITIES: return CROSSOVER_RARITIES[kind]
     if kind in CONSTRUCTION_RARITIES: return CONSTRUCTION_RARITIES[kind]
     if kind in {'freeUpgrade', 'free_upgrade'}: return 'SR'
     if kind in ANIME_RARITIES: return ANIME_RARITIES[kind]
@@ -72,6 +76,7 @@ def impact_rarity(pool, kind, values):
         if kind in {'gamble', 'fullDemolish', 'fullUpgrade'}: return 'UR'
         if kind in {'remote', 'immunity', 'barrier', 'blast', 'jail', 'freeUpgrade'}: return 'SSR'
         if kind == 'cash': return 'R' if values['amount'] <= 600 else 'SR'
+        if kind in {'fixed', 'move'} and values.get('steps') == 0: return 'SSR'
         if kind in {'fixed', 'move', 'bonus'}: return 'R'
         return 'SR'
     if kind in {'income', 'fee'}:
@@ -90,6 +95,10 @@ def assign_weights(pool, mechanisms):
         # 道具由ContentCatalog先按固定档位概率抽取，再均分该档全部完整效果。
         for _, parameter in candidates: parameter['weight'] = 1
         return
+    neta_candidates = [(k,p) for k,p in candidates if k in NETA_RARITIES]
+    candidates = [(k,p) for k,p in candidates if k not in NETA_RARITIES]
+    crossover_candidates = candidates
+    candidates = [(k,p) for k,p in candidates if k not in CROSSOVER_RARITIES]
     construction_candidates = candidates
     candidates = [(k,p) for k,p in candidates if k not in CONSTRUCTION_RARITIES]
     all_candidates = candidates
@@ -124,10 +133,16 @@ def assign_weights(pool, mechanisms):
         else: probability = original[(kind,p['id'])]
         probabilities.append(probability)
     candidates, probabilities = assign_construction(pool, construction_candidates, all_candidates, probabilities)
+    # 八素材事件各追加原池总量的1%，旧效果保持相对权重。
+    denominator_factor = 100 + len(neta_candidates)
+    probabilities = [p * Fraction(100, denominator_factor) for p in probabilities] + [Fraction(1, denominator_factor)] * len(neta_candidates)
+    candidates = list(candidates) + neta_candidates
+    candidates, probabilities = assign_crossover(pool, list(crossover_candidates) + neta_candidates, candidates, probabilities)
     if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))
     weights = [int(p * denominator) for p in probabilities]
     divisor = reduce(gcd, weights)
+    if sum(weights) // divisor > 9007199254740991: raise ValueError("事件精确总权重超过安全整数上限")
     for (_, parameter), weight in zip(candidates, weights): parameter['weight'] = weight // divisor
 
 
@@ -145,6 +160,7 @@ def generate(pool, filename):
         quote, description, effect = cells[5:8] if pool == 'card' else cells[4:7]
         known = known_skins.get(f'{pool}_{skin_id}')
         kind, values = known if known is not None else classify(pool, effect)
+        if kind in {'bankai', 'igniteSea', 'senbonzakura', 'geniusClub', 'kingsPressure'}: values = {'version': 2}
         rarity = impact_rarity(pool, kind, values)
         if cells[3] != rarity: raise ValueError(f'{pool} {skin_id} 标注 {cells[3]}，实际影响应为 {rarity}')
         mechanism = mechanisms.setdefault(kind, {'id': kind, 'enabled': kind != 'extra_action', 'groups': [{'id': 'default', 'parameters': []}]})
@@ -156,7 +172,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':100,'fortune':76}.get(pool)
+    expected = {'chance':103,'fortune':80}.get(pool)
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if expected is not None and count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))
