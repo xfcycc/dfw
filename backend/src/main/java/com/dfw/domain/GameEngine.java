@@ -87,7 +87,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.openingRollUsedTurn=-1; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
     /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");

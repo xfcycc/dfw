@@ -35,7 +35,7 @@ export interface Card extends ContentResult { kind: ItemKind; projected?: boolea
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: `cross_${string}` | `neta_${'bankai' | 'ignite' | 'research' | 'bid' | 'reward' | 'petals' | 'petal_defense'}` | `construction_${string}` | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'movement_release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  type: `cross_${string}` | `neta_${'bankai' | 'ignite' | 'research' | 'bid' | 'reward' | 'petals' | 'petal_defense'}` | `construction_${string}` | 'opening_roll' | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'movement_release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
   numbers?: number[];
   cardOptions?: Record<string, Card[]>;
   materialIds?: string[];

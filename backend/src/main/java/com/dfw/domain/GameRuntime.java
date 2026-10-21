@@ -19,6 +19,8 @@ public class GameRuntime {
     public String windowExit;
     /** 当前移动来源，RANDOM、REPLACE 或直接入狱后跳过移动的 JAIL。 */
     public String rollMode;
+    /** 最近开放开局自选骰点的全局回合，防止保留原结果或重连后重复开放。 */
+    public int openingRollOfferedTurn = -1;
     /** 已确定但尚未执行的移动步数。 */
     public Integer movementSteps;
     /** Flowable 实例标识。 */

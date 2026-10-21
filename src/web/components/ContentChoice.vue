@@ -24,10 +24,11 @@ const enabled = computed(() => game.canAct && game.canDecide && !game.room?.trad
 const wager = computed(() => props.choice.content?.parameters?.wager ?? 0);
 const upgrading = computed(() => ['free_upgrade', 'full_upgrade'].includes(props.choice.type));
 const choosingCards = computed(() => ['neta_bid', 'neta_reward', 'neta_ignite', 'neta_research', 'hand_limit', 'recycle', 'discover', 'anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type));
-watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; route.value = ''; point.value = 3; petalTiles.value = []; petalBudget.value = 1; }, { immediate: true });
-/** 输入是否确认，提交已保存选择的身份及地产或解控卡，失败保留输入。 */
+watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; route.value = ''; point.value = props.choice.type === 'opening_roll' ? game.room?.dice ?? 3 : 3; petalTiles.value = []; petalBudget.value = 1; }, { immediate: true });
+/** 输入是否确认，提交已保存选择的身份及点数、地产或解控卡，失败保留输入。 */
 async function decide(accept: boolean): Promise<void> {
   const action: Extract<GameAction, { type: 'contentDecision' }> = { type: 'contentDecision', decisionId: props.choice.id, accept };
+  if (props.choice.type === 'opening_roll' && accept) action.point = point.value;
   if (props.choice.type === 'neta_bid' && accept && keep.value.length) action.discardCardIds = keep.value;
   if (props.choice.type === 'neta_reward' && accept) action.cardId = discovered.value;
   if (props.choice.type === 'neta_petals' && accept) action.tileIds = petalTiles.value;
@@ -53,7 +54,11 @@ async function decide(accept: boolean): Promise<void> {
   <div v-else class="content-choice" :class="{ 'card-selection': choosingCards }">
     <ContentCard v-if="choice.content && !compact && !choosingCards" :content="choice.content" />
     <p v-if="choice.prompt" class="notice">{{ choice.prompt }}</p>
-    <template v-if="choice.type === 'neta_bid'">
+    <template v-if="choice.type === 'opening_roll'">
+      <label class="field">自选骰点<ThemedSelect v-model="point" label="选择开局骰点" :options="(choice.numbers ?? []).map(n => ({ value: n, label: `${n} 点` }))" /></label>
+      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">保留原骰点，暂不使用</button><button class="button primary" :disabled="!enabled" @click="decide(true)">使用唯一机会，选择 {{ point }} 点</button></div>
+    </template>
+    <template v-else-if="choice.type === 'neta_bid'">
       <p class="notice">已投入 {{ keep.length }}／2 张；可以零张参加。仅胜者弃牌，弃牌不折现。</p>
       <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: keep.includes(card.id) }"><input v-model="keep" type="checkbox" :value="card.id" :disabled="!keep.includes(card.id) && keep.length >= 2" /><ContentCard :content="card" compact thumbnail /></label></div>
       <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">放弃竞标</button><button class="button primary" :disabled="!enabled" @click="decide(true)">锁定 {{ keep.length }} 张秘密投入</button></div>

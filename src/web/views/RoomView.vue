@@ -651,7 +651,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
       <p v-if="mapChoice && !mapTargeting" class="map-target-instructions">{{ targetHint }}</p>
       <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
       <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>

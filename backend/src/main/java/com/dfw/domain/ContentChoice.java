@@ -10,7 +10,7 @@ import lombok.Setter;
 public class ContentChoice {
     /** 唯一选择身份。 */
     public String id;
-    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release、movement_release、hand_limit、recycle 或 discover。 */
+    /** opening_roll 为开局自选骰点，其他类型沿用事件、手牌及响应选择。 */
     public String type;
     /** 实际做选择的玩家。 */
     public String playerId;
@@ -48,6 +48,6 @@ public class ContentChoice {
     public long discardCash;
     /** 赌博已提交的随机样本，放弃时为空。 */
     public Integer sample;
-    /** 已消费天锁斩月后固定的两枚骰点。 */
+    /** 已固定的双骰结果，或开局自选的 1～6 点候选。 */
     public List<Integer> numbers = new ArrayList<>();
 }

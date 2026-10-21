@@ -230,6 +230,16 @@ public final class ContentService {
     }
     /** 输入确定限制及外部控制标记，保存跳过次数并登记保护；监禁立即停租，普通休息仍可收租，无返回值。 */
     private static void applyRestriction(Room room,Player owner,int count,boolean jailed,boolean controlled) { SettlementService.observe(room); if (jailed && count > 0) owner.matchStats.jailCount++; owner.skipTurns=Math.max(owner.skipTurns,count); if(!controlled) owner.voluntarySkipTurns=Math.max(owner.voluntarySkipTurns,count); owner.jailed=jailed || owner.jailed; if(controlled && count>0) StatusService.protectControl(room,owner); log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"+(jailed?"；服刑期间暂停收租，其他小游戏正常参与":"")); BoardEffect.cue(room,jailed?"jail":"rest",owner); }
+    /** 输入普通掷骰后的房间，在前三个个人回合内开放一次自选窗口，返回是否等待答复。 */
+    public boolean offerOpeningRoll(Room room) {
+        Player owner=current(room);
+        if(owner.openingRollUsedTurn>=0 || owner.personalTurns<1 || owner.personalTurns>3 || room.runtime.openingRollOfferedTurn==room.turnNumber || CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")>0) return false;
+        ContentChoice choice=open(room,owner,"opening_roll");
+        room.runtime.openingRollOfferedTurn=room.turnNumber;
+        choice.numbers=List.of(1,2,3,4,5,6);
+        choice.prompt="第 "+owner.personalTurns+"／3 个个人回合，本次掷出 "+room.dice+" 点。可消耗本局唯一机会自选 1～6 点，不消耗手牌或主动次数；保留原骰点则不消耗机会。迟缓、加码和移动翻倍仍照常生效。";
+        return true;
+    }
     /** 输入选择拥有者和类型，保存父事项并开放唯一私人选择，返回可填写参数的选择帧。 */
     ContentChoice open(Room room,Player owner,String type) {
         require(room.runtime.choice==null && room.trade==null,"请先处理已有选择");
@@ -249,6 +259,16 @@ public final class ContentService {
         if(anime.decide(room,owner,choice,action)) return;
         if(Set.of("free_upgrade","full_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
         switch(choice.type) {
+            case "opening_roll" -> {
+                require(action.accept!=null,"请选择自选点数或保留原骰点");
+                require(owner.openingRollUsedTurn<0 && owner.personalTurns>=1 && owner.personalTurns<=3 && "RANDOM".equals(room.runtime.rollMode) && CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")==0,"开局自选机会已失效");
+                if(action.accept) {
+                    require(action.point!=null && action.point>=1 && action.point<=6,"请选择 1～6 点");
+                    owner.openingRollUsedTurn=room.turnNumber;
+                    int original=room.dice; room.dice=action.point; room.runtime.movementSteps=action.point;
+                    log(room,owner.name+" 使用开局自选机会，将骰点从 "+original+" 点改为 "+action.point+" 点，本局机会已用完");
+                }
+            }
             case "recycle", "discover" -> expansion.decide(room, owner, choice, action);
             case "hand_limit" -> {
                 int limit = PropertyEffects.handLimit(owner);
