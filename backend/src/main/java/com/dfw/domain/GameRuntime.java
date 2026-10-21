@@ -49,6 +49,12 @@ public class GameRuntime {
     public int rollBonus;
     /** 动漫扩展的回合记录、攻击响应和秘密投票，仅保存在内部快照。 */
     public AnimeState anime = new AnimeState();
+    /** 八素材扩展的神君与公共研究进度，旧快照可缺省。 */
+    public NetaState neta = new NetaState();
+    /** 双骰选定的移动方向，零值代表既有普通方向。 */
+    public int movementDirection;
+    /** 素材扩展的等待、污染结算与秘密赌局，旧快照缺省。 */
+    public CrossoverState crossover = new CrossoverState();
     /** 本局已完成的效果数量。 */
     public long settledEffects;
 }

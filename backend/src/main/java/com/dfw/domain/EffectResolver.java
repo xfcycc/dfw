@@ -9,6 +9,9 @@ import java.util.function.BiConsumer;
 public class EffectResolver {
     private final RandomSource random;
     private final Map<String, BiConsumer<Room, GameEffect>> handlers = new HashMap<>();
+    private java.util.function.BiPredicate<Room,GameEffect> beforeEffect;
+    /** 输入可暂停的结算前选择钩子，按注册顺序组合；返回真时保留队首效果等待私人答复。 */
+    public void beforeEffect(java.util.function.BiPredicate<Room,GameEffect> hook) { beforeEffect=beforeEffect==null?hook:beforeEffect.or(hook); }
     private final ThreadLocal<Integer> insertionIndex = new ThreadLocal<>();
     /** 输入随机源，用于分配效果标识。 */
     public EffectResolver(RandomSource random) { this.random = random; }
@@ -43,8 +46,10 @@ public class EffectResolver {
             int turn = room.turnNumber;
             GameEffect effect = room.runtime.effects.getFirst();
             if (room.activity != null && !effect.resumesDecision) return;
+            if(beforeEffect!=null && beforeEffect.test(room,effect)) return;
             insertionIndex.set(1);
             BoardEffect.Observation presentation = BoardEffect.watch(room, effect);
+            CrossoverService.damageSource(room,effect);
             try { handler(effect).accept(room, effect); }
             finally { insertionIndex.remove(); }
             if (presentation != null) presentation.finish(room);

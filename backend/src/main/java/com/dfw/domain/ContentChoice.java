@@ -10,10 +10,12 @@ import lombok.Setter;
 public class ContentChoice {
     /** 唯一选择身份。 */
     public String id;
-    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release、hand_limit、recycle 或 discover。 */
+    /** free_upgrade、full_upgrade、self_destroy、opponent_destroy、gamble、release、movement_release、hand_limit、recycle 或 discover。 */
     public String type;
     /** 实际做选择的玩家。 */
     public String playerId;
+    /** 位移解控关联的待结算效果身份，仅内部保存，不向客户端暴露队列。 */
+    public List<String> effectIds = new ArrayList<>();
     /** 仅选择者可见的玩家候选。 */
     public List<String> playerIds = new ArrayList<>();
     /** 私人选择的补充提示。 */
@@ -34,8 +36,18 @@ public class ContentChoice {
     public int skipTurns;
     /** 是否监禁。 */
     public boolean jailed;
+    /** 多张重塑材料各自的固定候选，仅选择者可见。 */
+    public Map<String,List<Card>> cardOptions = new LinkedHashMap<>();
+    /** 已锁定的有序材料，防止重连重抽。 */
+    public List<String> materialIds = new ArrayList<>();
+    /** 蓝银缠绕的独立解控入口，不跳过资产经营。 */
+    public boolean binding;
+    /** 本次休息是否为自愿代价，不产生连续控制保护。 */
+    public boolean voluntaryRestriction;
     /** 弃置一张牌的实际现金，选择时冻结。 */
     public long discardCash;
     /** 赌博已提交的随机样本，放弃时为空。 */
     public Integer sample;
+    /** 已消费天锁斩月后固定的两枚骰点。 */
+    public List<Integer> numbers = new ArrayList<>();
 }

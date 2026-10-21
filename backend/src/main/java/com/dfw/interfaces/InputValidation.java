@@ -50,13 +50,16 @@ public final class InputValidation {
                     }
                 }
             }
-            case "constructionBuild", "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
+            case "senbonzakuraStrike", "purifyPollution", "constructionBuild", "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
             case "contentDecision" -> { uuid(action,"decisionId");
-                if(action.has("tileIds")) { JsonNode ids=action.get("tileIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=2); for(JsonNode id:ids) number(id,0,Rules.MAX_TILES-1); }
+                if(action.has("point")) number(action.get("point"),1,6);
+                if(action.has("direction")) { number(action.get("direction"),-1,1); check(action.get("direction").asInt()!=0); }
+                if(action.has("tileIds")) { JsonNode ids=action.get("tileIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=3); for(JsonNode id:ids) number(id,0,Rules.MAX_TILES-1); }
                 if(action.has("selection")) number(action.get("selection"),0,Rules.MAX_LEVEL); if(action.has("playerId")) uuid(action,"playerId"); if(action.has("accept")) bool(action,"accept"); if(action.has("tileId")) number(action.get("tileId"),0,Rules.MAX_TILES-1); if(action.has("cardId")) uuid(action,"cardId");
-                if(action.has("keepCardIds")) { JsonNode ids=action.get("keepCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=6); for(JsonNode id:ids) check(id.isString() && (id.asString().matches(UUID_PATTERN) || id.asString().equals("00000000-0000-0000-0000-000000000000") || id.asString().equalsIgnoreCase("ffffffff-ffff-ffff-ffff-ffffffffffff"))); }
-                if(action.has("discardCardIds")) { JsonNode ids=action.get("discardCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=6); for(JsonNode id:ids) check(id.isString() && id.asString().matches(UUID_PATTERN)); }
+                if(action.has("keepCardIds")) { JsonNode ids=action.get("keepCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=7); for(JsonNode id:ids) check(id.isString() && (id.asString().matches(UUID_PATTERN) || id.asString().equals("00000000-0000-0000-0000-000000000000") || id.asString().equalsIgnoreCase("ffffffff-ffff-ffff-ffff-ffffffffffff"))); }
+                if(action.has("cardSelections")) { JsonNode selections=action.get("cardSelections"); object(selections); check(selections.size()>=1 && selections.size()<=3); selections.properties().forEach(entry -> { check(entry.getKey().matches(UUID_PATTERN)); check(entry.getValue().isString() && entry.getValue().asString().matches(UUID_PATTERN)); }); }
+                if(action.has("discardCardIds")) { JsonNode ids=action.get("discardCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=7); for(JsonNode id:ids) check(id.isString() && id.asString().matches(UUID_PATTERN)); }
             }
             case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); }
             case "ready" -> bool(action, "value");
@@ -77,7 +80,7 @@ public final class InputValidation {
             case "activityInput" -> List.of("activityId","activityRound","selection","point","playerId");
             case "chat" -> List.of("message", "references");
             case "assignSeat" -> List.of("claimId");
-            case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds","discardCardIds","tileIds","selection","playerId");
+            case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds","discardCardIds","tileIds","selection","playerId","cardSelections","point","direction");
             case "paymentDefense" -> List.of("decisionId","cardId");
             case "ready" -> List.of("value");
             case "setName" -> List.of("name");

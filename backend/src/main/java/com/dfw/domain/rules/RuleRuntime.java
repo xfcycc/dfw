@@ -33,13 +33,14 @@ public final class RuleRuntime {
         Card card = actor.hand.stream().filter(value -> value.id.equals(action.cardId)).findFirst().orElse(null);
         var rule = card == null ? null : catalog.getCards().get(card.kind);
         require(rule != null && rule.activation().equals("ACTIVE"), "该道具不可主动使用");
-        require(rule.stages().contains(stage(room).id()) && (!rule.countsAsActive() || !room.activeCardUsed), "每回合掷骰前最多主动使用一张道具");
+        require(rule.stages().contains(stage(room).id()) && (!rule.countsAsActive() || AnimeService.usable(room,card)), "每回合掷骰前最多主动使用一张道具");
+        CrossoverService.validateActive(room,actor,card);
         executeCard(room, actor, action, card, rule);
     }
     /** 输入收费玩家，以当前租金选择上下文执行配置中的防御卡，不占主动次数。 */
     public void immune(Room room, Player actor, String cardId) {
         Card card = actor.hand.stream().filter(value -> value.id.equals(cardId) && rentDefense(room, value.kind)).findFirst().orElse(null);
-        require(card != null, "你没有可用的防御道具"); var rule = catalog.getCards().get(card.kind);
+        require(card != null && CrossoverService.handAllowed(room,actor,card,false), "你没有可用的防御道具或当前被禁牌"); var rule = catalog.getCards().get(card.kind);
         require(rule.stages().contains("rent_choice") && room.phase.equals("rent"), "当前没有待支付的租金");
         executeCard(room, actor, new Action(), card, rule);
     }
@@ -50,7 +51,7 @@ public final class RuleRuntime {
         List<GameEffect> planned = RuleEffects.plan(rule.steps(), context, effects, rule.id());
         if (rule.activation().equals("RENT")) planned.getFirst().resumesDecision = true;
         require(planned.stream().noneMatch(effect -> Set.of("PLACE_BARRIER","DEMOLISH").contains(effect.type) && PropertyEffects.frozen(tile(room,effect.tileId))), "神威空间中的地产无法操作");
-        actor.hand.remove(card); if (rule.countsAsActive()) room.activeCardUsed = true; cardLog(room, actor, card, action);
+        ContentService.consume(room,actor,card,rule.countsAsActive(),action);
         effects.submitAll(room, planned);
     }
     /** 输入原协议命令，检查当前配置行动窗口；买地、租金和偿债继续原待选校验。 */
@@ -68,7 +69,7 @@ public final class RuleRuntime {
     public boolean needsAdvance(Room room) {
         if (!room.status.equals("playing") || room.pausedReason != null || room.trade != null) return false;
         if (room.activity != null) return activities.due(room);
-        if (content.needsOverflow(room) || AnimeService.needsResume(room)) return true;
+        if (content.needsOverflow(room) || AnimeService.needsResume(room) || room.runtime.neta!=null && room.runtime.neta.research!=null && room.pending==null) return true;
         if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
     }
@@ -76,7 +77,7 @@ public final class RuleRuntime {
     public void advanceUntilWait(Room room) {
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
-            if (room.activity == null) { content.anime.resume(room); if(room.pending==null) content.overflow(room); }
+            if (room.activity == null) { CrossoverService.resume(room); content.anime.resume(room); content.neta.resume(room); if(room.pending==null) content.overflow(room); }
             effects.drain(room);
             boolean hadActivity = room.activity != null; activities.refresh(room);
             if (hadActivity && room.activity == null) { if (turns.checkWinner(room)) return; if (current(room).bankrupt) turns.advance(room); continue; }
@@ -85,10 +86,13 @@ public final class RuleRuntime {
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
             if ("DIRECTED".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
-            if ("JAIL".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
+            if (("JAIL".equals(room.runtime.rollMode) || "STATIONARY".equals(room.runtime.rollMode)) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
-                    if(stage.hook().equals("TURN_START")) content.anime.startTurn(room);
+                    if(stage.hook().equals("TURN_START")) {
+                        content.anime.startTurn(room); effects.drain(room);
+                        if(room.pending!=null) return;
+                    }
                     if (stage.hook().equals("TURN_START") && turns.skipCurrentTurn(room)) continue;
                     var context = new RuleExpression.Context(room, current(room), new Action());
                     List<GameEffect> planned = RuleEffects.plan(stage.steps(), context, effects, stage.id()); room.runtime.stageIndex++;
@@ -96,6 +100,7 @@ public final class RuleRuntime {
                 }
                 case "ACTION_WINDOW" -> {
                     room.phase = stage.phase();
+                    if(room.runtime.windowExit==null && stage.phase().equals("pre_roll") && content.crossover.offerCharge(room)) return;
                     if (room.runtime.windowExit == null) return;
                     require(stage.exitOn().contains(room.runtime.windowExit), "行动窗口退出结果不可用");
                     room.runtime.windowExit = null; room.runtime.stageIndex++;
@@ -108,6 +113,8 @@ public final class RuleRuntime {
                         if(content.anime.offerRewind(room)) return;
                     }
                     anime.rollPrepared=false;
+                    if("FLASH".equals(room.runtime.rollMode)) { room.runtime.stageIndex++; continue; }
+                    if(CrossoverService.turns(current(room),"DEFENSE_SPECIALIZATION")>0) room.runtime.movementSteps=1;
                     if(StatusService.consume(current(room),"NEXT_ROLL_HALF")) { room.runtime.movementSteps=Math.floorDiv(room.runtime.movementSteps,2); log(room,current(room).name+" 消耗迟缓，基础步数减为 "+room.runtime.movementSteps); BoardEffect.cue(room,"slow",current(room)); }
                     room.runtime.movementSteps=Math.addExact(room.runtime.movementSteps,room.runtime.rollBonus); room.runtime.rollBonus=0;
                     HistoryTrace.event(room, "dice", current(room).id, "本次移动点数为 " + room.dice, room.runtime.movementSteps);
@@ -115,11 +122,11 @@ public final class RuleRuntime {
                 }
                 case "MOVEMENT" -> {
                     require(room.runtime.movementSteps != null, "缺少移动步数");
-                    GameEffect movement = effects.effect("MOVE", current(room)); movement.amount = room.runtime.movementSteps;
+                    GameEffect movement = effects.effect("MOVE", current(room)); movement.amount = room.runtime.movementSteps * (room.runtime.movementDirection==0?1:room.runtime.movementDirection); movement.selector="FLASH".equals(room.runtime.rollMode)?"FLASH":"NORMAL";
                     room.runtime.stageIndex++; effects.submit(room, movement);
                 }
                 case "LANDING" -> { room.runtime.stageIndex++; effects.submit(room, effects.effect("SETTLE_TILE", current(room))); }
-                case "END_TURN" -> turns.advance(room);
+                case "END_TURN" -> { if(content.crossover.beforeEnd(room,current(room))) return; turns.advance(room); }
                 default -> throw new IllegalStateException("未注册阶段：" + stage.handler());
             }
         }
@@ -130,7 +137,7 @@ public final class RuleRuntime {
         if (room.runtime.stageTurnNumber == room.turnNumber) return;
         if (room.runtime.stageTurnNumber != 0) { room.runtime.effects.clear(); room.runtime.effectsWaiting = false; }
         room.runtime.stageTurnNumber = room.turnNumber; room.runtime.stageIndex = 0;
-        room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null; room.runtime.rollBonus = 0;
+        room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null; room.runtime.rollBonus = 0; room.runtime.movementDirection=0;
     }
     /** 输入房间，返回当前配置中的阶段，错误游标拒绝继续。 */
     private RuleSet.Stage stage(Room room) {

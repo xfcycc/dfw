@@ -87,7 +87,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
     /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
@@ -162,14 +162,17 @@ public class GameEngine {
         if(action.type.equals("card") && player.hand.stream().anyMatch(c -> Objects.equals(c.id,action.cardId) && c.kind.equals("deathReturn"))) { content.anime.deathReturn(room,player,ContentService.find(player,action.cardId),action); return; }
         if (paymentPending(room) && !room.pending.defenseResolved) require(Set.of("paymentDefense", "rentDecision").contains(action.type), "请先选择本笔费用的防御或放弃");
         if (paymentPending(room)) require(Set.of("paymentDefense", "payDebt", "rentDecision", "sellBuilding", "mortgage", "sellLand", "tradeOffer", "declareBankruptcy").contains(action.type), "请先处理当前费用");
+        if(action.type.equals("senbonzakuraStrike")) { content.neta.openPetals(room,player); return; }
+        if(action.type.equals("purifyPollution")) { content.crossover.openPurify(room,player); return; }
         if(action.type.equals("constructionBuild")) { ConstructionService.openRemote(content,room,player); return; }
         ruleRuntime.validateAction(room, action.type);
         switch (action.type) {
             case "roll" -> {
                 require(room.phase.equals("pre_roll"), "本回合已移动");
-                room.runtime.rollMode = "RANDOM";
+                if(CrossoverService.turns(player,"BLUE_BIND")>0 || CrossoverService.state(room).stationaryTurn==room.turnNumber) { room.runtime.rollMode="STATIONARY"; StatusService.controlledSkip(room,player); }
+                else room.runtime.rollMode = "RANDOM";
             }
-            case "card" -> items.use(room, player, action);
+            case "card" -> { CrossoverService.validateActive(room,player,ContentService.find(player,action.cardId)); items.use(room, player, action); }
             case "buy", "upgrade" -> {
                 require(room.phase.equals(action.type) && room.pending != null && room.pending.tileId != null, "当前没有这项操作");
                 Tile tile = room.board.get(room.pending.tileId); require(!PropertyEffects.frozen(tile), "神威空间中的地产无法操作"); long cost = action.type.equals("buy") ? tile.price : Rules.buildCost(room, tile);

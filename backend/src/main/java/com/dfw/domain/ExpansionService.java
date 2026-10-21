@@ -11,10 +11,15 @@ public final class ExpansionService {
     private final EffectResolver effects;
     private final RandomSource random;
     private final ContentCatalog catalog;
-    /** 输入既有内容服务、效果队列及目录，注册闷棍解控后的偷牌阶段。 */
+    /** 输入既有内容服务、效果队列及目录，注册偷牌及可响应的事件换位阶段。 */
     public ExpansionService(ContentService content, EffectResolver effects, RandomSource random, ContentCatalog catalog) {
         this.content=content; this.effects=effects; this.random=random; this.catalog=catalog;
         effects.register("SAP_STEAL", (room,effect) -> steal(room,player(room,effect.playerId),player(room,effect.targetId)));
+        effects.register("EVENT_RELOCATE", (room,effect) -> {
+            Player target=player(room,effect.playerId); if(target==null || target.bankrupt) return;
+            MotionSegment segment=BoardEffect.begin("shuffle",target); segment.beforeEvent=effect.content;
+            relocate(room,segment,target,effect.destination); BoardEffect.publish(room,segment);
+        });
     }
     /** 输入房间，返回当前可施加附加效果的普通地产。 */
     private static List<Tile> properties(Room room) {
@@ -48,10 +53,10 @@ public final class ExpansionService {
                 List<Integer> order;
                 do { order=shuffled(indices); } while(hasFixedPoint(order));
                 List<Integer> positions=alive.stream().map(p -> p.position).toList();
-                MotionSegment segment=BoardEffect.begin("shuffle",actor); segment.beforeEvent=result;
-                for(int i=0;i<alive.size();i++) relocate(room,segment,alive.get(i),positions.get(order.get(i)));
-                BoardEffect.publish(room,segment);
-                log(room,"ROOM·错位空间：所有未破产玩家均接手另一人的原位置，不结算落点或起点");
+                for(int i=0;i<alive.size();i++) {
+                    GameEffect move=effects.effect("EVENT_RELOCATE",alive.get(i)); move.destination=positions.get(order.get(i)); move.content=result; effects.submit(room,move);
+                }
+                log(room,"ROOM·错位空间：已固定所有未破产玩家的换位目标，可分别解控，不结算落点或起点");
             }
             case "all_cards" -> {
                 for(Player target:room.players) if(!target.bankrupt) content.giveCards(room,target,1,null);
@@ -106,9 +111,9 @@ public final class ExpansionService {
                 require(target!=null && target.type.equals("property") && !PropertyEffects.frozen(target),"请选择未处于神威中的地产");
                 if(card.kind.equals("shield")) require(Objects.equals(target.ownerId,actor.id) && !target.demolitionShield,"请选择尚无护盾的自家地产");
                 if(card.kind.equals("homeTeleport")) require(Objects.equals(target.ownerId,actor.id),"请选择自家地产");
-                if(card.kind.equals("blackhole")) require(target.barrier || target.meteorCharges>0 || target.demolitionShield || target.treasure || target.concertStacks>0 || !ConstructionService.labels(room,target.id).isEmpty(),"该地产没有可清除的附加效果");
+                if(card.kind.equals("blackhole")) require(CrossoverService.attached(room,target),"该地产没有可清除的附加效果");
                 Player landlord=player(room,target.ownerId); long price=PropertyEffects.baseRent(room,target);
-                if(card.kind.equals("exchange")) require(landlord!=null && !landlord.bankrupt && landlord!=actor && actor.cash>=price,"请选择付得起无修正租金的对手地产");
+                if(card.kind.equals("exchange")) { price=PropertyEffects.exchangePrice(room,target); require(landlord!=null && !landlord.bankrupt && landlord!=actor && actor.cash>=price,"请选择付得起交换价的对手地产，最低为地价"); }
                 ContentService.consume(room,actor,card,true,action);
                 MotionSegment presentation=Set.of("blackhole","shield","exchange").contains(card.kind) ? BoardEffect.begin(card.kind,actor) : null;
                 if(presentation!=null) presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
@@ -118,7 +123,7 @@ public final class ExpansionService {
                         actor.cash-=price; landlord.cash=Math.addExact(landlord.cash,price); target.ownerId=actor.id;
                         log(room,actor.name+" 支付 "+landlord.name+" ¥"+price+"，取得 "+target.name+"（"+target.id+"号），承接建筑、抵押和附加效果");
                     }
-                    case "blackhole" -> { ConstructionService.clear(room,target); target.barrier=false; target.meteorCharges=0; target.demolitionShield=false; target.demolitionShieldCharges=0; target.treasure=false; target.concertStacks=0; }
+                    case "blackhole" -> CrossoverService.clear(room,target,false);
                     case "homeTeleport" -> teleport(room,actor,target.id);
                     default -> throw new IllegalStateException("未处理的地产道具");
                 }

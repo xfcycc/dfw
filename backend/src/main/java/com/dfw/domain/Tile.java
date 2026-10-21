@@ -45,6 +45,8 @@ public class Tile {
     public int meteorCharges;
     /** 猩红腐败剩余触发次数，随地产保存。 */
     public int corruptionTurns;
+    /** 恩佐斯污染绑定的业主，产权变化立即失效。 */
+    public String nzothOwnerId;
     /** 零域施术者，空表示未冰封。 */
     public String zeroCasterId;
     /** 零域结束的施术者个人回合。 */
@@ -65,4 +67,10 @@ public class Tile {
     public int kamuiTurns;
     /** 神威施放时的全局行动编号，当回合不递减。 */
     public int kamuiAppliedTurn;
+    /** 花瓣标记的触发者，空表示没有一次性租金修正。 */
+    public String petalCasterId;
+    /** 花瓣标记绑定业主，产权改变后失效。 */
+    public String petalOwnerId;
+    /** 标记在触发者该个人回合开始前有效。 */
+    public int petalUntilTurn;
 }

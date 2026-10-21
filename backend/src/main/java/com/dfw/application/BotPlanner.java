@@ -84,8 +84,9 @@ public final class BotPlanner {
             return action(!conservative && me.cash >= cost && me.cash - cost >= reserve && gain >= cost * (horizon == 1 ? .8 : .95) ? state.phase : "pass");
         }
         if (!conservative) {
+            if(own.petalsAvailable && state.phase.equals("pre_roll") && state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0 && !PropertyEffects.frozen(t) && PropertyEffects.shieldCharges(t)==0)) return action("senbonzakuraStrike");
             if (own.remoteBuildAvailable && state.phase.equals("manage")) return action("constructionBuild");
-            if (state.phase.equals("pre_roll") && (!own.activeCardUsed || own.hand.stream().anyMatch(c -> c.projected && c.expiresAtTurn==state.turnNumber))) { Action card = activeCard(); if (card != null) return card; }
+            if (state.phase.equals("pre_roll") && (!own.activeCardUsed || own.bankaiActive && own.bankaiRemaining>0 || own.hand.stream().anyMatch(c -> c.projected && c.expiresAtTurn==state.turnNumber))) { Action card = activeCard(); if (card != null) return card; }
             if (!offered) { Action trade = offer(); if (trade != null) return trade; }
             Tile redeem = state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && t.mortgaged && me.cash - Rules.redeemCost(t) >= reserve)
                     .max(Comparator.comparingDouble(t -> rentWhenActive(t, t.level) * traffic(t, me.id) / Math.max(1, Rules.redeemCost(t)))).orElse(null);
@@ -97,6 +98,7 @@ public final class BotPlanner {
     /** 输入保守标记，完成本人七类内容选择；未知类型作为规划错误报告。 */
     private Action choice(boolean conservative) {
         if(own.choice.type.startsWith("construction_")) return constructionChoice(conservative);
+        if(own.choice.type.startsWith("cross_")) return crossoverChoice(conservative);
         ContentChoiceVo c = own.choice; Action a = action("contentDecision"); a.decisionId = c.id; a.accept = true;
         switch (c.type) {
             case "hand_limit" -> a.keepCardIds = (conservative ? c.cards.stream() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue).reversed())).limit(c.handLimit > 0 ? c.handLimit : 6).map(card -> card.id).toList();
@@ -108,6 +110,37 @@ public final class BotPlanner {
                 Tile t = state.board.get(id); double loss = value(t, t.ownerId) - valueAtLevel(t, t.ownerId, 0);
                 return c.type.equals("self_destroy") ? -loss : loss * threat(person(t.ownerId));
             })).orElse(null);
+            case "neta_bid" -> {
+                // 机器人只使用本人手牌及公开候选，不读取其他玩家的秘密投入。
+                a.accept=true;
+                if(!conservative) {
+                    double reward=state.researchCandidates.stream().mapToDouble(this::keepValue).max().orElse(startIncome());
+                    List<Card> materials=c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue)).limit(2).toList();
+                    List<String> bids=new ArrayList<>(); double cost=0;
+                    for(Card material:materials) if(cost+keepValue(material)<reward*.6) { bids.add(material.id); cost+=keepValue(material); }
+                    if(!bids.isEmpty()) a.discardCardIds=bids;
+                }
+            }
+            case "neta_reward" -> a.cardId=c.cards.stream().max(Comparator.comparingDouble(this::keepValue)).orElseThrow().id;
+            case "neta_petals" -> {
+                a.tileIds=c.tileIds.stream().map(id -> state.board.get(id)).filter(t -> conservative || PropertyEffects.shieldCharges(t)==0).sorted(Comparator.comparingLong((Tile t) -> Rules.buildCost(economics,t)*t.level).reversed()).limit(c.numbers.getFirst()).map(t -> t.id).toList(); a.accept=!a.tileIds.isEmpty();
+            }
+            case "neta_petal_defense" -> { a.accept=true; a.selection=c.numbers.getFirst(); }
+            case "neta_bankai" -> {
+                double score=Double.NEGATIVE_INFINITY;
+                for(int point:c.numbers) for(int direction:List.of(1,-1)) {
+                    double gain=conservative ? point*direction : movementValue(me,me.position,point*direction);
+                    if(gain>score) { score=gain; a.point=point; a.direction=direction; }
+                }
+            }
+            case "neta_research" -> a.cardId=(conservative?c.cards.stream().findFirst():c.cards.stream().max(Comparator.comparingDouble(this::keepValue))).orElseThrow().id;
+            case "neta_ignite" -> {
+                a.accept=false;
+                if(!conservative && !c.cards.isEmpty()) {
+                    Card fuel=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).orElseThrow(); double score=0;
+                    for(int point=1;point<=6;point++) { double gain=movementValue(me,me.position,point)-keepValue(fuel); if(gain>score) { score=gain; a.accept=true; a.point=point; a.cardId=fuel.id; } }
+                }
+            }
             case "discover" -> a.cardId = (conservative ? c.cards.stream().findFirst() : c.cards.stream().max(Comparator.comparingDouble(this::keepValue))).orElseThrow().id;
             case "recycle" -> {
                 if(conservative) a.accept=false;
@@ -118,7 +151,7 @@ public final class BotPlanner {
             case "anime_rewind" -> { a.accept=!conservative && state.dice!=null && state.dice<=2; if(a.accept) a.cardId=c.cards.getFirst().id; }
             case "anime_vote" -> { a.playerId=c.playerIds.stream().max(Comparator.comparingLong(id -> person(id).netWorth)).orElse(null); a.accept=a.playerId!=null; }
             case "gamble" -> a.accept = !conservative && gamble(c.content);
-            case "release" -> { a.cardId = own.hand.stream().filter(card -> card.kind.equals("release")).map(card -> card.id).findFirst().orElse(null); a.accept = a.cardId != null; }
+            case "release", "movement_release" -> { a.cardId = (c.type.equals("movement_release")?c.cards:own.hand).stream().filter(card -> card.kind.equals("release") && !own.disabledCardIds.contains(card.id)).map(card -> card.id).findFirst().orElse(null); a.accept = a.cardId != null; }
             default -> throw new GameError("机器人尚未支持的私人选择：" + c.type);
         }
         return a;
@@ -151,6 +184,48 @@ public final class BotPlanner {
         return action("declareBankruptcy");
     }
 
+    /** 输入素材选择和保守标记，只根据本人候选完成，不读取对手暗牌或内部样本。 */
+    private Action crossoverChoice(boolean safe) {
+        ContentChoiceVo c=own.choice; Action a=action("contentDecision"); a.decisionId=c.id; a.accept=true;
+        switch(c.type) {
+            case "cross_fusion_materials" -> { a.discardCardIds=c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue)).limit(2).map(x -> x.id).toList(); a.accept=a.discardCardIds.size()==2; }
+            case "cross_fusion_confirm" -> { }
+            case "cross_pink_materials" -> a.discardCardIds=c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue)).limit(3).map(x -> x.id).toList();
+            case "cross_pink_pick" -> { a.cardSelections=new LinkedHashMap<>(); c.cardOptions.forEach((id,options) -> a.cardSelections.put(id,options.stream().max(Comparator.comparingDouble(this::keepValue)).orElseThrow().id)); }
+            case "cross_mend" -> a.tileIds=c.tileIds.stream().sorted(Comparator.comparingInt((Integer id) -> state.board.get(id).damageLevel-state.board.get(id).level).reversed()).limit(3).toList();
+            case "cross_charge" -> { a.tileId=c.tileIds.stream().findFirst().orElse(null); a.accept=a.tileId!=null; }
+            case "cross_purify" -> { a.tileId=c.tileIds.stream().findFirst().orElse(null); Card material=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).orElse(null); a.cardId=material==null?null:material.id; a.accept=a.tileId!=null && material!=null && (!safe || state.board.get(a.tileId).level>1); }
+            case "cross_bind_release" -> { a.cardId=c.cards.stream().findFirst().map(x -> x.id).orElse(null); a.accept=a.cardId!=null; }
+            case "cross_boost" -> { int next=(me.position+1)%state.board.size(); a.accept=!safe && !state.board.get(next).barrier && landingValue(me,next)>=landingValue(me,me.position); }
+            case "cross_duel_target" -> { a.playerId=c.playerIds.stream().findFirst().orElse(null); a.accept=!safe && a.playerId!=null; }
+            case "cross_duel_stake" -> { a.cardId=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).map(x -> x.id).orElse(null); a.accept=!safe && a.cardId!=null; }
+            default -> throw new GameError("未知素材私人选择");
+        }
+        return a;
+    }
+
+    /** 输入新素材道具及候选命令，估计收益并固定合法目标，避免空目标反复重试。 */
+    private double crossoverCard(Card card,Action candidate) {
+        double base=startIncome();
+        switch(card.kind) {
+            case "asunaFlash" -> { double best=Double.NEGATIVE_INFINITY; for(int i=1;i<=3;i++) { int dest=(me.position+i)%state.board.size(); double value=landingValue(me,dest)-rollValue(me,me.position,0); if(value>best) { best=value; candidate.point=i; } } return best; }
+            case "revealingSwords", "kingsPressure", "blueSilverBind" -> {
+                PublicPlayerVo target=state.players.stream().filter(p -> !p.bankrupt && !p.id.equals(me.id) && (card.kind.equals("blueSilverBind")?GameSupport.nearbyDistance(me.position,p.position,state.board.size())<=6 && p.controlProtectionTurns==0:card.kind.equals("revealingSwords")?p.handSealTurns==0:card.parameters.getOrDefault("version",0L)>=2?p.attackSealTurns==0:p.urSealTurns==0)).max(Comparator.comparingLong(p -> p.netWorth)).orElse(null);
+                if(target==null) return Double.NEGATIVE_INFINITY; candidate.playerId=target.id; return base*.65;
+            }
+            case "shadowBlade" -> {
+                for(Tile t:state.board) { Tile next=state.board.get((t.id+1)%state.board.size()); if(t.level>0 && next.level>0 && t.ownerId!=null && next.ownerId!=null && !t.ownerId.equals(me.id) && !next.ownerId.equals(me.id) && !PropertyEffects.frozen(t) && !PropertyEffects.frozen(next) && !person(t.ownerId).bankrupt && !person(next.ownerId).bankrupt) { candidate.tileIds=List.of(t.id,next.id); return base; } } return Double.NEGATIVE_INFINITY;
+            }
+            case "fusion" -> { double cost=own.hand.stream().filter(c -> !c.id.equals(card.id)).sorted(Comparator.comparingDouble(this::keepValue)).limit(2).mapToDouble(this::keepValue).sum(); return own.hand.size()>=3?base*2-cost:Double.NEGATIVE_INFINITY; }
+            case "nuwaMend" -> { return state.board.stream().anyMatch(t -> me.id.equals(t.ownerId) && me.id.equals(t.damageOwnerId) && t.damageLevel>t.level && !PropertyEffects.frozen(t) && me.personalTurns<=t.damageUntilTurn)?base:Double.NEGATIVE_INFINITY; }
+            case "goldenCore" -> { return me.cultivated?Double.NEGATIVE_INFINITY:base; }
+            case "namelessSword" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0)?base*.5:Double.NEGATIVE_INFINITY; }
+            case "defenseSpecialization" -> { return me.defenseSpecializationTurns==0 && state.board.stream().anyMatch(t -> me.id.equals(t.ownerId) && t.level>1)?base*.5:Double.NEGATIVE_INFINITY; }
+            case "doubleBoost" -> { return base*.3; }
+            default -> { return Double.NEGATIVE_INFINITY; }
+        }
+    }
+
     /** 输入当前费用，比较减免、支付后现金安全与留牌成本；均能安全支付时优先消耗保留成本较低的牌。 */
     private Action paymentDefense(PendingDecision debt) {
         Action a = action("paymentDefense"); a.decisionId = debt.id;
@@ -158,6 +233,7 @@ public final class BotPlanner {
         double safety = conservative ? 0 : Math.min(reserve, me.cash * .25);
         boolean bestSafe = false;
         for (Card c : own.hand) {
+            if(own.disabledCardIds.contains(c.id)) continue;
             long saving = c.kind.equals("immunity") && debt.type.equals("rent") ? debt.amount : c.kind.equals("halfPayment") ? debt.amount / 2 : 0;
             if (saving <= 0) continue;
             long copies = own.hand.stream().filter(card -> card.kind.equals(c.kind)).count();
@@ -378,10 +454,14 @@ public final class BotPlanner {
     private Action activeCard() {
         Action best = null; double bestScore = 0;
         for (Card c : own.hand) {
-            if(own.activeCardUsed && !(c.projected && c.expiresAtTurn==state.turnNumber)) continue;
+            if(own.activeCardUsed && !(own.bankaiActive && own.bankaiRemaining>0) && !(c.projected && c.expiresAtTurn==state.turnNumber)) continue;
+            if(own.disabledCardIds.contains(c.id)) continue;
+            if(me.defenseSpecializationTurns>0 && (AnimeService.attacks(c.kind) || Set.of("fixed","remote","move","homeTeleport","shadowstep","asunaFlash").contains(c.kind))) continue;
+            if(me.blueBindTurns>0 && Set.of("fixed","remote","move","homeTeleport","shadowstep","asunaFlash").contains(c.kind)) continue;
             if(AnimeService.DEFENSE.contains(c.kind) || c.kind.equals("swordRain") && c.lastUsedTurn==state.turnNumber) continue;
             Action candidate = action("card"); candidate.cardId = c.id; double score = Double.NEGATIVE_INFINITY;
             switch (c.kind) {
+                case "asunaFlash", "defenseSpecialization", "revealingSwords", "fusion", "shadowBlade", "doubleBoost", "blueSilverBind", "goldenCore", "nuwaMend", "namelessSword", "kingsPressure" -> score=crossoverCard(c,candidate);
                 case "geoResonance", "growthLink", "sereniteaPot", "createBuild", "remoteConstruction", "shrineGrowth" -> {
                     List<Tile> targets=state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && !AnimeService.iced(t) && !t.mortgaged && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id)).toList();
                     if(!targets.isEmpty() && (!Set.of("growthLink","sereniteaPot").contains(c.kind) || targets.size()>=2) && (!c.kind.equals("createBuild") || own.hand.size()>1)) {
@@ -406,7 +486,7 @@ public final class BotPlanner {
                     }
                 }
                 case "demolish", "fullDemolish" -> {
-                    for (Tile t : state.board) if (t.ownerId != null && !PropertyEffects.frozen(t) && !t.demolitionShield && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt && t.level > 0) {
+                    for (Tile t : state.board) if (t.ownerId != null && !PropertyEffects.frozen(t) && (c.kind.equals("fullDemolish") || !t.demolitionShield) && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt && t.level > 0) {
                         double gain = (value(t, t.ownerId) - valueAtLevel(t, t.ownerId, c.kind.equals("fullDemolish") ? 0 : t.level - 1)) * threat(person(t.ownerId));
                         if (gain > score) { score = gain; candidate.tileId = t.id; }
                     }
@@ -429,9 +509,10 @@ public final class BotPlanner {
                             if (self || p.jailed) continue;
                             gain = rollValue(me, p.position, 0) - rollValue(me, me.position, 0) - threat(p) * (rollValue(p, me.position, 0) - rollValue(p, p.position, 0));
                         } else if (c.kind.equals("blast")) {
-                            double average = 0; for (int i = 0; i < state.board.size(); i++) average += rollValue(p, i, 0) / state.board.size();
+                            double average = 0; for (int i = 0; i < state.board.size(); i++) average += (rollValue(p, i, 0) + landingValue(p,i)) / state.board.size();
                             gain = (average - rollValue(p, p.position, 0)) * (self ? 1 : -threat(p));
                         } else if (c.kind.equals("jail")) {
+                            if(!self && p.controlProtectionTurns>0) continue;
                             double income = state.board.stream().filter(t -> p.id.equals(t.ownerId)).mapToDouble(t -> rent(t, t.level) * traffic(t, p.id) / horizon).sum();
                             gain = self ? -rollValue(me, me.position, 0) - income - startIncome() * .4 : threat(p) * (income + startIncome() * .4) / (p.jailed ? 4 : 1);
                         } else {
@@ -455,8 +536,24 @@ public final class BotPlanner {
     private double expansionCard(Card card, Action action) {
         double best=Double.NEGATIVE_INFINITY, base=startIncome()*.25;
         switch(card.kind) {
+            case "bankai" -> { return NetaService.modern(card) && own.hand.stream().filter(c -> !c.id.equals(card.id) && !Set.of("bankai","projection").contains(c.kind) && "主动".equals(c.cardType)).count()<2 ? best : base; }
+            case "senbonzakura" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && t.level>0) ? base*3 : best; }
+            case "keqingRush","thunderLord","fireBurial","igniteSea" -> {
+                Tile sacrifice=state.board.stream().filter(t -> me.id.equals(t.ownerId) && t.level>0 && !t.mortgaged && !PropertyEffects.frozen(t)).min(Comparator.comparingLong(t -> Rules.buildCost(economics,t))).orElse(null);
+                for(Tile t:state.board) if(t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt && t.level>0 && !PropertyEffects.frozen(t)) {
+                    if(card.kind.equals("keqingRush") && GameSupport.nearbyDistance(me.position,t.id,state.board.size())>6 || card.kind.equals("fireBurial") && sacrifice==null) continue;
+                    int hits=card.kind.equals("igniteSea")?Math.min(3,1+PropertyEffects.shieldCharges(t)):card.kind.equals("keqingRush")?1:card.kind.equals("fireBurial")?2:3;
+                    int lost=Math.min(t.level,Set.of("fireBurial","igniteSea").contains(card.kind)?hits:Math.max(0,hits-PropertyEffects.shieldCharges(t)));
+                    double gain=Rules.buildCost(economics,t)*lost*threat(person(t.ownerId));
+                    if(card.kind.equals("keqingRush")) gain+=landingValue(me,t.id)-rollValue(me,me.position,0);
+                    if(card.kind.equals("fireBurial")) gain-=Rules.buildCost(economics,sacrifice);
+                    if(card.kind.equals("thunderLord")) gain*=.65;
+                    if(gain>best) { best=gain; action.tileId=t.id; if(card.kind.equals("fireBurial")) action.secondTileId=sacrifice.id; }
+                }
+                return best;
+            }
             case "projection" -> { return own.projectionAvailable ? base : best; }
-            case "contract" -> { return (me.handLimit==null?6:me.handLimit)>1 ? 3000-base*2 : best; }
+            case "contract" -> { return (me.handLimit==null?6:me.handLimit)>1 ? 5000-base*2 : best; }
             case "starburst", "corruption", "sevenSwords" -> {
                 List<Tile> candidates=state.board.stream().filter(t -> t.type.equals("property") && t.ownerId!=null && !me.id.equals(t.ownerId) && t.level>0 && !PropertyEffects.frozen(t)).sorted(Comparator.comparingDouble((Tile t) -> Rules.buildCost(economics,t)*t.level).reversed()).toList();
                 if(candidates.isEmpty()) return best; Tile t=candidates.getFirst(); action.tileId=t.id;
@@ -469,7 +566,7 @@ public final class BotPlanner {
             }
             case "swordRain", "commandSpell" -> {
                 for(PublicPlayerVo p:state.players) if(!p.bankrupt && !p.id.equals(me.id)) {
-                    if(card.kind.equals("swordRain")) { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6 || p.skipTurns>0) continue; double gain=base*threat(p); if(gain>best) { best=gain; action.playerId=p.id; } }
+                    if(card.kind.equals("swordRain")) { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6 || p.skipTurns>0 || p.controlProtectionTurns>0) continue; double gain=base*threat(p); if(gain>best) { best=gain; action.playerId=p.id; } }
                     else for(int point=1;point<=6;point++) { double gain=-threat(p)*movementValue(p,p.position,point); if(gain>best) { best=gain; action.playerId=p.id; action.point=point; } }
                 }
             }
@@ -516,7 +613,7 @@ public final class BotPlanner {
                 for(PublicPlayerVo p:state.players) if(!p.bankrupt && !p.id.equals(me.id)) {
                     double gain;
                     switch(card.kind) {
-                        case "sap" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>3) continue; gain=base*(1+threat(p)+(p.cardCount!=null && p.cardCount>0?1:0)); }
+                        case "sap" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>3) continue; gain=base*((p.controlProtectionTurns>0?0:1+threat(p))+(p.cardCount!=null && p.cardCount>0?1:0)); }
                         case "slow" -> {
                             if(p.nextRollHalf) continue;
                             gain=0; for(int point=1;point<=6;point++) gain+=threat(p)*(movementValue(p,p.position,point)-movementValue(p,p.position,Math.floorDiv(point,2)))/6;
@@ -533,7 +630,7 @@ public final class BotPlanner {
                     boolean self=me.id.equals(t.ownerId); double gain;
                     switch(card.kind) {
                         case "shield" -> { if(!self || t.demolitionShield || t.level==0) continue; gain=Rules.buildCost(economics,t)*t.level*.5*card.parameters.getOrDefault("charges",1L); }
-                        case "exchange" -> { long cost=PropertyEffects.baseRent(economics,t); if(t.ownerId==null || self || me.cash<cost) continue; gain=value(t,me.id)-cost; }
+                        case "exchange" -> { long cost=PropertyEffects.exchangePrice(economics,t); if(t.ownerId==null || self || me.cash<cost) continue; gain=value(t,me.id)-cost; }
                         case "blackhole" -> {
                             gain=(self?-1:1)*(t.demolitionShield?base:0)+(self?-1:1)*(t.concertStacks>0?base*t.concertStacks:0);
                             if(t.barrier || t.meteorCharges>0) gain+=base*(self?-1:1);

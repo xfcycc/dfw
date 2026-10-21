@@ -19,6 +19,20 @@ public class PublicPlayerVo {
     public boolean nextMoveDouble;
     /** 玩家唯一标识。 */
     public String id;
+    /** 素材扩展的公开状态及期限。 */
+    public java.util.List<String> crossoverEffects;
+    /** 剩余全手牌禁用回合数。 */
+    public int handSealTurns;
+    /** 剩余UR主动禁用回合数。 */
+    public int urSealTurns;
+    /** 剩余所有等级主动攻击禁用回合数，不限制防御及非攻击主动牌。 */
+    public int attackSealTurns;
+    /** 剩余防御特化回合数。 */
+    public int defenseSpecializationTurns;
+    /** 剩余蓝银缠绕回合数。 */
+    public int blueBindTurns;
+    /** 本局是否已成功结丹。 */
+    public boolean cultivated;
     /** 公开昵称。 */
     public String name;
     /** 玩家选择的公开形象，旧快照缺省使用探险家。 */
@@ -53,6 +67,8 @@ public class PublicPlayerVo {
     public boolean jailed;
     /** 陷阱免疫尚未结束的后续个人回合数，零表示没有免疫。 */
     public int trapImmunityTurns;
+    /** 连续控制保护剩余个人回合数，等待本次受控行动跳过时仍显示两回合。 */
+    public int controlProtectionTurns;
     /** 淘汰顺序，未淘汰为空。 */
     public Integer eliminationOrder;
 }

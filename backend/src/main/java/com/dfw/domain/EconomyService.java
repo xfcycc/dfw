@@ -53,6 +53,7 @@ public class EconomyService {
         if (tileId != null && creditorId != null) {
             Tile property = tile(room,tileId);
             if (PropertyEffects.frozen(property) || AnimeService.iced(property)) return;
+            amount=NetaService.petalRent(room,property,amount);
             if (property.concertStacks > 0) {
                 BoardEffect.Observation presentation = BoardEffect.watch(room,"concertRent",player);
                 amount = PropertyEffects.concertRent(amount,property.concertStacks);

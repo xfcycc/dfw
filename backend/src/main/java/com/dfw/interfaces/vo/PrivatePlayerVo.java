@@ -9,6 +9,14 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PrivatePlayerVo {
+    /** 卍解本回合是否已经发动，耗尽后仍为真。 */
+    public boolean bankaiActive;
+    /** 卍解统一后续出牌剩余次数。 */
+    public int bankaiRemaining;
+    /** 本回合可否释放千本樱。 */
+    public boolean petalsAvailable;
+    /** 本人剩余共享花瓣。 */
+    public int petalsRemaining;
     /** 本回合是否可以打开七五折远程施工选择。 */
     public boolean remoteBuildAvailable;
     /** 本人活动选择，仅本人可见，未提交为空。 */
@@ -24,6 +32,8 @@ public class PrivatePlayerVo {
     public List<SeatClaimVo> seatClaims = new ArrayList<>();
     /** 上一回合是否存在可投影的主动牌，含UR，不含投影魔术。 */
     public boolean projectionAvailable;
+    /** 当前不能使用的本人手牌身份，防御与主动时机各按原规则判断。 */
+    public List<String> disabledCardIds = new ArrayList<>();
     /** 本人的完整内容选择。 */
     public ContentChoiceVo choice;
     /** 本人获得的私人事件卡面。 */

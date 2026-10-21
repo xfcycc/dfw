@@ -7,8 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerStatus {
-    /** 固定状态定义：TRAP_IMMUNITY、NEXT_PAYMENT_WAIVER、NEXT_RENT_DOUBLE、NEXT_MOVE_DOUBLE。 */
+    /** 固定状态定义：陷阱免疫、连续控制保护及一次性费用、租金和移动状态。 */
     public String type;
+    /** 连控保护是否仍在等待本次受控行动跳过；等待期间不递减保护期限。 */
+    public boolean awaitingControlledSkip;
     /** 产生状态的效果标识。 */
     public String sourceEffectId;
     /** 最近施放或刷新时的全局回合号，该回合不扣期限。 */

@@ -42,6 +42,8 @@ public class Player {
     public boolean bankrupt;
     /** 待跳过回合数。 */
     public int skipTurns;
+    /** 自愿承担且尚未跳过的休息次数，净化不能移除该代价。 */
+    public int voluntarySkipTurns;
     /** 是否服刑。 */
     public boolean jailed;
     /** 淘汰顺序，未淘汰为空。 */

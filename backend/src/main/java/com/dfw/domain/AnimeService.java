@@ -7,7 +7,7 @@ import static com.dfw.domain.GameSupport.*;
 /** 动漫道具的固定效果计划、防御响应及回合状态；全部复用房间事务与私人选择。 */
 public final class AnimeService {
     /** 有独立使用时机的手牌，禁止作为普通主动牌消耗。 */
-    public static final Set<String> DEFENSE = Set.of("timeRewind","imagineBreaker","vectorReflect","sealCard","deathReturn");
+    public static final Set<String> DEFENSE = Set.of("timeRewind","imagineBreaker","vectorReflect","sealCard","deathReturn","hollowfication");
     /** 需要按目标分段并允许主动防御的牌型。 */
     private static final Set<String> ATTACKS = Set.of("barrier","demolish","fullDemolish","swap","blast","jail","steal","exchange","kamui","blackhole","sap","slow","reaper","swapAny","handDestruction","gravity","meteor","starburst","corruption","commandSpell","sevenSwords","railgun","explosion","swordRain","voidTears","absoluteZero");
     private final ContentService content;
@@ -26,28 +26,31 @@ public final class AnimeService {
     /** 输入完整手牌，复制效果及有期限的实例状态，不共享可变参数。 */
     public static Card copy(Card source) {
         Card card=ContentService.card(source); card.kind=source.kind; if(card.mechanism==null) card.mechanism=source.kind;
-        if(card.pool==null) card.pool="card"; if(card.rarity==null) card.rarity=source.kind.equals("barrier")?"SSR":"SR";
+        if(card.pool==null) card.pool="card"; if(card.rarity==null) card.rarity=Set.of("barrier","remote","stay","immunity").contains(source.kind)?"SSR":"SR";
         if(card.name==null) card.name=switch(source.kind) { case "barrier"->"路障"; case "demolish"->"拆房"; case "swap"->"换位"; default->source.kind; };
         card.expiresAtTurn=source.expiresAtTurn; card.projected=source.projected;
-        card.remainingUses=source.remainingUses; card.lastUsedTurn=source.lastUsedTurn; return card;
+        card.usesSpent=source.usesSpent; card.remainingUses=source.remainingUses; card.lastUsedTurn=source.lastUsedTurn; return card;
     }
     /** 输入卡型，返回是否由目标计划器负责。 */
-    public static boolean attacks(String kind) { return ATTACKS.contains(kind); }
+    public static boolean attacks(String kind) { return ATTACKS.contains(kind) || CrossoverService.ATTACKS.contains(kind) || Set.of("keqingRush","thunderLord","fireBurial","igniteSea","senbonzakura").contains(kind); }
     /** 输入持牌人和当前牌，返回是否允许使用其专属投影次数或剑雨剩余次数。 */
     public static boolean usable(Room room,Card card) {
-        return (!room.activeCardUsed || card.projected && card.expiresAtTurn==room.turnNumber) && (!card.kind.equals("swordRain") || card.lastUsedTurn!=room.turnNumber);
+        return NetaService.allowed(room,current(room),card) && (!room.activeCardUsed || NetaService.bankaiActive(room,current(room)) && NetaService.state(room).bankaiRemaining>0 || card.projected && card.expiresAtTurn==room.turnNumber) && (!card.kind.equals("swordRain") || card.lastUsedTurn!=room.turnNumber && card.usesSpent<2);
     }
     /** 输入新回合房间，保存回归点并依次处理业主的腐败，跳过回合也计数。 */
     public void startTurn(Room room) {
         AnimeState state=state(room); if(state.startedTurn==room.turnNumber) return;
         state.startedTurn=room.turnNumber; Player owner=current(room); owner.personalTurns++; owner.turnStartPosition=owner.position;
         observeOwnership(room);
+        content.neta.startTurn(room,owner);
         for(Tile tile:room.board) if(Objects.equals(tile.ownerId,owner.id) && tile.corruptionTurns>0 && !PropertyEffects.frozen(tile)) {
-            lower(room,tile,1); tile.corruptionTurns--; if(tile.level==0) tile.corruptionTurns=0;
+            CrossoverService.state(room).damageBatch="corruption:"+tile.id+":"+room.turnNumber; CrossoverService.state(room).damageActorId=null;
+            GameEffect damage=effects.effect("NETA_DAMAGE",owner); damage.tileId=tile.id; damage.amount=1; damage.selector="corruption"; effects.submit(room,damage);
         }
     }
     /** 输入结束行动者，销毁本回合临时牌，更新投影记录并解除到期零域。 */
     public static void endTurn(Room room,Player owner) {
+        NetaService.endTurn(room,owner);
         AnimeState state=state(room);
         for(Player p:room.players) p.hand.removeIf(c -> c.expiresAtTurn>0 && c.expiresAtTurn<=room.turnNumber);
         state.previousCards=new ArrayList<>(state.currentCards); state.currentCards.clear();
@@ -55,13 +58,18 @@ public final class AnimeService {
     }
     /** 输入房间，产权改变后立即清除旧修复证据，不能转手再转回恢复旧记录。 */
     public static void observeOwnership(Room room) {
+        for(Tile tile:room.board) if(tile.nzothOwnerId!=null && tile.level==0 && PropertyEffects.shieldCharges(tile)==0) tile.nzothOwnerId=null;
+        NetaService.clean(room);
         for(Tile tile:room.board) if(!Objects.equals(tile.observedOwnerId,tile.ownerId)) {
             tile.damageOwnerId=null; tile.damageLevel=0; tile.damageUntilTurn=0; tile.observedOwnerId=tile.ownerId;
+            CrossoverService.state(room).damage.remove(tile.id);
+            if(!Objects.equals(tile.nzothOwnerId,tile.ownerId)) tile.nzothOwnerId=null;
         }
     }
     /** 输入受损地产，记录实际损坏前等级和业主的下一个个人回合期限。 */
     public static void recordDamage(Room room,Tile tile) {
         Player owner=player(room,tile.ownerId); if(owner==null || owner.bankrupt || tile.level<=0) return;
+        CrossoverService.recordDamage(room,tile);
         tile.damageOwnerId=owner.id; tile.damageLevel=tile.level; tile.damageUntilTurn=owner.personalTurns+1; tile.observedOwnerId=owner.id;
     }
     /** 输入房间与地产，返回是否可用四之弹恢复，排除未实际损坏及产权变化。 */
@@ -73,9 +81,9 @@ public final class AnimeService {
     /** 输入房间及普通骰点，在移动前向持有人开放一次重掷选择，返回是否等待。 */
     public boolean offerRewind(Room room) {
         AnimeState state=state(room); Player owner=current(room);
-        if(state.rewindOfferedTurn==room.turnNumber || owner.hand.stream().noneMatch(c -> c.kind.equals("timeRewind"))) return false;
+        if(state.rewindOfferedTurn==room.turnNumber || owner.hand.stream().noneMatch(c -> c.kind.equals("timeRewind") && CrossoverService.handAllowed(room,owner,c,false))) return false;
         state.rewindOfferedTurn=room.turnNumber;
-        ContentChoice choice=content.open(room,owner,"anime_rewind"); choice.cards.addAll(owner.hand.stream().filter(c -> c.kind.equals("timeRewind")).toList());
+        ContentChoice choice=content.open(room,owner,"anime_rewind"); choice.cards.addAll(owner.hand.stream().filter(c -> c.kind.equals("timeRewind") && CrossoverService.handAllowed(room,owner,c,false)).toList());
         choice.prompt="本次普通骰点为 "+room.dice+"，可以使用时间溯行重新掷一次，必须接受新结果。"; return true;
     }
     /** 输入主动牌和参数，处理投影、契约、修复或完整攻击计划；无合法目标不消费。 */
@@ -87,25 +95,38 @@ public final class AnimeService {
         }
         if(card.kind.equals("contract")) {
             require(PropertyEffects.handLimit(actor)>1,"手牌上限已为一张，不能签订契约"); ContentService.consume(room,actor,card,true,action);
-            actor.cash=Math.addExact(actor.cash,3000); actor.handLimitReduction++; log(room,actor.name+" 契约成立，获得 ¥3000，手牌上限减一"); content.overflow(room); return true;
+            actor.cash=Math.addExact(actor.cash,5000); actor.handLimitReduction++; log(room,actor.name+" 契约成立，获得 ¥5000，手牌上限减一"); content.overflow(room); return true;
         }
         if(card.kind.equals("timeRestore")) {
             Tile target=tile(room,action.tileId); require(restorable(room,actor,target),"请选择修复期限内、产权未变化且实际受损的自家地产");
             ContentService.consume(room,actor,card,true,action); target.level=target.damageLevel; target.damageOwnerId=null; log(room,target.name+" 经四之弹恢复至 "+target.level+" 级"); return true;
         }
         if(!attacks(card.kind)) return false;
+        attack(room,actor,card,action,true); return true;
+    }
+    /** 输入已确认主动牌或蓄力释放，固定攻击分段；释放不重复消费卡或主动次数。 */
+    public void attack(Room room,Player actor,Card card,Action action,boolean consume) {
+        require(CrossoverService.attackAllowed(actor),"王的压制期间不能发动主动攻击");
+        require(!consume || CrossoverService.handAllowed(room,actor,card,true),"该牌当前被禁用");
+        require(CrossoverService.turns(actor,"DEFENSE_SPECIALIZATION")==0,"防御特化期间不能主动攻击");
         AnimeState.Attack frame=new AnimeState.Attack(); frame.actorId=actor.id; frame.returnPhase=room.phase;
         plan(room,actor,card,action,frame.parts);
         require(!frame.parts.isEmpty(),"当前没有合法目标，此卡和主动次数保留");
-        if(card.kind.equals("swordRain")) {
-            require(card.lastUsedTurn!=room.turnNumber,"剑雨本回合仍在冷却"); card.remainingUses=(card.remainingUses==0?2:card.remainingUses)-1; card.lastUsedTurn=room.turnNumber;
+        if(card.kind.equals("fireBurial")) {
+            Tile sacrifice=tile(room,action.secondTileId);
+            require(sacrifice!=null && Objects.equals(sacrifice.ownerId,actor.id) && sacrifice.level>0 && !sacrifice.mortgaged && !PropertyEffects.frozen(sacrifice),"请选择自家未抵押、未封印且有建筑的献祭地产");
+            sacrifice.level--; sacrifice.damageOwnerId=null; sacrifice.damageLevel=0; CrossoverService.state(room).damage.remove(sacrifice.id);
+            log(room,actor.name+" 献祭 "+sacrifice.name+" 的一级建筑，无退款且不可用四之弹恢复");
         }
-        ContentService.consume(room,actor,card,true,action); if(card.kind.equals("swordRain") && card.remainingUses>0) actor.hand.add(card);
+        if(card.kind.equals("swordRain")) {
+            require(card.lastUsedTurn!=room.turnNumber,"剑雨本回合仍在冷却"); card.remainingUses=(card.remainingUses==0?2:card.remainingUses)-1; card.usesSpent++; card.lastUsedTurn=room.turnNumber;
+        }
+        if(consume) ContentService.consume(room,actor,card,true,action); if(card.kind.equals("swordRain") && card.remainingUses>0) actor.hand.add(card);
         frame.card=copy(card);
         Set<String> targets=new LinkedHashSet<>();
         for(GameEffect part:frame.parts) if(part.targetId!=null && !part.targetId.equals(actor.id)) targets.add(part.targetId);
-        frame.singleTarget=targets.size()==1 && (!card.kind.equals("kamui") || frame.parts.size()==1) && !Set.of("handDestruction","gravity","meteor","sevenSwords","railgun","explosion","absoluteZero","voidTears","swapAny").contains(card.kind);
-        frame.defenders.addAll(targets); state(room).attack=frame; offerDefense(room); return true;
+        frame.singleTarget=targets.size()==1 && (!card.kind.equals("kamui") || frame.parts.size()==1) && !Set.of("handDestruction","gravity","meteor","sevenSwords","railgun","explosion","absoluteZero","voidTears","swapAny","asunaFlash","shadowBlade").contains(card.kind);
+        frame.defenders.addAll(targets); state(room).attack=frame; offerDefense(room);
     }
     /** 输入恢复或移出后的房间，继续没有待选的未完成响应，不重复已入队结果。 */
     public void resume(Room room) {
@@ -118,11 +139,26 @@ public final class AnimeService {
     public static boolean needsResume(Room room) { AnimeState state=state(room); return room.pending==null && (state.attack!=null && !state.attack.queued || !state.voters.isEmpty()); }
     /** 输入来源和已验证参数，固定所有目标、随机样本与分段，返回空。 */
     private void plan(Room room,Player actor,Card card,Action action,List<GameEffect> parts) {
+        if(content.crossover.plan(room,actor,card,action,parts)) return;
         Tile target=tile(room,action.tileId); Player other=player(room,action.playerId); String kind=card.kind;
         switch(kind) {
+            case "senbonzakura" -> {
+                require(action.tileIds!=null && !action.tileIds.isEmpty() && action.tileIds.size()<=3 && new HashSet<>(action.tileIds).size()==action.tileIds.size(),"请选择不同花瓣目标");
+                for(int id:action.tileIds) { Tile t=tile(room,id); require(enemyBuilding(room,actor,t),"花瓣目标须为对手有建筑的未封印地产"); part(parts,room,actor,player(room,t.ownerId),t,"lower",1); }
+            }
+            case "igniteSea" -> {
+                require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
+                part(parts,room,actor,player(room,target.ownerId),target,"igniteSea",0);
+            }
+            case "keqingRush","thunderLord","fireBurial" -> {
+                require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
+                if(kind.equals("keqingRush")) require(nearbyDistance(actor.position,target.id,room.board.size())<=6,"请选择前后六格内的对手地产");
+                part(parts,room,actor,player(room,target.ownerId),target,kind.equals("thunderLord")?"thunderMark":kind.equals("fireBurial")?"lowerPiercing":"lower",kind.equals("fireBurial")?2:1);
+                if(kind.equals("keqingRush")) part(parts,room,actor,actor,target,"rushTeleport",0);
+            }
             case "demolish","fullDemolish","starburst","corruption" -> {
                 require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
-                part(parts,room,actor,player(room,target.ownerId),target,kind.equals("corruption")?"corrupt":kind.equals("fullDemolish")?"full":"lower",kind.equals("fullDemolish")?3:kind.equals("starburst")?2:1);
+                part(parts,room,actor,player(room,target.ownerId),target,kind.equals("corruption")?"corrupt":kind.equals("fullDemolish")?"fullPiercing":"lower",kind.equals("fullDemolish")?3:kind.equals("starburst")?2:1);
             }
             case "barrier" -> {
                 require(target!=null && !PropertyEffects.frozen(target) && !target.barrier && nearbyDistance(actor.position,target.id,room.board.size())>=1 && nearbyDistance(actor.position,target.id,room.board.size())<=6,"请选择前后六格内无路障的地块，不含当前格");
@@ -133,9 +169,9 @@ public final class AnimeService {
             }
             case "exchange","blackhole" -> {
                 require(target!=null && target.type.equals("property") && !PropertyEffects.frozen(target),"请选择未封印地产");
-                if(kind.equals("exchange")) require(target.ownerId!=null && !Objects.equals(target.ownerId,actor.id) && actor.cash>=PropertyEffects.baseRent(room,target),"请选择现金足以支付无修正租金的对手地产");
-                if(kind.equals("blackhole")) require(target.barrier || target.meteorCharges>0 || target.demolitionShield || target.treasure || target.concertStacks>0 || target.corruptionTurns>0 || target.portalTileId!=null || iced(target) || !ConstructionService.labels(room,target.id).isEmpty(),"地产没有可清除的附加效果");
-                part(parts,room,actor,player(room,target.ownerId),target,kind,kind.equals("exchange")?PropertyEffects.baseRent(room,target):0);
+                if(kind.equals("exchange")) require(target.ownerId!=null && !Objects.equals(target.ownerId,actor.id) && actor.cash>=PropertyEffects.exchangePrice(room,target),"请选择现金足以支付交换价的对手地产，最低为地价");
+                if(kind.equals("blackhole")) require(CrossoverService.attached(room,target),"地产没有可清除的附加效果");
+                part(parts,room,actor,player(room,target.ownerId),target,kind,kind.equals("exchange")?PropertyEffects.exchangePrice(room,target):0);
             }
             case "swap","blast","jail","steal","sap","slow","reaper","commandSpell","swordRain" -> {
                 require(other!=null && !other.bankrupt && (Set.of("blast","jail").contains(kind) || other!=actor),"请选择合法未破产玩家");
@@ -146,7 +182,7 @@ public final class AnimeService {
                 if(kind.equals("reaper")) require(PropertyEffects.handLimit(actor)>1 && PropertyEffects.handLimit(other)>1,"双方手牌上限须大于一张");
                 if(kind.equals("commandSpell")) require(action.point!=null && action.point>=1 && action.point<=6,"请选择1～6点");
                 if(kind.equals("swap")) { part(parts,room,actor,actor,null,"teleport",other.position); part(parts,room,actor,other,null,"teleport",actor.position); }
-                else if(kind.equals("blast")) part(parts,room,actor,other,null,"teleport",random.nextInt(room.board.size()));
+                else if(kind.equals("blast")) part(parts,room,actor,other,null,"blast",random.nextInt(room.board.size()));
                 else if(kind.equals("reaper")) { part(parts,room,actor,actor,null,"handLimit",1); part(parts,room,actor,other,null,"handLimit",1); }
                 else if(kind.equals("sap")) { part(parts,room,actor,other,null,"rest",1); part(parts,room,actor,other,null,"steal",1); }
                 else part(parts,room,actor,other,null,switch(kind){case "swordRain"->"rest";case "commandSpell"->"command";default->kind;},kind.equals("commandSpell")?action.point:1);
@@ -221,9 +257,11 @@ public final class AnimeService {
         while(frame.nextDefender<frame.defenders.size()) {
             Player owner=player(room,frame.defenders.get(frame.nextDefender++)); if(owner==null || owner.bankrupt) continue;
             boolean playerTarget=frame.parts.stream().anyMatch(e -> Objects.equals(e.targetId,owner.id) && !e.propertyTarget);
-            List<Card> cards=owner.hand.stream().filter(c -> c.kind.equals("imagineBreaker") || c.kind.equals("vectorReflect") && playerTarget || c.kind.equals("sealCard") && frame.singleTarget).toList();
+            boolean control=frame.parts.stream().anyMatch(e -> Objects.equals(e.targetId,owner.id) && controlledPart(e));
+            if(CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")>0) { frame.defenses.put(owner.id,"imagineBreaker"); continue; }
+            List<Card> cards=owner.hand.stream().filter(c -> CrossoverService.handAllowed(room,owner,c,false)).filter(c -> c.kind.equals("imagineBreaker") || c.kind.equals("vectorReflect") && playerTarget || c.kind.equals("sealCard") && frame.singleTarget || c.kind.equals("hollowfication") && control).toList();
             if(cards.isEmpty()) continue;
-            ContentChoice choice=content.open(room,owner,"anime_defense"); choice.cards.addAll(cards); choice.content=frame.card; choice.prompt=player(room,frame.actorId).name+" 使用「"+frame.card.name+"」，可以防御本牌针对你的全部效果。"; return;
+            ContentChoice choice=content.open(room,owner,"anime_defense"); choice.cards.addAll(cards); choice.content=frame.card; choice.prompt=player(room,frame.actorId).name+" 使用「"+frame.card.name+"」，可选择防御；虚化仅抵消针对本人的强制位移、休息和监禁。"; return;
         }
         finishDefense(room);
     }
@@ -231,8 +269,12 @@ public final class AnimeService {
     private void finishDefense(Room room) {
         AnimeState.Attack frame=state(room).attack; frame.queued=true;
         boolean portalBlocked=frame.card.kind.equals("voidTears") && frame.defenses.values().stream().anyMatch(v -> !v.isEmpty());
+        boolean swapBlocked=Set.of("swap","swapAny").contains(frame.card.kind) && frame.defenses.values().stream().anyMatch("hollowfication"::equals);
         for(GameEffect e:frame.parts) {
             String defense=frame.defenses.getOrDefault(e.targetId,"");
+            Player recipient=player(room,e.targetId);
+            if(recipient!=null && !recipient.id.equals(frame.actorId) && CrossoverService.turns(recipient,"DEFENSE_SPECIALIZATION")>0) continue;
+            if(swapBlocked || defense.equals("hollowfication") && controlledPart(e)) continue;
             if(portalBlocked || defense.equals("imagineBreaker") || defense.equals("sealCard")) continue;
             if(defense.equals("vectorReflect") && !e.propertyTarget) {
                 String defender=e.targetId; e.targetId=frame.actorId; e.playerId=defender;
@@ -243,6 +285,8 @@ public final class AnimeService {
         room.phase=frame.returnPhase;
         effects.submit(room,effects.effect("ANIME_FINISH",player(room,frame.actorId)));
     }
+    /** 输入攻击分段，返回是否为虚化可抵消的本人强制控制；自愿突入不在此列。 */
+    private static boolean controlledPart(GameEffect effect) { return !effect.propertyTarget && Set.of("teleport","gather","blast","jail","rest","command").contains(effect.selector); }
     /** 输入当前选择和答复，完成重掷、投影、主动防御或秘密投票，返回是否处理。 */
     public boolean decide(Room room,Player owner,ContentChoice choice,Action action) {
         if(!choice.type.startsWith("anime_")) return false;
@@ -289,15 +333,24 @@ public final class AnimeService {
         long value=owner.cash; for(Tile t:room.board) if(Objects.equals(t.ownerId,owner.id) && !PropertyEffects.frozen(t)) value=Math.addExact(value,Rules.propertyLiquidationValue(room,t));
         require(value<room.pending.amount,"尚未达到破产清算条件");
         require(room.pending.creditorId!=null || room.board.stream().noneMatch(t -> Objects.equals(t.ownerId,owner.id) && !t.mortgaged && !PropertyEffects.frozen(t)),"系统费用须先处理全部可抵押地产");
-        ContentService.consume(room,owner,card,false,action); room.pending=null; room.phase="manage"; relocate(room,owner,owner.turnStartPosition,"deathReturn"); owner.cash=Math.addExact(owner.cash,3000); content.restrict(room,owner,1,false); log(room,owner.name+" 死亡回归，当前剩余债务取消，获得 ¥3000");
+        ContentService.consume(room,owner,card,false,action); room.pending=null; room.phase="manage"; relocate(room,owner,owner.turnStartPosition,"deathReturn"); owner.cash=Math.addExact(owner.cash,3000); content.restrict(room,owner,1,false,false); log(room,owner.name+" 死亡回归，当前剩余债务取消，获得 ¥3000");
     }
     /** 输入固定分段，执行已完成主动防御的结果；等待解控时后续分段留在原队列。 */
     private void resolve(Room room,GameEffect e) {
         Player actor=player(room,e.playerId), target=player(room,e.targetId); Tile tile=tile(room,e.tileId);
         if(actor==null || actor.bankrupt || target!=null && target.bankrupt) return;
         switch(e.selector) {
+            case "igniteSea" -> {
+                if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0) {
+                    int shields=PropertyEffects.shieldCharges(tile); tile.demolitionShield=false; tile.demolitionShieldCharges=0;
+                    GameEffect damage=effects.effect("NETA_DAMAGE",actor); damage.tileId=tile.id; damage.amount=Math.min(3,1+shields); damage.content=e.content; effects.submit(room,damage);
+                }
+            }
+            case "thunderMark" -> NetaService.mark(room,actor,tile);
+            case "lowerPiercing" -> { if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0) { recordDamage(room,tile); tile.level=Math.max(0,tile.level-(int)e.amount); } }
+            case "rushTeleport" -> { GameEffect move=effects.effect("DIRECTED_TELEPORT",actor); move.tileId=tile.id; effects.submit(room,move); }
             case "lower" -> lower(room,tile,(int)e.amount);
-            case "full" -> { if(tile!=null && tile.level>0 && !PropertyEffects.preventDemolition(room,tile)) { recordDamage(room,tile); tile.level=0; log(room,tile.name+" 的建筑被全部摧毁"); } }
+            case "full","fullPiercing" -> { if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0 && (e.selector.equals("fullPiercing") || !PropertyEffects.preventDemolition(room,tile))) { recordDamage(room,tile); tile.level=0; log(room,tile.name+" 的建筑被全部摧毁"+(e.selector.equals("fullPiercing")?"，无视护盾":"")); } }
             case "corrupt" -> { if(tile!=null && !PropertyEffects.frozen(tile)) { tile.corruptionTurns=3; log(room,tile.name+" 受到猩红腐败，剩余三次侵蚀"); } }
             case "railgun" -> { if(tile!=null && !PropertyEffects.frozen(tile)) { tile.barrier=false; tile.meteorCharges=0; tile.demolitionShield=false; tile.demolitionShieldCharges=0; if(e.amount>0) lower(room,tile,1); } }
             case "barrier" -> tile.barrier=true;
@@ -305,15 +358,12 @@ public final class AnimeService {
             case "kamui" -> { tile.kamuiCasterId=actor.id; tile.kamuiTurns=3; tile.kamuiAppliedTurn=room.turnNumber; }
             case "zero" -> { tile.zeroCasterId=actor.id; tile.zeroUntilTurn=(int)e.amount; }
             case "portal" -> { if(tile.portalTileId!=null) { Tile old=tile(room,tile.portalTileId); if(old!=null && Objects.equals(old.portalTileId,tile.id)) old.portalTileId=null; } tile.portalTileId=e.destination; }
-            case "blackhole" -> {
-                ConstructionService.clear(room,tile);
-                if(tile.portalTileId!=null) { Tile paired=tile(room,tile.portalTileId); if(paired!=null && Objects.equals(paired.portalTileId,tile.id)) paired.portalTileId=null; }
-                tile.barrier=false; tile.meteorCharges=0; tile.demolitionShield=false; tile.demolitionShieldCharges=0; tile.treasure=false; tile.concertStacks=0; tile.corruptionTurns=0; tile.portalTileId=null; tile.zeroCasterId=null; tile.zeroUntilTurn=0;
-            }
+            case "blackhole" -> CrossoverService.clear(room,tile,false);
             case "exchange" -> { if(actor.cash<e.amount) { log(room,"现金已变化，等价交换未执行"); break; } actor.cash-=e.amount; if(target!=null) target.cash=Math.addExact(target.cash,e.amount); tile.ownerId=actor.id; observeOwnership(room); }
             case "teleport","gather" -> relocate(room,target,(int)e.amount,"teleport");
-            case "jail" -> { GameEffect jail=effects.effect("SEND_TO_JAIL",target); effects.submit(room,jail); }
-            case "rest" -> content.restrict(room,target,1,false);
+            case "blast" -> { relocate(room,target,(int)e.amount,"teleport"); effects.submit(room,effects.effect("SETTLE_TILE",target)); }
+            case "jail" -> { GameEffect jail=effects.effect("SEND_TO_JAIL",target); jail.voluntaryRestriction=actor==target; jail.content=e.content; effects.submit(room,jail); }
+            case "rest" -> content.restrict(room,target,1,false,actor!=target);
             case "slow" -> { GameEffect slow=effects.effect("ADD_STATUS",target); slow.statusId="NEXT_ROLL_HALF"; slow.amount=1; effects.submit(room,slow); }
             case "handLimit" -> { target.handLimitReduction++; content.overflow(room); }
             case "steal" -> {
@@ -323,7 +373,7 @@ public final class AnimeService {
             case "command" -> {
                 GameEffect move=effects.effect("MOVE",target); move.amount=e.amount; move.content=e.content; effects.submit(room,move); GameEffect land=effects.effect("SETTLE_TILE",target); land.content=e.content; effects.submit(room,land);
             }
-            default -> throw new GameError("未知动漫效果分段");
+            default -> content.crossover.resolvePart(room,e);
         }
         log(room,"「"+(e.content==null?e.selector:e.content.name)+"」效果已结算"+(tile==null?target==null?"":"："+target.name:"："+tile.name));
     }

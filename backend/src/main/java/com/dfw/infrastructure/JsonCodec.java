@@ -27,7 +27,7 @@ public class JsonCodec {
     public String actionDigest(Action action) {
         var fields = mapper.convertValue(action, TreeMap.class);
         // 新增可选金额省略或为零时，保持既有回执的规范化摘要，兼容重放。
-        for (String field : java.util.List.of("tileIds","secondTileId","direction")) if (fields.get(field) == null) fields.remove(field);
+        for (String field : java.util.List.of("tileIds","secondTileId","direction","cardSelections")) if (fields.get(field) == null) fields.remove(field);
         if (action.debtCredit == null || action.debtCredit == 0) fields.remove("debtCredit");
         if (action.botDifficulty == null) fields.remove("botDifficulty");
         if (action.mapSize == null) fields.remove("mapSize");

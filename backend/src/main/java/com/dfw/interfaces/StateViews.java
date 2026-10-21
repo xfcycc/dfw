@@ -15,12 +15,15 @@ public final class StateViews {
         value.chanceEventDescriptions = room.chanceEventDescriptions; value.upgradedTiles=room.upgradedTiles;
         if(room.runtime!=null && room.runtime.lastContent!=null && !room.runtime.lastContent.privateSupply) { value.event=room.runtime.lastContent; value.eventPlayerId=room.runtime.contentPlayerId; }
         if(room.runtime!=null) { value.playedCard=room.runtime.playedCard; value.playedCardPlayerId=room.runtime.playedCardPlayerId; }
-        for(Tile tile:room.board) { var labels=ConstructionService.labels(room,tile.id); if(!labels.isEmpty()) value.constructionEffects.put(tile.id,labels); }
+        for(Tile tile:room.board) { var labels=new java.util.ArrayList<>(ConstructionService.labels(room,tile.id)); labels.addAll(NetaService.labels(room,tile)); if(!labels.isEmpty()) value.constructionEffects.put(tile.id,labels); }
+        if(room.runtime!=null && room.runtime.neta!=null && room.runtime.neta.research!=null) value.researchCandidates=room.runtime.neta.research.cards;
         value.pending = room.pending; value.tradePending = room.trade != null; value.pausedReason = room.pausedReason; value.dice = room.dice; value.motion = room.motion; value.winnerId = room.winnerId; value.logs = room.logs;
         var assets = new java.util.HashMap<String, Long>();
         for (Player player : room.players) assets.put(player.id, Rules.netWorth(room, player));
         for (Player player : room.players) {
             PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position;
+            p.crossoverEffects=new java.util.ArrayList<>(CrossoverService.labels(room,player)); p.crossoverEffects.addAll(NetaService.playerLabels(room,player)); p.handSealTurns=CrossoverService.turns(player,"HAND_SEAL"); p.urSealTurns=CrossoverService.turns(player,"UR_ACTIVE_SEAL"); p.attackSealTurns=CrossoverService.turns(player,"ACTIVE_ATTACK_SEAL"); p.defenseSpecializationTurns=CrossoverService.turns(player,"DEFENSE_SPECIALIZATION"); p.blueBindTurns=CrossoverService.turns(player,"BLUE_BIND"); p.cultivated=CrossoverService.state(room).cultivated.contains(player.id);
+            p.controlProtectionTurns=StatusService.controlProtectionTurns(player);
             p.cardCount = player.hand.size(); p.handLimit=PropertyEffects.handLimit(player);
             p.nextRollHalf=player.statuses.stream().anyMatch(s -> s.type.equals("NEXT_ROLL_HALF") && s.remainingTurns>0);
             p.netWorth = assets.get(player.id); p.assetRank = player.bankrupt ? null : 1 + (int) room.players.stream().filter(other -> !other.bankrupt && assets.get(other.id) > p.netWorth).count();
@@ -49,16 +52,18 @@ public final class StateViews {
         value.archiveCode = room.archiveCode;
         if (id.equals(room.hostId)) for (SeatClaim claim : room.seatClaims) { SeatClaimVo v = new SeatClaimVo(); v.id = claim.id; v.playerId = claim.playerId; v.name = claim.name; v.at = claim.at; value.seatClaims.add(v); }
         if (room.activity != null) { value.activityId=room.activity.id; value.activityRound=room.activity.round; value.activitySelection=room.activity.choices.get(id); }
-        Player owner=player(room,id); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
+        Player owner=player(room,id); value.disabledCardIds=owner.hand.stream().filter(c -> !(AnimeService.DEFENSE.contains(c.kind) || java.util.Set.of("immunity","halfPayment","release").contains(c.kind) ? CrossoverService.handAllowed(room,owner,c,false) : CrossoverService.activeAllowed(room,owner,c)) || c.kind.equals("swordRain") && c.usesSpent>=2).map(c -> c.id).toList(); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
         if(room.runtime!=null) {
             value.projectionAvailable=room.runtime.anime!=null && room.runtime.anime.previousCards.stream().anyMatch(c -> !c.kind.equals("projection") && "主动".equals(c.cardType));
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
             ContentChoice choice=room.runtime.choice;
             if(choice!=null && choice.playerId.equals(id)) {
                 ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=ContentService.choiceTargets(room,choice); v.cards=choice.cards; v.cardId=choice.cardId;
-                v.playerIds=choice.playerIds; v.prompt=choice.prompt; v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
+                v.numbers=choice.numbers; v.cardOptions=choice.cardOptions; v.materialIds=choice.materialIds; v.playerIds=choice.playerIds; v.prompt=choice.prompt; v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
             }
         }
+        value.bankaiActive=NetaService.bankaiActive(room,owner); value.bankaiRemaining=value.bankaiActive?NetaService.state(room).bankaiRemaining:0;
+        value.petalsAvailable=NetaService.petalsAvailable(room,owner); var petals=NetaService.state(room).petals.get(id); value.petalsRemaining=petals==null?0:petals.charges;
         value.remoteBuildAvailable=ConstructionService.remoteAvailable(room,owner);
         value.activeCardUsed = current(room) != null && current(room).id.equals(id) && room.activeCardUsed;
         value.trade = room.trade != null && (room.trade.fromId.equals(id) || room.trade.toId.equals(id)) ? room.trade : null; return value;

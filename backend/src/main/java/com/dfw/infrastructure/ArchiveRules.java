@@ -39,6 +39,16 @@ public class ArchiveRules {
     private static final String EQUAL_UR_RULES = "3d9daa6260811a5ca0615b87f87faa4600808c39963486ba10bee14d725e33f2";
     /** 道具四档内完整效果均分后的默认摘要，保留原档位总出率及旧手牌。 */
     private static final String EQUAL_CARD_TIER_RULES = "341e825c8954c3be3a0dcc3d505970a58a5cf9e0a4f3afbbd5a8c3d589a6208e";
+    /** 两回合连控保护与卡牌数值调整后的默认摘要，旧手牌金额与已排队分段保留。 */
+    private static final String BALANCED_CARD_RULES = "5f92a3effbd0723504ba09a4fad93a9b04c4755ae60ec3f9060c26fa0ec00413";
+    /** 八素材加入后的明确默认摘要，旧手牌与待结算结果保持冻结。 */
+    private static final String NETA_CONTENT_RULES = "3f0d24724666412a879ef2e634787440b0a0ff6d1e5e605a1a11d5feff708e34";
+    /** 十七素材扩展与精确长整型事件权重的默认摘要，仅兼容明确登记的历史默认内容。 */
+    private static final String CROSSOVER_CONTENT_RULES = "3f0d24724666412a879ef2e634787440b0a0ff6d1e5e605a1a11d5feff708e34";
+    /** 八素材最终UR设计的明确默认摘要，旧手牌及旧选择仍按冻结版本结算。 */
+    private static final String FINAL_NETA_RULES = "6d9d0a5808502360c937636a7111f5a1e0ec258797b394df882e1b9f25103c7b";
+    /** 王的压制改为SSR三回合主动攻击限制后的默认摘要，历史卡牌与状态继续冻结。 */
+    private static final String ATTACK_PRESSURE_RULES = "d28a0b9099f7982a43f498b5e0c27bad8c107f736eea9f1b62d846febc62e709";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -57,10 +67,13 @@ public class ArchiveRules {
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
         return digest.equals(savedDigest)
-                || EQUAL_CARD_TIER_RULES.equals(digest) && (EQUAL_UR_RULES.equals(savedDigest) || UR_PROJECTION_RULES.equals(savedDigest) || TRIPLE_SHIELD_RULES.equals(savedDigest))
+                || (FINAL_NETA_RULES.equals(digest) || ATTACK_PRESSURE_RULES.equals(digest)) && savedDigest!=null && Set.of(FINAL_NETA_RULES,PREVIOUS_BARRIER_RULES,CURRENT_BARRIER_RULES,PRE_EXPANSION_RULES,EXPANSION_RULES,RENAMED_CONTENT_RULES,PRE_SKIN_EXPANSION_RULES,SKIN_EXPANSION_RULES,ANIME_CONTENT_RULES,PRE_RAILGUN_COPY_RULES,PRE_CARD_COPY_REVIEW_RULES,TRIPLE_SHIELD_RULES,UR_PROJECTION_RULES,EQUAL_UR_RULES,EQUAL_CARD_TIER_RULES,BALANCED_CARD_RULES,NETA_CONTENT_RULES,"aeda9c8378265ecb71cc6d53d985bd90e19dc28b418be61c0c2d44fb38365e46").contains(savedDigest)
+                || CROSSOVER_CONTENT_RULES.equals(digest) && savedDigest!=null && Set.of(PREVIOUS_BARRIER_RULES,CURRENT_BARRIER_RULES,PRE_EXPANSION_RULES,EXPANSION_RULES,RENAMED_CONTENT_RULES,PRE_SKIN_EXPANSION_RULES,SKIN_EXPANSION_RULES,ANIME_CONTENT_RULES,PRE_RAILGUN_COPY_RULES,PRE_CARD_COPY_REVIEW_RULES,TRIPLE_SHIELD_RULES,UR_PROJECTION_RULES,EQUAL_UR_RULES,EQUAL_CARD_TIER_RULES,BALANCED_CARD_RULES,NETA_CONTENT_RULES).contains(savedDigest)
+                || NETA_CONTENT_RULES.equals(digest) && savedDigest!=null && Set.of(PREVIOUS_BARRIER_RULES,CURRENT_BARRIER_RULES,PRE_EXPANSION_RULES,EXPANSION_RULES,RENAMED_CONTENT_RULES,PRE_SKIN_EXPANSION_RULES,SKIN_EXPANSION_RULES,ANIME_CONTENT_RULES,PRE_RAILGUN_COPY_RULES,PRE_CARD_COPY_REVIEW_RULES,TRIPLE_SHIELD_RULES,UR_PROJECTION_RULES,EQUAL_UR_RULES,EQUAL_CARD_TIER_RULES,BALANCED_CARD_RULES).contains(savedDigest)
+                || (EQUAL_CARD_TIER_RULES.equals(digest) || BALANCED_CARD_RULES.equals(digest)) && (EQUAL_CARD_TIER_RULES.equals(savedDigest) || EQUAL_UR_RULES.equals(savedDigest) || UR_PROJECTION_RULES.equals(savedDigest) || TRIPLE_SHIELD_RULES.equals(savedDigest))
                 || EQUAL_UR_RULES.equals(digest) && (UR_PROJECTION_RULES.equals(savedDigest) || TRIPLE_SHIELD_RULES.equals(savedDigest))
                 || UR_PROJECTION_RULES.equals(digest) && TRIPLE_SHIELD_RULES.equals(savedDigest)
-                || (ANIME_CONTENT_RULES.equals(digest) || TRIPLE_SHIELD_RULES.equals(digest) || UR_PROJECTION_RULES.equals(digest) || EQUAL_UR_RULES.equals(digest) || EQUAL_CARD_TIER_RULES.equals(digest)) && savedDigest != null && Set.of(ANIME_CONTENT_RULES, PRE_CARD_COPY_REVIEW_RULES, PRE_RAILGUN_COPY_RULES, SKIN_EXPANSION_RULES, PRE_SKIN_EXPANSION_RULES, RENAMED_CONTENT_RULES, EXPANSION_RULES, PRE_EXPANSION_RULES).contains(savedDigest)
+                || (ANIME_CONTENT_RULES.equals(digest) || TRIPLE_SHIELD_RULES.equals(digest) || UR_PROJECTION_RULES.equals(digest) || EQUAL_UR_RULES.equals(digest) || EQUAL_CARD_TIER_RULES.equals(digest) || BALANCED_CARD_RULES.equals(digest)) && savedDigest != null && Set.of(ANIME_CONTENT_RULES, PRE_CARD_COPY_REVIEW_RULES, PRE_RAILGUN_COPY_RULES, SKIN_EXPANSION_RULES, PRE_SKIN_EXPANSION_RULES, RENAMED_CONTENT_RULES, EXPANSION_RULES, PRE_EXPANSION_RULES).contains(savedDigest)
                 || SKIN_EXPANSION_RULES.equals(digest) && PRE_SKIN_EXPANSION_RULES.equals(savedDigest)
                 || RENAMED_CONTENT_RULES.equals(digest) && (EXPANSION_RULES.equals(savedDigest) || PRE_EXPANSION_RULES.equals(savedDigest))
                 || EXPANSION_RULES.equals(digest) && PRE_EXPANSION_RULES.equals(savedDigest) || CURRENT_BARRIER_RULES.equals(digest) && PREVIOUS_BARRIER_RULES.equals(savedDigest);

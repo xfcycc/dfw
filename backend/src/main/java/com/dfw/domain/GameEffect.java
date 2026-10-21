@@ -7,12 +7,18 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameEffect {
+    /** 已答复本次位移解控的玩家，恢复队列时不重复询问。 */
+    public java.util.List<String> movementReleasePlayers = new java.util.ArrayList<>();
+    /** 传送门位移被抵消后仍继续剩余步数，不消耗门或重算骰子。 */
+    public boolean movementCancelled;
     /** 已抽取的完整内容，不重新抽取参数或皮肤。 */
     public ContentResult content;
     /** 动漫主动效果分段的固定目标位置，-1表示未使用。 */
     public int destination = -1;
     /** 此分段是否作用于地产，由主动防御分开处理。 */
     public boolean propertyTarget;
+    /** 是否为主动对自己施加的限制，不受连续控制保护减免。 */
+    public boolean voluntaryRestriction;
     /** 本次效果标识。 */
     public String id;
     /** 注册的处理器名称。 */

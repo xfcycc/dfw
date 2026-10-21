@@ -78,7 +78,7 @@ public final class EventService {
         room.phase = frame.returnPhase; room.runtime.globalEvent = null;
         if (!turns.checkWinner(room) && current(room).bankrupt) turns.advance(room);
     }
-    /** 输入指定或随机地块，保存实际损失；事件触发原补偿订阅，UR 全拆手牌不补偿，空目标无事实。 */
+    /** 输入指定或随机地块，保存实际损失；事件触发原补偿订阅，UR 全拆手牌无视护盾且不补偿，空目标无事实。 */
     private void destroy(Room room, GameEffect effect) {
         Tile target = tile(room, effect.tileId);
         if ("RANDOM_BUILT_PROPERTY".equals(effect.selector)) {
@@ -89,7 +89,8 @@ public final class EventService {
         require(target != null && target.type.equals("property"), "请选择有效地产");
         Player owner = player(room, target.ownerId);
         if (target.level == 0 || owner == null || owner.bankrupt) { log(room, target.name + " 没有实际建筑损失，不触发补偿"); return; }
-        if (PropertyEffects.preventDemolition(room,target)) return;
+        boolean piercing=effect.content!=null && "card".equals(effect.content.pool) && "fullDemolish".equals(effect.content.mechanism);
+        if (PropertyEffects.frozen(target) || !piercing && PropertyEffects.preventDemolition(room,target)) return;
         DisasterResult result = new DisasterResult(); result.effectId = effect.id; result.tileId = target.id; result.ownerId = owner.id;
         result.destroyedLevels = target.level; result.loss = Math.multiplyExact(Rules.buildCost(room, target), target.level);
         result.rent = Rules.rent(room, target);

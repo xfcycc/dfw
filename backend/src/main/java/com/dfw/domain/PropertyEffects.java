@@ -16,6 +16,8 @@ public final class PropertyEffects {
         EconomyRules economy = Rules.economy(room); int level = tile.ownerId == null ? 0 : tile.level;
         return economy.derived("rent." + tile.price + "." + level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * Rules.RENT_MULTIPLIERS[level]);
     }
+    /** 输入本局及地产，返回等价交换应付价格，最低为该地块的实际土地价格。 */
+    public static long exchangePrice(Room room,Tile tile) { return Math.max(tile.price,baseRent(room,tile)); }
     /** 输入基础租金与叠加层数，以精确分数计算乘数并在最后向下取整。 */
     public static long concertRent(long base, int stacks) {
         return BigInteger.valueOf(base).multiply(BigInteger.valueOf(6).pow(stacks)).divide(BigInteger.valueOf(5).pow(stacks)).longValueExact();
@@ -29,7 +31,7 @@ public final class PropertyEffects {
             tile.demolitionShieldCharges = shieldCharges(tile) - 1; tile.demolitionShield = tile.demolitionShieldCharges > 0;
             log(room, tile.name + " 的防拆护盾抵挡了本次建筑拆除，剩余 " + tile.demolitionShieldCharges + " 层"); return true;
         }
-        return false;
+        return NetaService.prevent(room,tile);
     }
     /** 输入房间和行动结束者，递减其后续个人回合的神威；休息也计数。 */
     public static void endTurn(Room room, Player owner) {
@@ -48,7 +50,9 @@ public final class PropertyEffects {
     private static void release(Room room, Tile tile) {
         MotionSegment segment = BoardEffect.begin("kamuiRelease", player(room, tile.kamuiCasterId));
         segment.boardEffect.beforeTiles.add(BoardEffect.appearance(tile));
-        tile.kamuiCasterId = null; tile.kamuiTurns = 0; log(room, tile.name + " 已离开神威空间，地产及原有附加效果恢复");
+        tile.kamuiCasterId = null; tile.kamuiTurns = 0;
+        if(tile.portalTileId!=null) { Tile paired=tile(room,tile.portalTileId); if(paired==null || !Objects.equals(paired.portalTileId,tile.id)) tile.portalTileId=null; }
+        log(room, tile.name + " 已离开神威空间，地产及原有附加效果恢复");
         segment.boardEffect.afterTiles.add(BoardEffect.appearance(tile)); BoardEffect.publish(room, segment);
     }
 }

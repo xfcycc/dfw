@@ -307,7 +307,7 @@
             "parameters": [
               {
                 "id": "steps-0",
-                "rarity": "R",
+                "rarity": "SSR",
                 "values": {
                   "steps": 0
                 },
@@ -315,7 +315,7 @@
                   {
                     "id": "card_jojo_time_stop",
                     "name": "时间停止",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "砸瓦鲁多！",
                     "description": "DIO抬起手，钟声仿佛也在这一刻停住。半空的飞刀一动不动，承太郎站在原地，帽檐遮住了眼睛。DIO正要露出胜券在握的笑容，却忽然发现那根手指好像动了一下。",
                     "cardType": "主动"
@@ -323,7 +323,7 @@
                   {
                     "id": "card_moon_box",
                     "name": "月光宝盒",
-                    "rarity": "R",
+                    "rarity": "SSR",
                     "quote": "般若波罗蜜！",
                     "description": "至尊宝举起月光宝盒，认真念完咒语，四周的景物顿时卷成一团。再睁眼，又是那个熟悉的地方，熟悉的人，熟悉的一句你怎么又回来了。他看了看手里的盒子，决定这次先别急着答话。",
                     "cardType": "主动"
@@ -1287,12 +1287,12 @@
             "id": "default",
             "parameters": [
               {
-                "id": "prize-10000_probability-50_wager-5000",
+                "id": "prize-20000_probability-50_wager-5000",
                 "rarity": "UR",
                 "values": {
                   "wager": 5000,
                   "probability": 50,
-                  "prize": 10000
+                  "prize": 20000
                 },
                 "skins": [
                   {
@@ -1307,12 +1307,12 @@
                 "weight": 1
               },
               {
-                "id": "prize-5000_probability-20_wager-1000",
+                "id": "prize-10000_probability-20_wager-1000",
                 "rarity": "UR",
                 "values": {
                   "wager": 1000,
                   "probability": 20,
-                  "prize": 5000
+                  "prize": 10000
                 },
                 "skins": [
                   {
@@ -2561,6 +2561,500 @@
                     "rarity": "SR",
                     "quote": "不用太大！先有个屋顶就行！",
                     "description": "夜斗把理想中的神社比画得越来越大，雪音已经开始怀疑预算。日和捧着刚做好的小小神社走过来，他的声音忽然停住，接过去时比谁都小心。",
+                    "cardType": "持续"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "keqingRush",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_neta_keqing_rush",
+                    "name": "斩尽牛杂",
+                    "rarity": "SSR",
+                    "quote": "斩尽牛杂！",
+                    "description": "刻晴抬剑，雷光中的身影接连闪现。剑影收拢时，她已越过面前的阻挡，落在最后一道雷楔旁。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "thunderLord",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_neta_thunder_lord",
+                    "name": "煌煌威灵",
+                    "rarity": "UR",
+                    "quote": "煌煌威灵，尊吾敕命！",
+                    "description": "景元抬起阵刀，金色巨影在身后缓缓成形。他的动作从容得像随手落下一子，神君的兵刃已越过肩头，等待下一声敕令。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "hollowfication",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_neta_hollowfication",
+                    "name": "虚化",
+                    "rarity": "SSR",
+                    "quote": "这一次，换我来。",
+                    "description": "一护抬手划过脸侧，白色面具沿着指尖浮现。压来的攻击尚未落下，他已握紧斩月抬起头，面具后的目光与刚才判若两人。",
+                    "cardType": "防御"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fireBurial",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_neta_fire_burial",
+                    "name": "一刀火葬",
+                    "rarity": "SSR",
+                    "quote": "破道之九十六·一刀火葬！",
+                    "description": "山本将力量压入这一击，地面骤然亮起炽红纹路。巨大的火刃自下而上升起，火光映在他的脸上，出手的代价也已一并落下。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "bankai",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "version-2",
+                "rarity": "UR",
+                "values": {
+                  "version": 2
+                },
+                "skins": [
+                  {
+                    "id": "card_neta_bankai",
+                    "name": "天锁斩月",
+                    "rarity": "UR",
+                    "quote": "卍解！天锁斩月！",
+                    "description": "扩散的灵压突然向内收拢，宽大的刀身化为漆黑长刀。一护压低身体，衣摆刚刚扬起，人已经从原地消失。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "asunaFlash",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_asunaFlash",
+                    "name": "闪光的亚丝娜",
+                    "rarity": "UR",
+                    "quote": "这一剑，绝不退让。",
+                    "description": "白红色身影从怪物的攻击间隙穿过，细剑拖出连贯的光轨。突刺结束时，亚丝娜已立于敌阵另一侧，身后的攻击才刚刚落下。她握紧剑柄，再次望向前方。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "defenseSpecialization",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_defenseSpecialization",
+                    "name": "怕痛就全点防御了",
+                    "rarity": "UR",
+                    "quote": "因为怕痛，所以防御力全点满！",
+                    "description": "梅普露抱着大盾站在爆炸中央，密集攻击在周围接连炸开。烟尘散去，她小心地从盾后探出头，确认自己毫发无伤，才露出安心的笑容。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "revealingSwords",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_revealingSwords",
+                    "name": "光的护封剑",
+                    "rarity": "UR",
+                    "quote": "发动魔法卡——光的护封剑！",
+                    "description": "金色巨剑从天而降，贯入战场，构成耀眼的封锁剑阵。被困其中的怪兽仰头怒吼，却无法越过光芒形成的边界；剑阵外的决斗者已经准备好下一次行动。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "fusion",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_fusion",
+                    "name": "融合",
+                    "rarity": "UR",
+                    "quote": "发动魔法卡——融合！",
+                    "description": "蓝橙交错的漩涡席卷战场，两道截然不同的怪兽轮廓被卷入中心。旋涡深处的光越来越亮，一个更强大的身影正从融合的力量中显现。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "shadowBlade",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_shadowBlade",
+                    "name": "双龙魔影剑",
+                    "rarity": "SSR",
+                    "quote": "剑锋未至，魔影先行。",
+                    "description": "漆黑的剑身从幽暗中显露，锋刃映出冷冽的光泽。挥斩掠过，两道交错的龙形魔影冲入敌阵；剑鸣停下后，残留的暗影仍盘旋在刃端。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "doubleBoost",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_doubleBoost",
+                    "name": "双喷",
+                    "rarity": "SSR",
+                    "quote": "出弯，双喷！",
+                    "description": "赛车贴着弯道内侧滑出，车尾拖出清晰的轮胎烟痕。两段喷焰接连点亮，车身在速度残影中冲向直道，后视镜里的对手已经被甩出一段距离。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "blueSilverBind",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_blueSilverBind",
+                    "name": "蓝银缠绕",
+                    "rarity": "SR",
+                    "quote": "你也有取死之道！",
+                    "description": "蓝银草从地面骤然生长，绕过武器与护甲，缠住目标的四肢。蓝色光点沿草叶流动，唐三抬手收拢，藤蔓在敌人挣脱前骤然绷紧。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "goldenCore",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_goldenCore",
+                    "name": "结丹",
+                    "rarity": "UR",
+                    "quote": "大道漫漫，今日结丹。",
+                    "description": "洞府石门紧闭，韩立盘坐阵中，四周灵气不断向丹田汇聚。一点金光逐渐凝实，洞府外的天地灵气随之涌动；他收敛心神，守住这来之不易的突破。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "nuwaMend",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_nuwaMend",
+                    "name": "女娲补天",
+                    "rarity": "UR",
+                    "quote": "炼五色石，以补苍天。",
+                    "description": "天穹裂开巨大的缺口，五色神光自女娲石中升起，沿裂隙缓缓铺展。残破山河映在光中，渺小的人影立于天地之间，仰望那片终于开始愈合的苍穹。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "namelessSword",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_namelessSword",
+                    "name": "无名剑法",
+                    "rarity": "SSR",
+                    "quote": "剑虽无名，锋芒自见。",
+                    "description": "剑客立于风中，剑锋低垂，衣摆与落叶缓缓移动。出剑的一瞬，数道剑气先后穿过烟尘；待风声重新响起，剑客已经收剑而立。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "kingsPressure",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "version-2",
+                "rarity": "SSR",
+                "values": {
+                  "version": 2
+                },
+                "skins": [
+                  {
+                    "id": "card_crossover_kingsPressure",
+                    "name": "王的压制",
+                    "rarity": "SSR",
+                    "quote": "不死魔王，仍在王座之上。",
+                    "description": "比赛舞台的灯光落在Faker身上，他神情平静，视线始终停在屏幕。另一侧的选手眉头紧锁，手指悬在按键上；大屏中的一次走位，已经让整个赛场屏住呼吸。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "igniteSea",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "version-2",
+                "rarity": "UR",
+                "values": {
+                  "version": 2
+                },
+                "skins": [
+                  {
+                    "id": "card_neta_ignite_sea",
+                    "name": "点燃大海",
+                    "rarity": "UR",
+                    "quote": "我将，点燃大海！",
+                    "description": "流萤抬起头，银色长发在青绿色的光中扬起。她伸手触向前方，萤火越过指尖，沉寂的夜色被一点点照亮。那道身影没有停下，像要将眼前的大海一并点燃。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "senbonzakura",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "version-2",
+                "rarity": "UR",
+                "values": {
+                  "version": 2
+                },
+                "skins": [
+                  {
+                    "id": "card_neta_senbonzakura",
+                    "name": "千本樱",
+                    "rarity": "UR",
+                    "quote": "散落吧，千本樱。",
+                    "description": "白哉松开刀柄，刀身在落下途中散成无数细小的光。樱色碎片缓缓飘过，直到他抬起手，漫天花瓣才同时转向。",
                     "cardType": "持续"
                   }
                 ],

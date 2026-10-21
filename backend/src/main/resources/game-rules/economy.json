@@ -15,7 +15,7 @@
     "content.fortune.bottom_bonus.amount-400_bonus-600.bonus": 1500,
     "content.fortune.bottom_bonus.amount-400_bonus-800.bonus": 1500,
     "content.fortune.talent.amount-5000_count-2.amount": 2000,
-    "content.card.gamble.prize-10000_probability-50_wager-5000.wager": 5000,
-    "content.card.gamble.prize-10000_probability-50_wager-5000.prize": 10000
+    "content.card.gamble.prize-20000_probability-50_wager-5000.wager": 5000,
+    "content.card.gamble.prize-20000_probability-50_wager-5000.prize": 20000
   }
 }

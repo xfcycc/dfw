@@ -22,6 +22,8 @@ public class Action {
     public List<String> keepCardIds;
     /** 制衡确认弃掉的本人旧牌，不含发动卡。 */
     public List<String> discardCardIds;
+    /** 重塑材料身份到所选固定候选身份。 */
+    public Map<String,String> cardSelections;
     /** 本人选择的内置角色形象。 */
     public String avatarId;
     /** 本次活动身份。 */

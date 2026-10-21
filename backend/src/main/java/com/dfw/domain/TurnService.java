@@ -17,6 +17,7 @@ public class TurnService {
         effects.register("DIRECTED_TELEPORT", this::directedTeleport);
         effects.register("SKIP_TURN", this::skipTurn);
         effects.register("MOVE", this::moveEffect);
+        effects.register("PORTAL_TRANSFER", this::portalTransfer);
         effects.register("RANDOM_TELEPORT", this::teleport);
         effects.register("SEND_TO_JAIL", this::sendToJail);
         effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
@@ -56,6 +57,7 @@ public class TurnService {
     public void advance(Room room) {
         HistoryTrace.event(room, "turn_end", current(room) == null ? null : current(room).id, "行动结束", null);
         ConstructionService.endTurn(room,current(room));
+        CrossoverService.endTurn(room,current(room));
         AnimeService.endTurn(room,current(room));
         StatusService.endTurn(room, current(room));
         if (checkWinner(room)) return;
@@ -84,45 +86,83 @@ public class TurnService {
     /** 输入房间和移动效果，执行实际路径并关联触发本段的公开事件，无返回值。 */
     private void moveEffect(Room room, GameEffect effect) {
         int first = room.movementSequence.size();
-        move(room, player(room, effect.playerId), (int) effect.amount);
+        move(room, player(room, effect.playerId), (int) effect.amount,effect.selector);
+        if("NORMAL".equals(effect.selector) && "RANDOM".equals(room.runtime.rollMode) && CrossoverService.state(room).boostTurn==room.turnNumber) effects.submit(room,effects.effect("CROSS_BOOST",player(room,effect.playerId)));
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.stream().skip(first).filter(segment -> segment.boardEffect == null).findFirst().ifPresent(segment -> segment.beforeEvent = effect.content);
         if (effect.message != null) log(room, effect.message);
     }
     /** 输入房间、玩家及最终有符号步数，处理翻倍、路障与路径；正向经过或最终停在起点时发奖，无返回值。 */
-    public void move(Room room, Player player, int steps) {
-        if (StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); BoardEffect.cue(room,"morale",player); }
+    public void move(Room room, Player player, int steps) { move(room,player,steps,null); }
+    /** 输入移动模式，突进忽略路径、喷射仅忽略陨星，后续仍只由原阶段结算最终落点。 */
+    private void move(Room room,Player player,int steps,String mode) {
+        move(room,player,steps,mode,false);
+    }
+    /** 输入已换算步数、移动模式及是否续走，续走不重复消费翻倍状态或领取原地奖励。 */
+    private void move(Room room,Player player,int steps,String mode,boolean continuing) {
+        boolean flash="FLASH".equals(mode), boost="BOOST".equals(mode);
+        if (!continuing && !flash && !boost && StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); BoardEffect.cue(room,"morale",player); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;
-        boolean rewarded = false, immune = false;
+        boolean rewarded = false, immune = false, portalPaused = false;
         BoardEffect.Observation trap = null;
-        if (steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
+        if (!continuing && steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
             if (player.position == 0 && steps > 0) { rewardStart(room, player, "向前经过起点"); rewarded = true; }
             Tile tile = room.board.get(player.position);
+            if(flash) continue;
             if(!PropertyEffects.frozen(tile) && tile.portalTileId!=null) {
                 Tile exit=tile(room,tile.portalTileId);
                 if(exit!=null && !PropertyEffects.frozen(exit) && Objects.equals(exit.portalTileId,tile.id)) {
+                    if(player.hand.stream().anyMatch(c -> c.kind.equals("release") && CrossoverService.handAllowed(room,player,c,false))) {
+                        GameEffect transfer=effects.effect("PORTAL_TRANSFER",player); transfer.tileId=tile.id; transfer.destination=exit.id;
+                        transfer.amount=(Math.abs(steps)-i-1)*Integer.signum(steps); transfer.selector=mode; transfer.statusId=steps<0?"BACKWARD":"FORWARD";
+                        effects.submit(room,transfer); portalPaused=true; break;
+                    }
                     tile.portalTileId=null; exit.portalTileId=null; player.position=exit.id; motion.path.add(exit.id); tile=exit;
                     log(room,player.name+" 通过虚空之泪到达 "+exit.name+"，继续剩余步数");
                 }
             }
             if (PropertyEffects.frozen(tile)) continue;
-            if ((tile.barrier || tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); immune = true; continue; }
-            if (tile.barrier || tile.meteorCharges>0) {
+            if ((tile.barrier || !boost && tile.meteorCharges>0) && StatusService.immune(player, "TRAP")) { log(room, player.name + " 免疫 " + tile.name + " 的路障，路障保留"); immune = true; continue; }
+            if (tile.barrier || !boost && tile.meteorCharges>0) {
                 trap = BoardEffect.watch(room,"barrierHit",player);
-                if(tile.barrier) tile.barrier=false; else tile.meteorCharges--;
+                if(tile.barrier) { tile.barrier=false; CrossoverService.state(room).boostBlocked=true; } else tile.meteorCharges--;
                 log(room, player.name + " 在 " + tile.name + " 被路障或陨星拦下，每次仅消耗一层"); break;
             }
         }
-        if (steps < 0 && player.position == 0) { rewardStart(room, player, "后退停在起点"); rewarded = true; }
+        if (!portalPaused && steps < 0 && player.position == 0) { rewardStart(room, player, "后退停在起点"); rewarded = true; }
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         if (rewarded) { BoardEffect.cue(room,"income",player); BoardEffect.cue(room,"supply",player); }
         if (immune) BoardEffect.cue(room,"trapImmune",player);
         if (trap != null) trap.finish(room);
         // 全部移动完成后才开放补给超限选择，保留后续落点阶段与已完成路径。
-        content.overflow(room);
+        if(!portalPaused) content.overflow(room);
+    }
+    /** 输入已固定入口、出口及剩余步数，响应后处理实际所在格路障再续走；抵消保留传送门。 */
+    private void portalTransfer(Room room,GameEffect effect) {
+        Player owner=player(room,effect.playerId); if(owner==null || owner.bankrupt) return;
+        Tile entry=tile(room,effect.tileId), exit=tile(room,effect.destination);
+        if(!effect.movementCancelled && entry!=null && exit!=null && !PropertyEffects.frozen(entry) && !PropertyEffects.frozen(exit) && Objects.equals(entry.portalTileId,exit.id) && Objects.equals(exit.portalTileId,entry.id)) {
+            entry.portalTileId=null; exit.portalTileId=null;
+            MotionSegment segment=BoardEffect.begin("teleport",owner); BoardEffect.movement(segment,owner,exit.id); owner.position=exit.id; BoardEffect.publish(room,segment);
+            log(room,owner.name+" 通过虚空之泪到达 "+exit.name+"，继续剩余步数");
+        }
+        Tile landed=room.board.get(owner.position); boolean blocked=false;
+        if(!PropertyEffects.frozen(landed) && (landed.barrier || !"BOOST".equals(effect.selector) && landed.meteorCharges>0)) {
+            if(StatusService.immune(owner,"TRAP")) { log(room,owner.name+" 免疫 "+landed.name+" 的路障，路障保留"); BoardEffect.cue(room,"trapImmune",owner); }
+            else {
+                BoardEffect.Observation trap=BoardEffect.watch(room,"barrierHit",owner);
+                if(landed.barrier) { landed.barrier=false; CrossoverService.state(room).boostBlocked=true; } else landed.meteorCharges--;
+                log(room,owner.name+" 在 "+landed.name+" 被路障或陨星拦下，每次仅消耗一层"); trap.finish(room); blocked=true;
+            }
+        }
+        if(!blocked && effect.amount!=0) move(room,owner,(int)effect.amount,effect.selector,true);
+        else {
+            if(owner.position==0 && "BACKWARD".equals(effect.statusId)) { rewardStart(room,owner,"后退停在起点"); BoardEffect.cue(room,"income",owner); BoardEffect.cue(room,"supply",owner); }
+            content.overflow(room);
+        }
     }
     /** 输入已确认传送终点，替代掷骰并保存路径；到起点仅领取一次奖励，落点交原 LANDING 阶段。 */
     private void directedTeleport(Room room, GameEffect effect) {
@@ -147,10 +187,11 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
         log(room,"log",target.id,target.name+" 被爆破鬼才传送至 "+room.board.get(target.position).name+"（"+target.position+"号），此次落点不结算");
     }
-    /** 输入目标玩家及入狱效果，直达监狱后开放解控；本人掷骰前入狱替代本次移动，无返回值。 */
+    /** 输入目标玩家及入狱效果，先核对外部控制保护再传送并开放解控；本人掷骰前入狱替代移动，无返回值。 */
     private void sendToJail(Room room, GameEffect effect) {
         Player target=player(room,effect.playerId);
         GameError.require(target!=null && !target.bankrupt,"请选择一名未破产玩家，可选择自己");
+        if(!effect.voluntaryRestriction && StatusService.controlProtectionTurns(target)>0) { log(room,target.name+" 的连续控制保护抵挡了本次入狱及传送"); return; }
         Tile jail=room.board.stream().filter(t -> t.type.equals("jail")).findFirst().orElseThrow();
         Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
         target.position=jail.id; motion.path.add(jail.id);
@@ -158,7 +199,7 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
         if (target==current(room) && room.phase.equals("pre_roll")) { room.runtime.rollMode="JAIL"; room.runtime.windowExit="replace_roll"; }
         log(room,"log",target.id,target.name+" 被直接送至监狱，不触发沿途奖励或重复落点结算");
-        content.restrict(room,target,1,true);
+        content.restrict(room,target,1,true,!effect.voluntaryRestriction);
     }
     /** 输入房间、领奖玩家及触发动作，按本局配置发放起点现金与道具并记录日志，无返回值。 */
     private void rewardStart(Room room, Player player, String action) {
@@ -173,6 +214,7 @@ public class TurnService {
             case "activity" -> activities.open(room, player, tile);
             case "jail" -> { content.restrict(room, player, 1, true); }
             case "chance", "fortune" -> {
+                if(room.eventDrawn) { log(room,"本个人回合已抽取事件，本次不再抽取"); break; }
                 room.eventDrawn = true;
                 content.event(room, player, tile.type);
             }
@@ -218,12 +260,15 @@ public class TurnService {
             room.trade.remainingMs = 0; room.trade.runningSince = null;
         }
     }
-    /** 输入配置对局，在 TURN_START 跳过在线玩家的一次休息回合，服刑结束后恢复收租并返回真。 */
+    /** 输入配置对局，跳过在线玩家的一次休息行动并启动连控保护，服刑结束后恢复收租，实际跳过时返回真。 */
     public boolean skipCurrentTurn(Room room) {
         Player actor = current(room);
-        if (actor == null || !actor.online || actor.skipTurns == 0 || room.trade != null) return false;
-        boolean jailed=actor.jailed; actor.skipTurns--; if (actor.skipTurns==0) actor.jailed=false;
+        if (actor == null || !actor.online || actor.skipTurns == 0 && CrossoverService.state(room).skippedTurn!=room.turnNumber || room.trade != null) return false;
+        if(CrossoverService.state(room).skippedTurn==room.turnNumber) { if(!content.crossover.beforeEnd(room,actor)) advance(room); return true; }
+        CrossoverService.state(room).skippedTurn=room.turnNumber;
+        boolean jailed=actor.jailed; actor.skipTurns--; if(actor.voluntarySkipTurns>0) actor.voluntarySkipTurns--; if (actor.skipTurns==0) actor.jailed=false;
+        StatusService.controlledSkip(room,actor);
         log(room, actor.name + (jailed ? actor.jailed ? " 服刑休息一回合，继续暂停收租" : " 服刑休息一回合，现已出狱并恢复收租" : " 休息一回合"));
-        BoardEffect.cue(room,jailed ? actor.jailed ? "jail" : "release" : "rest",actor); advance(room); return true;
+        BoardEffect.cue(room,jailed ? actor.jailed ? "jail" : "release" : "rest",actor); if(!content.crossover.beforeEnd(room,actor)) advance(room); return true;
     }
 }

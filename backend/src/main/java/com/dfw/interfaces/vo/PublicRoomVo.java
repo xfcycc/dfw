@@ -15,6 +15,8 @@ public class PublicRoomVo {
     public ActivityRotationVo activityRotation;
     /** 当前多人活动的安全公开投影。 */
     public ActivityVo activity;
+    /** 公共研究候选，不包含参与人的秘密选择。 */
+    public List<Card> researchCandidates = new ArrayList<>();
 
     /** 永久房间标识。 */
     public String roomId;

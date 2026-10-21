@@ -28,7 +28,7 @@ public final class ConstructionService {
     }
 
     /** 输入房间、业主及合法地产，免费增一级并登记实际新建数量，无递归联动。 */
-    private static void build(Room room,Player owner,Tile target) {
+    public static void build(Room room,Player owner,Tile target) {
         int before=target.level; target.level++;
         if(!room.upgradedTiles.contains(target.id)) room.upgradedTiles.add(target.id);
         SettlementService.observe(room); owner.matchStats.builtLevels++;

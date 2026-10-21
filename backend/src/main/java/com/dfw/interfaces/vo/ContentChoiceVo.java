@@ -21,6 +21,10 @@ public class ContentChoiceVo {
     public List<Integer> tileIds;
     /** 超限、制衡或发现时仅提供选择者本人的候选牌。 */
     public List<Card> cards;
+    /** 多张材料各自固定的重塑候选，仅向本人发送。 */
+    public Map<String,List<Card>> cardOptions;
+    /** 已锁定的有序材料身份。 */
+    public List<String> materialIds;
     /** 发动免费升级的未消费卡。 */
     public String cardId;
     /** 相关已确定卡面。 */
@@ -33,4 +37,6 @@ public class ContentChoiceVo {
     public long discardCash;
     /** 当前实际手牌上限。 */
     public int handLimit;
+    /** 已固定的双骰候选，仅实际选择者可见。 */
+    public List<Integer> numbers;
 }
