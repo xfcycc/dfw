@@ -9,6 +9,10 @@ import com.dfw.domain.*;
 @Getter
 @Setter
 public class PrivatePlayerVo {
+    /** 十万年魂环剩余免租次数；零表示未持有或已到期。 */
+    public int soulRingRemaining;
+    /** 魂环剩余本人回合数，包含当前本人回合。 */
+    public int soulRingTurns;
     /** 卍解本回合是否已经发动，耗尽后仍为真。 */
     public boolean bankaiActive;
     /** 卍解统一后续出牌剩余次数。 */

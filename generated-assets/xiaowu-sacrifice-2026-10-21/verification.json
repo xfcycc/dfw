@@ -1,0 +1,266 @@
+{
+  "date": "2026-10-21",
+  "scope": "专用开发实例的真实HTTP/WebSocket命令与浏览器手动定向验收；固定场景非自然整局平衡数据",
+  "database": "dfw_neta_20261021_1433",
+  "rooms": 8,
+  "typecheck": "npm run typecheck 通过",
+  "backendCompile": "mvn -f backend/pom.xml -Dmaven.test.skip=true compile -q 通过",
+  "unitOrSmokeTests": "未编写、未执行",
+  "frontendBuild": "未执行",
+  "commit": "未提交",
+  "deployment": "未部署",
+  "rarity": {
+    "urTotalProbability": "5%",
+    "urEffects": 30,
+    "eachUrEffectProbability": "1/600 = 0.1666667%"
+  },
+  "sourceSync": "源表生成配置已核对；机会与财富JSON相对改动前字节未变",
+  "rulesDigest": "cf1033a89675725649ae8f33aebe13c8d6570d63089fe7877c6bfe4c816fbc34",
+  "staticArtwork": {
+    "skinId": "card_neta_xiaowu_sacrifice",
+    "animationName": "none",
+    "urAnimated": false,
+    "url": "https://pic.caiguoyu.cn/typora/20261021182127155.webp"
+  },
+  "cases": [
+    {
+      "name": "献祭两处含裸地、护盾不阻挡、无退款",
+      "lands": [
+        {
+          "owner": null,
+          "level": 0,
+          "shield": 3,
+          "damage": null
+        },
+        {
+          "owner": null,
+          "level": 0,
+          "shield": 0,
+          "damage": null
+        }
+      ],
+      "cashUnchanged": true,
+      "charges": 3,
+      "turns": 8,
+      "active": true
+    },
+    {
+      "name": "最终租金窗口",
+      "type": "rent",
+      "amount": 3600,
+      "charges": 3
+    },
+    {
+      "name": "过期付款窗口拒绝且不扣次数",
+      "ok": false,
+      "error": "费用选择已失效",
+      "charges": 3
+    },
+    {
+      "name": "第一次魂环免除最终租金",
+      "pending": null,
+      "cashUnchanged": true,
+      "charges": 2
+    },
+    {
+      "name": "非法献祭 5,5",
+      "ok": false,
+      "error": "请选择两处不同的自家地产",
+      "active": false,
+      "cardRetained": true,
+      "ring": 0
+    },
+    {
+      "name": "非法献祭 5,1",
+      "ok": false,
+      "error": "献祭地产须为自家未抵押、未封印地产",
+      "active": false,
+      "cardRetained": true,
+      "ring": 0
+    },
+    {
+      "name": "非法献祭 1,2",
+      "ok": false,
+      "error": "献祭地产须为自家未抵押、未封印地产",
+      "active": false,
+      "cardRetained": true,
+      "ring": 0
+    },
+    {
+      "name": "非法献祭 5,6",
+      "ok": false,
+      "error": "献祭地产须为自家未抵押、未封印地产",
+      "active": false,
+      "cardRetained": true,
+      "ring": 0
+    },
+    {
+      "name": "非法献祭 6,7",
+      "ok": false,
+      "error": "献祭地产须为自家未抵押、未封印地产",
+      "active": false,
+      "cardRetained": true,
+      "ring": 0
+    },
+    {
+      "name": "银行费用不可免租",
+      "ok": false,
+      "error": "十万年魂环仅能免除本人的一笔正租金",
+      "charges": 3
+    },
+    {
+      "name": "白云无尽净化保留魂环",
+      "charges": 3,
+      "turns": 8,
+      "labels": [
+        "十万年魂环：剩余3次 · 剩余8个本人回合"
+      ],
+      "disabled": 0
+    },
+    {
+      "name": "魂环存续拒绝再次献祭",
+      "ok": false,
+      "error": "十万年魂环仍在生效，不能重复发动",
+      "cardRetained": true,
+      "landStillOwned": true
+    },
+    {
+      "name": "自选保留魂环",
+      "charges": 2,
+      "defenseResolved": true
+    },
+    {
+      "name": "不使用正常转账",
+      "charges": 2,
+      "paid": 1500,
+      "amount": 1500
+    },
+    {
+      "name": "第二次免租",
+      "charges": 1,
+      "turns": 6
+    },
+    {
+      "name": "进入第八个本人回合仍有效",
+      "personalTurns": 8,
+      "charges": 2,
+      "turns": 1
+    },
+    {
+      "name": "第八个本人回合结束清除魂环",
+      "charges": 0,
+      "turns": 0,
+      "label": []
+    },
+    {
+      "name": "WebSocket重连保留剩余次数和期限",
+      "charges": 1,
+      "turns": 5
+    },
+    {
+      "name": "服务重启保留已消耗额度和原期限",
+      "charges": 1,
+      "turns": 5
+    },
+    {
+      "name": "第三次免租后结束魂环",
+      "charges": 0,
+      "turns": 0,
+      "pending": null
+    },
+    {
+      "name": "零租不消耗魂环",
+      "pending": null,
+      "charges": 3,
+      "phase": "manage"
+    },
+    {
+      "name": "休息的第八个本人回合照常到期",
+      "personalTurns": 8,
+      "charges": 0,
+      "turns": 0
+    },
+    {
+      "name": "魂环与付款卡互斥",
+      "ok": false,
+      "error": "本笔只能选择魂环或一张付款防御卡",
+      "charges": 3,
+      "cardRetained": true
+    },
+    {
+      "name": "用了半价卡后不能再叠魂环",
+      "ok": false,
+      "error": "本笔费用已完成防御选择",
+      "amount": 2500,
+      "charges": 3
+    },
+    {
+      "name": "空现金、禁手牌的租金窗口",
+      "amount": 5000,
+      "cash": 0,
+      "disabled": 6,
+      "charges": 2
+    },
+    {
+      "name": "禁手牌不影响已获得的魂环",
+      "pending": null,
+      "charges": 1,
+      "cash": 0
+    },
+    {
+      "name": "持有人淘汰清除魂环",
+      "bankrupt": true,
+      "charges": 0,
+      "turns": 0
+    },
+    {
+      "name": "数据库快照中的魂环已结束",
+      "counts": [
+        {
+          "code": "353482",
+          "ringCount": 0
+        },
+        {
+          "code": "873363",
+          "ringCount": 0
+        }
+      ]
+    },
+    {
+      "name": "返回大厅重建运行时",
+      "status": "lobby",
+      "charges": 0,
+      "turns": 0
+    },
+    {
+      "name": "浏览器献祭与免租完整流程",
+      "sacrificed": [
+        {
+          "id": 1,
+          "owner": null,
+          "level": 0
+        },
+        {
+          "id": 2,
+          "owner": null,
+          "level": 0
+        }
+      ],
+      "cash": 102400,
+      "charges": 2,
+      "turns": 7,
+      "pending": null,
+      "waivedRent": 6000
+    }
+  ],
+  "screenshots": {
+    "selection": "/tmp/dfw-xiaowu-assets/sacrifice-selection.png",
+    "rentChoice": "/tmp/dfw-xiaowu-assets/rent-choice.png",
+    "rentPaid": "/tmp/dfw-xiaowu-assets/rent-paid.png"
+  },
+  "limits": [
+    "未进行六人完整对局与统计平衡验证",
+    "机器人策略已接入并编译，未独立进行长局策略评估"
+  ],
+  "temporaryServices": "本轮3018后端、5178前端与开发客户端已关闭；保留其他服务"
+}

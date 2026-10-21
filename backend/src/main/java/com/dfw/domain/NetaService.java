@@ -34,6 +34,7 @@ public final class NetaService {
             Player caster=player(room,entry.getKey()); Tile t=tile(room,entry.getValue().tileId);
             return caster==null || caster.bankrupt || t==null || !Objects.equals(t.ownerId,entry.getValue().ownerId);
         });
+        state(room).soulRings.entrySet().removeIf(entry -> { Player p=player(room,entry.getKey()); return p==null || p.bankrupt || entry.getValue().charges<=0 || p.personalTurns>entry.getValue().untilTurn; });
         state(room).petals.entrySet().removeIf(entry -> { Player p=player(room,entry.getKey()); return p==null || p.bankrupt || p.personalTurns>entry.getValue().untilTurn; });
         state(room).defenses.keySet().removeIf(id -> room.runtime.effects.stream().noneMatch(e -> Objects.equals(e.id,id)));
         for(Tile t:room.board) if(t.petalCasterId!=null) {
@@ -77,8 +78,27 @@ public final class NetaService {
         long reduced=economy.derived("rent."+tile.price+"."+level,Math.multiplyExact(tile.price,economy.rentBasePercent)/100*Rules.RENT_MULTIPLIERS[level]);
         clearPetal(tile); log(room,tile.name+" 消耗千本樱标记，本笔按 "+level+" 级基础租金 ¥"+reduced+" 结算"); return reduced;
     }
-    /** 输入普通道具；双骰确认发动立即消费并固定样本，后续只能选择路线。 */
+    /** 输入房间、持有人、道具及参数，验证并执行献祭或持续增益；返回是否已接管此道具。 */
     public boolean use(Room room,Player owner,Card card,Action action) {
+        if(card.kind.equals("xiaowuSacrifice")) {
+            require(soulRingRemaining(room,owner)==0,"十万年魂环仍在生效，不能重复发动");
+            List<Integer> ids=action.tileIds;
+            require(ids!=null && ids.size()==2 && new HashSet<>(ids).size()==2,"请选择两处不同的自家地产");
+            List<Tile> targets=ids.stream().map(id -> tile(room,id)).toList();
+            require(targets.stream().allMatch(t -> t!=null && t.type.equals("property") && owner.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t)),"献祭地产须为自家未抵押、未封印地产");
+            ContentService.consume(room,owner,card,true,action);
+            for(Tile t:targets) {
+                // 自愿献祭不经过建筑破坏或售地流程，既不退款，也不留下可修复的损坏记录。
+                t.ownerId=null; t.level=0; t.mortgaged=false; t.mortgageBase=null;
+                t.damageOwnerId=null; t.damageLevel=0; t.damageUntilTurn=0;
+                CrossoverService.state(room).damage.remove(t.id);
+            }
+            AnimeService.observeOwnership(room);
+            NetaState.SoulRing ring=new NetaState.SoulRing(); ring.untilTurn=owner.personalTurns+7;
+            state(room).soulRings.put(owner.id,ring);
+            log(room,owner.name+" 献祭 "+targets.get(0).name+"、"+targets.get(1).name+"，获得十万年魂环：8个本人回合内可自主免除3笔租金（含本回合）");
+            return true;
+        }
         if(modern(card) && card.kind.equals("senbonzakura")) {
             ContentService.consume(room,owner,card,true,action);
             NetaState.Petals petals=state(room).petals.get(owner.id);
@@ -195,14 +215,37 @@ public final class NetaService {
     }
     /** 输入成功消费的主动卡，仅后续出牌扣除共享额度，防御和持续技能不算出牌。 */
     public static void spent(Room room,Player owner) { if(bankaiActive(room,owner)) state(room).bankaiRemaining--; }
-    /** 输入个人回合结束者，销毁达到第三个后续回合结束的持续花瓣。 */
+    /** 输入持有人，返回仍有效的免租次数，不修改正面增益。 */
+    public static int soulRingRemaining(Room room,Player owner) {
+        NetaState.SoulRing ring=state(room).soulRings.get(owner.id);
+        return ring==null || owner.bankrupt || owner.personalTurns>ring.untilTurn?0:ring.charges;
+    }
+    /** 输入持有人，返回含当前回合在内的剩余本人回合数。 */
+    public static int soulRingTurns(Room room,Player owner) {
+        return soulRingRemaining(room,owner)==0?0:state(room).soulRings.get(owner.id).untilTurn-owner.personalTurns+1;
+    }
+    /** 输入已确认的本人付款窗口，仅免除一笔正租金，不向房东补款，不受手牌封禁影响。 */
+    public static void waiveRent(Room room,Player owner) {
+        require(paymentPending(room) && owner.id.equals(room.pending.playerId) && !room.pending.defenseResolved && room.pending.type.equals("rent") && room.pending.amount>0,"十万年魂环仅能免除本人的一笔正租金");
+        require(soulRingRemaining(room,owner)>0,"十万年魂环已失效");
+        NetaState.SoulRing ring=state(room).soulRings.get(owner.id); ring.charges--;
+        log(room,"log",owner.id,owner.name+" 使用十万年魂环，免除租金 ¥"+String.format("%,d",room.pending.amount)+"，剩余 "+ring.charges+" 次");
+        if(ring.charges==0) state(room).soulRings.remove(owner.id);
+        room.pending=null; room.phase="manage"; BoardEffect.cue(room,"immunity",owner);
+    }
+    /** 输入个人回合结束者，清除达到期限的持续花瓣和十万年魂环，休息回合也计时。 */
     public static void endTurn(Room room,Player owner) {
         NetaState.Petals p=state(room).petals.get(owner.id); if(p!=null && owner.personalTurns>=p.untilTurn) state(room).petals.remove(owner.id);
+        NetaState.SoulRing ring=state(room).soulRings.get(owner.id);
+        if(ring!=null && owner.personalTurns>=ring.untilTurn) { state(room).soulRings.remove(owner.id); log(room,owner.name+" 的十万年魂环到期"); }
     }
-    /** 输入持有人，返回可公开的剩余花瓣与持续期限。 */
+    /** 输入房间及持有人，返回可公开的花瓣、魂环额度与持续期限。 */
     public static List<String> playerLabels(Room room,Player owner) {
         NetaState.Petals p=state(room).petals.get(owner.id);
-        return p==null?List.of():List.of("千本樱："+p.charges+"片 · 至第"+p.untilTurn+"个个人回合结束");
+        List<String> labels=new ArrayList<>();
+        if(p!=null) labels.add("千本樱："+p.charges+"片 · 至第"+p.untilTurn+"个个人回合结束");
+        if(soulRingRemaining(room,owner)>0) labels.add("十万年魂环：剩余"+soulRingRemaining(room,owner)+"次 · 剩余"+soulRingTurns(room,owner)+"个本人回合");
+        return labels;
     }
     /** 输入持有人，返回是否可在掷骰前使用一次花瓣攻击，不占普通主动次数。 */
     public static boolean petalsAvailable(Room room,Player owner) {

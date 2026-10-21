@@ -16,6 +16,7 @@ export interface UrCardScene {
 
 /** 本批UR仅显示已有等级外框；原画无呼吸、流光、粒子或分层动画。 */
 export const STATIC_UR_SKINS = new Set([
+  'card_neta_xiaowu_sacrifice',
   'card_neta_thunder_lord', 'card_neta_bankai', 'card_neta_ignite_sea',
   'card_neta_senbonzakura', 'fortune_neta_genius_club',
 ]);

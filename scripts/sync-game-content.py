@@ -10,7 +10,7 @@ from construction_content import RARITIES as CONSTRUCTION_RARITIES, assign as as
 
 ROOT = Path(__file__).resolve().parents[1]
 RARITIES = {'R', 'SR', 'SSR', 'UR'}
-NETA_RARITIES = {'keqingRush': 'SSR', 'thunderLord': 'UR', 'hollowfication': 'SSR', 'fireBurial': 'SSR', 'bankai': 'UR', 'igniteSea': 'UR', 'geniusClub': 'UR', 'senbonzakura': 'UR'}
+NETA_RARITIES = {'xiaowuSacrifice': 'UR', 'keqingRush': 'SSR', 'thunderLord': 'UR', 'hollowfication': 'SSR', 'fireBurial': 'SSR', 'bankai': 'UR', 'igniteSea': 'UR', 'geniusClub': 'UR', 'senbonzakura': 'UR'}
 NEW_EVENT = {'chance': {'concert': '4', 'shuffle': '4'}, 'fortune': {'treasure': '5', 'all_cards': '6'}}
 ANIME_RARITIES = {'timeRewind': 'SSR', 'projection': 'UR', 'starburst': 'SSR', 'imagineBreaker': 'UR', 'classTrial': 'SR', 'timeRestore': 'SSR', 'vectorReflect': 'UR', 'deathReturn': 'UR', 'explosion': 'UR', 'corruption': 'SSR', 'contract': 'SSR', 'commandSpell': 'UR', 'sevenSwords': 'UR', 'railgun': 'UR', 'sealCard': 'UR', 'swordRain': 'SSR', 'voidTears': 'SSR', 'absoluteZero': 'UR'}
 NEW_RARITIES = {'shield': 'SSR', 'recycle': 'SR', 'discover': 'SSR', 'sap': 'SR', 'exchange': 'UR', 'slow': 'R', 'swapAny': 'SSR', 'kamui': 'UR', 'handDestruction': 'SSR', 'gravity': 'SSR', 'reaper': 'UR', 'shadowstep': 'SR', 'homeTeleport': 'SSR', 'blackhole': 'SSR', 'meteor': 'SSR', 'treasure': 'SSR', 'concert': 'SSR', 'shuffle': 'SSR', 'all_cards': 'SR'}

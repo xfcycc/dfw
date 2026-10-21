@@ -226,12 +226,18 @@ public final class BotPlanner {
         }
     }
 
-    /** 输入当前费用，比较减免、支付后现金安全与留牌成本；均能安全支付时优先消耗保留成本较低的牌。 */
+    /** 输入当前费用，比较魂环与手牌减免、现金安全及保留成本，返回互斥的付款防御选择。 */
     private Action paymentDefense(PendingDecision debt) {
         Action a = action("paymentDefense"); a.decisionId = debt.id;
         double best = 0, bestCost = Double.POSITIVE_INFINITY;
         double safety = conservative ? 0 : Math.min(reserve, me.cash * .25);
         boolean bestSafe = false;
+        if(debt.type.equals("rent") && debt.amount>0 && own.soulRingRemaining>0) {
+            double typical=state.board.stream().filter(t -> t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt).mapToLong(t -> rent(t,t.level)).average().orElse(0);
+            double cost=conservative || own.soulRingTurns<=1?0:typical*.65;
+            double score=debt.amount-cost;
+            if(score>0 || me.cash<debt.amount) { a.useSoulRing=true; best=score; bestCost=cost; bestSafe=me.cash>=safety; }
+        }
         for (Card c : own.hand) {
             if(own.disabledCardIds.contains(c.id)) continue;
             long saving = c.kind.equals("immunity") && debt.type.equals("rent") ? debt.amount : c.kind.equals("halfPayment") ? debt.amount / 2 : 0;
@@ -247,8 +253,8 @@ public final class BotPlanner {
             if (score <= 0) continue;
             boolean safe = after >= safety;
             boolean better = safe == bestSafe && (safe && cost < bestCost || (!safe || cost == bestCost) && score > best);
-            if (a.cardId == null || safe && !bestSafe || better) {
-                best = score; bestCost = cost; bestSafe = safe; a.cardId = c.id;
+            if (a.cardId == null && !Boolean.TRUE.equals(a.useSoulRing) || safe && !bestSafe || better) {
+                best = score; bestCost = cost; bestSafe = safe; a.cardId = c.id; a.useSoulRing=null;
             }
         }
         return a;
@@ -532,11 +538,21 @@ public final class BotPlanner {
         return best;
     }
 
-    /** 输入新增主动卡和待填命令，按公开局面评分并设置合法目标，神威选择同边最多三处收益最高的敌方地产；返回最高收益评分。 */
+    /** 输入新增主动卡和待填命令，按公开局面评分并设置合法目标，献祭比较资产损失与有限免租收益；返回最高收益评分。 */
     private double expansionCard(Card card, Action action) {
         double best=Double.NEGATIVE_INFINITY, base=startIncome()*.25;
         switch(card.kind) {
             case "bankai" -> { return NetaService.modern(card) && own.hand.stream().filter(c -> !c.id.equals(card.id) && !Set.of("bankai","projection").contains(c.kind) && "主动".equals(c.cardType)).count()<2 ? best : base; }
+            case "xiaowuSacrifice" -> {
+                if(own.soulRingRemaining>0) return best;
+                List<Tile> lands=state.board.stream().filter(t -> t.type.equals("property") && me.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t)).sorted(Comparator.comparingDouble(t -> value(t,me.id))).limit(2).toList();
+                if(lands.size()<2) return best;
+                action.tileIds=lands.stream().map(t -> t.id).toList();
+                // 只在未来租金压力足以覆盖两处资产价值时献祭，避免无脑烧地。
+                double exposure=state.board.stream().filter(t -> t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt).mapToDouble(t -> rent(t,t.level)*visits.get(me.id)[t.id]/horizon*8).sum();
+                double cap=state.board.stream().filter(t -> t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt).mapToDouble(t -> rent(t,t.level)).max().orElse(0)*3;
+                return Math.min(exposure,cap)-lands.stream().mapToDouble(t -> value(t,me.id)).sum();
+            }
             case "senbonzakura" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && t.level>0) ? base*3 : best; }
             case "keqingRush","thunderLord","fireBurial","igniteSea" -> {
                 Tile sacrifice=state.board.stream().filter(t -> me.id.equals(t.ownerId) && t.level>0 && !t.mortgaged && !PropertyEffects.frozen(t)).min(Comparator.comparingLong(t -> Rules.buildCost(economics,t))).orElse(null);

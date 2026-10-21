@@ -62,6 +62,7 @@ public final class StateViews {
                 v.numbers=choice.numbers; v.cardOptions=choice.cardOptions; v.materialIds=choice.materialIds; v.playerIds=choice.playerIds; v.prompt=choice.prompt; v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
             }
         }
+        value.soulRingRemaining=NetaService.soulRingRemaining(room,owner); value.soulRingTurns=NetaService.soulRingTurns(room,owner);
         value.bankaiActive=NetaService.bankaiActive(room,owner); value.bankaiRemaining=value.bankaiActive?NetaService.state(room).bankaiRemaining:0;
         value.petalsAvailable=NetaService.petalsAvailable(room,owner); var petals=NetaService.state(room).petals.get(id); value.petalsRemaining=petals==null?0:petals.charges;
         value.remoteBuildAvailable=ConstructionService.remoteAvailable(room,owner);

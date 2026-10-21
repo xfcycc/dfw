@@ -7,6 +7,16 @@ import lombok.Setter;
 /** 八素材扩展的持久化进度；研究选择只通过私人窗口投影。 */
 @Getter @Setter
 public class NetaState {
+    /** 正面增益独立于负面状态，净化和解控不得移除或刷新。 */
+    public Map<String, SoulRing> soulRings = new LinkedHashMap<>();
+    /** 献祭所得的有限免租次数及个人回合期限。 */
+    @Getter @Setter
+    public static class SoulRing {
+        /** 剩余可自主消耗的免租次数。 */
+        public int charges = 3;
+        /** 发动当回合计第一回合，第八个本人回合结束到期。 */
+        public int untilTurn;
+    }
     /** 每位施术者至多一份神君标记。 */
     public Map<String, Thunder> thunder = new LinkedHashMap<>();
     /** 持有人的三片攻防共享花瓣。 */

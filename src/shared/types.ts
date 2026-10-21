@@ -10,7 +10,7 @@ export type BotDifficulty = 'easy' | 'normal' | 'hard';
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */
-export type ItemKind = 'asunaFlash' | 'defenseSpecialization' | 'revealingSwords' | 'fusion' | 'shadowBlade' | 'doubleBoost' | 'blueSilverBind' | 'goldenCore' | 'nuwaMend' | 'namelessSword' | 'kingsPressure' | 'keqingRush' | 'thunderLord' | 'hollowfication' | 'fireBurial' | 'bankai' | 'igniteSea' | 'senbonzakura' | 'geoResonance' | 'growthLink' | 'sereniteaPot' | 'createBuild' | 'remoteConstruction' | 'shrineGrowth' | 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor' | 'timeRewind' | 'projection' | 'starburst' | 'imagineBreaker' | 'timeRestore' | 'vectorReflect' | 'deathReturn' | 'explosion' | 'corruption' | 'contract' | 'commandSpell' | 'sevenSwords' | 'railgun' | 'sealCard' | 'swordRain' | 'voidTears' | 'absoluteZero';
+export type ItemKind = 'xiaowuSacrifice' | 'asunaFlash' | 'defenseSpecialization' | 'revealingSwords' | 'fusion' | 'shadowBlade' | 'doubleBoost' | 'blueSilverBind' | 'goldenCore' | 'nuwaMend' | 'namelessSword' | 'kingsPressure' | 'keqingRush' | 'thunderLord' | 'hollowfication' | 'fireBurial' | 'bankai' | 'igniteSea' | 'senbonzakura' | 'geoResonance' | 'growthLink' | 'sereniteaPot' | 'createBuild' | 'remoteConstruction' | 'shrineGrowth' | 'remote' | 'barrier' | 'stay' | 'immunity' | 'demolish' | 'swap' | 'blast' | 'jail' | 'fixed' | 'move' | 'bonus' | 'freeUpgrade' | 'fullUpgrade' | 'fullDemolish' | 'halfPayment' | 'release' | 'steal' | 'cash' | 'gamble' | 'shield' | 'recycle' | 'discover' | 'sap' | 'exchange' | 'slow' | 'swapAny' | 'kamui' | 'handDestruction' | 'gravity' | 'reaper' | 'shadowstep' | 'homeTeleport' | 'blackhole' | 'meteor' | 'timeRewind' | 'projection' | 'starburst' | 'imagineBreaker' | 'timeRestore' | 'vectorReflect' | 'deathReturn' | 'explosion' | 'corruption' | 'contract' | 'commandSpell' | 'sevenSwords' | 'railgun' | 'sealCard' | 'swordRain' | 'voidTears' | 'absoluteZero';
 /** 已冻结的完整卡面，旧手牌缺少皮肤时使用原定义。 */
 export interface ContentResult {
   kind?: ItemKind | null;
@@ -269,6 +269,8 @@ export interface PublicRoomState {
 /** 当前玩家私有状态，只有本人可收到。 */
 export interface PrivatePlayerState {
   /** 卍解后所有后续出牌共用额度，耗尽时仍保持已发动标记。 */
+  soulRingRemaining?: number;
+  soulRingTurns?: number;
   bankaiActive?: boolean;
   bankaiRemaining?: number;
   /** 持续花瓣技能的私人可用状态。 */
@@ -318,7 +320,7 @@ export type GameAction =
   | { type: 'setMapSize'; mapSize: MapSize }
   | { type: 'senbonzakuraStrike' | 'purifyPollution' | 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
   | { type: 'rentDecision'; useCard: boolean }
-  | { type: 'paymentDefense'; decisionId?: string; cardId?: string }
+  | { type: 'paymentDefense'; decisionId?: string; cardId?: string; useSoulRing?: boolean }
   | { type: 'contentDecision'; decisionId: string; cardSelections?: Record<string, string>; point?: number; direction?: number; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
   | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string; secondTileId?: number; tileIds?: number[]; direction?: number }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }

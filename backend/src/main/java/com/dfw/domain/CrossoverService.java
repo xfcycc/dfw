@@ -11,7 +11,7 @@ public final class CrossoverService {
     public static final Set<String> ATTACKS=Set.of("asunaFlash","revealingSwords","shadowBlade","blueSilverBind","kingsPressure");
     private static final Set<String> MOVEMENT=Set.of("fixed","remote","move","stay","bonus","swap","blast","swapAny","gravity","shadowstep","homeTeleport","commandSpell","voidTears","timeRewind","asunaFlash","doubleBoost");
     private static final Set<String> BUILDING=Set.of("freeUpgrade","fullUpgrade","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","timeRestore","nuwaMend");
-    private static final Set<String> DEFENSE=Set.of("immunity","halfPayment","release","shield","imagineBreaker","vectorReflect","deathReturn","sealCard","hollowfication","defenseSpecialization");
+    private static final Set<String> DEFENSE=Set.of("xiaowuSacrifice","immunity","halfPayment","release","shield","imagineBreaker","vectorReflect","deathReturn","sealCard","hollowfication","defenseSpecialization");
     private static final Set<String> RESOURCE=Set.of("cash","gamble","recycle","discover","contract","projection","handDestruction","fusion","goldenCore");
     private static final Set<String> REPLACEMENTS=Set.of("fixed","remote","move","stay","homeTeleport","shadowstep","asunaFlash");
     private final ContentService content;

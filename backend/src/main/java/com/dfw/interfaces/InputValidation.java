@@ -61,7 +61,7 @@ public final class InputValidation {
                 if(action.has("cardSelections")) { JsonNode selections=action.get("cardSelections"); object(selections); check(selections.size()>=1 && selections.size()<=3); selections.properties().forEach(entry -> { check(entry.getKey().matches(UUID_PATTERN)); check(entry.getValue().isString() && entry.getValue().asString().matches(UUID_PATTERN)); }); }
                 if(action.has("discardCardIds")) { JsonNode ids=action.get("discardCardIds"); check(ids.isArray() && ids.size()>=1 && ids.size()<=7); for(JsonNode id:ids) check(id.isString() && id.asString().matches(UUID_PATTERN)); }
             }
-            case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); }
+            case "paymentDefense" -> { if(action.has("decisionId")) uuid(action,"decisionId"); if(action.has("cardId")) uuid(action,"cardId"); if(action.has("useSoulRing")) bool(action,"useSoulRing"); }
             case "ready" -> bool(action, "value");
             case "setName" -> check(action.has("name") && action.get("name").isString());
             case "setAvatar" -> check(action.has("avatarId") && action.get("avatarId").isString() && com.dfw.domain.PlayerAvatars.IDS.contains(action.get("avatarId").asString()));
@@ -81,7 +81,7 @@ public final class InputValidation {
             case "chat" -> List.of("message", "references");
             case "assignSeat" -> List.of("claimId");
             case "contentDecision" -> List.of("decisionId","accept","tileId","cardId","keepCardIds","discardCardIds","tileIds","selection","playerId","cardSelections","point","direction");
-            case "paymentDefense" -> List.of("decisionId","cardId");
+            case "paymentDefense" -> List.of("decisionId","cardId","useSoulRing");
             case "ready" -> List.of("value");
             case "setName" -> List.of("name");
             case "setAvatar" -> List.of("avatarId");

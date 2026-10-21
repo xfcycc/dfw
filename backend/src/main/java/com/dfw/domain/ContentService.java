@@ -367,6 +367,9 @@ public final class ContentService {
     public void defense(Room room,Player owner,Action action) {
         require(paymentPending(room) && room.pending.playerId.equals(owner.id) && !room.pending.defenseResolved,"本笔费用已完成防御选择");
         PendingDecision debt=room.pending; require(action.decisionId==null || Objects.equals(action.decisionId,debt.id),"费用选择已失效");
+        if(Boolean.TRUE.equals(action.useSoulRing)) {
+            require(action.cardId==null,"本笔只能选择魂环或一张付款防御卡"); NetaService.waiveRent(room,owner); return;
+        }
         if(action.cardId!=null) {
             Card card=find(owner,action.cardId);
             require(card.kind.equals("halfPayment") || card.kind.equals("immunity") && debt.type.equals("rent"),"此道具不能减免本笔费用");

@@ -42,6 +42,8 @@ public class Action {
     public Boolean value;
     /** 免租选择。 */
     public Boolean useCard;
+    /** 本笔正租金是否消耗一次十万年魂环，与付款防御卡互斥。 */
+    public Boolean useSoulRing;
     /** 道具标识。 */
     public String cardId;
     /** 点数。 */

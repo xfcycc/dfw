@@ -3063,6 +3063,33 @@
             ]
           }
         ]
+      },
+      {
+        "id": "xiaowuSacrifice",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_neta_xiaowu_sacrifice",
+                    "name": "小舞献祭",
+                    "rarity": "UR",
+                    "quote": "复活吧！我的爱人！",
+                    "description": "献祭的红光早已散去，唐三却始终记得小舞挡在自己身前的模样。此刻，点点光芒重新汇聚，熟悉的身影在怀中渐渐清晰。他颤抖着握住她的手，将压在心底的思念化作一声呼喊。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
       }
     ]
   }

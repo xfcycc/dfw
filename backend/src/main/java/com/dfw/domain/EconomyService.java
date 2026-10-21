@@ -26,7 +26,7 @@ public class EconomyService {
         }
         SettlementService.eliminate(room, player, payment, removed);
         for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id)) { tile.ownerId = null; tile.level = 0; tile.mortgaged = false; tile.mortgageBase = null; }
-        player.cash = 0; player.contentNotice=null; player.contentNoticeText=null; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; player.skipTurns = 0; player.jailed = false;
+        player.cash = 0; player.contentNotice=null; player.contentNoticeText=null; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; if(room.runtime!=null) NetaService.state(room).soulRings.remove(player.id); player.skipTurns = 0; player.jailed = false;
         PropertyEffects.eliminateCaster(room, player.id);
         player.eliminationOrder = (int) room.players.stream().filter(p -> p.bankrupt).count();
         if (room.trade != null && (room.trade.fromId.equals(player.id) || room.trade.toId.equals(player.id))) room.trade = null;

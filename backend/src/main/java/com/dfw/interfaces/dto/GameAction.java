@@ -42,6 +42,8 @@ public class GameAction {
     public Boolean value;
     /** 是否使用免租。 */
     public Boolean useCard;
+    /** 本笔正租金是否消耗一次十万年魂环，与付款防御卡互斥。 */
+    public Boolean useSoulRing;
     /** 主动道具标识。 */
     public String cardId;
     /** 指定点数。 */

@@ -20,6 +20,7 @@ public class ItemService {
     public void use(Room room, Player player, Action action) { if (player.hand.stream().anyMatch(c -> c.id.equals(action.cardId) && (c.skinId != null || AnimeService.attacks(c.kind)))) content.use(room, player, action); else ruleRuntime.useCard(room, player, action); }
     /** 输入付款选择，旧免租卡保持已配置效果组合，新卡按取得时冻结的参数执行。 */
     public void defense(Room room, Player player, Action action) {
+        if(Boolean.TRUE.equals(action.useSoulRing)) { content.defense(room,player,action); return; }
         Card legacy=player.hand.stream().filter(c -> c.id.equals(action.cardId) && c.skinId==null && c.kind.equals("immunity")).findFirst().orElse(null);
         if(legacy==null) { content.defense(room,player,action); return; }
         require(paymentPending(room) && room.pending.type.equals("rent") && !room.pending.defenseResolved && room.pending.playerId.equals(player.id), "本笔租金已完成防御选择");

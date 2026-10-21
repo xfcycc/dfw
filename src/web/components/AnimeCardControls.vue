@@ -42,6 +42,7 @@ const tiles = computed(() => {
   if (props.card.kind === 'absoluteZero') return board.value.filter((t, index, all) => all.findIndex(v => side(v.id) === side(t.id)) === index);
   return board.value;
 });
+const sacrificeLands = computed(() => board.value.filter(t => t.type === 'property' && t.ownerId === game.me?.id && !t.mortgaged && !isKamui(t)));
 const sacrifices = computed(() => board.value.filter(t => t.type === 'property' && t.ownerId === game.me?.id && t.level > 0 && !t.mortgaged && !isKamui(t)));
 /** 输入当前突入目标，分别显示降级成功和被防御时的租金，仍以服务端结算为准。 */
 const rushRent = computed(() => {
@@ -79,6 +80,7 @@ watchEffect(() => {
     p.tileIds = seals.value.filter(id => id !== '').map(Number);
     valid = sealSide.value !== '' && p.tileIds.length >= 1 && p.tileIds.length <= 3 && new Set(p.tileIds).size === p.tileIds.length && p.tileIds.every(id => sealTiles.value.some(t => t.id === id));
   }
+  if (props.card.kind === 'xiaowuSacrifice') { p.tileIds = [first.value, second.value].filter(id => id !== '').map(Number); valid = !(game.privateData?.soulRingRemaining ?? 0) && p.tileIds.length === 2 && first.value !== second.value && p.tileIds.every(id => sacrificeLands.value.some(t => t.id === id)); }
   if (props.card.kind === 'projection') valid = !!game.privateData?.projectionAvailable;
   if (props.card.kind === 'contract') valid = (game.me?.handLimit ?? 6) > 1;
   emit('change', p, valid);
@@ -88,6 +90,12 @@ watchEffect(() => {
   <div class="anime-card-controls">
     <label v-if="['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<ThemedSelect v-model="first" label="选择目标地产" :options="options" /></label>
     <template v-if="card.kind === 'fireBurial'"><label class="field">献祭自家建筑<ThemedSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label><p class="notice warning">确认后先献祭一级建筑，无退款且四之弹不可恢复；攻击被防御也不返还。</p></template>
+    <template v-if="card.kind === 'xiaowuSacrifice'">
+      <label class="field">第一处献祭地产<ThemedSelect v-model="first" label="第一处献祭地产" :options="[{ value: '', label: '请选择自家未抵押地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== second).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
+      <label class="field">第二处献祭地产<ThemedSelect v-model="second" label="第二处献祭地产" :options="[{ value: '', label: '请选择另一处自家地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== first).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
+      <p class="notice warning">确认后失去两处土地及全部建筑，无退款、无补偿且不可修复。获得十万年魂环：含本回合共8个本人回合，自选免除最多3笔正租金；每笔看到金额后再决定。</p>
+      <p v-if="game.privateData?.soulRingRemaining" class="notice">十万年魂环仍在生效，不能重复发动或刷新。</p>
+    </template>
     <p v-if="rushRent" class="notice warning">{{ rushRent }}</p>
     <p v-if="card.kind === 'bankai'" class="notice">{{ (card.parameters?.version ?? 0) >= 2 ? '发动后，本回合最多再出2张其他主动牌，含UR；不能再用卍解或投影。替代移动后结束出牌，其他限制和费用照常。' : '确认发动后消耗卡与主动次数，并固定两枚骰点；随后必须选一枚前进或后退。' }}</p>
     <p v-if="card.kind === 'igniteSea' && first !== ''" class="notice warning">先移除所选地产全部护盾，再降低 {{ Math.min(3, 1 + (tiles.find(t => String(t.id) === first)?.demolitionShieldCharges || (tiles.find(t => String(t.id) === first)?.demolitionShield ? 1 : 0))) }} 级建筑（不低于0级）；对手可主动防御，其他附加效果保留。</p>
