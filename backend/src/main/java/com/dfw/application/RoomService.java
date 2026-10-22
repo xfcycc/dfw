@@ -348,7 +348,7 @@ public class RoomService {
             case "roll" -> "掷骰行动"; case "endTurn" -> "结束行动"; case "card" -> "使用道具"; case "buy" -> "购买地产"; case "upgrade" -> "升级建筑"; case "pass" -> "放弃当前购买或升级";
             case "tradeOffer" -> "发起私人报价"; case "tradeRespond" -> "回应私人报价"; case "tradeCancel" -> "取消私人报价"; case "assignSeat" -> "批准角色申请"; case "continueRecovery" -> "继续恢复对局";
             case "mortgage" -> "抵押地产"; case "redeem" -> "赎回地产"; case "sellLand" -> "出售地产"; case "sellBuilding" -> "出售建筑"; case "removePlayer" -> "移出离线玩家";
-            case "declareBankruptcy" -> "申请清算"; case "payDebt", "rentDecision", "paymentDefense" -> "处理费用结算"; case "contentDecision" -> "处理私人选择"; default -> "完成游戏操作";
+            case "surrender" -> "主动投降"; case "declareBankruptcy" -> "申请清算"; case "payDebt", "rentDecision", "paymentDefense" -> "处理费用结算"; case "contentDecision" -> "处理私人选择"; default -> "完成游戏操作";
         };
     }
 }

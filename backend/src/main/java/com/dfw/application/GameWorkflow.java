@@ -17,7 +17,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @Component
 public class GameWorkflow {
     private static final String PROCESS_KEY = "genericGameRuntime";
-    private static final Set<String> LIFECYCLE = Set.of("addBot", "setBotDifficulty", "ready", "setMapSize", "start", "newGame", "removePlayer");
+    private static final Set<String> LIFECYCLE = Set.of("addBot", "setBotDifficulty", "ready", "setMapSize", "start", "newGame", "removePlayer", "surrender");
     private final ProcessEngine process;
     private final GameWorkflowScope scope;
     private final RuleSet rules;

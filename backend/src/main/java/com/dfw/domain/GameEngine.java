@@ -140,6 +140,7 @@ public class GameEngine {
                 room.phase = "pre_roll"; room.pending = null; room.trade = null; room.winnerId = null; room.dice = null; room.motion = null; room.logs.clear(); room.activityRotation = null; room.activity = null;
                 for (Player p : room.players) { reset(p); p.ready = p.botDifficulty != null; } return;
             }
+            case "surrender" -> { surrender(room, player); return; }
             case "removePlayer" -> {
                 require(room.hostId.equals(player.id), "只有房主可移出玩家"); require(!room.status.equals("finished"), "请先返回大厅，再管理已结束对局的席位");
                 Player target = player(room, action.playerId); require(target != null && !target.id.equals(player.id) && (!target.online || target.botDifficulty != null && room.status.equals("lobby")), "只能移出离线玩家或大厅机器人");
@@ -211,5 +212,17 @@ public class GameEngine {
             default -> throw new GameError("当前操作不可用");
         }
         ruleRuntime.accepted(room, action.type);
+    }
+    /** 输入进行中房间和本人玩家，按现有偿债清算退出竞争，再衔接活动、回合及胜负，无返回值。 */
+    private void surrender(Room room, Player player) {
+        require(room.status.equals("playing") && !player.bankrupt, "你当前不能投降");
+        boolean isCurrent = current(room) == player;
+        PendingDecision debt = paymentPending(room) && room.pending.playerId.equals(player.id) ? room.pending : null;
+        activities.removing(room, player.id);
+        economy.eliminate(room, player, debt == null ? null : debt.creditorId, debt == null ? 0 : debt.amount, false);
+        player.matchStats.cause = "你主动投降，清算资产并退出本局竞争。";
+        player.matchStats.causeQuote = "暂别财富争夺，留在场边为朋友加油。";
+        log(room, "log", player.id, player.name + " 主动投降，退出本局竞争");
+        if (room.runtime.globalEvent == null && room.activity == null) { if (isCurrent) turns.advance(room); else turns.checkWinner(room); }
     }
 }

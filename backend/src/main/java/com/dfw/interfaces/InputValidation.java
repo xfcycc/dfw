@@ -50,7 +50,7 @@ public final class InputValidation {
                     }
                 }
             }
-            case "senbonzakuraStrike", "purifyPollution", "constructionBuild", "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "continueRecovery" -> { }
+            case "senbonzakuraStrike", "purifyPollution", "constructionBuild", "start", "roll", "buy", "upgrade", "pass", "endTurn", "tradeCancel", "newGame", "payDebt", "declareBankruptcy", "surrender", "continueRecovery" -> { }
             case "assignSeat" -> uuid(action, "claimId");
             case "contentDecision" -> { uuid(action,"decisionId");
                 if(action.has("point")) number(action.get("point"),1,6);

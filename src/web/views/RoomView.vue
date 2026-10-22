@@ -59,7 +59,13 @@ const props = withDefaults(defineProps<{ spectator?: boolean }>(), { spectator: 
 const route = useRoute();
 const origin = window.location.origin;
 const game = useGameStore();
-const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | 'more' | 'workbench' | null>(null);
+const modal = ref<'tools' | 'rules' | 'bankruptcy' | 'surrender' | 'save' | 'trade' | 'avatar' | 'rename' | 'card' | 'choice' | 'defense' | 'decision' | 'assets' | 'more' | 'workbench' | null>(null);
+const canSurrender = computed(() => !props.spectator && !!game.me && !game.me.bankrupt && game.room?.status === 'playing' && !game.room.recoveryPending && game.connection === 'online' && !game.busy && !game.settling && !game.opening);
+/** 无入参，二次确认后发送本人投降命令，成功关闭确认框，失败保留提示，无返回值。 */
+async function surrender(): Promise<void> {
+  if (!canSurrender.value) return;
+  if (await game.act({ type: 'surrender' }) && modal.value === 'surrender') modal.value = null;
+}
 const nickname = ref('');
 const botDifficulty = ref<BotDifficulty>('normal');
 const botLevels = [{ value: 'easy', label: '简单' }, { value: 'normal', label: '普通' }, { value: 'hard', label: '困难' }] as const;
@@ -627,7 +633,15 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                           </template>
                         </template>
                         </div></Modal>
-    <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null"><button v-if="game.privateData?.remoteBuildAvailable" class="button primary" :disabled="!game.canAct" @click="openRemoteConstruction">基建轮班：七五折远程施工</button><Assets /></Modal>
+    <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null">
+      <button v-if="game.privateData?.remoteBuildAvailable" class="button primary" :disabled="!game.canAct" @click="openRemoteConstruction">基建轮班：七五折远程施工</button><Assets />
+      <template v-if="game.room?.status === 'playing' && !game.me.bankrupt" #footer><button type="button" class="button danger" :disabled="!canSurrender" @click="modal = 'surrender'">一键投降</button></template>
+    </Modal>
+    <Modal panel-class="modern-modal" v-if="modal === 'surrender' && game.me && !spectator" title="确认投降？" :close-disabled="game.busy" @close="modal = 'assets'">
+      <p class="notice warning">确认后将立即清算：全部地产归还银行，现金和手牌清空，你将退出本局竞争。本局无法撤销投降，仍可留在房间观看。</p>
+      <p class="muted">若有待付玩家债务，将按现有清算规则优先偿还。</p>
+      <div class="button-row"><button type="button" class="button secondary" :disabled="game.busy" @click="modal = 'assets'">继续游戏</button><button type="button" class="button danger" :disabled="!canSurrender" @click="surrender">{{ game.busy ? '正在投降…' : '确认投降并退出竞争' }}</button></div>
+    </Modal>
     <Modal :panel-class="mapTargeting ? 'modern-modal' : ['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card' && (!mapTargeting || mapConfirmOpen)" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :wide="!mapTargeting" @close="closeTargetPicker">
       <div v-show="!mapTargeting" class="card-use-layout" :class="{ 'has-targets': drafting && targetKind }">
         <div class="card-use-preview"><ContentCard :content="selectedCard" compact preview /></div>

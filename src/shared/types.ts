@@ -320,7 +320,7 @@ export type GameAction =
   | { type: 'setName'; name: string }
   | { type: 'setAvatar'; avatarId: string }
   | { type: 'setMapSize'; mapSize: MapSize }
-  | { type: 'senbonzakuraStrike' | 'purifyPollution' | 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' }
+  | { type: 'senbonzakuraStrike' | 'purifyPollution' | 'constructionBuild' | 'start' | 'roll' | 'buy' | 'upgrade' | 'pass' | 'endTurn' | 'tradeCancel' | 'newGame' | 'payDebt' | 'declareBankruptcy' | 'surrender' }
   | { type: 'rentDecision'; useCard: boolean }
   | { type: 'paymentDefense'; decisionId?: string; cardId?: string; useSoulRing?: boolean }
   | { type: 'contentDecision'; decisionId: string; cardSelections?: Record<string, string>; point?: number; direction?: number; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
