@@ -9,7 +9,7 @@ import lombok.Setter;
 public class HistoryEntryVo {
     /** 当时公开的原卡牌展示快照，旧记录或私人事件缺省为空。 */
     public com.dfw.domain.ContentResult content;
-    /** 聊天中显式选中的引用，旧记录缺省为空。 */
+    /** 聊天中显式选中的引用或事件中的地产引用，旧记录缺省为空。 */
     public java.util.List<com.dfw.domain.ChatReference> references = new java.util.ArrayList<>();
     /** 记录中当时玩家的公开标记，旧记录缺省为空。 */
     public java.util.List<com.dfw.domain.PlayerMention> mentions = new java.util.ArrayList<>();

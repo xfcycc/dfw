@@ -37,13 +37,35 @@ public final class GameSupport {
     private static void log(Room room, String type, String actorId, String text, List<ChatReference> references, ContentResult content) {
         SettlementService.observe(room);
         PublicLog entry = new PublicLog(); entry.id = UUID.randomUUID().toString(); entry.type = type; entry.text = text; entry.at = System.currentTimeMillis();
-        entry.actorId = actorId; entry.references = references; entry.content = content;
+        entry.actorId = actorId; entry.references = "chat".equals(type) ? references : propertyReferences(room, text, content); entry.content = content;
         for (Player player : room.players) if (text.contains(player.name)) { PlayerMention mention = new PlayerMention(); mention.id = player.id; mention.name = player.name; mention.color = player.color; entry.mentions.add(mention); }
         room.logs.add(0, entry); if (room.logs.size() > 100) room.logs.removeLast();
         Map<String, Object> details = new LinkedHashMap<>();
         details.put("logId", entry.id); details.put("mentions", entry.mentions); details.put("references", entry.references);
         if (content != null) details.put("content", content);
         HistoryTrace.event(room, type, actorId, text, details);
+    }
+    /** 输入房间、公开文案及原卡面，返回按正文偏移冻结的地产引用，跳过玩家名称和卡牌标题。 */
+    private static List<ChatReference> propertyReferences(Room room, String text, ContentResult content) {
+        List<Tile> properties = room.board.stream().filter(t -> "property".equals(t.type) && t.name != null && !t.name.isEmpty())
+            .sorted(Comparator.comparingInt((Tile t) -> t.name.length()).reversed()).toList();
+        List<String> names = new ArrayList<>(room.players.stream().map(p -> p.name).filter(n -> n != null && !n.isEmpty()).toList());
+        if (content != null && content.name != null && !content.name.isEmpty()) names.add("「" + content.name + "」");
+        names.sort(Comparator.comparingInt(String::length).reversed());
+        List<ChatReference> result = new ArrayList<>();
+        for (int offset = 0; offset < text.length();) {
+            int start = offset;
+            Tile target = properties.stream().filter(t -> text.startsWith(t.name, start)).findFirst().orElse(null);
+            String protectedName = names.stream().filter(n -> text.startsWith(n, start)).findFirst().orElse(null);
+            boolean numbered = target != null && text.startsWith(target.name + "（" + target.id + "号", start);
+            if (protectedName != null && !numbered && (target == null || protectedName.length() >= target.name.length())) {
+                offset += protectedName.length(); continue;
+            }
+            if (target == null) { offset++; continue; }
+            ChatReference reference = new ChatReference(); reference.start = offset; reference.end = offset + target.name.length(); reference.tileId = target.id;
+            result.add(reference); offset = reference.end;
+        }
+        return result;
     }
     /** 输入发送者及聊天参数，冻结有效目标和正文位置；失效或已被编辑的引用按普通文字保存，无返回值。 */
     public static void chatLog(Room room, Player actor, Action action) {

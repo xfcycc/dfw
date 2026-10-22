@@ -13,7 +13,7 @@ public class PublicLog {
     public String type;
     /** 聊天发送者身份，旧记录可缺省。 */
     public String actorId;
-    /** 显式聊天引用，旧记录缺省为空。 */
+    /** 显式聊天引用或事件中的地产引用，旧记录缺省为空。 */
     public java.util.List<ChatReference> references = new java.util.ArrayList<>();
     /** 文案中出现的当时玩家标记，旧记录缺省为空。 */
     public java.util.List<PlayerMention> mentions = new java.util.ArrayList<>();

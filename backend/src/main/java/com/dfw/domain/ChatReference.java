@@ -3,11 +3,11 @@ package com.dfw.domain;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 聊天正文中的显式引用；位置按 UTF-16 字符偏移保存，目标身份不随改名变化。 */
+/** 公开正文中的玩家或地产引用；位置按 UTF-16 字符偏移保存，目标身份不随改名变化。 */
 @Getter
 @Setter
 public class ChatReference {
-    /** 引用起始位置，包含 @。 */
+    /** 引用起始位置，聊天显式引用包含 @。 */
     public int start;
     /** 引用结束位置，不包含末尾分隔空格。 */
     public int end;
