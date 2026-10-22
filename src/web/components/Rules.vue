@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { buildCost, initialCards, initialCashBase, ITEMS, rentFor, RULES, ruleMoney, startCards } from '../../shared/rules';
-import type { EconomySettings, Tile } from '../../shared/types';
+import { buildCost, initialCards, initialCash, ITEMS, rentFor, RULES, ruleMoney, startCards } from '../../shared/rules';
+import type { EconomySettings, MapSize, Tile } from '../../shared/types';
 
-const props = defineProps<{ spectator?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null; playerCount: number; activityMoney?: Record<string, number> | null }>();
+const props = defineProps<{ spectator?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null; playerCount: number; mapSize?: MapSize; activityMoney?: Record<string, number> | null }>();
 const version = ref<'brief' | 'detailed'>('brief');
 // 当前补给池没有旧版停留卡，速查只展示本局可获得的道具。
 const availableItems = Object.entries(ITEMS).filter(([kind]) => kind !== 'stay').map(([, item]) => item);
@@ -37,7 +37,7 @@ const example = computed(() => {
     <div class="rules-goal">
       <h3>买地收路费，成为最后的赢家</h3>
       <p>2～6 人轮流行动。<strong>最后一名未破产的玩家获胜</strong>，资产榜第一名只是当前领先。</p>
-      <div class="rules-facts"><span>起始现金 <strong>¥{{ ruleMoney(economy, 'initialCash', initialCashBase(playerCount)).toLocaleString() }}</strong></span><span>正向经过或停留起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} ＋{{ startCards(playerCount) }} 张道具</strong></span><span>开局手牌 <strong>{{ initialCards(playerCount) }} 张</strong></span></div>
+      <div class="rules-facts"><span>起始现金 <strong>¥{{ initialCash(economy, playerCount, mapSize).toLocaleString() }}</strong></span><span>正向经过或停留起点 <strong>+¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} ＋{{ startCards(playerCount) }} 张道具</strong></span><span>开局手牌 <strong>{{ initialCards(playerCount) }} 张</strong></span></div>
     </div>
 
     <p class="notice"><strong>开局自选骰点：</strong>每人前三个个人回合内，普通掷骰后可使用一次机会，把骰点改为 1～6 中任意一点，不消耗手牌或主动次数。保留原骰点不消耗机会，第 3 个个人回合结束后过期；休息或入狱跳过的回合也计数。自选后仍正常结算迟缓、加码、移动翻倍、路障和落点；防御特化期间不能自选。选择自选后不再使用时间溯行，保留原骰点可继续按提示重掷。</p>

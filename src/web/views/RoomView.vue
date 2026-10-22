@@ -688,7 +688,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <button class="game-tool mint" @click="modal = null; game.copy(`${origin}/watch/${code}`)"><span class="game-tool-icon" aria-hidden="true">🔗</span><span>复制观战链接</span></button>
       </div>
     </Modal>
-    <Modal panel-class="modern-modal" v-if="modal === 'rules'" title="大富翁玩法说明" wide @close="modal = null"><Rules :economy="game.room?.economy" :player-count="game.room?.players.length ?? 2" :spectator="spectator" :chance-events="game.room?.chanceEventDescriptions" :activity-money="game.room?.activityRotation?.money" /></Modal>
+    <Modal panel-class="modern-modal" v-if="modal === 'rules'" title="大富翁玩法说明" wide @close="modal = null"><Rules :economy="game.room?.economy" :player-count="game.room?.players.length ?? 2" :map-size="isLobby ? game.room?.mapSize ?? 'large' : undefined" :spectator="spectator" :chance-events="game.room?.chanceEventDescriptions" :activity-money="game.room?.activityRotation?.money" /></Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'save' && game.me && !spectator" title="标记当前存档" @close="modal = null"><SaveArchive /></Modal>
 
 

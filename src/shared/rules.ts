@@ -10,6 +10,11 @@ export const RULES = {
 } as const;
 /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
 export function initialCashBase(count: number): number { return count >= 5 ? 7500 : RULES.initialCash; }
+/** 输入经济快照、人数及可选的大厅地图，返回初始现金；局内读取冻结总额，缺少快照的旧局沿用原基准。 */
+export function initialCash(economy: EconomySettings | null | undefined, count: number, size?: MapSize): number {
+  const bonus = size === 'large' ? 3000 : size === 'medium' ? 1500 : 0;
+  return economy?.fixedAmounts.initialCash ?? ruleMoney(economy, 'initialCash', initialCashBase(count)) + bonus;
+}
 /** 输入开局人数，返回每人初始手牌数量。 */
 export function initialCards(count: number): number { return count >= 3 ? 3 : RULES.initialCards; }
 /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过或最终停在起点时的道具补给数量。 */

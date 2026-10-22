@@ -70,10 +70,10 @@ public class GameEngine {
         HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
         HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
     }
-    /** 输入新局房间，按开局人数换算初始现金并冻结各项金额，重启不重算旧基准。 */
+    /** 输入新局房间，按开局人数与地图大小计算初始现金并冻结各项金额，重启不重算旧基准。 */
     private void freezeMoney(Room room) {
         content.freeze(room);
-        room.economy.fixedAmounts.put("initialCash", room.economy.money("initialCash", Rules.initialCashBase(room.players.size())));
+        room.economy.fixedAmounts.put("initialCash", Rules.initialCash(room.economy, room.players.size(), room.mapSize));
         room.economy.fixedAmounts.put("startIncome", room.economy.money("startIncome", Rules.START_INCOME));
         for (int i = 0; i < Rules.PRICES.length; i++) room.economy.fixedAmounts.put("landPrice." + i, room.economy.money("landPrice." + i, Rules.PRICES[i]));
         for (var event : rules.getChanceEvents()) freezeSteps(room, event.id(), event.steps());

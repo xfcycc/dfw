@@ -11,6 +11,11 @@ public final class Rules {
     public static final String[] ITEMS = {"remote", "barrier", "stay", "immunity", "demolish", "swap"};
     /** 输入开局人数，返回应用经济倍率前的每人初始现金基数。 */
     public static long initialCashBase(int count) { return count >= 5 ? 7500 : INITIAL_CASH; }
+    /** 输入经济配置、开局人数及地图大小，返回每人初始现金；地图补助不乘倍率，固定总额覆盖优先。 */
+    public static long initialCash(EconomyRules economy, int count, String size) {
+        long bonus = switch (size == null ? "large" : size) { case "small" -> 0; case "medium" -> 1500; case "large" -> 3000; default -> throw new GameError("地图大小不可用"); };
+        return economy.derived("initialCash", Math.round(initialCashBase(count) * economy.moneyMultiplier) + bonus);
+    }
     /** 输入开局人数，返回每人初始手牌数量。 */
     public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
     /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过或最终停在起点时的道具补给数量。 */
