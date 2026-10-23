@@ -38,6 +38,11 @@ public final class BotPlanner {
         if(kind.equals("remoteConstruction")) { a.accept=!conservative; return a; }
         List<Tile> candidates=c.tileIds.stream().map(id -> state.board.get(id)).toList();
         if(candidates.isEmpty()) return a;
+        if(kind.equals("remote")) {
+            Tile target=conservative ? candidates.stream().filter(t -> me.cash>=ConstructionService.remoteCost(economics,t)).findFirst().orElse(null) : remoteBuildTarget(candidates);
+            if(target!=null) { a.tileId=target.id; a.tileIds=List.of(target.id); a.accept=true; }
+            return a;
+        }
         if(kind.equals("sereniteaPot")) {
             double best=Double.NEGATIVE_INFINITY;
             for(int i=0;i<candidates.size();i++) for(int j=i+1;j<candidates.size();j++) {
@@ -57,14 +62,18 @@ public final class BotPlanner {
             List<Card> materials=conservative ? c.cards.stream().limit(1).toList() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue)).limit(Math.min(2,ordered.size())).toList();
             a.accept=!materials.isEmpty(); a.discardCardIds=materials.stream().map(card -> card.id).toList(); a.tileIds=ordered.stream().limit(materials.size()).map(t -> t.id).toList();
         }
-        if(kind.equals("remote")) {
-            Tile target=ordered.getFirst(); long cost=ConstructionService.remoteCost(economics,target);
-            a.accept=me.cash>=cost && (conservative || me.cash-cost>=reserve && upgradeValue(target,target.level+1)>cost);
-        }
         return a;
     }
 
-    /** 输入近期是否已主动报价，返回下一合法意图；非本人等待点返回空。 */
+    /** 输入公开候选地产，返回保留现金后仍值得远程建造的目标；无目标返回空。 */
+    private Tile remoteBuildTarget(List<Tile> candidates) {
+        return candidates.stream().filter(t -> t.type.equals("property") && me.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t)
+                && !AnimeService.iced(t) && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id))
+                .filter(t -> me.cash-ConstructionService.remoteCost(economics,t)>=reserve && upgradeValue(t,t.level+1)>ConstructionService.remoteCost(economics,t))
+                .max(Comparator.comparingDouble(t -> upgradeValue(t,t.level+1))).orElse(null);
+    }
+
+    /** 输入近期是否已主动报价，返回下一合法意图；远程施工与确认选择使用相同判断。 */
     public Action next(boolean offered) {
         if (state.recoveryPending || state.pausedReason != null || !state.status.equals("playing") || me.bankrupt) return null;
         if (state.tradePending) {
@@ -85,7 +94,7 @@ public final class BotPlanner {
         }
         if (!conservative) {
             if(own.petalsAvailable && state.phase.equals("pre_roll") && state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0 && !PropertyEffects.frozen(t) && PropertyEffects.shieldCharges(t)==0)) return action("senbonzakuraStrike");
-            if (own.remoteBuildAvailable && state.phase.equals("manage")) return action("constructionBuild");
+            if (own.remoteBuildAvailable && state.phase.equals("manage") && remoteBuildTarget(state.board)!=null) return action("constructionBuild");
             if (state.phase.equals("pre_roll") && (!own.activeCardUsed || own.bankaiActive && own.bankaiRemaining>0 || own.hand.stream().anyMatch(c -> c.projected && c.expiresAtTurn==state.turnNumber))) { Action card = activeCard(); if (card != null) return card; }
             if (!offered) { Action trade = offer(); if (trade != null) return trade; }
             Tile redeem = state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && t.mortgaged && me.cash - Rules.redeemCost(t) >= reserve)
