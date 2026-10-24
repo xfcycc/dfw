@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { computed, nextTick, ref } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { RealtimeClient } from '../../shared/realtime.js';
 import type { CommandResult, ContentResult, GameAction, GameCommand, MotionSegment, PrivatePlayerState, PublicRoomState, Session } from '../../shared/types.js';
 import { postJson } from '../http';
@@ -84,6 +84,7 @@ export const useGameStore = defineStore('game', () => {
   let chatState: PublicRoomState | null = null;
   let socket: RealtimeClient | null = null;
   let messageTimer: ReturnType<typeof setTimeout> | undefined;
+  let choiceSyncTimer: ReturnType<typeof setTimeout> | undefined;
   let movementResult: PublicRoomState | null = null;
   const movementSegments: MotionSegment[] = [];
   let latestVersion = 0;
@@ -96,6 +97,32 @@ export const useGameStore = defineStore('game', () => {
   const canDecide = computed(() => !!me.value && decisionPlayer.value?.id === me.value.id && !me.value.bankrupt);
   const isHost = computed(() => !!me.value && room.value?.hostId === me.value.id);
   const canAct = computed(() => connection.value === 'online' && !!room.value && !room.value.pausedReason && !busy.value && !settling.value && !opening.value);
+  const missingChoiceKey = computed(() => {
+    const pending = room.value?.pending;
+    if (connection.value !== 'online' || settling.value || opening.value || busy.value || room.value?.status !== 'playing' || room.value.recoveryPending
+      || !canDecide.value || pending?.type !== 'choice' || !pending.id || privateData.value?.playerId === session.value?.playerId && privateData.value?.choice?.id === pending.id) return '';
+    return `${room.value.roomId ?? room.value.code}:${room.value.gameId}:${session.value?.playerId}:${pending.id}`;
+  });
+
+  /** 输入本人缺失选择的标识，短暂等待正常收包后自动补拉；匹配、断线或切换待办时取消，无返回值。 */
+  watch(missingChoiceKey, key => {
+    clearTimeout(choiceSyncTimer);
+    if (!key) return;
+    let delay = 500;
+    let attempts = 0;
+    /** 无入参，只重新同步仍缺失的同一选择，按退避间隔重试，不重发业务命令，无返回值。 */
+    function syncChoice(): void {
+      if (missingChoiceKey.value !== key || !socket?.connected) return;
+      if (attempts++ === 0) console.warn('[choice-sync] 私人选择缺失，开始自动同步', {
+        roomId: room.value?.roomId, decisionId: room.value?.pending?.id, privateDecisionId: privateData.value?.choice?.id, version: room.value?.version,
+      });
+      try { socket.emit('room:sync'); }
+      catch { /* 连接关闭期间由现有断线回调接管，重连成功后会完整同步。 */ }
+      delay = Math.min(delay * 2, 8000);
+      choiceSyncTimer = setTimeout(syncChoice, delay);
+    }
+    choiceSyncTimer = setTimeout(syncChoice, delay);
+  });
 
   /** 输入公开快照，以服务端剩余时间和单调时钟同步开场；首次进入、重连及后台只展示顺序，无返回值。 */
   function syncOpening(state: PublicRoomState): void {
@@ -285,6 +312,7 @@ export const useGameStore = defineStore('game', () => {
 
   /** 关闭当前网络连接并清空页面状态；不删除恢复令牌。 */
   function disconnect(): void {
+    clearTimeout(choiceSyncTimer);
     clearInterval(openingTimer); opening.value = false; openingAnimated.value = false; openingElapsed.value = 0; openingKey = '';
     clearNotifications();
     socket?.removeAllListeners();
