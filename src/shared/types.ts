@@ -333,7 +333,7 @@ export type GameAction =
 /** 原生 WebSocket 信封；命令回执通过 requestId 关联，状态通过角色分别发送。 */
 export interface RealtimeEnvelope { type: string; requestId?: string; payload?: unknown }
 
-/** 五类轮换活动及类别内部趣味变体。 */
+/** 九种等权轮换活动。 */
 export type ActivityKind = 'casino' | 'horse' | 'roulette' | 'packet' | 'rps' | 'treasure' | 'bridge' | 'minority' | 'blindbox';
 /** 服务端冻结金额及回合轮换信息。 */
 export interface ActivityRotation {

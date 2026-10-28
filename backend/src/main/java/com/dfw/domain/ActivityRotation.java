@@ -10,6 +10,8 @@ import lombok.Setter;
 public class ActivityRotation {
     /** 新局启用同类别趣味变体，旧快照缺省为关闭。 */
     public boolean variantsEnabled;
+    /** 是否已切换为九种具体玩法的洗牌队列；旧快照缺省为关闭，生成后续活动时转换。 */
+    public boolean nineGameQueueEnabled;
     /** 开局人数乘五的固定周期。 */
     public int period;
     /** 已完整结束的全局回合数。 */

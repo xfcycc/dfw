@@ -113,7 +113,7 @@ const propertyPrices = computed(() => RULES.prices.map((base, index) => {
       </section>
       <section>
         <h3>8. 轮换活动与小游戏</h3>
-        <p>活动角需要停下才触发，经过不参加；参与范围、下注和奖励以当场提示为准。</p>
+        <p>活动角需要停下才触发，经过不参加；九种游戏随机排队，每批各安排一次，每期两个，相邻两期不重复。按排上棋盘计数，没踩到也会正常轮换；参与范围、下注和奖励以当场提示为准。</p>
         <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角</strong></summary><p>起点、监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，银行基础奖池为¥{{ activityMoney.packetBase ?? 0 }}＋参与人数×¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；每人自选一个未领取红包，点击立即开包到账，基础份额1%～90%，每人独立10%幸运翻倍并额外庆祝。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
         <details v-if="activityMoney?.treasureStake !== undefined" class="rules-reminder">
           <summary><strong>更多活动玩法</strong></summary>

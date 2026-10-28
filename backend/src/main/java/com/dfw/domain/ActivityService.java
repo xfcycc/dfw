@@ -6,7 +6,7 @@ import static com.dfw.domain.GameSupport.*;
 
 /** 活动角轮换、多人输入和固定随机结果；调用方负责房间串行事务与广播。 */
 public final class ActivityService {
-    public static final List<String> KINDS = List.of("casino", "horse", "roulette", "packet", "rps");
+    public static final List<String> KINDS = List.of("casino", "horse", "roulette", "packet", "rps", "treasure", "bridge", "minority", "blindbox");
     public static final Map<String, String> NAMES = Map.of("casino", "暖暖赌场", "horse", "小镇赛马", "roulette", "轮盘对决", "packet", "拼手气红包", "rps", "猜拳擂台", "treasure", "贪心宝箱", "bridge", "三关玻璃桥", "minority", "少数派夜市", "blindbox", "暖暖潮玩盲盒");
     private static final Map<String, String> VARIANTS = Map.of("casino", "treasure", "horse", "bridge", "rps", "minority", "packet", "blindbox");
     private static final Map<String, Long> BASE = Map.ofEntries(Map.entry("casinoSmallStake",250L), Map.entry("casinoSmallPrize",500L), Map.entry("casinoPointStake",250L), Map.entry("casinoPointPrize",1500L), Map.entry("horseStake",250L), Map.entry("horsePrize",2500L), Map.entry("rouletteDebt",1000L), Map.entry("packetBase",500L), Map.entry("packetPerPlayer",500L), Map.entry("rpsPrize",1500L), Map.entry("treasureStake",250L), Map.entry("blindboxRegular",250L), Map.entry("blindboxHiddenBase",500L), Map.entry("blindboxHiddenPerPlayer",250L));
@@ -25,21 +25,20 @@ public final class ActivityService {
         require(r.money.get("packetPerPlayer") >= 1, "红包金额至少为一元");
         r.current = pair(r, List.of()); r.next = pair(r, r.current); room.activityRotation = r; room.activity = null; applyTiles(room);
     }
-    /** 输入轮换队列及上期分配，返回不同且各角不重复上期的两项玩法。 */
+    /** 输入轮换队列及上期分配，返回两项不同且均未在上期出现的玩法；旧队列首次生成时转换，无需改动已预告活动。 */
     private List<String> pair(ActivityRotation r, List<String> previous) {
+        if (!r.nineGameQueueEnabled) { r.queue.clear(); r.nineGameQueueEnabled = true; }
         List<String> result = new ArrayList<>();
         for (int slot = 0; slot < 2; slot++) {
             int found = -1;
             while (found < 0) {
-                for (int i = 0; i < r.queue.size(); i++) if (!result.contains(r.queue.get(i)) && (previous.isEmpty() || !category(previous.get(slot)).equals(r.queue.get(i)))) { found = i; break; }
+                for (int i = 0; i < r.queue.size(); i++) if (!result.contains(r.queue.get(i)) && !previous.contains(r.queue.get(i))) { found = i; break; }
                 if (found < 0) { List<String> batch = new ArrayList<>(KINDS); shuffle(batch); r.queue.addAll(batch); }
             }
             result.add(r.queue.remove(found));
         }
-        return result.stream().map(kind -> r.variantsEnabled && VARIANTS.containsKey(kind) && random.nextInt(2) == 1 ? VARIANTS.get(kind) : kind).toList();
+        return result;
     }
-    /** 输入具体玩法标识，返回原五类队列键，避免变体改变类别权重。 */
-    private String category(String kind) { return VARIANTS.entrySet().stream().filter(entry -> entry.getValue().equals(kind)).map(Map.Entry::getKey).findFirst().orElse(kind); }
     /** 输入列表，使用服务端随机源原地洗牌，无返回值。 */
     private <T> void shuffle(List<T> values) { for (int i = values.size() - 1; i > 0; i--) Collections.swap(values, i, random.nextInt(i + 1)); }
     /** 输入房间，刷新两个角的公开名称和玩法标识。 */
@@ -49,7 +48,11 @@ public final class ActivityService {
         ActivityRotation r = room.activityRotation; if (r == null) return;
         require(room.activity == null && room.pending == null && room.trade == null, "请先完成活动和结算");
         r.completedTurns++;
-        if (r.completedTurns % r.period == 0) { r.revision++; r.current = r.next; r.next = pair(r, r.current); applyTiles(room); log(room, "活动角焕新：" + String.join("、", r.current.stream().map(NAMES::get).toList())); }
+        if (r.completedTurns % r.period == 0) {
+            // 五玩法旧快照可能缺少新增游戏金额，仅按本局经济快照补齐缺失键，保留已有金额。
+            if (!r.nineGameQueueEnabled) for (String key : List.of("treasureStake", "blindboxRegular", "blindboxHiddenBase", "blindboxHiddenPerPlayer")) r.money.computeIfAbsent(key, ignored -> room.economy.money("activity." + key, BASE.get(key)));
+            r.revision++; r.current = r.next; r.next = pair(r, r.current); applyTiles(room); log(room, "活动角焕新：" + String.join("、", r.current.stream().map(NAMES::get).toList()));
+        }
         int remaining = r.period - r.completedTurns % r.period;
         if (remaining <= 3) log(room, "活动预告：还有 " + remaining + " 个回合轮换，" + r.tileIds.get(0) + " 号活动角将变为「" + NAMES.get(r.next.get(0)) + "」，" + r.tileIds.get(1) + " 号活动角将变为「" + NAMES.get(r.next.get(1)) + "」");
     }
