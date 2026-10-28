@@ -25,3 +25,7 @@ backend/target/
 *.bmp
 *.tif
 *.tiff
+
+# README 使用的用户提供截图。
+!/docs/images/game-board.png
+!/docs/images/player-trade.jpg
