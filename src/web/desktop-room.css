@@ -1,5 +1,5 @@
-/* 桌面玩家使用真实可用宽高布局；不缩放中央文字，手机与观战沿用各自布局。 */
-.modern-room.game-session.desktop-single-screen { height: 100dvh; min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+/* 桌面单屏按 1920 × 900 的内容空间整体适配，补偿缩放后的高度；手机与观战沿用各自布局。 */
+.modern-room.game-session.desktop-single-screen { zoom: var(--desktop-scale, 1); height: calc(100dvh / var(--desktop-scale, 1)); min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .modern-room.desktop-single-screen .room-header { flex-shrink: 0; padding: 6px 16px; }
 .modern-room.game-session.desktop-single-screen > main { display: flex; flex: 1; min-height: 0; padding: 0 8px 8px; overflow: hidden; }
 .modern-room.desktop-single-screen .immersive-layout { display: flex; flex: 1; min-height: 0; }

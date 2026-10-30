@@ -123,6 +123,12 @@ const mobileViewport = computed(() => classicLayout.value ? classicMobileViewpor
 const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow' : 'landscape');
 const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
 const detachedDashboard = computed(() => spectatorFollowing.value || !props.spectator && mobileViewport.value);
+const desktopViewport = ref({ width: window.innerWidth, height: window.innerHeight });
+const desktopScale = computed(() => classicLayout.value || !isSingleScreen.value || props.spectator || detachedDashboard.value ? 1 : Math.min(1, desktopViewport.value.width / 1920, desktopViewport.value.height / 900));
+/** 无入参，按窗口可用宽高更新桌面单屏比例；手机、经典布局和观战保持原布局，无返回值。 */
+function resizeDesktopViewport(): void { desktopViewport.value = { width: window.innerWidth, height: window.innerHeight }; }
+window.addEventListener('resize', resizeDesktopViewport);
+onBeforeUnmount(() => window.removeEventListener('resize', resizeDesktopViewport));
 const workbenchTab = ref<'cards' | 'ranking'>('cards');
 /** 无入参，打开本人本回合的七五折远程施工选择，失败保留资产窗口。 */
 async function openRemoteConstruction(): Promise<void> { if (await game.act({ type: 'constructionBuild' })) modal.value = 'choice'; }
@@ -461,7 +467,7 @@ function selectPlayer(id: string): void {
 async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({ type: 'setMapSize', mapSize }); }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'classic-layout': classicLayout, 'desktop-single-screen': !classicLayout && isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'classic-layout': classicLayout, 'desktop-single-screen': !classicLayout && isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--desktop-scale': desktopScale, '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
     <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
     <header class="site-header room-header immersive-header">
       <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
