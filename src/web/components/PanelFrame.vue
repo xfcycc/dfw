@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { imageUrl } from '../image-assets';
 import { computed } from 'vue';
+import HolidayDecorations from './HolidayDecorations.vue';
 const props = withDefaults(defineProps<{ ornament?: 'left' | 'right'; variant?: 'news' | 'chat' | 'ranking' | 'workbench' | 'cards' | 'notice' }>(), { ornament: 'left', variant: 'news' });
 const source = imageUrl('/images/panels/panel-theme-frames.png');
 const people = imageUrl('/images/panels/panel-theme-people.png');
@@ -33,6 +34,7 @@ const personBox = computed(() => { const index = themes[props.variant].person; r
   <span class="panel-frame" :class="`panel-frame-${variant}`" aria-hidden="true">
     <span v-for="piece in pieces" :key="piece.area" class="panel-frame-piece" :style="{ gridArea: piece.area }"><svg :viewBox="piece.box" preserveAspectRatio="none" focusable="false"><image :href="source" width="1536" height="1024" /></svg></span>
     <svg class="panel-frame-person" :class="`panel-frame-person-${ornament}`" :viewBox="personBox" focusable="false"><image :href="people" width="1536" height="1024" /></svg>
+    <HolidayDecorations v-if="variant !== 'cards'" class="holiday-panel-decoration" />
   </span>
 </template>
 <style scoped>

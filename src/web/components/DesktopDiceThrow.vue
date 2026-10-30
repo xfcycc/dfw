@@ -2,6 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import type { PublicPlayer } from '../../shared/types';
 import DiceFace from './DiceFace.vue';
+import HolidayDiceEffects from './HolidayDiceEffects.vue';
+import { activeHoliday } from '../holiday-theme';
 const props = defineProps<{ board?: HTMLElement; player: PublicPlayer; mine: boolean; value: number; rolling: boolean; duration: number }>();
 const placement = ref<{ x: number; y: number; dx: number; dy: number }>();
 const faces = [1, 6, 3, 4, 2, 5];
@@ -35,10 +37,11 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div v-if="placement" class="desktop-dice-throw" :class="{ 'is-rolling': rolling }" :style="throwStyle" role="status" aria-live="polite">
+  <div v-if="placement" class="desktop-dice-throw" :class="{ 'is-rolling': rolling, 'holiday-dice-throw': !!activeHoliday }" :style="throwStyle" role="status" aria-live="polite">
     <span class="sr-only">{{ player.name }}{{ rolling ? '正在掷骰' : `掷出 ${value} 点` }}</span>
     <div class="throw-flight" aria-hidden="true">
       <div class="throw-shadow"></div>
+      <HolidayDiceEffects :rolling="rolling" />
       <div class="throw-cube">
         <DiceFace v-for="(face, index) in faces" :key="face" class="throw-face" :class="`throw-face-${index}`" :value="index === 0 && !rotations[value] ? value : face" />
       </div>
@@ -67,6 +70,9 @@ onBeforeUnmount(() => {
 .throw-result { position: absolute; top: 58px; left: 0; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; width: max-content; max-width: 240px; padding: 8px 18px; border: 2px solid #d7bb8b; border-radius: 16px; background: #fff9ecf5; box-shadow: 0 5px 15px #49351e24; animation: dice-result-in .16s ease-out both; }
 .throw-result strong { color: #80501e; font-size: 24px; line-height: 1.2; }
 .throw-result span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #80664b; font-size: 13px; }
+.holiday-dice-throw .throw-shadow{background:var(--holiday-dice-glow);filter:blur(9px)}
+.holiday-dice-throw .throw-result{background:var(--holiday-cream);border-color:var(--holiday-dice-edge);box-shadow:0 4px 20px color-mix(in srgb,var(--holiday-dice-glow) 30%,transparent)}
+.holiday-dice-throw .throw-result strong{color:var(--holiday-ink)}
 @keyframes dice-throw-flight {
   0% { transform: translate(var(--throw-x), var(--throw-y)) scale(.55); }
   35% { transform: translate(calc(var(--throw-x) * .3), calc(var(--throw-y) * .3 - 90px)) scale(1.12); }

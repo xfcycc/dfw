@@ -1,0 +1,13 @@
+{
+  "date": "2026-10-30",
+  "method": "ImageGen 生成三套节日小镇背景和独立透明标题；保持 1536×1024 尺寸转码 WebP quality 90，沿用 PicGo 图床",
+  "sourceDirectory": "/Users/caiguoyu/.codex/generated_images/01a18a88-9078-76e0-9800-629b33e63454",
+  "assets": [
+    { "key": "/images/holidays/halloween-town.webp", "source": "exec-7075411b-820c-4bd6-b3a8-ac5c0062a22c.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032942.webp", "bytes": 426360 },
+    { "key": "/images/holidays/christmas-town.webp", "source": "exec-89842fd4-ef14-4160-9890-58a5f8fd5133.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032945.webp", "bytes": 477018 },
+    { "key": "/images/holidays/spring-town.webp", "source": "exec-af61b0ba-be9f-4598-b133-e88a31bc91ec.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032946.webp", "bytes": 378108 },
+    { "key": "/images/holidays/halloween-title.webp", "source": "exec-172f4965-fcd4-4d43-98d9-52bf431bb87d.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032947.webp", "bytes": 397578, "alpha": true },
+    { "key": "/images/holidays/christmas-title.webp", "source": "exec-8ef8483b-7593-4e2c-add4-d6ca0a6fa587.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032948.webp", "bytes": 482940, "alpha": true },
+    { "key": "/images/holidays/spring-title.webp", "source": "exec-23874a83-3cb8-40a0-936e-68a6802934c1.png", "url": "https://pic.caiguoyu.cn/typora/20261030101032949.webp", "bytes": 391702, "alpha": true }
+  ]
+}

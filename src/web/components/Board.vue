@@ -7,6 +7,7 @@ import City from './City.vue';
 import CharacterPawn from './CharacterPawn.vue';
 import DiceFace from './DiceFace.vue';
 import DesktopDiceThrow from './DesktopDiceThrow.vue';
+import HolidayDiceEffects from './HolidayDiceEffects.vue';
 import BoardEffectLayer from './BoardEffectLayer.vue';
 import TileTrapMarker from './TileTrapMarker.vue';
 import PlayerText from './PlayerText.vue';
@@ -366,13 +367,13 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
     <Teleport :to="diceTarget || feedbackArea || 'body'" defer>
       <Transition name="dice-overlay">
         <div v-if="!desktopDice && diceFullscreen && motion && motionPlayer" :key="motion.id" class="dice-overlay" :class="{ 'is-rolling': rolling }" role="status" aria-live="polite">
-          <div class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
+          <div class="dice-stage" aria-hidden="true"><HolidayDiceEffects :rolling="rolling" /><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
           <div class="dice-overlay-caption"><strong><PlayerText :text="motionPlayer.name" :players="room.players" /></strong><span>{{ movementLabel }}</span></div>
         </div>
       </Transition>
       <Transition name="motion-feedback">
         <div v-if="motion && motionPlayer && !diceFullscreen && !motion.boardEffect" :key="motion.id" class="board-motion-feedback" :class="{ 'is-rolling': rolling, 'is-settled': !rolling }" :style="{ '--motion-color': motionPlayer.color }" role="status" aria-live="polite">
-          <div v-if="diceResult !== null" class="dice-stage" aria-hidden="true"><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
+          <div v-if="diceResult !== null" class="dice-stage" aria-hidden="true"><HolidayDiceEffects :rolling="rolling" /><DiceFace :value="rolling ? diceFace : diceResult" :rolling="rolling" :settled="!rolling" /></div>
           <CharacterPawn v-else :avatar-id="motionPlayer.avatarId" :color="motionPlayer.color" :moving="moving" />
           <div class="motion-caption"><strong><PlayerText :text="motionPlayer.name" :players="room.players" /></strong><span>{{ movementLabel }}</span><div v-if="!rolling && motion.path.length" class="motion-progress" aria-hidden="true"><i :style="{ width: `${step / motion.path.length * 100}%` }"></i></div></div>
         </div>

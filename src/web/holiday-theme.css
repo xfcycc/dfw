@@ -1,0 +1,79 @@
+/* 节日只覆盖入口配色与非交互装饰，保留对局状态、玩家和卡牌的语义颜色。 */
+:root[data-holiday="halloween"]{--holiday-base:#25233d;--holiday-cream:#fff1d9;--holiday-ink:#70451f;--holiday-light:#ffe2a3;--holiday-main:#eea553;--holiday-edge:#a46b40;--holiday-secondary:#e6d8f0;--holiday-secondary-ink:#62507a;--holiday-glow:#e8a45b}
+:root[data-holiday="christmas"]{--holiday-base:#263d58;--holiday-cream:#edf5f6;--holiday-ink:#774b32;--holiday-light:#fff2d2;--holiday-main:#ebca91;--holiday-edge:#ae8754;--holiday-secondary:#d9eae4;--holiday-secondary-ink:#3d665b;--holiday-glow:#d6e5ed}
+:root[data-holiday="spring"]{--holiday-base:#f2d9bc;--holiday-cream:#fff3dc;--holiday-ink:#8f332d;--holiday-light:#ffedb5;--holiday-main:#f1c575;--holiday-edge:#bb624d;--holiday-secondary:#f6d8ca;--holiday-secondary-ink:#944b43;--holiday-glow:#f5d18b}
+:root[data-holiday="halloween"]{--holiday-dice-light:#72508c;--holiday-dice-dark:#35264f;--holiday-dice-edge:#d99c54;--holiday-dice-inset:#edba7759;--holiday-dice-pip:#ffe0a0;--holiday-dice-spark:#ffd186;--holiday-dice-glow:#e99b54;--holiday-dice-symbol:'✦'}
+:root[data-holiday="christmas"]{--holiday-dice-light:#f4fbff;--holiday-dice-dark:#b5d5e5;--holiday-dice-edge:#7dacc2;--holiday-dice-inset:#ffffffb3;--holiday-dice-pip:#b44649;--holiday-dice-spark:#e6f7ff;--holiday-dice-glow:#89cfe9;--holiday-dice-symbol:'❄'}
+:root[data-holiday="spring"]{--holiday-dice-light:#e27861;--holiday-dice-dark:#a9373e;--holiday-dice-edge:#e7bd6c;--holiday-dice-inset:#ffe5a06b;--holiday-dice-pip:#ffe4a1;--holiday-dice-spark:#ffd77e;--holiday-dice-glow:#f4c067;--holiday-dice-symbol:'✿'}
+:root[data-holiday] .dice-stage{position:relative}
+
+:root[data-holiday] .home-page{background:var(--holiday-base)}
+:root[data-holiday] .home-page::before{background:linear-gradient(180deg,#1313240a,#13132412 65%,#13132433)}
+:root[data-holiday] .home-menu{position:relative;z-index:1;padding-top:15svh}
+:root[data-holiday] .home-title{width:min(74vw,440px);margin-bottom:24px;filter:drop-shadow(0 8px 18px #18182a40)}
+:root[data-holiday] .home-create{background:linear-gradient(180deg,var(--holiday-light),var(--holiday-main));color:var(--holiday-ink);border-color:var(--holiday-light);box-shadow:inset 0 2px 0 #fff8dc,0 5px 0 var(--holiday-edge),0 9px 0 #ffffff65,0 12px 25px #151c3433}
+:root[data-holiday] .home-join{background:linear-gradient(180deg,#fffdf4,var(--holiday-cream));color:var(--holiday-ink);box-shadow:inset 0 2px 0 #fff,0 4px 0 var(--holiday-edge),0 8px 16px #151c3426}
+:root[data-holiday] .home-watch{background:linear-gradient(180deg,#fffdf4,var(--holiday-secondary));color:var(--holiday-secondary-ink);border-color:var(--holiday-cream);box-shadow:inset 0 2px 0 #fff,0 4px 0 var(--holiday-edge),0 8px 16px #151c3426}
+:root[data-holiday] .home-toolbar .home-tool-button,:root[data-holiday] .home-recent-room{background:var(--holiday-cream);color:var(--holiday-ink)}
+.holiday-decorations{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.holiday-ornament{position:absolute;width:clamp(58px,7vw,100px);height:auto;filter:drop-shadow(0 5px 8px #171a3426)}
+.holiday-ornament-left{left:4%;top:12%}
+.holiday-ornament-right{right:4%;top:25%;transform:rotate(9deg)}
+:root[data-holiday="spring"] .holiday-ornament-right{top:12%;transform:none}
+:root[data-holiday] .lobby-room .cottage-panel{position:relative;border-color:var(--holiday-edge);box-shadow:inset 0 0 0 4px var(--holiday-cream),0 6px 0 #b5986a35,0 18px 50px #30213c2b}
+:root[data-holiday] .lobby-room .cottage-panel::after{content:'';position:absolute;top:-4px;left:24px;right:24px;height:7px;border-radius:10px;background:radial-gradient(circle,var(--holiday-glow) 2px,transparent 3px) 0 0/22px 7px;pointer-events:none}
+.room-page .holiday-ornament-left{top:88px;left:12px;width:44px;opacity:.8}
+.room-page .holiday-ornament-right{top:88px;right:12px;width:44px;opacity:.8}
+.room-page.lobby-room .holiday-ornament{width:76px;opacity:1}
+.room-page.game-session .holiday-decorations{z-index:1}
+.room-page.game-session .holiday-ornament{top:76px;width:30px;opacity:.55}
+.brand.holiday-brand{display:inline-flex;align-items:center;justify-content:center;width:112px;height:56px;flex-shrink:0}
+.holiday-brand img{display:block;width:100%;height:100%;object-fit:contain}
+
+/* 页面背景独立于 --town-background，棋盘底图、地块与卡牌沿用原有素材。 */
+:root[data-holiday] .modern-room.game-session{background:linear-gradient(#fffdf51a,#fffdf536),var(--holiday-background) center / cover no-repeat var(--holiday-base);background-attachment:fixed}
+:root[data-holiday] .modern-room.game-session .room-header{background:color-mix(in srgb,var(--holiday-cream) 94%,transparent);border-bottom-color:var(--holiday-edge)}
+:root[data-holiday] .modern-room.game-session .immersive-layout .board-view{background:color-mix(in srgb,var(--holiday-cream) 38%,transparent);border-color:color-mix(in srgb,var(--holiday-edge) 65%,transparent)}
+:root[data-holiday] .modern-room.game-session .immersive-board .workbench-center{border-color:var(--holiday-edge);box-shadow:inset 0 0 0 4px var(--holiday-cream),0 4px 0 color-mix(in srgb,var(--holiday-edge) 25%,transparent)}
+:root[data-holiday] .modern-room.game-session .workbench-center :is(.city-feed-panel,.room-chat,.dashboard-ranking,.dashboard-workbench){--frame-edge:var(--holiday-edge);box-shadow:0 3px 0 color-mix(in srgb,var(--holiday-edge) 30%,transparent)}
+:root[data-holiday] .modern-room.game-session .workbench-center :is(.city-feed-panel,.room-chat,.dashboard-ranking,.dashboard-workbench)::after{content:'';position:absolute;top:2px;left:28px;right:28px;height:5px;border-radius:8px;background:radial-gradient(circle,var(--holiday-glow) 2px,transparent 2.5px) 0 0 / 18px 5px;pointer-events:none}
+.holiday-panel-decoration{display:none}
+:root[data-holiday] .game-session .panel-frame .holiday-panel-decoration{display:block;overflow:visible;z-index:1}
+:root[data-holiday] .game-session .panel-frame .holiday-panel-decoration .holiday-ornament-left{display:none}
+:root[data-holiday] .game-session .panel-frame .holiday-panel-decoration .holiday-ornament-right{display:block;top:-9px;right:-6px;width:27px;opacity:.95;transform:rotate(8deg)}
+@media(max-width:600px){
+  :root[data-holiday] .game-session .panel-frame .holiday-panel-decoration .holiday-ornament-right{top:-7px;right:-3px;width:21px;opacity:.85}
+}
+
+.holiday-preview{position:fixed;bottom:max(16px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);z-index:90;width:min(440px,calc(100% - 24px));padding:12px 14px;border:1px solid #ffffffbd;border-radius:18px;background:#fffdf4f5;color:#594b40;box-shadow:0 8px 32px #151c3433;backdrop-filter:blur(16px);font-size:11px}
+.holiday-preview-heading{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+.holiday-preview-heading strong{white-space:nowrap;font-size:12px}
+.holiday-preview-heading>span{flex:1;font-size:10px;color:#82776c}
+.holiday-preview-heading>button{border:0;background:transparent;color:#82776c;font-size:20px;padding:0 4px;line-height:1}
+.holiday-preview-options{display:flex;gap:6px}
+.holiday-preview-options>button{flex:1;border:1px solid #e8dfd3;border-radius:10px;padding:7px 4px;background:#fffaf2;color:#756757;font-size:11px;white-space:nowrap}
+.holiday-preview-options>button[aria-pressed="true"]{background:#6a654f;border-color:#6a654f;color:#fff9e8}
+.holiday-preview button:focus-visible{outline:2px solid #8d7954;outline-offset:2px}
+html:has(.holiday-preview) .home-menu{padding-bottom:130px}
+
+@media(max-width:600px) and (orientation:portrait){
+  :root[data-holiday] .home-background{height:65svh;mask-image:linear-gradient(#000 60%,transparent)}
+  :root[data-holiday] .home-menu{padding-top:25svh}
+  :root[data-holiday] .home-title{width:min(84vw,330px);margin-bottom:22px}
+  :root[data-holiday] .home-page::before{background:linear-gradient(180deg,transparent 25%,var(--holiday-base) 76%);z-index:-1}
+  .home-page .holiday-ornament-left{top:17%;left:3%;width:48px}
+  .home-page .holiday-ornament-right{top:21%;right:3%;width:48px}
+  .room-page.lobby-room .holiday-ornament{width:42px;opacity:.65}
+  .room-page.game-session .holiday-ornament{display:none}
+  .brand.holiday-brand{width:90px;height:48px}
+  .holiday-preview-heading{gap:6px}
+}
+@media(max-height:600px) and (orientation:landscape){
+  :root[data-holiday] .home-menu{padding-top:10svh}
+  :root[data-holiday] .home-title{width:270px;margin-bottom:18px}
+  .holiday-preview{left:auto;right:12px;transform:none;width:310px}
+}
+@media(max-height:700px) and (min-width:601px){
+  :root[data-holiday]:has(.holiday-preview) .home-menu{padding-top:12svh}
+  :root[data-holiday]:has(.holiday-preview) .home-title{width:340px;margin-bottom:20px}
+}

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { holidayTheme } from '../holiday-theme';
+import HolidayDecorations from '../components/HolidayDecorations.vue';
 import ThemedSelect from '../components/ThemedSelect.vue';
 import { imageUrl } from '../image-assets';
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
@@ -467,10 +469,11 @@ function selectPlayer(id: string): void {
 async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({ type: 'setMapSize', mapSize }); }
 </script>
 <template>
-  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'classic-layout': classicLayout, 'desktop-single-screen': !classicLayout && isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--desktop-scale': desktopScale, '--town-background': `url(${imageUrl('/images/board/town-background.png')})` }">
-    <img v-if="isLobby" class="lobby-background" :src="imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
+  <div class="room-page modern-room" :class="{ 'spectator-page': spectator, 'spectator-follow': spectatorFollowing, 'spectator-landscape': spectator && !spectatorFollowing, 'game-session': isGameSession, 'single-screen': isSingleScreen, 'lobby-room': isLobby, 'detached-dashboard': detachedDashboard, 'classic-layout': classicLayout, 'desktop-single-screen': !classicLayout && isSingleScreen && !spectator && !detachedDashboard }" :style="{ '--desktop-scale': desktopScale, '--town-background': `url(${imageUrl('/images/board/town-background.png')})`, '--holiday-background': holidayTheme ? `url(${holidayTheme.background})` : undefined }">
+    <img v-if="isLobby" class="lobby-background" :src="holidayTheme?.background || imageUrl('/images/lobby-cottage.png')" alt="" fetchpriority="high" />
+    <HolidayDecorations />
     <header class="site-header room-header immersive-header">
-      <RouterLink to="/" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
+      <RouterLink :to="{ path: '/', query: route.query.holidayPreview === undefined ? {} : { holidayPreview: route.query.holidayPreview } }" aria-label="返回首页"><span v-if="isLobby" class="lobby-back">← 返回小镇</span><Logo v-else /></RouterLink>
       <button class="room-tag" aria-label="复制房间号" @click="game.copy(code)">房间 <strong>{{ code }}</strong></button>
       <div v-if="isGameSession" class="room-utilities game-utilities" role="group" aria-label="游戏工具栏">
         <span class="connection-label" :class="game.connection"><i></i>{{ game.connection === 'online' ? '实时同步' : game.connection === 'connecting' ? '连接中' : '已断开' }}</span>
