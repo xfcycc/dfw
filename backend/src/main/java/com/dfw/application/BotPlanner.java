@@ -687,9 +687,13 @@ public final class BotPlanner {
         return best;
     }
 
-    /** 输入保守标记，仅用已公开活动阶段与本人现金选择，秘密猜测使用独立均匀随机数。 */
+    /** 输入保守标记，返回公开阶段允许的活动操作；含真人的结果等待手动关闭，全机器人活动自行结束。 */
     private Action activity(boolean conservative) {
         ActivityVo a = state.activity;
+        if (a.stage.equals("result") && a.participants.contains(me.id)) {
+            if (state.players.stream().anyMatch(p -> a.participants.contains(p.id) && !p.bankrupt && p.botDifficulty == null)) return null;
+            Action close = action("activityInput"); close.activityId = a.id; close.activityRound = a.round; return close;
+        }
         if (a.endsAt != null || !a.participants.contains(me.id)) return null;
         if (a.kind.equals("roulette")) {
             if (!me.id.equals(a.stage.equals("select") ? a.triggerId : a.currentPlayerId) || !Set.of("select", "duel").contains(a.stage)) return null;

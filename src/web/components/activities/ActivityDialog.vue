@@ -48,6 +48,15 @@ async function submit(input: ActivityInput): Promise<void> {
   const a = activity.value; if (!a || !enabled.value) return;
   await game.act({ type: 'activityInput', activityId: a.id, activityRound: a.round, ...input });
 }
+/** 无入参，最终结果由参与者关闭时结束活动，其他阶段及观赛仅收起窗口，无返回值。 */
+async function close(): Promise<void> {
+  const a = activity.value;
+  if (a?.stage === 'result' && !props.spectator && game.me && !game.me.bankrupt && a.participants.includes(game.me.id)) {
+    if (!game.canAct) return;
+    if (!await game.act({ type: 'activityInput', activityId: a.id, activityRound: a.round })) return;
+  }
+  open.value = false;
+}
 watch(() => activity.value?.id, () => { open.value = true; });
 let hoof: ReturnType<typeof setInterval> | undefined;
 let baseline = true;
@@ -82,7 +91,7 @@ onBeforeUnmount(() => { clearInterval(hoof); });
 <template>
   <button v-if="activity && activity.stage !== 'payment'" type="button" class="turn-action-status turn-action-link activity-action" :disabled="paused" aria-haspopup="dialog" :aria-expanded="open && !paused && !game.room?.recoveryPending" :title="progress || '点击进入活动'" @click="open = true"><span class="activity-action-copy"><strong>当前行动：{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></span><span class="activity-action-enter">进入活动 <span aria-hidden="true">↗</span></span></button>
   <slot v-else />
-  <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="open = false">
+  <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="close">
     <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div>
       <div class="activity-content"><ActivityPresentation :activity="activity" :revealing="blindboxRevealing"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" @revealing="blindboxRevealing = $event" /></ActivityPresentation>
@@ -90,5 +99,6 @@ onBeforeUnmount(() => { clearInterval(hoof); });
         <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
       </div>
     </div>
+    <template v-if="activity.stage === 'result'" #footer><button type="button" class="button primary full" :disabled="!spectator && !game.canAct" @click="close">{{ !spectator && game.me && !game.me.bankrupt && activity.participants.includes(game.me.id) ? '关闭结果，继续游戏' : '关闭结果' }}</button></template>
   </Modal>
 </template>

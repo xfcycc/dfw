@@ -8,7 +8,6 @@ import static com.dfw.domain.GameSupport.*;
 public final class ActivityService {
     public static final List<String> KINDS = List.of("casino", "horse", "roulette", "packet", "rps", "treasure", "bridge", "minority", "blindbox");
     public static final Map<String, String> NAMES = Map.of("casino", "暖暖赌场", "horse", "小镇赛马", "roulette", "轮盘对决", "packet", "拼手气红包", "rps", "猜拳擂台", "treasure", "贪心宝箱", "bridge", "三关玻璃桥", "minority", "少数派夜市", "blindbox", "暖暖潮玩盲盒");
-    private static final Map<String, String> VARIANTS = Map.of("casino", "treasure", "horse", "bridge", "rps", "minority", "packet", "blindbox");
     private static final Map<String, Long> BASE = Map.ofEntries(Map.entry("casinoSmallStake",250L), Map.entry("casinoSmallPrize",500L), Map.entry("casinoPointStake",250L), Map.entry("casinoPointPrize",1500L), Map.entry("horseStake",250L), Map.entry("horsePrize",2500L), Map.entry("rouletteDebt",1000L), Map.entry("packetBase",500L), Map.entry("packetPerPlayer",500L), Map.entry("rpsPrize",1500L), Map.entry("treasureStake",250L), Map.entry("blindboxRegular",250L), Map.entry("blindboxHiddenBase",500L), Map.entry("blindboxHiddenPerPlayer",250L));
     private final RandomSource random;
     private final EconomyService economy;
@@ -86,6 +85,10 @@ public final class ActivityService {
         CornerActivity a = room.activity;
         require(a != null && Objects.equals(a.id, action.activityId) && Objects.equals(action.activityRound, a.round), "活动已进入下一阶段，请同步后操作");
         require(!actor.bankrupt && a.participants.contains(actor.id), "你不在本次活动参与名单内");
+        if (a.stage.equals("result")) {
+            require(a.settled && room.pending == null && room.trade == null, "请先完成活动结算");
+            a.stage = "closing"; a.endsAt = System.currentTimeMillis(); return;
+        }
         require(room.pending == null && room.trade == null && a.endsAt == null, "请等待当前展示或结算完成");
         if (a.kind.equals("roulette")) { rouletteInput(room, a, actor, action); return; }
         if (a.kind.equals("treasure")) { treasureInput(room, a, actor, action.selection); return; }
@@ -162,7 +165,7 @@ public final class ActivityService {
         log(room, actor.name + " 打开 " + selection + " 号盲盒：" + (hidden ? bonus > 0 ? "限定款，隐藏奖励翻倍" : "隐藏款" : "普通款") + "，到账 ¥" + (base + bonus));
         if (a.choices.size() == a.participants.size()) result(room, a, "暖暖潮玩盲盒已全部领取，未选中的盲盒不发放");
     }
-    /** 输入房间、活动、领取人和红包序号，独占领取后立即结算；全部领取后播放结果三秒，再保留五秒。 */
+    /** 输入房间、活动、领取人和红包序号，独占领取后立即结算；全部领取后展示结果，等待手动关闭，无返回值。 */
     private void claimPacket(Room room, CornerActivity a, Player actor, int selection) {
         require(selection >= 1 && selection <= a.participants.size(), "请选择有效红包");
         // 旧活动已提交的领取保留原分配，待下次有效领取时一并结算，避免重复发奖。
@@ -180,7 +183,7 @@ public final class ActivityService {
         grant(room, a, id, Math.addExact(base, bonus));
         log(room, player(room, id).name + " 拆开 " + selection + " 号红包，基础 ¥" + base + (bonus > 0 ? "，幸运加奖 ¥" + bonus : ""));
     }
-    /** 输入房间及已全部领取的红包活动，给唯一手气最佳者补给道具并设置自动关闭截止时间，无返回值。 */
+    /** 输入房间及已全部领取的红包活动，给唯一手气最佳者补给道具并展示最终结果，无返回值。 */
     private void finishPackets(Room room, CornerActivity a) {
         String best = a.participants.getFirst(); long largest = -1;
         for (String id : a.participants) {
@@ -190,7 +193,6 @@ public final class ActivityService {
         }
         rewardCard(room, a, best);
         result(room, a, "红包已全部拆开，手气最佳：" + player(room, best).name);
-        a.endsAt = a.startedAt + 8000;
     }
     /** 输入轮盘活动及操作者，处理发起、放弃与当前玩家的一次开枪。 */
     private void rouletteInput(Room room, CornerActivity a, Player actor, Action action) {
@@ -210,9 +212,9 @@ public final class ActivityService {
     /** 输入活动与展示阶段时长，保存服务端截止时间并使旧输入失效。 */
     private void timed(CornerActivity a, String stage, long duration) { a.stage = stage; a.round++; a.startedAt = System.currentTimeMillis(); a.endsAt = a.startedAt + duration; }
     /** 输入活动取消说明，生成无需经济结算的结束展示。 */
-    private void cancelChoice(Room room, CornerActivity a, String summary) { a.settled = true; a.summary = summary; log(room,summary); timed(a,"result",VARIANTS.containsValue(a.kind) ? 8000 : 1500); }
+    private void cancelChoice(Room room, CornerActivity a, String summary) { result(room, a, summary); }
     /** 输入房间，返回当前活动是否到达自动阶段推进点。 */
-    public boolean due(Room room) { CornerActivity a=room.activity; return a != null && (a.stage.equals("payment") && room.pending == null && room.trade == null || a.endsAt != null && a.endsAt <= System.currentTimeMillis()); }
+    public boolean due(Room room) { CornerActivity a=room.activity; return a != null && !a.stage.equals("result") && (a.stage.equals("payment") && room.pending == null && room.trade == null || a.endsAt != null && a.endsAt <= System.currentTimeMillis()); }
     /** 输入房间，完成到期揭晓或父费用续接；由现有事务内调用。 */
     public void refresh(Room room) {
         CornerActivity a=room.activity; if (a == null || !due(room)) return;
@@ -231,8 +233,8 @@ public final class ActivityService {
                 if(a.hit) { String winner=a.participants.stream().filter(id -> !id.equals(a.lastShooterId)).findFirst().orElseThrow(); a.settled=true; a.stage="payment"; a.round++; a.endsAt=null; a.summary=player(room,a.lastShooterId).name + " 轮盘判负，对 " + player(room,winner).name + " 产生待处理费用 ¥" + money(room,"rouletteDebt"); log(room,a.summary); rewardCard(room,a,winner); economy.charge(room,player(room,a.lastShooterId),money(room,"rouletteDebt"),winner,null); if (paymentPending(room)) { room.pending.activityPayment=true; room.pending.sourceName="轮盘对决"; } }
                 else { log(room,player(room,a.lastShooterId).name + " 第 " + a.shots + " 次开枪为空响"); a.currentPlayerId=a.participants.stream().filter(id -> !id.equals(a.lastShooterId)).findFirst().orElseThrow(); a.stage="duel"; a.round++; a.endsAt=null; }
             }
-            case "payment" -> timed(a,"result",8000);
-            case "result" -> { room.activity=null; room.phase=a.returnPhase; }
+            case "payment" -> { a.stage="result"; a.round++; a.startedAt=System.currentTimeMillis(); a.endsAt=null; }
+            case "closing" -> { room.activity=null; room.phase=a.returnPhase; }
             default -> throw new GameError("活动展示阶段不可用");
         }
     }
@@ -287,8 +289,8 @@ public final class ActivityService {
         content.giveCards(room, owner, 1, null); a.cardRewards.put(id, 1);
         log(room, owner.name + " 获得「" + NAMES.get(a.kind) + "」额外奖励：1 张随机道具");
     }
-    /** 输入房间、活动与结果说明，标记结算完成并保留八秒供揭晓、庆祝及结果阅读，无返回值。 */
-    private void result(Room room, CornerActivity a, String summary) { a.settled=true; a.summary=summary; log(room,summary); timed(a,"result",8000); }
+    /** 输入房间、活动与结果说明，完成结算并持续展示结果，等待参与者手动关闭，无返回值。 */
+    private void result(Room room, CornerActivity a, String summary) { a.settled=true; a.summary=summary; log(room,summary); a.stage="result"; a.round++; a.startedAt=System.currentTimeMillis(); a.endsAt=null; }
     /** 输入将被房主移出的玩家，未结算活动退款中止；既有费用继续保留。 */
     public void removing(Room room, String playerId) {
         CornerActivity a=room.activity; if(a==null || !a.participants.contains(playerId)) return;
@@ -296,7 +298,7 @@ public final class ActivityService {
     }
     /** 输入房间，返回尚未回应且离线的必需参与者；观战者不影响活动。 */
     public Player offlineRequired(Room room) {
-        CornerActivity a=room.activity; if(a==null || a.endsAt!=null || a.stage.equals("payment")) return null;
+        CornerActivity a=room.activity; if(a==null || a.endsAt!=null || a.stage.equals("payment") || a.stage.equals("result")) return null;
         List<String> required=a.kind.equals("roulette") ? List.of(a.stage.equals("select") ? a.triggerId : a.currentPlayerId) : a.kind.equals("rps") || a.kind.equals("bridge") && a.stage.equals("bridge_select") ? a.contenders : a.participants;
         return required.stream().filter(id -> !a.choices.containsKey(id)).map(id -> player(room,id)).filter(p -> p!=null && !p.bankrupt && !p.online).findFirst().orElse(null);
     }
