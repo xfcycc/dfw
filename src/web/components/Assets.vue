@@ -11,7 +11,7 @@ const allowed = computed(() => (!game.room?.activity || game.room.activity.stage
 const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?.pending?.type === 'debt');
 </script>
 <template>
-  <p v-if="payment" class="asset-payment-note">变现后请确认支付；玩家债务可协商抵债。</p>
+  <p v-if="payment" class="asset-payment-note">变现后请确认支付；玩家债务可协商结清，支持少量现金或0元。</p>
   <p v-if="game.me?.jailed && game.me.skipTurns > 0" class="notice warning">服刑期间全部地产暂停收租，出狱后恢复；其他小游戏正常参与。</p>
   <div v-if="!owned.length" class="asset-empty">暂无地产，停在无主地块时可购买。</div>
   <div class="asset-portfolio">

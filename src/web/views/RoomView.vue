@@ -627,7 +627,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                             <p class="muted">现金 ¥{{ game.me?.cash.toLocaleString() }} · 确认后才扣款。</p>
                             <template v-if="!payment.defenseResolved"><button class="button primary small" :disabled="!canPlay" @click="modal = 'defense'">选择防御与付款方式</button></template>
                             <div v-else class="button-row"><button class="button primary" :disabled="!canPlay || (game.me?.cash ?? 0) < payment.amount" @click="game.act({ type: 'payDebt' })">确认现金支付</button></div>
-                            <div v-if="payment.defenseResolved" class="button-row"><button class="button secondary" :disabled="!canPlay" @click="openWorkbench('assets')">抵押／变现</button><button v-if="payment.creditorId" class="button secondary" :disabled="!canTrade" @click="openWorkbench('trade')">协商抵债／出售</button></div>
+                            <div v-if="payment.defenseResolved" class="button-row"><button class="button secondary" :disabled="!canPlay" @click="openWorkbench('assets')">抵押／变现</button><button v-if="payment.creditorId" class="button secondary" :disabled="!canTrade" @click="openWorkbench('trade')">协商结清／出售</button></div>
                             <p v-if="!payment.creditorId && (game.me?.cash ?? 0) < payment.amount" class="notice warning">系统费用需自行选择地产抵押或整套出售筹款。</p>
                             <template v-if="payment.defenseResolved && liquidationValue < payment.amount"><p class="muted">银行变现仍不足。{{ payment.creditorId ? '可继续与玩家协商成交，或主动结束协商并清算。' : '自行抵押或出售全部可抵押地产后仍不足，可确认清算。' }}</p><button class="button ghost small danger" :disabled="!canLiquidate" @click="modal = 'bankruptcy'">结束协商并申请清算</button></template>
                           </template>

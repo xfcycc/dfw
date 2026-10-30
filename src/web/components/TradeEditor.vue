@@ -35,8 +35,8 @@ const previewError = computed(() => {
   if (value.giveTiles.some(id => game.room?.board[id]?.ownerId !== from.value?.id) || value.wantTiles.some(id => game.room?.board[id]?.ownerId !== to.value?.id)) return '报价地产的归属已变化，请重新选择。';
   if ([...value.giveTiles, ...value.wantTiles].some(id => game.room?.board[id] && isKamui(game.room.board[id]!))) return '神威空间中的地产不能交易。';
   if (new Set([...value.giveTiles, ...value.wantTiles]).size !== value.giveTiles.length + value.wantTiles.length) return '交易地产不能重复。';
-  if ((value.debtCredit ?? 0) > 0 && (!associatedDebt.value || value.toId !== payment.value?.creditorId || !value.giveTiles.length || (value.debtCredit ?? 0) > (payment.value?.amount ?? 0))) return '抵债须向债权人提供地产，抵扣金额不能超过当前欠款。';
-  if (!value.giveCash && !value.wantCash && !value.giveTiles.length && !value.wantTiles.length) return '选择现金或地产后，这里将展示成交后的结果。';
+  if ((value.debtCredit ?? 0) > 0 && (!associatedDebt.value || value.toId !== payment.value?.creditorId || (value.debtCredit ?? 0) > (payment.value?.amount ?? 0))) return '协商结清须向当前债权人报价，抵扣金额不能超过当前欠款。';
+  if (!value.giveCash && !value.wantCash && !value.giveTiles.length && !value.wantTiles.length && !(value.debtCredit ?? 0)) return '选择现金、地产或填写协商抵扣金额后，这里将展示成交后的结果。';
   return '';
 });
 const outcomes = computed(() => {
@@ -106,7 +106,7 @@ async function submit(): Promise<void> {
     </template>
     <template v-else>
       <p v-if="game.privateData?.tradeRejection" class="notice warning" role="status"><PlayerText :text="game.privateData.tradeRejection" /></p>
-      <p v-if="payment?.creditorId" class="notice"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId)} 尚需支付 ¥${payment.amount.toLocaleString()}。`" />可向债权人提出资产抵债，或向其他玩家出售资产筹款。</p>
+      <p v-if="payment?.creditorId" class="notice"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId)} 尚需支付 ¥${payment.amount.toLocaleString()}。`" />可向债权人提出协商结清，提供少量现金、地产或均不提供，债权人接受后才抵扣欠款；也可向其他玩家出售资产筹款。</p>
       <label class="field">交易对象<ThemedSelect v-model="toId" label="交易对象" :options="partners.map(player => ({ value: player.id, label: player.name + (player.id === payment?.creditorId ? '（债权人）' : '') + (player.online ? '' : '（离线）') }))" /></label>
       <div class="trade-columns">
         <section class="trade-side"><h3><PlayerText :text="`${game.me?.name}（我）提供`" /></h3><div class="field"><label>现金 <small>持有 ¥{{ game.me?.cash }}</small><input v-model.number="giveCash" type="number" min="0" :max="game.me?.cash" step="1" /></label><div class="button-row trade-cash-actions"><button v-for="amount in [1000, 100]" :key="amount" type="button" class="button secondary small" :disabled="giveCash >= (game.me?.cash ?? 0)" @click="giveCash = increaseCash(giveCash, amount, game.me?.cash)">+{{ amount }}</button></div></div><label v-for="tile in own" :key="tile.id" class="checkbox-row"><input v-model="giveTiles" type="checkbox" :value="tile.id" /><span>{{ tile.name }} · {{ tile.id }}号<small>地价 ¥{{ tile.price.toLocaleString() }} · {{ tile.level }}级{{ tile.mortgaged ? ` · 已抵押，赎回 ¥${redeemCost(tile)}` : '' }}</small></span></label><p v-if="!own.length" class="muted">暂无地产</p></section>
@@ -121,7 +121,7 @@ async function submit(): Promise<void> {
           <h3><PlayerText :text="name(outcome.player.id)" /></h3>
           <dl class="trade-outcome"><div><dt>获得地产</dt><dd>{{ tileNames(outcome.gained) }}</dd></div><div><dt>失去地产</dt><dd>{{ tileNames(outcome.lost) }}</dd></div><div><dt>收到现金</dt><dd>¥{{ outcome.received.toLocaleString() }}</dd></div><div><dt>支付现金</dt><dd>¥{{ outcome.paid.toLocaleString() }}</dd></div><div><dt>现金净变化</dt><dd>{{ outcome.received - outcome.paid >= 0 ? '+' : '−' }}¥{{ Math.abs(outcome.received - outcome.paid).toLocaleString() }}</dd></div><div><dt>最终现金</dt><dd><strong>¥{{ (outcome.player.cash + outcome.received - outcome.paid).toLocaleString() }}</strong></dd></div></dl>
         </section></div>
-        <p v-if="associatedDebt && payment" class="notice warning"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId!)}`" /> 的原欠款 ¥{{ payment.amount.toLocaleString() }}，协商抵扣 ¥{{ (offer.debtCredit ?? 0).toLocaleString() }}，成交后剩余欠款 <strong>¥{{ (payment.amount - (offer.debtCredit ?? 0)).toLocaleString() }}</strong>。{{ offer.toId !== payment.creditorId ? '本次向第三人交易只筹款，原欠款仍需另行确认支付。' : '抵扣不转移现金，现金栏是额外交易对价；剩余欠款需另行确认支付。' }}</p>
+        <p v-if="associatedDebt && payment" class="notice warning"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId!)}`" /> 的原欠款 ¥{{ payment.amount.toLocaleString() }}，协商抵扣 ¥{{ (offer.debtCredit ?? 0).toLocaleString() }}，成交后剩余欠款 <strong>¥{{ (payment.amount - (offer.debtCredit ?? 0)).toLocaleString() }}</strong>。{{ offer.toId !== payment.creditorId ? '本次向第三人交易只筹款，原欠款仍需另行确认支付。' : '债权人接受后才生效。现金按上方报价实际转移，不再额外减少欠款；现金和地产均可为零。' }}{{ payment.amount === (offer.debtCredit ?? 0) ? '接受后本笔欠款结清，无需另行付款。' : '剩余欠款需另行确认支付。' }}</p>
       </template>
     </section>
     <template v-if="trade">
@@ -129,7 +129,7 @@ async function submit(): Promise<void> {
       <div v-else class="button-row trade-actions"><button type="button" class="button secondary" :disabled="!game.canAct" @click="cancel"><PlayerText :text="`取消向 ${counterparty?.name ?? '玩家'} 的报价`" /></button></div>
     </template>
     <template v-else>
-      <p class="muted">对方接受后一次性完成交换。报价内容、同意、拒绝及取消均进入公开记录，观众可查看。抵债报价须提供地产，金额由双方协商；部分抵债后继续处理余额。报价期间暂停其他操作，手牌不参与交易。</p>
+      <p class="muted">对方接受后一次性完成交换。报价内容、同意、拒绝及取消均进入公开记录，观众可查看。向债权人协商结清可只提供少量现金，也可不提供现金和地产；填写约定抵扣金额，经债权人接受后抵扣，部分抵扣后继续处理余额。银行费用不适用。报价期间暂停其他操作，手牌不参与交易。</p>
       <div class="button-row trade-actions"><button class="button primary" :disabled="!canOffer || !!previewError"><PlayerText :text="`向 ${partner?.name ?? '对方'} 发送交易报价`" /></button></div>
     </template>
   </form>
