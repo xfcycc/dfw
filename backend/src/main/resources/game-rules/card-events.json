@@ -2498,13 +2498,13 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SR",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_sakura_create_build",
                     "name": "创",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "把想象中的样子，变出来！",
                     "description": "小樱握住法杖，注视着卡牌浮现出的光。纸面上的线条慢慢立起，门窗、屋顶和阶梯逐一成形，小可已经绕着新出现的轮廓飞了一圈。",
                     "cardType": "主动"

@@ -50,7 +50,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   senbonzakura: { name: '千本樱', icon: '✦', description: "获得3片攻防共享花瓣，至第3个后续个人回合结束；每回合掷骰前可一次消耗1～3片，各使不同对手地产降1级，不占主动次数；防御时每片挡1次常规建筑破坏，护盾优先，穿盾攻击无视花瓣；重复补至3片但不延长。" },
   bankai: { name: '天锁斩月', icon: '✦', description: "发动后，本回合最多再使用2张其他主动道具，含UR；期间不能再用天锁斩月或投影魔术，额外出牌统一计数；替代移动后结束出牌窗口，费用和限制照常。" },
   geoResonance: { name: "岩脊共鸣", icon: '✦', description: "选择1处自家地产，与左右紧邻的自家地产各免费升1级，最多3处。" },
-  growthLink: { name: "所闻遍计", icon: '✦', description: "连接2处自家地产，持续3个后续个人回合；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。" },
+  growthLink: { name: "所闻遍计", icon: '✦', description: "连接2处自家地产，无回合期限；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。" },
   sereniteaPot: { name: "尘歌壶", icon: '✦', description: "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。" },
   createBuild: { name: "创", icon: '✦', description: "弃置1～2张其他手牌，每张换1处不同自家地产免费升1级；弃牌不折现，确认后才消耗。" },
   remoteConstruction: { name: "基建轮班", icon: '✦', description: "本回合及下个个人回合，在资产管理阶段各可远程建造1次，支付标准建造费的75%，向下取整。" },

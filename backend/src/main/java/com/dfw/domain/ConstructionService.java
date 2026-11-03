@@ -130,8 +130,8 @@ public final class ConstructionService {
             }
             case "growthLink" -> {
                 ConstructionState s=state(room); s.links.removeIf(link -> link.ownerId.equals(owner.id) && Set.of(link.first,link.second).equals(new HashSet<>(ids)));
-                ConstructionState.Link link=new ConstructionState.Link(); link.ownerId=owner.id; link.first=ids.getFirst(); link.second=ids.getLast(); link.untilTurn=ended(room,owner.id)+4; s.links.add(link);
-                log(room,owner.name+" 建立所闻遍计连接，三个后续个人回合内最多成功联动两次");
+                ConstructionState.Link link=new ConstructionState.Link(); link.ownerId=owner.id; link.first=ids.getFirst(); link.second=ids.getLast(); s.links.add(link);
+                log(room,owner.name+" 建立所闻遍计连接，无回合期限，最多成功联动两次");
             }
             case "sereniteaPot" -> {
                 int[] levels={firstLevel,secondLevel};
@@ -200,7 +200,7 @@ public final class ConstructionService {
         prune(room);
     }
 
-    /** 输入行动结束者，递增个人回合并清理到期连接或施工机会；休息回合同样计数。 */
+    /** 输入行动结束者，递增个人回合并清理失效标记或到期施工机会；休息回合同样计数。 */
     public static void endTurn(Room room,Player owner) {
         if(owner==null || room.runtime.construction==null) return;
         state(room).endedTurns.merge(owner.id,1,Integer::sum); prune(room);
@@ -212,7 +212,7 @@ public final class ConstructionService {
     /** 输入房间，移除到期、淘汰、产权变化或耗尽的标记，不刷新剩余次数。 */
     private static void prune(Room room) {
         ConstructionState s=state(room);
-        s.links.removeIf(link -> { Player owner=player(room,link.ownerId); return owner==null || owner.bankrupt || link.charges<=0 || ended(room,link.ownerId)>=link.untilTurn
+        s.links.removeIf(link -> { Player owner=player(room,link.ownerId); return owner==null || owner.bankrupt || link.charges<=0
                 || !Objects.equals(tile(room,link.first).ownerId,link.ownerId) || !Objects.equals(tile(room,link.second).ownerId,link.ownerId); });
         s.shrines.entrySet().removeIf(entry -> { Player owner=player(room,entry.getValue().ownerId); return owner==null || owner.bankrupt || entry.getValue().charges<=0 || !Objects.equals(tile(room,entry.getKey()).ownerId,owner.id); });
         s.remoteUntil.entrySet().removeIf(entry -> { Player owner=player(room,entry.getKey()); return owner==null || owner.bankrupt || ended(room,entry.getKey())>=entry.getValue(); });
@@ -228,7 +228,7 @@ public final class ConstructionService {
     public static List<String> labels(Room room,int tileId) {
         if(room.runtime==null || room.runtime.construction==null) return List.of();
         ConstructionState s=room.runtime.construction; List<String> labels=new ArrayList<>();
-        for(ConstructionState.Link link:s.links) if(link.charges>0 && (link.first==tileId || link.second==tileId) && s.endedTurns.getOrDefault(link.ownerId,0)<link.untilTurn
+        for(ConstructionState.Link link:s.links) if(link.charges>0 && (link.first==tileId || link.second==tileId)
                 && Objects.equals(tile(room,link.first).ownerId,link.ownerId) && Objects.equals(tile(room,link.second).ownerId,link.ownerId)) labels.add("所闻遍计：连接"+(link.first==tileId ? link.second : link.first)+"号地，剩余"+link.charges+"次");
         ConstructionState.Shrine shrine=s.shrines.get(tileId); if(shrine!=null && shrine.charges>0 && Objects.equals(tile(room,tileId).ownerId,shrine.ownerId)) labels.add("奉纳：剩余"+shrine.charges+"次生长");
         return labels;

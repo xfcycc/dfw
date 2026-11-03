@@ -3,7 +3,7 @@ from fractions import Fraction
 
 RARITIES = {
     'geoResonance': 'SSR', 'growthLink': 'SSR', 'sereniteaPot': 'UR',
-    'createBuild': 'SR', 'remoteConstruction': 'SR', 'shrineGrowth': 'SR',
+    'createBuild': 'SSR', 'remoteConstruction': 'SR', 'shrineGrowth': 'SR',
     'allConstruction': 'SSR', 'erdtreeBlessing': 'SSR',
 }
 

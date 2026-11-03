@@ -33,8 +33,6 @@ public class ConstructionState {
         public int second;
         /** 剩余成功次数。 */
         public int charges = 2;
-        /** 到期时业主已结束的个人回合数。 */
-        public int untilTurn;
     }
 
     /** 其他玩家完成普通落点结算后生长的标记。 */
