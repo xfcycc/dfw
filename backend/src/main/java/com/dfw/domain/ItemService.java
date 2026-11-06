@@ -36,6 +36,7 @@ public class ItemService {
             case "SWAP_POSITION" -> {
                 Player target = player(room, effect.targetId); require(target != null && !target.bankrupt && !target.id.equals(player.id), "换位目标不可用");
                 MotionSegment segment = BoardEffect.begin("swap", player);
+                BoardEffect.source(segment,effect.content);
                 BoardEffect.movement(segment, player, target.position); BoardEffect.movement(segment, target, player.position);
                 int position = player.position; player.position = target.position; target.position = position;
                 BoardEffect.publish(room, segment); log(room, player.name + " 与 " + target.name + " 交换了位置");

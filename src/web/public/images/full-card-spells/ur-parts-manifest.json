@@ -1,0 +1,26 @@
+{
+  "source": "ImageGen, 2026-11-06; layered spell props",
+  "usage": "gameplay-and-local-preview",
+  "distribution": "oss; not-deployed",
+  "runtimeManifest": "oss-assets.json",
+  "atlases": [
+    {
+      "file": "firefly-parts.png",
+      "source": "exec-93c20e72-5964-4775-8cac-bc61b6126435.png",
+      "columns": 2,
+      "rows": 2,
+      "skinId": "card_neta_ignite_sea",
+      "theme": "流萤／萨姆完全燃烧；按用户明确纠正替换旧海浪主题",
+      "cells": ["装甲右臂与青绿能量刃", "青绿火翼", "推进器与喷流", "青绿斩击与萤光"]
+    },
+    {
+      "file": "ur-parts.png",
+      "source": "exec-c3390597-e9ef-4e4d-8e98-d61e164dc896.png",
+      "columns": 4,
+      "rows": 4,
+      "cells": ["单道罗生门", "幻想杀手右手", "单把金光剑", "硬币", "独立神龙", "龙珠", "草庐门", "家业钥匙", "黏土鸟", "木柱", "裙装", "饰品", "伞", "五色石", "红莲", "卷轴"],
+      "mapping": "ur-choreography.ts / UR_PART_CELLS; scene cases explicitly select animated parts"
+    }
+  ],
+  "notes": ["原图保留，整张 PNG 原样复制，无脚本修图", "复杂轮廓来自透明图片；SVG 仅用于光束、阵纹、碎片及几何辅助元素", "原有四张专属 UR 继续使用 spell-atlas.png；其余未拆分主体保留旧逐卡图集"]
+}

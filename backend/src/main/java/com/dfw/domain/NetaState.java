@@ -47,6 +47,8 @@ public class NetaState {
     /** 下一次施术者个人回合开始结算的神君追击。 */
     @Getter @Setter
     public static class Thunder {
+        /** 已公开发动的原卡面，供延迟追击保持招式身份；旧存档可为空。 */
+        public ContentResult source;
         /** 已锁定的目标地产。 */
         public int tileId;
         /** 标记时的业主，转手后不再追击。 */

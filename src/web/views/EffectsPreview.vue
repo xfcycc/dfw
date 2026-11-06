@@ -9,7 +9,10 @@ import HandSlots from '../components/HandSlots.vue';
 import { useGameStore } from '../stores/game';
 import { effectSpriteKind } from '../effect-sprites';
 import { BOARD_EFFECTS, boardEffectDuration, boardEffectLabel } from '../board-effect-presentation';
+import UrSpellPreview from '../components/UrSpellPreview.vue';
+import FullSpellPreview from '../components/FullSpellPreview.vue';
 
+const previewMode = ref<'all' | 'ur' | 'regular' | 'generic'>(new URLSearchParams(location.search).get('sample') === 'all' ? 'all' : new URLSearchParams(location.search).get('sample') === 'regular' ? 'regular' : 'ur');
 const kinds = Object.keys(BOARD_EFFECTS) as BoardEffect['kind'][];
 const search = ref('');
 const visibleKinds = computed(() => kinds.filter(kind => `${BOARD_EFFECTS[kind].label} ${BOARD_EFFECTS[kind].description}`.includes(search.value.trim())));
@@ -113,6 +116,10 @@ function finishHidden(): void {
   if (!room.value.motion) return;
   finish(room.value.motion.id); epoch.value++;
 }
+/** 输入预览模式，释放旧通用演出和揭卡状态，再切换展示区域。 */
+function switchPreview(mode: 'all' | 'ur' | 'regular' | 'generic'): void {
+  epoch.value++; waitingForNotice.value = false; game.cardReveals = []; playing.value = false; completed.value = false; room.value = initialRoom(); previewMode.value = mode;
+}
 document.addEventListener('visibilitychange', finishHidden);
 onBeforeUnmount(() => { document.removeEventListener('visibilitychange', finishHidden); game.cardReveals = []; });
 </script>
@@ -120,7 +127,11 @@ onBeforeUnmount(() => { document.removeEventListener('visibilitychange', finishH
 <template>
   <main class="effects-preview">
     <header><div><p class="eyebrow">大富翁-奇迹大陆 · 动画放映室</p><h1>看看，这张牌怎么生效。</h1><p>选择效果即可播放，也可以反复重看。</p></div><a href="/">返回游戏 ↗</a></header>
-    <div class="preview-layout">
+    <nav class="preview-modes" aria-label="预览模式"><button class="button" :class="previewMode === 'ur' ? 'primary' : 'secondary'" :aria-pressed="previewMode === 'ur'" @click="switchPreview('ur')">UR 招式样板</button><button class="button" :class="previewMode === 'regular' ? 'primary' : 'secondary'" :aria-pressed="previewMode === 'regular'" @click="switchPreview('regular')">非 UR 招式样板</button><button class="button" :class="previewMode === 'generic' ? 'primary' : 'secondary'" :aria-pressed="previewMode === 'generic'" @click="switchPreview('generic')">原有通用效果</button></nav>
+    <button type="button" class="button" @click="switchPreview('all')">全卡池 331 张</button>
+    <FullSpellPreview v-if="previewMode === 'all'" />
+    <UrSpellPreview v-else-if="previewMode !== 'generic'" :key="previewMode" :regular="previewMode === 'regular'" />
+    <div v-else class="preview-layout">
       <aside><label class="preview-search">效果清单 · {{ kinds.length }} 种<input v-model="search" aria-label="搜索效果" placeholder="搜索效果或说明" /></label><button v-for="kind in visibleKinds" :key="kind" :class="{ selected: selected === kind }" :disabled="playing" @click="replay(kind)"><span>{{ boardEffectLabel(kind) }}</span><small>{{ boardEffectDuration(kind) ? `${(boardEffectDuration(kind) / 1000).toFixed(1)} 秒` : '无特效' }}</small></button></aside>
       <section class="preview-stage"><div class="preview-intro"><div><h2>{{ boardEffectLabel(selected) }}</h2><p>{{ BOARD_EFFECTS[selected].description }}</p></div><span>{{ boardEffectDuration(selected) ? `${duration} 秒` : '无特效' }}</span></div>
         <Board :room="room" :live="true" :presentation-epoch="epoch" compact bounded me-id="preview-0" @settled="finish"><template #controls><section class="preview-news"><h3>城市新鲜事</h3><div class="mobile-city-reveal"><CardReveal /></div><p v-for="(record, index) in records" :key="index">{{ record }}</p><p v-if="!records.length && !playing">暂无新鲜事</p></section></template></Board>
@@ -135,6 +146,7 @@ onBeforeUnmount(() => { document.removeEventListener('visibilitychange', finishH
 
 <style scoped>
 .effects-preview { min-height:100vh; padding:32px clamp(16px,4vw,64px); background:radial-gradient(ellipse at 0 0,#ffe6c5,transparent 55%),#faf3e7; color:#725442; }
+.preview-modes { display:flex; flex-wrap:wrap; gap:10px; max-width:1320px; margin:0 auto 18px; }
 header { display:flex; justify-content:space-between; align-items:center; gap:20px; max-width:1320px; margin:0 auto 25px; }h1 { margin:6px 0 9px; font-size:clamp(24px,3vw,38px); }header p { margin:0; color:#a18367; }header a { font-size:13px; white-space:nowrap; }
 .preview-layout { display:grid; grid-template-columns:210px minmax(0,1fr); gap:22px; max-width:1320px; margin:auto; }aside { display:grid; align-content:start; gap:9px; max-height:80vh; overflow:auto; padding-right:4px; }aside button { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:16px 13px; border:1px solid #e5d3b7; border-radius:14px; background:#fffaf1; color:#8b7056; text-align:left; }aside button.selected { border-color:#c99560; background:linear-gradient(120deg,#ffe4bd,#fff3db); color:#8b5739; box-shadow:0 4px 10px #9c6a3712; }aside button span { font-size:13px; font-weight:700; }aside button small { font-size:10px; white-space:nowrap; }
 .preview-search { position:sticky; top:0; z-index:1; padding:0 0 10px; background:#faf3e7; font-size:11px; color:#a18367; }.preview-search input { display:block; width:100%; margin-top:7px; padding:10px; border:1px solid #e5d3b7; border-radius:10px; background:#fffaf1; color:#725442; }

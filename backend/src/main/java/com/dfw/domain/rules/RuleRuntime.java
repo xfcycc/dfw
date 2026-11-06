@@ -19,6 +19,7 @@ public final class RuleRuntime {
         effects.register("REPLACE_ROLL", (room, effect) -> {
             require(effect.amount >= -3 && effect.amount <= 6, "规则骰子点数不可用");
             room.runtime.rollMode = "REPLACE"; room.runtime.movementSteps = (int) effect.amount; room.dice = (int) effect.amount;
+            room.runtime.movementSkinId = effect.sourceSkinId;
             if (stage(room).handler().equals("ACTION_WINDOW")) room.runtime.windowExit = "replace_roll";
             if (effect.message != null) log(room, effect.message);
         });
@@ -117,7 +118,7 @@ public final class RuleRuntime {
                     anime.rollPrepared=false;
                     if("FLASH".equals(room.runtime.rollMode)) { room.runtime.stageIndex++; continue; }
                     if(CrossoverService.turns(current(room),"DEFENSE_SPECIALIZATION")>0) room.runtime.movementSteps=1;
-                    if(StatusService.consume(current(room),"NEXT_ROLL_HALF")) { room.runtime.movementSteps=Math.floorDiv(room.runtime.movementSteps,2); log(room,current(room).name+" 消耗迟缓，基础步数减为 "+room.runtime.movementSteps); BoardEffect.cue(room,"slow",current(room)); }
+                    if(StatusService.consume(room,current(room),"NEXT_ROLL_HALF","slow")) { room.runtime.movementSteps=Math.floorDiv(room.runtime.movementSteps,2); log(room,current(room).name+" 消耗迟缓，基础步数减为 "+room.runtime.movementSteps); }
                     room.runtime.movementSteps=Math.addExact(room.runtime.movementSteps,room.runtime.rollBonus); room.runtime.rollBonus=0;
                     HistoryTrace.event(room, "dice", current(room).id, "本次移动点数为 " + room.dice, room.runtime.movementSteps);
                     room.runtime.stageIndex++;
@@ -125,6 +126,7 @@ public final class RuleRuntime {
                 case "MOVEMENT" -> {
                     require(room.runtime.movementSteps != null, "缺少移动步数");
                     GameEffect movement = effects.effect("MOVE", current(room)); movement.amount = room.runtime.movementSteps * (room.runtime.movementDirection==0?1:room.runtime.movementDirection); movement.selector="FLASH".equals(room.runtime.rollMode)?"FLASH":"NORMAL";
+                    movement.sourceSkinId = room.runtime.movementSkinId;
                     room.runtime.stageIndex++; effects.submit(room, movement);
                 }
                 case "LANDING" -> { room.runtime.stageIndex++; effects.submit(room, effects.effect("SETTLE_TILE", current(room))); }
@@ -140,6 +142,7 @@ public final class RuleRuntime {
         if (room.runtime.stageTurnNumber != 0) { room.runtime.effects.clear(); room.runtime.effectsWaiting = false; }
         room.runtime.stageTurnNumber = room.turnNumber; room.runtime.stageIndex = 0;
         room.runtime.windowExit = null; room.runtime.rollMode = null; room.runtime.movementSteps = null; room.runtime.rollBonus = 0; room.runtime.movementDirection=0;
+        room.runtime.movementSkinId = null;
     }
     /** 输入房间，返回当前配置中的阶段，错误游标拒绝继续。 */
     private RuleSet.Stage stage(Room room) {

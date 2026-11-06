@@ -10,6 +10,12 @@ import static com.dfw.domain.GameSupport.*;
 @Getter
 @Setter
 public class BoardEffect {
+    /** 已有状态的消耗反馈，只播放短提示。 */
+    public boolean triggered;
+    /** 本次费用防御前的待付金额，没有费用事件时为空。 */
+    public Long paymentBefore;
+    /** 本次费用防御后的待付金额，不表示已经支付。 */
+    public Long paymentAfter;
     /** 演出类型，仅描述公开表现，不参与规则分支。 */
     public String kind;
     /** 参与演出的公开玩家编号，不包含手牌种类或数量。 */
@@ -62,6 +68,22 @@ public class BoardEffect {
         public int kamuiTurns;
         /** 神威施加回合。 */
         public int kamuiAppliedTurn;
+        /** 腐败剩余触发次数。 */
+        public int corruptionTurns;
+        /** 污染绑定的业主。 */
+        public String nzothOwnerId;
+        /** 零域施术者。 */
+        public String zeroCasterId;
+        /** 零域结束回合。 */
+        public int zeroUntilTurn;
+        /** 裂隙另一端。 */
+        public Integer portalTileId;
+        /** 花瓣标记施术者。 */
+        public String petalCasterId;
+        /** 花瓣标记绑定业主。 */
+        public String petalOwnerId;
+        /** 花瓣标记结束回合。 */
+        public int petalUntilTurn;
     }
 
     /** 输入类型和作用者，返回未发布的展示片段，不推进业务或消耗游戏随机源。 */
@@ -72,12 +94,18 @@ public class BoardEffect {
         segment.boardEffect.playerIds.add(actor.id);
         return segment;
     }
+    /** 输入展示片段和已公开发动卡，记录来源身份，不复制私人手牌内容。 */
+    public static void source(MotionSegment segment, ContentResult source) {
+        if(source!=null && (!source.privateSupply || "card".equals(source.pool))) { segment.sourceSkinId=source.skinId; segment.sourceCardId=source.id; }
+    }
     /** 输入目标地产，返回独立的公开外观快照，后续业务写入不会改动该快照。 */
     public static TileState appearance(Tile tile) {
         TileState state = new TileState(); state.id = tile.id; state.ownerId = tile.ownerId; state.level = tile.level;
         state.barrier = tile.barrier; state.demolitionShield = tile.demolitionShield; state.demolitionShieldCharges = PropertyEffects.shieldCharges(tile); state.treasure = tile.treasure;
         state.concertStacks = tile.concertStacks; state.meteorCharges = tile.meteorCharges;
         state.kamuiCasterId = tile.kamuiCasterId; state.kamuiTurns = tile.kamuiTurns; state.kamuiAppliedTurn = tile.kamuiAppliedTurn;
+        state.corruptionTurns=tile.corruptionTurns; state.nzothOwnerId=tile.nzothOwnerId; state.zeroCasterId=tile.zeroCasterId; state.zeroUntilTurn=tile.zeroUntilTurn; state.portalTileId=tile.portalTileId;
+        state.petalCasterId=tile.petalCasterId; state.petalOwnerId=tile.petalOwnerId; state.petalUntilTurn=tile.petalUntilTurn;
         return state;
     }
     /** 输入片段、玩家和实际终点，仅记录位移，不修改玩家或结算路径。 */
@@ -99,15 +127,37 @@ public class BoardEffect {
     }
     /** 输入房间、类型和作用者，返回只读采样上下文，由调用者在原业务完成后发布。 */
     public static Observation watch(Room room, String kind, Player actor) { return new Observation(room, kind, actor); }
+    /** 输入已授权命令的实际来源，采集整个结算的公开变化；私人选择未执行时不发布。 */
+    public static Observation command(Room room, String actorId, Action action) {
+        Player actor=player(room,actorId); if(actor==null) return null;
+        ContentResult origin=null;
+        if("contentDecision".equals(action.type) && Boolean.TRUE.equals(action.accept) && room.runtime.choice!=null) {
+            // 只有响应使用的牌才是来源；暗押、燃料、净化与发现选择中的 cardId 都是私人材料或候选。
+            boolean response=Set.of("anime_defense","anime_rewind","release","movement_release","cross_bind_release").contains(room.runtime.choice.type);
+            origin=response?actor.hand.stream().filter(card -> Objects.equals(card.id,action.cardId)).findFirst().orElse(null):room.runtime.choice.content;
+        } else if(Set.of("card","paymentDefense").contains(action.type)) origin=actor.hand.stream().filter(card -> Objects.equals(card.id,action.cardId)).findFirst().orElse(null);
+        if(origin==null || origin.privateSupply && !"card".equals(origin.pool)) return null;
+        Observation observation=watch(room,"spell",actor); observation.source=origin; observation.commandAction=action;
+        ContentResult selected=origin;
+        observation.held=actor.hand.stream().anyMatch(card -> Objects.equals(card.id,selected.id));
+        observation.spent=origin instanceof Card card?card.usesSpent:0;
+        source(observation.segment,origin); return observation;
+    }
     /** 输入已确定效果及公开参与者，仅追加无金额、无手牌明细的演出，无返回值。 */
     public static void cue(Room room, String kind, Player actor, Player... participants) { watch(room, kind, actor).participants(Arrays.asList(participants)).finish(room); }
 
     /** 输入房间及原子效果，返回对应演出采样；未覆盖或已有专属记录的效果返回空。 */
     public static Observation watch(Room room, GameEffect effect) {
+        if(effect.type.equals("REPLACE_ROLL") && effect.sourceSkinId!=null) return null;
         String kind = switch (effect.type) {
-            case "ANIME_PART" -> "kamui".equals(effect.selector) ? "kamui" : null;
+            case "ANIME_PART" -> switch(String.valueOf(effect.selector)) {
+                case "kamui" -> "kamui";
+                case "lower", "lowerPiercing", "full", "fullPiercing" -> "demolish";
+                case "slow", "jail" -> null;
+                default -> "spell";
+            };
             case "PLACE_BARRIER" -> "barrier";
-            case "DEMOLISH", "DESTROY_BUILDINGS" -> "demolish";
+            case "DEMOLISH", "DESTROY_BUILDINGS", "NETA_DAMAGE" -> "demolish";
             case "GRANT_MONEY" -> "income";
             case "GRANT_RANDOM_LAND" -> "talent";
             case "DRAW_CARDS" -> "supply";
@@ -130,7 +180,7 @@ public class BoardEffect {
                 case "cards", "cards_one", "cards_two", "directed", "all_cards" -> "supply";
                 case "treasure" -> "treasure";
                 case "concert" -> "concert";
-                default -> null;
+                default -> "spell";
             };
             default -> null;
         };
@@ -138,10 +188,18 @@ public class BoardEffect {
         if (kind == null || actor == null || actor.bankrupt) return null;
         Observation observation = watch(room, kind, actor);
         observation.source = effect.content;
+        source(observation.segment,effect.content);
+        if(effect.content==null) { observation.segment.sourceSkinId=effect.sourceSkinId; observation.segment.sourceCardId=effect.sourceCardId; }
         observation.prefix = Set.of("teleport", "movement").contains(kind);
         observation.force = Set.of("supply", "movement", "teleport", "steal", "immunity").contains(kind) || effect.type.equals("ADD_STATUS");
         if (effect.type.equals("SAP_STEAL")) { Player target = player(room,effect.targetId); observation.force = target != null && !target.bankrupt && !target.hand.isEmpty(); }
         if (effect.type.equals("DRAW_CARDS")) observation.force = effect.amount > 0;
+        if(effect.type.equals("CONTENT_EVENT") && !effect.content.privateSupply && Set.of("geniusClub","pinkMiracle").contains(effect.content.mechanism)) observation.force=true;
+        if(effect.type.equals("ANIME_PART") && Set.of("command","thunderMark").contains(effect.selector)) {
+            observation.force=true;
+            if(effect.tileId!=null) { TileState target=appearance(tile(room,effect.tileId)); observation.segment.boardEffect.beforeTiles.add(target); observation.segment.boardEffect.afterTiles.add(target); }
+        }
+        if(effect.type.equals("ANIME_PART") && ("steal".equals(effect.selector) || "redraw".equals(effect.selector))) { Player target=player(room,effect.targetId); observation.force=target!=null && !target.hand.isEmpty(); }
         if (effect.targetId != null) observation.segment.boardEffect.playerIds.add(effect.targetId);
         if (effect.content != null && effect.content.mechanism.equals("all_cards")) observation.participants(room.players);
         return observation;
@@ -149,20 +207,25 @@ public class BoardEffect {
 
     /** 一次原业务调用的公开外观采样；内部比较信息不会进入快照或网络。 */
     public static final class Observation {
-        private static final Set<String> TILE_KINDS = Set.of("barrier", "barrierHit", "demolish", "shield", "exchange", "upgrade", "talent", "treasure", "concert", "concertRent", "landing", "kamui");
+        private static final Set<String> TILE_KINDS = Set.of("spell", "barrier", "barrierHit", "demolish", "shield", "exchange", "upgrade", "talent", "treasure", "concert", "concertRent", "landing", "kamui");
         private final MotionSegment segment;
         private final Map<Integer, TileState> tiles = new LinkedHashMap<>();
         private final Map<String, String> players = new LinkedHashMap<>();
+        private final Map<String,String> statuses=new LinkedHashMap<>();
         private final int index;
         private ContentResult source;
         private boolean prefix;
         private boolean force;
+        private Action commandAction;
+        private boolean held;
+        private int spent;
 
         /** 输入房间、展示类型和作用者，复制公开外观，不持有可变业务对象。 */
         private Observation(Room room, String kind, Player actor) {
             segment = begin(kind, actor); index = room.movementSequence.size();
             if (TILE_KINDS.contains(kind)) room.board.forEach(tile -> tiles.put(tile.id, appearance(tile)));
             room.players.forEach(player -> players.put(player.id, signature(player)));
+            room.players.forEach(player -> player.statuses.forEach(status -> statuses.put(player.id+":"+status.type,status.appliedTurn+":"+status.remainingTurns+":"+status.sourceEffectId)));
         }
         /** 输入公开玩家，返回状态比较值；不读取手牌、候选或随机结果。 */
         private static String signature(Player player) {
@@ -176,6 +239,20 @@ public class BoardEffect {
         /** 输入房间，在原业务成功后记录实际变化；不执行校验、随机或资金操作，无返回值。 */
         public void finish(Room room) {
             BoardEffect effect = segment.boardEffect;
+            if(commandAction!=null && room.runtime.anime!=null && room.runtime.anime.attack!=null && !room.runtime.anime.attack.queued) return;
+            if(source!=null && (!source.privateSupply || "card".equals(source.pool))) room.players.forEach(player -> player.statuses.stream().filter(status -> status.sourceSkinId==null && !status.type.equals("CONTROL_PROTECTION") && !Objects.equals(statuses.get(player.id+":"+status.type),status.appliedTurn+":"+status.remainingTurns+":"+status.sourceEffectId)).forEach(status -> {status.sourceSkinId=source.skinId;status.sourceCardId=source.id;}));
+            if(effect.kind.equals("spell") && room.movementSequence.size()>index) {
+                room.movementSequence.stream().skip(index).filter(part -> part.sourceSkinId==null).forEach(part -> source(part,source));
+                // 迟缓原子效果的作用者是接收人；演出从实际出牌者出发，公开参与者仍保留接收人。
+                if(commandAction!=null && "slow".equals(source.mechanism)) room.movementSequence.stream().skip(index)
+                        .filter(part -> Objects.equals(part.sourceCardId,source.id) && part.boardEffect!=null && "slow".equals(part.boardEffect.kind))
+                        .forEach(part -> { part.playerId=segment.playerId; part.from=segment.from; });
+                if(commandAction!=null && held && room.movementSequence.stream().skip(index).noneMatch(part -> Objects.equals(part.sourceSkinId,source.skinId))
+                        && player(room,segment.playerId).hand.stream().noneMatch(card -> Objects.equals(card.id,source.id))) {
+                    room.movementSequence.add(index,segment);refresh(room);
+                }
+                return;
+            }
             boolean changed = false;
             for (Player player : room.players) if (!Objects.equals(players.get(player.id), signature(player))) {
                 effect.playerIds.add(player.id); changed = true;
@@ -184,17 +261,34 @@ public class BoardEffect {
                 TileState before = tiles.get(tile.id), after = appearance(tile);
                 if (before != null && !before.equals(after)) { effect.beforeTiles.add(before); effect.afterTiles.add(after); changed = true; }
             }
+            if(effect.kind.equals("spell") && changed && effect.beforeTiles.isEmpty() && room.players.stream().allMatch(player -> {
+                String before=players.get(player.id),after=signature(player);
+                return before!=null && before.substring(before.indexOf(':')+1).equals(after.substring(after.indexOf(':')+1));
+            })) effect.kind="income";
             if (effect.kind.equals("landing")) {
                 if (effect.beforeTiles.stream().noneMatch(tile -> tile.treasure && !room.board.get(tile.id).treasure)) return;
                 effect.kind = "treasureClaim";
             }
             if (effect.kind.equals("fee") && (room.pending == null || !Set.of("rent", "debt").contains(room.pending.type))) return;
             if (effect.kind.equals("fee")) changed = true;
+            if (!changed && !force && commandAction!=null && held) {
+                Player owner=player(room,segment.playerId);
+                boolean consumed=owner.hand.stream().noneMatch(card -> Objects.equals(card.id,source.id));
+                force=consumed || source instanceof Card card && card.usesSpent>spent;
+            }
             if (!changed && !force) return;
             if (effect.kind.equals("demolish") && !effect.beforeTiles.isEmpty() && effect.beforeTiles.stream().allMatch(tile -> tile.level == room.board.get(tile.id).level)) effect.kind = "shieldBlock";
             effect.playerIds = new ArrayList<>(new LinkedHashSet<>(effect.playerIds));
             if (source != null && !source.privateSupply && !"card".equals(source.pool)) segment.beforeEvent = source;
             if (prefix) { room.movementSequence.add(index, segment); refresh(room); }
+            else if(Set.of("spell","demolish","seal","slow","shield","upgrade").contains(effect.kind) && segment.sourceCardId!=null && !room.movementSequence.isEmpty()
+                    && room.movementSequence.getLast().boardEffect!=null && room.movementSequence.getLast().boardEffect.kind.equals(effect.kind)
+                    && Objects.equals(room.movementSequence.getLast().sourceCardId,segment.sourceCardId) && Objects.equals(room.movementSequence.getLast().playerId,segment.playerId)) {
+                BoardEffect previous=room.movementSequence.getLast().boardEffect;
+                for(TileState before:effect.beforeTiles) if(previous.beforeTiles.stream().noneMatch(tile -> tile.id==before.id)) previous.beforeTiles.add(before);
+                for(TileState after:effect.afterTiles) { previous.afterTiles.removeIf(tile -> tile.id==after.id); previous.afterTiles.add(after); }
+                previous.playerIds=new ArrayList<>(new LinkedHashSet<>(java.util.stream.Stream.concat(previous.playerIds.stream(),effect.playerIds.stream()).toList()));refresh(room);
+            }
             else if (effect.kind.equals("kamui") && !room.movementSequence.isEmpty()
                     && room.movementSequence.getLast().boardEffect != null && room.movementSequence.getLast().boardEffect.kind.equals("kamui")
                     && Objects.equals(room.movementSequence.getLast().playerId, segment.playerId)) {

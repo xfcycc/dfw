@@ -1,0 +1,3850 @@
+[
+  {
+    "name": "任意门",
+    "rarity": "SSR",
+    "skinId": "card_dora_anywhere_door",
+    "mechanism": "remote",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T06"
+    ],
+    "design": "粉红门框与门扇；开门、棋子穿过、关门，落点用真实移动路径"
+  },
+  {
+    "name": "神抽",
+    "rarity": "SSR",
+    "skinId": "card_yugioh_destiny_draw",
+    "mechanism": "remote",
+    "material": "A",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "通用卡背从牌堆抽出并横划；光落在已选点数，不误演为新增手牌"
+  },
+  {
+    "name": "这就是「空白」",
+    "rarity": "SSR",
+    "skinId": "card_anime_g17",
+    "mechanism": "remote",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "棋盘网格与棋子推演线；候选路线收束到实际点数"
+  },
+  {
+    "name": "时间停止",
+    "rarity": "SSR",
+    "skinId": "card_jojo_time_stop",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T14"
+    ],
+    "design": "停摆钟盘、冻结飞刀；短暂停色后恢复，仅表现当前格重结算"
+  },
+  {
+    "name": "月光宝盒",
+    "rarity": "SSR",
+    "skinId": "card_moon_box",
+    "mechanism": "move",
+    "material": "C",
+    "actions": [
+      "T06",
+      "T14"
+    ],
+    "design": "带纹样的月光宝盒；盒盖开启、景物倒卷、回到当前格"
+  },
+  {
+    "name": "舞空术",
+    "rarity": "R",
+    "skinId": "card_dragonball_fly_air",
+    "mechanism": "move",
+    "material": "A",
+    "actions": [
+      "T14"
+    ],
+    "design": "棋子副本浮起、气流托举并按实际路径前进"
+  },
+  {
+    "name": "撤离",
+    "rarity": "R",
+    "skinId": "card_delta_extract",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "撤离烟柱、背包图标；信号亮起后快速离开"
+  },
+  {
+    "name": "末影珍珠",
+    "rarity": "R",
+    "skinId": "card_minecraft_ender_pearl",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T06"
+    ],
+    "design": "方块风末影珍珠；弧线投出、紫粒子散开、棋子抵达"
+  },
+  {
+    "name": "翔",
+    "rarity": "R",
+    "skinId": "card_anime_g13",
+    "mechanism": "move",
+    "material": "C",
+    "actions": [
+      "T14"
+    ],
+    "design": "带白色羽翼的封印杖；展开羽翼、载起棋子，不画小樱"
+  },
+  {
+    "name": "瞬步",
+    "rarity": "R",
+    "skinId": "card_naruto_shunshin",
+    "mechanism": "move",
+    "material": "A",
+    "actions": [
+      "T06",
+      "T14"
+    ],
+    "design": "短残影、衣角速度线；两次显隐接真实移动"
+  },
+  {
+    "name": "竹蜻蜓",
+    "rarity": "R",
+    "skinId": "card_dora_takecopter",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T14"
+    ],
+    "design": "竹蜻蜓；桨叶旋转后托起棋子"
+  },
+  {
+    "name": "闪现向前",
+    "rarity": "R",
+    "skinId": "card_flash_summoner",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T06",
+      "T09"
+    ],
+    "design": "金色闪现爆点与紫红羽毛；瞬闪后羽毛收拢"
+  },
+  {
+    "name": "筋斗云",
+    "rarity": "R",
+    "skinId": "card_journey_kite_cloud",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T14"
+    ],
+    "design": "卷曲金云；托起棋子、翻滚后落地"
+  },
+  {
+    "name": "全速前进",
+    "rarity": "R",
+    "skinId": "card_trisolaris_curvature",
+    "mechanism": "move",
+    "material": "C",
+    "actions": [
+      "T14"
+    ],
+    "design": "自然选择号的简化舰影；引擎亮起、星线拉长，不画舰桥人物"
+  },
+  {
+    "name": "眉头一皱",
+    "rarity": "R",
+    "skinId": "card_tactic_retreat_best",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T06",
+      "T14"
+    ],
+    "design": "遁符；悄悄后退半步再闪走，保留谨慎撤退的节奏"
+  },
+  {
+    "name": "倒车入库",
+    "rarity": "R",
+    "skinId": "card_meme_reverse_parking",
+    "mechanism": "move",
+    "material": "B",
+    "actions": [
+      "T14"
+    ],
+    "design": "小车与倒车箭头；两次小调整后倒入落点"
+  },
+  {
+    "name": "时空断裂",
+    "rarity": "R",
+    "skinId": "card_starcraft_warp",
+    "mechanism": "move",
+    "material": "C",
+    "actions": [
+      "T14"
+    ],
+    "design": "时间装置轮廓与蓝色时间残影；沿已知视觉轨迹倒放"
+  },
+  {
+    "name": "定住七仙女",
+    "rarity": "SSR",
+    "skinId": "card_journey_immobilize",
+    "mechanism": "barrier",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T12"
+    ],
+    "design": "定字印与桃子小图形；指向光束后定字盖在目标格"
+  },
+  {
+    "name": "提莫必须死",
+    "rarity": "SSR",
+    "skinId": "card_lol_teemo_mushroom",
+    "mechanism": "barrier",
+    "material": "C",
+    "actions": [
+      "T01"
+    ],
+    "design": "提莫特色蘑菇；落地弹起、缩进地面，后续踩中才释放烟团"
+  },
+  {
+    "name": "草丛三兄弟",
+    "rarity": "SSR",
+    "skinId": "card_yugioh_trap_card",
+    "mechanism": "barrier",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T08"
+    ],
+    "design": "草丛及剑、长枪、旗枪三个轮廓；草一抖三件武器探出，不画三名角色"
+  },
+  {
+    "name": "师傅别填",
+    "rarity": "SSR",
+    "skinId": "card_minecraft_dig_hole",
+    "mechanism": "barrier",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T04"
+    ],
+    "design": "坑口、土堆与小铲；土落入坑中后留下截停标记"
+  },
+  {
+    "name": "昏昏倒地",
+    "rarity": "SSR",
+    "skinId": "card_hp_obstacle_charm",
+    "mechanism": "barrier",
+    "material": "A",
+    "actions": [
+      "T02"
+    ],
+    "design": "复用魔杖，红光击中后目标副本倾倒；不增加实际击退"
+  },
+  {
+    "name": "实心水泥墩",
+    "rarity": "SSR",
+    "skinId": "card_meme_concrete_block",
+    "mechanism": "barrier",
+    "material": "B",
+    "actions": [
+      "T01"
+    ],
+    "design": "沿用水泥墩样板：实心路障落地、压缩回弹、扬尘"
+  },
+  {
+    "name": "走不动道",
+    "rarity": "SSR",
+    "skinId": "card_starcraft_spider_mine",
+    "mechanism": "barrier",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "黏住鞋底的心形贴纸与脚印；脚步停住，不画路过人物"
+  },
+  {
+    "name": "七之弹",
+    "rarity": "SSR",
+    "skinId": "card_anime_g16",
+    "mechanism": "barrier",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T15"
+    ],
+    "design": "刻刻帝钟盘与枪口剪影；弹丸携钟纹命中、指针停摆"
+  },
+  {
+    "name": "禁止通行",
+    "rarity": "SSR",
+    "skinId": "card_anime_g22",
+    "mechanism": "barrier",
+    "material": "A",
+    "actions": [
+      "T08",
+      "T01"
+    ],
+    "design": "沿地面推进的冲击线与碎石墙；到目标格立起并截停"
+  },
+  {
+    "name": "如来神掌",
+    "rarity": "SR",
+    "skinId": "card_kungfu_buddha_palm",
+    "mechanism": "demolish",
+    "material": "B",
+    "actions": [
+      "T08"
+    ],
+    "design": "巨大掌印；从上方压下，停顿后扩出掌形冲击"
+  },
+  {
+    "name": "如意金箍棒",
+    "rarity": "SR",
+    "skinId": "card_journey_golden_staff",
+    "mechanism": "demolish",
+    "material": "B",
+    "actions": [
+      "T13"
+    ],
+    "design": "金箍棒；由针变长、横扫后收回，不画悟空"
+  },
+  {
+    "name": "专业装修队",
+    "rarity": "SR",
+    "skinId": "card_meme_demolition_crew",
+    "mechanism": "demolish",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T04"
+    ],
+    "design": "施工锤与歪斜工具箱；两次敲击后目标建筑降级"
+  },
+  {
+    "name": "沙漠神殿压力板",
+    "rarity": "SR",
+    "skinId": "card_minecraft_tnt",
+    "mechanism": "demolish",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T08"
+    ],
+    "design": "方块压力板和 TNT 方块；下压、引线亮起、方块碎屑散开"
+  },
+  {
+    "name": "花花草草也是生命",
+    "rarity": "SR",
+    "skinId": "card_civ6_catapult",
+    "mechanism": "demolish",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T13"
+    ],
+    "design": "花草、抛出的物件和说教气泡；物件落到目标，不能沿历史 ID 使用投石车"
+  },
+  {
+    "name": "风之伤",
+    "rarity": "SR",
+    "skinId": "card_anime_g23",
+    "mechanism": "demolish",
+    "material": "C",
+    "actions": [
+      "T13",
+      "T08"
+    ],
+    "design": "铁碎牙巨刃与分叉金色裂地斩；沿目标方向推出"
+  },
+  {
+    "name": "金蝉脱壳",
+    "rarity": "SR",
+    "skinId": "card_tactic_golden_cicada",
+    "mechanism": "swap",
+    "material": "B",
+    "actions": [
+      "T06"
+    ],
+    "design": "空外袍；棋子消失后袍子落下，另一位置现身"
+  },
+  {
+    "name": "道友请留步",
+    "rarity": "SR",
+    "skinId": "card_tactic_lure_tiger",
+    "mechanism": "swap",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T06"
+    ],
+    "design": "道袍袖口与挽留手势；伸手拉住后双方换位，不画申公豹"
+  },
+  {
+    "name": "移形换位",
+    "rarity": "SR",
+    "skinId": "card_hp_apparition",
+    "mechanism": "swap",
+    "material": "B",
+    "actions": [
+      "T06"
+    ],
+    "design": "复仇之魂风格的双向紫翼光痕；同步交换两端，不套哈利波特门"
+  },
+  {
+    "name": "我们真的回不去了吗",
+    "rarity": "SR",
+    "skinId": "card_dora_time_machine",
+    "mechanism": "swap",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T06"
+    ],
+    "design": "两只聊天气泡与删改光标；气泡交错、棋子换位，不使用时光机"
+  },
+  {
+    "name": "飞雷神之术",
+    "rarity": "SR",
+    "skinId": "card_naruto_flying_thunder",
+    "mechanism": "swap",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T06"
+    ],
+    "design": "沿用三叉苦无样板；标记、闪光、交换位置"
+  },
+  {
+    "name": "空城计",
+    "rarity": "SSR",
+    "skinId": "card_sgyy_empty_city",
+    "mechanism": "immunity",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T12"
+    ],
+    "design": "敞开的城门与古琴；琴弦轻动、来袭费用标记退开"
+  },
+  {
+    "name": "草船借箭",
+    "rarity": "SSR",
+    "skinId": "card_sgyy_borrow_arrows",
+    "mechanism": "immunity",
+    "material": "C",
+    "actions": [
+      "T12",
+      "T03"
+    ],
+    "design": "带草垛的小船；雾中接箭，箭留在船侧，不生成收益"
+  },
+  {
+    "name": "隐形衣",
+    "rarity": "SSR",
+    "skinId": "card_hp_invisibility_cloak",
+    "mechanism": "immunity",
+    "material": "C",
+    "actions": [
+      "T12"
+    ],
+    "design": "星纹隐形披风；覆盖目标再淡去，保留轮廓而不隐藏必要状态"
+  },
+  {
+    "name": "掩耳盗铃",
+    "rarity": "SSR",
+    "skinId": "card_jjk_domain_expansion",
+    "mechanism": "immunity",
+    "material": "B",
+    "actions": [
+      "T12",
+      "T11"
+    ],
+    "design": "铃铛与捂耳手势符号；铃声波纹被罩住，费用取消"
+  },
+  {
+    "name": "我能打一整天",
+    "rarity": "SSR",
+    "skinId": "card_zelda_shield_parry",
+    "mechanism": "immunity",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "红白蓝圆盾；迎击、弹开费用标记、盾面轻震"
+  },
+  {
+    "name": "金身等死",
+    "rarity": "SSR",
+    "skinId": "card_lol_zhonya",
+    "mechanism": "immunity",
+    "material": "B",
+    "actions": [
+      "T12",
+      "T16"
+    ],
+    "design": "沙漏与棋子金色剪影；瞬间镀金、短暂停住再恢复"
+  },
+  {
+    "name": "马什么梅",
+    "rarity": "SSR",
+    "skinId": "card_bullet_flying_play_dumb",
+    "mechanism": "immunity",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "马／什么／梅三个问号气泡；逐次打断费用提示，不画人物"
+  },
+  {
+    "name": "风王结界",
+    "rarity": "SSR",
+    "skinId": "card_anime_g03",
+    "mechanism": "immunity",
+    "material": "A",
+    "actions": [
+      "T12",
+      "T16"
+    ],
+    "design": "透明剑轮廓与旋风；绕剑风环弹开来袭效果"
+  },
+  {
+    "name": "存在感消失",
+    "rarity": "SSR",
+    "skinId": "card_anime_g24",
+    "mechanism": "immunity",
+    "material": "A",
+    "actions": [
+      "T12"
+    ],
+    "design": "棋子视觉副本渐隐、费用标记扑空；真实玩家标识仍保留"
+  },
+  {
+    "name": "换个颜色再打",
+    "rarity": "R",
+    "skinId": "card_wukong_great_sage",
+    "mechanism": "bonus",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T14"
+    ],
+    "design": "额前菱形水晶与紫色轮廓；晶体闪亮后轻快加速，不画迪迦全身"
+  },
+  {
+    "name": "五速鞋游走",
+    "rarity": "R",
+    "skinId": "card_lol_swiftness_boots",
+    "mechanism": "bonus",
+    "material": "B",
+    "actions": [
+      "T14"
+    ],
+    "design": "五速鞋图标；鞋底冒风、短脚印接实际移动"
+  },
+  {
+    "name": "你最好现在就跑",
+    "rarity": "R",
+    "skinId": "card_wow_sprint",
+    "mechanism": "bonus",
+    "material": "B",
+    "actions": [
+      "T14"
+    ],
+    "design": "斧头剪影与疾跑尾迹；尾迹追来提示加速，不演攻击结算"
+  },
+  {
+    "name": "一米六怎么了",
+    "rarity": "R",
+    "skinId": "card_aot_odm_gear",
+    "mechanism": "bonus",
+    "material": "C",
+    "actions": [
+      "T14",
+      "T13"
+    ],
+    "design": "立体机动装置与双刃；钢索牵引、弧线掠过后收刀"
+  },
+  {
+    "name": "超频加速",
+    "rarity": "R",
+    "skinId": "card_anime_g15",
+    "mechanism": "bonus",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T14"
+    ],
+    "design": "银色机械羽翼；青蓝网格压静、翅膀展开后加速"
+  },
+  {
+    "name": "靖妖傩舞",
+    "rarity": "R",
+    "skinId": "card_anime_g29",
+    "mechanism": "bonus",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T14"
+    ],
+    "design": "降魔傩面与长枪尖；青风环绕后起落，不增加伤害表现"
+  },
+  {
+    "name": "SUPER！",
+    "rarity": "SR",
+    "skinId": "card_onepiece_shipwright",
+    "mechanism": "freeUpgrade",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T16"
+    ],
+    "design": "可乐罐、机械工具与星形标志；补充可乐后工具拼装"
+  },
+  {
+    "name": "改车消星",
+    "rarity": "SR",
+    "skinId": "card_wow_goblin_engineer",
+    "mechanism": "freeUpgrade",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "卷帘门与喷漆罐；遮住建筑、喷漆、卷门升起显出升级"
+  },
+  {
+    "name": "多重影分身",
+    "rarity": "SR",
+    "skinId": "card_naruto_shadow_clone",
+    "mechanism": "freeUpgrade",
+    "material": "A",
+    "actions": [
+      "T09",
+      "T04"
+    ],
+    "design": "现有棋子副本分成几团烟影共同施工；不单独制作鸣人人物"
+  },
+  {
+    "name": "熹妃回宫",
+    "rarity": "SR",
+    "skinId": "card_zhenhuan_promotion",
+    "mechanism": "freeUpgrade",
+    "material": "C",
+    "actions": [
+      "T01",
+      "T04"
+    ],
+    "design": "宫门与仪仗扇轮廓；宫门打开、建筑层级抬升，不做人形队列"
+  },
+  {
+    "name": "一步一步走到最高",
+    "rarity": "SR",
+    "skinId": "card_eldenring_blessing",
+    "mechanism": "freeUpgrade",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "台阶与高座剪影；台阶依次升起，最后一阶接建筑升级"
+  },
+  {
+    "name": "修复如初",
+    "rarity": "SR",
+    "skinId": "card_hp_reparo",
+    "mechanism": "freeUpgrade",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "沿用魔杖样板；砖块、窗框拼合，建筑升级"
+  },
+  {
+    "name": "团购",
+    "rarity": "SR",
+    "skinId": "card_meme_groupon",
+    "mechanism": "halfPayment",
+    "material": "B",
+    "actions": [
+      "T05",
+      "T11"
+    ],
+    "design": "手机团购券；券展开、核销盖章、账单金额减半"
+  },
+  {
+    "name": "帮我砍一刀",
+    "rarity": "SR",
+    "skinId": "card_meme_pdd_cut",
+    "mechanism": "halfPayment",
+    "material": "B",
+    "actions": [
+      "T05"
+    ],
+    "design": "沿用剪刀切账单样板；一半飘走，剩余金额落定"
+  },
+  {
+    "name": "及时雨",
+    "rarity": "SR",
+    "skinId": "card_watermargin_songjiang",
+    "mechanism": "halfPayment",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T05"
+    ],
+    "design": "银袋与酒碗；银袋推至账单旁，抵去一半费用"
+  },
+  {
+    "name": "舌战群儒",
+    "rarity": "SR",
+    "skinId": "card_sgyy_debate",
+    "mechanism": "halfPayment",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T05"
+    ],
+    "design": "羽扇与辩论气泡；气泡依次被压下，账单折半"
+  },
+  {
+    "name": "时间宝石",
+    "rarity": "SR",
+    "skinId": "card_avengers_time_stone",
+    "mechanism": "halfPayment",
+    "material": "C",
+    "actions": [
+      "T14",
+      "T05"
+    ],
+    "design": "时间宝石与绿色时间印；费用数字倒转后停在减半结果"
+  },
+  {
+    "name": "真相只有一个",
+    "rarity": "SR",
+    "skinId": "card_conan_reasoning",
+    "mechanism": "halfPayment",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T05"
+    ],
+    "design": "麻醉手表和蝴蝶结变声器；证据光线指向账单并划去一半"
+  },
+  {
+    "name": "踹牢门",
+    "rarity": "SR",
+    "skinId": "card_gintama_break_jail",
+    "mechanism": "release",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T12"
+    ],
+    "design": "拖鞋和牢门锁；一脚踢开锁，拖鞋飞远，控制标记解除"
+  },
+  {
+    "name": "月下的魔术师",
+    "rarity": "SR",
+    "skinId": "card_sekiro_escape",
+    "mechanism": "release",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T12"
+    ],
+    "design": "白礼帽、披风角与鸽子；白鸽飞散，限制标记消失"
+  },
+  {
+    "name": "关不住的鸟",
+    "rarity": "SR",
+    "skinId": "card_pokemon_escape_rope",
+    "mechanism": "release",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "雨线与打开的隧道口；雨水冲掉锁链，不使用宝可梦绳索"
+  },
+  {
+    "name": "穿透环乌龙",
+    "rarity": "SR",
+    "skinId": "card_dora_pass_ring",
+    "mechanism": "release",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T06"
+    ],
+    "design": "橙色穿透环；贴住限制边界、开洞、穿过后收环"
+  },
+  {
+    "name": "多比是自由的",
+    "rarity": "SR",
+    "skinId": "card_hp_portkey",
+    "mechanism": "release",
+    "material": "B",
+    "actions": [
+      "T06",
+      "T12"
+    ],
+    "design": "袜子信物与幻影移形旋痕；锁链脱落后短闪，不画多比"
+  },
+  {
+    "name": "约定的钥匙",
+    "rarity": "SR",
+    "skinId": "card_anime_g04",
+    "mechanism": "release",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "约定钥匙与锁；钥匙转动、锁开裂并散去"
+  },
+  {
+    "name": "顺手牵羊",
+    "rarity": "SR",
+    "skinId": "card_watermargin_shiqian",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T03"
+    ],
+    "design": "沿用伸手取牌样板；只夹固定通用卡背"
+  },
+  {
+    "name": "乡绅的钱如数奉还",
+    "rarity": "SR",
+    "skinId": "card_bullet_flying_rob",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T03"
+    ],
+    "design": "两只钱袋和分账签；先返还再收取的节奏，只表现实际手牌转移"
+  },
+  {
+    "name": "以彼之道，还施彼身",
+    "rarity": "SR",
+    "skinId": "card_idiom_empty_hand",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T06"
+    ],
+    "design": "袖口与折返弧线；卡背绕袖一圈后转向施术者"
+  },
+  {
+    "name": "潜行100",
+    "rarity": "SR",
+    "skinId": "card_stardew_trash_dive",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T03"
+    ],
+    "design": "木桶；罩住目标视觉副本上方，再从旁侧取走卡背"
+  },
+  {
+    "name": "东西我收下了",
+    "rarity": "SR",
+    "skinId": "card_gintama_yorozuya",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T14"
+    ],
+    "design": "小车与告别手势；卡背装进车里驶回，不画鲁邦"
+  },
+  {
+    "name": "移花接木",
+    "rarity": "SR",
+    "skinId": "card_wuxia_sleight_hand",
+    "mechanism": "steal",
+    "material": "B",
+    "actions": [
+      "T03"
+    ],
+    "design": "锦囊、小花与袖口；交换道具轮廓，卡背收入袖中"
+  },
+  {
+    "name": "虚空抽取",
+    "rarity": "SR",
+    "skinId": "card_anime_g07",
+    "mechanism": "steal",
+    "material": "C",
+    "actions": [
+      "T03",
+      "T04"
+    ],
+    "design": "虚空巨剑轮廓；光中抽出剑影，映射为卡背转移，不显示私牌"
+  },
+  {
+    "name": "偷窃",
+    "rarity": "SR",
+    "skinId": "card_anime_g30",
+    "mechanism": "steal",
+    "material": "A",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "复用手掌与卡背；先空手一抓、再掌心显物，区别于长手伸取"
+  },
+  {
+    "name": "十连三金",
+    "rarity": "SR",
+    "skinId": "card_meme_eu_king",
+    "mechanism": "cash",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "固定三个金光记号闪过、余额更新；不暗示实际发放三张卡"
+  },
+  {
+    "name": "摸出非洲之星",
+    "rarity": "SR",
+    "skinId": "card_delta_sell_gold",
+    "mechanism": "cash",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "非洲之星红色藏品小图；搜索框揭示，轻提示到账"
+  },
+  {
+    "name": "我买下了银行",
+    "rarity": "SR",
+    "skinId": "card_avengers_ironman_money",
+    "mechanism": "cash",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "银行印章与产权文件；收购章盖下后到账，不使用钢铁侠装甲"
+  },
+  {
+    "name": "顶金币",
+    "rarity": "R",
+    "skinId": "card_mario_coin",
+    "mechanism": "cash",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T11"
+    ],
+    "design": "问号砖与金币；砖被顶起、金币弹出，非阻塞到账提示"
+  },
+  {
+    "name": "开宝箱",
+    "rarity": "R",
+    "skinId": "card_genshin_chest",
+    "mechanism": "cash",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "现有宝箱素材轻开盖、金币闪出，不新增全屏演出"
+  },
+  {
+    "name": "黄金时代的错觉",
+    "rarity": "R",
+    "skinId": "card_civ6_golden_age",
+    "mechanism": "cash",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "聊天气泡与向上行情箭头；轻提示到账，不制作文明建筑"
+  },
+  {
+    "name": "拍卖会捡漏",
+    "rarity": "R",
+    "skinId": "card_wow_auction",
+    "mechanism": "cash",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "拍卖槌与蒙尘拍品；落槌、擦亮一角后到账"
+  },
+  {
+    "name": "命运硬币",
+    "rarity": "UR",
+    "skinId": "card_fate_coin",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T11"
+    ],
+    "design": "命运硬币正反面；翻转后按已确定结果显示圣光或落雷，不重新随机"
+  },
+  {
+    "name": "孤注一掷",
+    "rarity": "UR",
+    "skinId": "card_all_in_ticket",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T15"
+    ],
+    "design": "高薪海报、紧闭大门和票券；聚光后揭示已确定结果，不画主持人"
+  },
+  {
+    "name": "爆破鬼才",
+    "rarity": "SSR",
+    "skinId": "card_ziggs_blast",
+    "mechanism": "blast",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T08"
+    ],
+    "design": "吉格斯标志性炸弹；投掷、引线闪烁、爆炸，复用冲击环"
+  },
+  {
+    "name": "谕示裁定",
+    "rarity": "SSR",
+    "skinId": "card_oratrice_verdict",
+    "mechanism": "jail",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "枫丹审判天平和法槌；聚光锁定目标、裁定印落下"
+  },
+  {
+    "name": "黑白熊登场",
+    "rarity": "SSR",
+    "skinId": "card_anime_g14",
+    "mechanism": "jail",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T12"
+    ],
+    "design": "黑白熊广播屏头像；屏幕亮起、校门关闭、控制印记落下"
+  },
+  {
+    "name": "神罗天征",
+    "rarity": "UR",
+    "skinId": "card_naruto_shinra_tensei",
+    "mechanism": "fullDemolish",
+    "material": "A",
+    "actions": [
+      "T08",
+      "T15"
+    ],
+    "design": "同心斥力波与碎屑；从中心向外推开建筑副本，独立范围编排"
+  },
+  {
+    "name": "认真一拳",
+    "rarity": "UR",
+    "skinId": "card_onepunch_serious_punch",
+    "mechanism": "fullDemolish",
+    "material": "C",
+    "actions": [
+      "T08"
+    ],
+    "design": "沿用认真一拳透明拳套素材与命中时间轴"
+  },
+  {
+    "name": "连柱家之术",
+    "rarity": "UR",
+    "skinId": "card_naruto_wood_houses",
+    "mechanism": "fullUpgrade",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "木柱、横梁、木屋模块；多处依次破土成形，复用拼装动作"
+  },
+  {
+    "name": "神龙许愿",
+    "rarity": "UR",
+    "skinId": "card_dragonball_shenron_wish",
+    "mechanism": "fullUpgrade",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T16"
+    ],
+    "design": "盘曲神龙和七颗龙珠；定姿显现、龙珠聚光、落到实际升级目标"
+  },
+  {
+    "name": "A.T.力场",
+    "rarity": "SSR",
+    "skinId": "card_eva_at_field",
+    "mechanism": "shield",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "层叠橙色八边形光壁；前后层错时展开，受击时局部涟漪"
+  },
+  {
+    "name": "缎带结界",
+    "rarity": "SSR",
+    "skinId": "card_anime_g02",
+    "mechanism": "shield",
+    "material": "B",
+    "actions": [
+      "T10",
+      "T12"
+    ],
+    "design": "金色缎带；从边缘交织成护盾，再收成持续标记"
+  },
+  {
+    "name": "三重罗生门",
+    "rarity": "UR",
+    "skinId": "card_naruto_triple_rashomon",
+    "mechanism": "shield",
+    "material": "C",
+    "actions": [
+      "T01",
+      "T12"
+    ],
+    "design": "三道鬼面罗生门；可复用门基底，逐道升起和承击"
+  },
+  {
+    "name": "制衡",
+    "rarity": "SR",
+    "skinId": "card_sgs_zhiheng",
+    "mechanism": "recycle",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "奏报卷轴；旧卷移走、新卷滑入，私人卡仅用通用背面"
+  },
+  {
+    "name": "UMR上线",
+    "rarity": "SR",
+    "skinId": "card_anime_g10",
+    "mechanism": "recycle",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "街机按键与 UMR 记分牌；按键连击后刷新卡背"
+  },
+  {
+    "name": "从零开始",
+    "rarity": "SR",
+    "skinId": "card_anime_g25",
+    "mechanism": "recycle",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "归零刻度与重新亮起的脚印；旧卡淡去、新卡出现，不演死亡回归"
+  },
+  {
+    "name": "发现",
+    "rarity": "SSR",
+    "skinId": "card_hs_discover",
+    "mechanism": "discover",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "现有发现卡背与聚光；只向本人揭示候选，公共端不展示选项"
+  },
+  {
+    "name": "闷棍",
+    "rarity": "SR",
+    "skinId": "card_wow_sap",
+    "mechanism": "sap",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T12"
+    ],
+    "design": "短木棍与绕头星星；从背后敲一下、星星环绕目标"
+  },
+  {
+    "name": "等价交换",
+    "rarity": "UR",
+    "skinId": "card_fma_exchange",
+    "mechanism": "exchange",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T15"
+    ],
+    "design": "炼成阵、蓝色电弧与剑轮廓；阵亮后建筑副本分解重组，独立编排"
+  },
+  {
+    "name": "迟缓光线",
+    "rarity": "R",
+    "skinId": "card_onepiece_slow",
+    "mechanism": "slow",
+    "material": "B",
+    "actions": [
+      "T02"
+    ],
+    "design": "沿用粉色环形光波与迟滞残影样板"
+  },
+  {
+    "name": "斗转星移",
+    "rarity": "SSR",
+    "skinId": "card_tianlong_star_shift",
+    "mechanism": "swapAny",
+    "material": "A",
+    "actions": [
+      "T06",
+      "T16"
+    ],
+    "design": "两端星点沿圆弧交错，棋子换位；不复用黑洞主体"
+  },
+  {
+    "name": "红线续缘",
+    "rarity": "SSR",
+    "skinId": "card_anime_g19",
+    "mechanism": "swapAny",
+    "material": "B",
+    "actions": [
+      "T10",
+      "T06"
+    ],
+    "design": "红线结与天书小图；红线牵起双方后交换位置"
+  },
+  {
+    "name": "神威",
+    "rarity": "UR",
+    "skinId": "card_naruto_kamui",
+    "mechanism": "kamui",
+    "material": "C",
+    "actions": [
+      "T07"
+    ],
+    "design": "沿用神威旋涡透明素材、建筑卷入与封印样板"
+  },
+  {
+    "name": "封绝",
+    "rarity": "UR",
+    "skinId": "card_anime_g08",
+    "mechanism": "kamui",
+    "material": "C",
+    "actions": [
+      "T15",
+      "T12"
+    ],
+    "design": "赤红封绝纹章与薄壁；区域静止并落封印，不使用神威旋涡"
+  },
+  {
+    "name": "手牌抹杀",
+    "rarity": "SSR",
+    "skinId": "card_yugioh_hand_destruction",
+    "mechanism": "handDestruction",
+    "material": "A",
+    "actions": [
+      "T09",
+      "T11"
+    ],
+    "design": "固定卡背碎成光片再聚拢；不按各人真实手牌数量生成粒子"
+  },
+  {
+    "name": "地爆天星",
+    "rarity": "SSR",
+    "skinId": "card_naruto_chibaku_tensei",
+    "mechanism": "gravity",
+    "material": "B",
+    "actions": [
+      "T07",
+      "T01"
+    ],
+    "design": "黑色引力核与碎石；先吸碎石，再汇聚真实受影响棋子"
+  },
+  {
+    "name": "尸鬼封尽",
+    "rarity": "UR",
+    "skinId": "card_naruto_reaper_seal",
+    "mechanism": "reaper",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T12"
+    ],
+    "design": "沿用死神透明素材、光带和双方封印样板"
+  },
+  {
+    "name": "暗影步",
+    "rarity": "SR",
+    "skinId": "card_wow_shadowstep",
+    "mechanism": "shadowstep",
+    "material": "A",
+    "actions": [
+      "T06"
+    ],
+    "design": "脚边黑影展开、棋子沉入并在实际目的地显现"
+  },
+  {
+    "name": "传送",
+    "rarity": "SSR",
+    "skinId": "card_lol_teleport",
+    "mechanism": "homeTeleport",
+    "material": "B",
+    "actions": [
+      "T06",
+      "T16"
+    ],
+    "design": "紫色传送柱与旋转符文；落点先亮，再接棋子传送"
+  },
+  {
+    "name": "炉石回城",
+    "rarity": "SSR",
+    "skinId": "card_wow_hearthstone_home",
+    "mechanism": "homeTeleport",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T06"
+    ],
+    "design": "带螺旋纹的炉石；掌中蓄光、旅店暖光显现"
+  },
+  {
+    "name": "赐福指引",
+    "rarity": "SSR",
+    "skinId": "card_anime_g01",
+    "mechanism": "homeTeleport",
+    "material": "B",
+    "actions": [
+      "T14",
+      "T11"
+    ],
+    "design": "金色赐福丝线；先指出目的地，再接实际传送"
+  },
+  {
+    "name": "转移水晶",
+    "rarity": "SSR",
+    "skinId": "card_anime_g06",
+    "mechanism": "homeTeleport",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T06"
+    ],
+    "design": "蓝色棱晶；举起发光、碎成光粒、目的地聚合"
+  },
+  {
+    "name": "黑洞",
+    "rarity": "SSR",
+    "skinId": "card_original_blackhole",
+    "mechanism": "blackhole",
+    "material": "A",
+    "actions": [
+      "T07"
+    ],
+    "design": "沿用现有黑洞图集，仅吸走实际清除的附加标记，不吞建筑"
+  },
+  {
+    "name": "陨星",
+    "rarity": "SSR",
+    "skinId": "card_naruto_meteor",
+    "mechanism": "meteor",
+    "material": "A",
+    "actions": [
+      "T01",
+      "T08"
+    ],
+    "design": "沿用现有陨星图集；阴影、落下、冲击，留下实际截停层数"
+  },
+  {
+    "name": "时间溯行",
+    "rarity": "SSR",
+    "skinId": "card_anime_u01",
+    "mechanism": "timeRewind",
+    "material": "C",
+    "actions": [
+      "T14"
+    ],
+    "design": "圆盾沙漏；翻转沙漏、时间残影倒流，只展示实际回溯结果"
+  },
+  {
+    "name": "投影魔术",
+    "rarity": "UR",
+    "skinId": "card_anime_u02",
+    "mechanism": "projection",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T16"
+    ],
+    "design": "专属武器轮廓和魔术回路线；描边、填实、显出投影结果"
+  },
+  {
+    "name": "星爆气流斩",
+    "rarity": "SSR",
+    "skinId": "card_anime_u03",
+    "mechanism": "starburst",
+    "material": "C",
+    "actions": [
+      "T13"
+    ],
+    "design": "阐释者与逐暗者双剑；交叉连续斩击，复用斩击轨迹"
+  },
+  {
+    "name": "幻想杀手",
+    "rarity": "UR",
+    "skinId": "card_anime_u04",
+    "mechanism": "imagineBreaker",
+    "material": "B",
+    "actions": [
+      "T08",
+      "T12"
+    ],
+    "design": "右手轮廓与术式碎片；触碰点裂开，异能光纹消散"
+  },
+  {
+    "name": "刻刻帝·四之弹",
+    "rarity": "SSR",
+    "skinId": "card_anime_u06",
+    "mechanism": "timeRestore",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T14"
+    ],
+    "design": "复用刻刻帝钟盘枪口套件；命中后指针逆转，伤损视觉复原"
+  },
+  {
+    "name": "矢量反射",
+    "rarity": "UR",
+    "skinId": "card_anime_u07",
+    "mechanism": "vectorReflect",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T12"
+    ],
+    "design": "带方向箭头的来袭轨迹；触体折返，不能只画通用护盾"
+  },
+  {
+    "name": "死亡回归",
+    "rarity": "UR",
+    "skinId": "card_anime_u08",
+    "mechanism": "deathReturn",
+    "material": "C",
+    "actions": [
+      "T14",
+      "T15"
+    ],
+    "design": "暗紫手影与重复场景轮廓；短暂暗场后回到事实快照，独立编排"
+  },
+  {
+    "name": "爆裂魔法",
+    "rarity": "UR",
+    "skinId": "card_anime_u09",
+    "mechanism": "explosion",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T08"
+    ],
+    "design": "爆裂法杖与多层魔法阵；蓄力、柱状爆点、烟柱，独立编排"
+  },
+  {
+    "name": "猩红腐败",
+    "rarity": "SSR",
+    "skinId": "card_anime_u10",
+    "mechanism": "corruption",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "猩红花蕾与腐败蝶；花开、蝶散、侵蚀标记保留"
+  },
+  {
+    "name": "契约成立",
+    "rarity": "SSR",
+    "skinId": "card_anime_u11",
+    "mechanism": "contract",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T11"
+    ],
+    "design": "丘比简化头像与灵魂宝石；宝石点亮后契约印闭合，角色作为契约标志"
+  },
+  {
+    "name": "令咒",
+    "rarity": "UR",
+    "skinId": "card_anime_u12",
+    "mechanism": "commandSpell",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "对应令咒纹样；一划熄灭后命令光束落向目标"
+  },
+  {
+    "name": "火舞旋风",
+    "rarity": "UR",
+    "skinId": "card_anime_u13",
+    "mechanism": "sevenSwords",
+    "material": "C",
+    "actions": [
+      "T13",
+      "T16"
+    ],
+    "design": "长虹剑与火焰刃弧；旋斩卷成火旋风"
+  },
+  {
+    "name": "超电磁炮",
+    "rarity": "UR",
+    "skinId": "card_anime_u14",
+    "mechanism": "railgun",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T02"
+    ],
+    "design": "硬币、电弧和橙色直线轨迹；弹起蓄力后高速贯穿"
+  },
+  {
+    "name": "回到你原来的样子",
+    "rarity": "UR",
+    "skinId": "card_anime_u15",
+    "mechanism": "sealCard",
+    "material": "C",
+    "actions": [
+      "T07",
+      "T11"
+    ],
+    "design": "鸟首封印杖与封印阵；散乱魔力收进卡牌轮廓"
+  },
+  {
+    "name": "剑雨",
+    "rarity": "SSR",
+    "skinId": "card_anime_u16",
+    "mechanism": "swordRain",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T13"
+    ],
+    "design": "少量剑影轮廓；错时坠落成剑雨，停在实际目标范围"
+  },
+  {
+    "name": "虚空之泪",
+    "rarity": "SSR",
+    "skinId": "card_anime_u17",
+    "mechanism": "voidTears",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T07"
+    ],
+    "design": "晶亮泪滴与空间裂缝；泪光掠过后景物副本错开"
+  },
+  {
+    "name": "绝对零域",
+    "rarity": "UR",
+    "skinId": "card_anime_u18",
+    "mechanism": "absoluteZero",
+    "material": "C",
+    "actions": [
+      "T15",
+      "T12"
+    ],
+    "design": "无尽酒葫和九尾冰雾剪影；霜线扩散并冻结目标，不画完整雅雅"
+  },
+  {
+    "name": "岩脊共鸣",
+    "rarity": "SSR",
+    "skinId": "card_genshin_geo_resonance",
+    "mechanism": "geoResonance",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T10"
+    ],
+    "design": "岩柱与金色几何纹；柱起、相邻造物依次回应"
+  },
+  {
+    "name": "所闻遍计",
+    "rarity": "SSR",
+    "skinId": "card_genshin_growth_link",
+    "mechanism": "growthLink",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T04"
+    ],
+    "design": "四叶草式草元素印记；两端连线，一侧变化后另一侧长叶"
+  },
+  {
+    "name": "尘歌壶",
+    "rarity": "UR",
+    "skinId": "card_genshin_serenitea_pot",
+    "mechanism": "sereniteaPot",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T06"
+    ],
+    "design": "尘歌壶、亭阁和洞天云雾；壶口开境、建筑按实际结果重排"
+  },
+  {
+    "name": "创",
+    "rarity": "SSR",
+    "skinId": "card_sakura_create_build",
+    "mechanism": "createBuild",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "创牌轮廓与封印杖；纸上建筑线条立起成形"
+  },
+  {
+    "name": "基建轮班",
+    "rarity": "SR",
+    "skinId": "card_arknights_remote_construction",
+    "mechanism": "remoteConstruction",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T04"
+    ],
+    "design": "排班表、通讯器和施工灯；轮班确认后工具重新启动"
+  },
+  {
+    "name": "给我建座神社吧",
+    "rarity": "SR",
+    "skinId": "card_noragami_shrine_growth",
+    "mechanism": "shrineGrowth",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "小鸟居和迷你神社；零件拼起、双手形托盘接住，不画夜斗"
+  },
+  {
+    "name": "斩尽牛杂",
+    "rarity": "SSR",
+    "skinId": "card_neta_keqing_rush",
+    "mechanism": "keqingRush",
+    "material": "C",
+    "actions": [
+      "T06",
+      "T13"
+    ],
+    "design": "雷楔与紫色剑痕；多点短闪、收剑后停在实际位置"
+  },
+  {
+    "name": "煌煌威灵",
+    "rarity": "UR",
+    "skinId": "card_neta_thunder_lord",
+    "mechanism": "thunderLord",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T13"
+    ],
+    "design": "神君半身巨影与兵刃；巨影成形、兵刃落击，人物本身是招式主体"
+  },
+  {
+    "name": "虚化",
+    "rarity": "SSR",
+    "skinId": "card_neta_hollowfication",
+    "mechanism": "hollowfication",
+    "material": "C",
+    "actions": [
+      "T12",
+      "T16"
+    ],
+    "design": "虚化面具；沿脸侧轮廓展开、黑红灵压短闪"
+  },
+  {
+    "name": "一刀火葬",
+    "rarity": "SSR",
+    "skinId": "card_neta_fire_burial",
+    "mechanism": "fireBurial",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T15"
+    ],
+    "design": "巨型火刃轮廓；地面纹路亮起，火刃自下而上升起"
+  },
+  {
+    "name": "天锁斩月",
+    "rarity": "UR",
+    "skinId": "card_neta_bankai",
+    "mechanism": "bankai",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T06"
+    ],
+    "design": "黑色长刀和链尾；灵压收拢、刀影缩细、短闪突进"
+  },
+  {
+    "name": "闪光的亚丝娜",
+    "rarity": "UR",
+    "skinId": "card_crossover_asunaFlash",
+    "mechanism": "asunaFlash",
+    "material": "C",
+    "actions": [
+      "T08",
+      "T13"
+    ],
+    "design": "细剑与白红色剑穗；连续光轨突刺，不制作亚丝娜人物"
+  },
+  {
+    "name": "怕痛就全点防御了",
+    "rarity": "UR",
+    "skinId": "card_crossover_defenseSpecialization",
+    "mechanism": "defenseSpecialization",
+    "material": "C",
+    "actions": [
+      "T12"
+    ],
+    "design": "梅普露大盾的独特轮廓；攻击炸在盾面，盾从烟里稳稳露出"
+  },
+  {
+    "name": "光的护封剑",
+    "rarity": "UR",
+    "skinId": "card_crossover_revealingSwords",
+    "mechanism": "revealingSwords",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T12"
+    ],
+    "design": "金色光剑；依次落下并连成封锁边界"
+  },
+  {
+    "name": "融合",
+    "rarity": "UR",
+    "skinId": "card_crossover_fusion",
+    "mechanism": "fusion",
+    "material": "C",
+    "actions": [
+      "T07",
+      "T04"
+    ],
+    "design": "蓝橙融合旋涡与可替换轮廓；双轮廓卷入再聚合，独立编排"
+  },
+  {
+    "name": "双龙魔影剑",
+    "rarity": "SSR",
+    "skinId": "card_crossover_shadowBlade",
+    "mechanism": "shadowBlade",
+    "material": "C",
+    "actions": [
+      "T13",
+      "T10"
+    ],
+    "design": "双龙魔影剑和龙形暗影；挥斩后两道龙影交错飞出"
+  },
+  {
+    "name": "双喷",
+    "rarity": "SSR",
+    "skinId": "card_crossover_doubleBoost",
+    "mechanism": "doubleBoost",
+    "material": "B",
+    "actions": [
+      "T14"
+    ],
+    "design": "赛车小图与两段喷焰；漂移出弯后连续两次加速"
+  },
+  {
+    "name": "蓝银缠绕",
+    "rarity": "SR",
+    "skinId": "card_crossover_blueSilverBind",
+    "mechanism": "blueSilverBind",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T12"
+    ],
+    "design": "蓝色藤蔓与叶片；从地面生长、缠绕、收紧"
+  },
+  {
+    "name": "结丹",
+    "rarity": "UR",
+    "skinId": "card_crossover_goldenCore",
+    "mechanism": "goldenCore",
+    "material": "B",
+    "actions": [
+      "T16",
+      "T04"
+    ],
+    "design": "洞府阵纹、灵气粒子和金丹；聚气成丹，独立阶段编排但无需人物"
+  },
+  {
+    "name": "女娲补天",
+    "rarity": "UR",
+    "skinId": "card_crossover_nuwaMend",
+    "mechanism": "nuwaMend",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T15"
+    ],
+    "design": "五色神石与天空裂隙；五色光填补裂缝，独立范围编排"
+  },
+  {
+    "name": "无名剑法",
+    "rarity": "SSR",
+    "skinId": "card_crossover_namelessSword",
+    "mechanism": "namelessSword",
+    "material": "A",
+    "actions": [
+      "T13"
+    ],
+    "design": "简洁剑气和落叶；几道剑气依次穿过烟尘，末尾收束"
+  },
+  {
+    "name": "王的压制",
+    "rarity": "SSR",
+    "skinId": "card_crossover_kingsPressure",
+    "mechanism": "kingsPressure",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "王冠、键帽和静止指示；王冠落下，受压制目标键帽锁住，不画选手"
+  },
+  {
+    "name": "点燃大海",
+    "rarity": "UR",
+    "skinId": "card_neta_ignite_sea",
+    "mechanism": "igniteSea",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "流萤／萨姆完全燃烧：装甲局部点火、青绿火翼展开、推进加速与俯冲斩击，余焰化为萤光"
+  },
+  {
+    "name": "千本樱",
+    "rarity": "UR",
+    "skinId": "card_neta_senbonzakura",
+    "mechanism": "senbonzakura",
+    "material": "C",
+    "actions": [
+      "T09"
+    ],
+    "design": "沿用刀刃与樱花素材；先散开再聚集目标"
+  },
+  {
+    "name": "小舞献祭",
+    "rarity": "UR",
+    "skinId": "card_neta_xiaowu_sacrifice",
+    "mechanism": "xiaowuSacrifice",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T04"
+    ],
+    "design": "兔耳信物与红色魂环光点；光点重聚为生命轮廓，不制作人物相拥动画"
+  },
+  {
+    "name": "九格大红",
+    "rarity": "SSR",
+    "skinId": "chance_delta_central_control",
+    "mechanism": "income",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用非洲之星／大红藏品套件；九格搜索框亮红，仅揭卡侧提示"
+  },
+  {
+    "name": "重生只中二等奖",
+    "rarity": "SSR",
+    "skinId": "chance_lottery_jackpot",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "彩票号码条；最后一位擦过后显示二等奖，结果取服务端"
+  },
+  {
+    "name": "呀哈哈",
+    "rarity": "SR",
+    "skinId": "chance_zelda_chest",
+    "mechanism": "income",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "克洛格叶面小精灵；从石头后探头递种子，不做完整人物动作"
+  },
+  {
+    "name": "一字涨停",
+    "rarity": "SR",
+    "skinId": "chance_stock_limit_up",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "上升行情折线和涨停印；非阻塞到账提示"
+  },
+  {
+    "name": "挖到钻石",
+    "rarity": "SR",
+    "skinId": "chance_minecraft_diamond",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T11"
+    ],
+    "design": "像素铁镐与蓝钻；矿块敲开、钻石弹出"
+  },
+  {
+    "name": "月底发薪",
+    "rarity": "R",
+    "skinId": "chance_salary_arrived",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "工资短信与余额亮起；不新增棋盘等待"
+  },
+  {
+    "name": "回村种地",
+    "rarity": "R",
+    "skinId": "chance_stardew_harvest",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "成熟作物和菜筐；作物弹入筐中、收入提示"
+  },
+  {
+    "name": "迎财神",
+    "rarity": "R",
+    "skinId": "chance_caishen_blessing",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "财神帽轮廓、果盘与红包；红包轻落，不画财神全身"
+  },
+  {
+    "name": "万事屋开张",
+    "rarity": "R",
+    "skinId": "chance_anime_g27",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "万事屋招牌和委托单；招牌轻摆、委托到账"
+  },
+  {
+    "name": "拆迁暴富",
+    "rarity": "SR",
+    "skinId": "chance_demolition_compensation",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "拆迁通知与房屋轮廓；通知盖章后到账"
+  },
+  {
+    "name": "我成替身了",
+    "rarity": "SR",
+    "skinId": "chance_huang_silang_silver",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "礼帽、胡子与替身衣袍；轮廓拼到通用剪影上，提示收入"
+  },
+  {
+    "name": "劫生辰纲",
+    "rarity": "R",
+    "skinId": "chance_liangshan_share",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "生辰纲箱笼与银锭；箱开、银锭分出"
+  },
+  {
+    "name": "报销到账",
+    "rarity": "R",
+    "skinId": "chance_reimbursement_arrived",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "报销单通过章；直接衔接余额变化"
+  },
+  {
+    "name": "最终答案",
+    "rarity": "UR",
+    "skinId": "chance_windfall_jackpot",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T15"
+    ],
+    "design": "答题选项框、话筒和聚光；最终答案锁定后收入提示，不演主持人"
+  },
+  {
+    "name": "加班打车",
+    "rarity": "R",
+    "skinId": "chance_overtime_taxi",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "出租车顶灯与深夜价签；费用揭示，不预演已付款"
+  },
+  {
+    "name": "甲方改需求",
+    "rarity": "R",
+    "skinId": "chance_client_revision",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "多张带版本号的文件；翻回第一版后出现费用提示"
+  },
+  {
+    "name": "打点关系",
+    "rarity": "R",
+    "skinId": "chance_palace_bribe",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "袖口与银袋；银袋滑入袖口，费用待结算"
+  },
+  {
+    "name": "再充最后一单",
+    "rarity": "R",
+    "skinId": "chance_genshin_topup",
+    "mechanism": "fee",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "祈愿光点和付款短信；无金光后账单弹出，不新增抽卡结果"
+  },
+  {
+    "name": "不幸啊！",
+    "rarity": "R",
+    "skinId": "chance_anime_g11",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T11"
+    ],
+    "design": "裂开的购物袋、滚落食材；小物掉落后费用提示"
+  },
+  {
+    "name": "双十一剁手",
+    "rarity": "SR",
+    "skinId": "chance_double11_haul",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "购物车与满减券；商品叠满、账单展开"
+  },
+  {
+    "name": "被割韭菜",
+    "rarity": "SR",
+    "skinId": "chance_leek_cut",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T05",
+      "T11"
+    ],
+    "design": "韭菜和小镰刀；一刀划过、行情下落，费用待结算"
+  },
+  {
+    "name": "内卷报班",
+    "rarity": "SR",
+    "skinId": "chance_involution_class",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "课程书本和藏起的报名单；翻页展示费用"
+  },
+  {
+    "name": "赌马输光",
+    "rarity": "SR",
+    "skinId": "chance_kogoro_horse",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "马蹄和赛马票；票券垂下，按既定费用提示，不模拟赛马下注"
+  },
+  {
+    "name": "房东收租",
+    "rarity": "SR",
+    "skinId": "chance_rent_due",
+    "mechanism": "fee",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "门缝递入账单；复用账单主体，不影响原付款防御窗口"
+  },
+  {
+    "name": "股市暴跌",
+    "rarity": "SR",
+    "skinId": "chance_stock_crash",
+    "mechanism": "fee",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "行情线坠落、通知静音；费用提示"
+  },
+  {
+    "name": "外卖加料",
+    "rarity": "R",
+    "skinId": "chance_delivery_fee",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "外卖袋和加料小票；票据展开，不能误演为退款"
+  },
+  {
+    "name": "缴纳过路费",
+    "rarity": "R",
+    "skinId": "chance_warcraft_fee",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "小桥栏杆与双面价目表；翻到背面展示收费"
+  },
+  {
+    "name": "天价账单",
+    "rarity": "UR",
+    "skinId": "chance_catastrophic_bill",
+    "mechanism": "fee",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "长账单连续展开，最后停在真实金额；UR也不阻塞付款选择"
+  },
+  {
+    "name": "飞雷神之术",
+    "rarity": "SR",
+    "skinId": "chance_hiraishin",
+    "mechanism": "forward",
+    "material": "A",
+    "actions": [
+      "T01",
+      "T06"
+    ],
+    "design": "复用三叉苦无样板；改为单人抵达实际前进终点，不做双方交换"
+  },
+  {
+    "name": "下界传送门",
+    "rarity": "SR",
+    "skinId": "chance_nether_portal",
+    "mechanism": "forward",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T06"
+    ],
+    "design": "像素黑曜石门与紫幕；开门、穿越、关门"
+  },
+  {
+    "name": "上车，来不及解释了",
+    "rarity": "SR",
+    "skinId": "chance_ryze_realm_warp",
+    "mechanism": "forward",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T06"
+    ],
+    "design": "蓝色符文传送圈；圈内聚光后只移动实际受影响玩家"
+  },
+  {
+    "name": "点燃木星",
+    "rarity": "SR",
+    "skinId": "chance_engine_burn",
+    "mechanism": "forward",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T14"
+    ],
+    "design": "行星发动机喷口与木星弧面；蓝焰上冲，接实际移动"
+  },
+  {
+    "name": "腾云驾雾",
+    "rarity": "SR",
+    "skinId": "chance_somersault_cloud",
+    "mechanism": "forward",
+    "material": "A",
+    "actions": [
+      "T14"
+    ],
+    "design": "复用筋斗云；翻滚托举后落地"
+  },
+  {
+    "name": "蘑菇加速",
+    "rarity": "SR",
+    "skinId": "chance_kart_boost",
+    "mechanism": "forward",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "蘑菇和卡丁车；蘑菇缩入车身，喷焰加速"
+  },
+  {
+    "name": "我大了五个",
+    "rarity": "SR",
+    "skinId": "chance_blackhole_pull",
+    "mechanism": "back",
+    "material": "A",
+    "actions": [
+      "T07",
+      "T14"
+    ],
+    "design": "复用黑洞图集和引力线；只演实际后退，不能凭题材牵走五人"
+  },
+  {
+    "name": "毒圈推人",
+    "rarity": "SR",
+    "skinId": "chance_pubg_zone",
+    "mechanism": "back",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T14"
+    ],
+    "design": "绿色毒圈弧线；安全区收缩，棋子沿真实后退路径撤离"
+  },
+  {
+    "name": "踩到香蕉皮",
+    "rarity": "SR",
+    "skinId": "chance_banana_peel",
+    "mechanism": "back",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T14"
+    ],
+    "design": "香蕉皮；脚下滑开，棋子副本后仰倒滑"
+  },
+  {
+    "name": "被阴了一枪",
+    "rarity": "SR",
+    "skinId": "chance_cs_ambush",
+    "mechanism": "back",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T14"
+    ],
+    "design": "拐角准星与短弹痕；目标惊跳后退，不新增伤害结算"
+  },
+  {
+    "name": "八卦阵",
+    "rarity": "SR",
+    "skinId": "chance_bagua_formation",
+    "mechanism": "back",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T14"
+    ],
+    "design": "八卦盘与石堆；道路方向转动后接后退路径"
+  },
+  {
+    "name": "甲方退稿",
+    "rarity": "SR",
+    "skinId": "chance_client_reject",
+    "mechanism": "back",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "方案页和退回印；盖章后棋子退回实际落点"
+  },
+  {
+    "name": "股票回撤",
+    "rarity": "SR",
+    "skinId": "chance_stock_pullback",
+    "mechanism": "back",
+    "material": "A",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "回撤折线；沿线倒退的表现接实际移动，不扣额外现金"
+  },
+  {
+    "name": "彻底躺平",
+    "rarity": "SR",
+    "skinId": "chance_lying_flat",
+    "mechanism": "skip",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T12"
+    ],
+    "design": "沙发、抱枕与睡眠符号；落坐、抱枕压扁，休息标记保留"
+  },
+  {
+    "name": "打工人摆烂",
+    "rarity": "SR",
+    "skinId": "chance_worker_slacking",
+    "mechanism": "skip",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "电脑窗口、鼠标与耳机；光标轻晃后显示休息标记"
+  },
+  {
+    "name": "镜花水月",
+    "rarity": "SR",
+    "skinId": "chance_sharingan_illusion",
+    "mechanism": "skip",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T12"
+    ],
+    "design": "镜面裂纹和刀影；目标影像错位，合拢成幻术标记"
+  },
+  {
+    "name": "我架枪，你发财",
+    "rarity": "SR",
+    "skinId": "chance_delta_star_stolen",
+    "mechanism": "skip",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "空搜索箱与架枪准星；准星守着空箱，落下休息标记"
+  },
+  {
+    "name": "抢空投",
+    "rarity": "SR",
+    "skinId": "chance_airdrop_crate",
+    "mechanism": "cards",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T11"
+    ],
+    "design": "空投箱、降落伞与红烟；落箱开盖，私人端再揭实际卡牌"
+  },
+  {
+    "name": "丢精灵球",
+    "rarity": "SR",
+    "skinId": "chance_pokeball_catch",
+    "mechanism": "cards",
+    "material": "B",
+    "actions": [
+      "T02",
+      "T11"
+    ],
+    "design": "精灵球；投出、摇动、锁扣闭合后进入补给揭示"
+  },
+  {
+    "name": "四次元口袋",
+    "rarity": "SR",
+    "skinId": "chance_four_dim_pocket",
+    "mechanism": "cards",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "四次元口袋；依次掏出固定道具剪影，实际私牌另揭示"
+  },
+  {
+    "name": "开箱出大红",
+    "rarity": "R",
+    "skinId": "chance_delta_loot",
+    "mechanism": "cards",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用大红藏品和搜索箱；红光点亮，不按题材额外发现金"
+  },
+  {
+    "name": "拆快递福袋",
+    "rarity": "R",
+    "skinId": "chance_double11_bag",
+    "mechanism": "cards",
+    "material": "B",
+    "actions": [
+      "T05",
+      "T11"
+    ],
+    "design": "快递福袋与封箱胶带；撕开胶带、卡背弹出"
+  },
+  {
+    "name": "抽卡十连",
+    "rarity": "R",
+    "skinId": "chance_gacha_ten",
+    "mechanism": "cards",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用卡包和金光揭示；十连只是题材，不公开或伪造实际卡数"
+  },
+  {
+    "name": "发红包",
+    "rarity": "SSR",
+    "skinId": "chance_red_envelope",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "红包拆分飞向实际收款者；同步到账，无多轮阻塞"
+  },
+  {
+    "name": "撒银子啦",
+    "rarity": "SSR",
+    "skinId": "chance_goose_city_silver",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T09",
+      "T11"
+    ],
+    "design": "银锭从钱袋洒开，飞向实际收款者"
+  },
+  {
+    "name": "神龙许愿",
+    "rarity": "SSR",
+    "skinId": "chance_shenron_wish",
+    "mechanism": "all_income",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T11"
+    ],
+    "design": "复用神龙／龙珠素材；缩短召唤后发放实际全员收益"
+  },
+  {
+    "name": "全服补偿",
+    "rarity": "SSR",
+    "skinId": "chance_server_compensation",
+    "mechanism": "all_income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "补偿邮件、领取印；一次揭示全员收益"
+  },
+  {
+    "name": "掌柜的发月钱",
+    "rarity": "SSR",
+    "skinId": "chance_tong_boss_wage",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "账本与算盘；翻页点数后显示各人实际到账"
+  },
+  {
+    "name": "全员交房租",
+    "rarity": "SSR",
+    "skinId": "chance_everyone_rent",
+    "mechanism": "all_fee",
+    "material": "A",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "账单分发至实际付款者；不提前显示支付成功"
+  },
+  {
+    "name": "帝国征税",
+    "rarity": "SSR",
+    "skinId": "chance_galactic_tax",
+    "mechanism": "all_fee",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "征税船剪影与帝国货运税单；税单盖章，不画风暴兵队列"
+  },
+  {
+    "name": "全民剁手",
+    "rarity": "SSR",
+    "skinId": "chance_double11_all",
+    "mechanism": "all_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用购物车与快递箱；订单飞向各人费用提示"
+  },
+  {
+    "name": "团建AA",
+    "rarity": "SSR",
+    "skinId": "chance_team_building",
+    "mechanism": "all_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "团建收款码样式图形与分摊账单；仅装饰，不生成可支付二维码"
+  },
+  {
+    "name": "朕的钱呢",
+    "rarity": "SSR",
+    "skinId": "chance_tithe_palace",
+    "mechanism": "rich_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "奏折与玉玺；先标出实际受影响对象，再展开费用"
+  },
+  {
+    "name": "争百大",
+    "rarity": "SSR",
+    "skinId": "chance_platform_cut",
+    "mechanism": "rich_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "榜单、应援票与刷新箭头；选中实际缴费者，不画选手"
+  },
+  {
+    "name": "交保护费",
+    "rarity": "SSR",
+    "skinId": "chance_protection_money",
+    "mechanism": "rich_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "宅门和保护费票据；票据落到实际目标，不使用全员收费动画"
+  },
+  {
+    "name": "劫富济贫",
+    "rarity": "SSR",
+    "skinId": "chance_rob_rich",
+    "mechanism": "rich_fee",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "豪宅门牌与银袋；从实际目标移出费用提示，不额外演穷者获钱"
+  },
+  {
+    "name": "抄家了",
+    "rarity": "SSR",
+    "skinId": "chance_jia_family_raid",
+    "mechanism": "rich_fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "家产册与封条；封条交叉贴上，展示实际费用"
+  },
+  {
+    "name": "化缘布施",
+    "rarity": "SSR",
+    "skinId": "chance_alms",
+    "mechanism": "bottom_income",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "化缘钵；钵转向实际受助者、银锭递出"
+  },
+  {
+    "name": "礼物不大",
+    "rarity": "SSR",
+    "skinId": "chance_weasley_gift",
+    "mechanism": "bottom_income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "毛衣包裹与手写信；包裹打开，收益落到实际受助者"
+  },
+  {
+    "name": "砍一刀成功",
+    "rarity": "SSR",
+    "skinId": "chance_pdd_cut",
+    "mechanism": "bottom_income",
+    "material": "A",
+    "actions": [
+      "T05",
+      "T11"
+    ],
+    "design": "复用剪刀、助力条；进度完成后显示实际受助者收益"
+  },
+  {
+    "name": "万能口袋",
+    "rarity": "SSR",
+    "skinId": "chance_doraemon_help",
+    "mechanism": "bottom_income",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "复用四次元口袋；礼物递给实际受助者"
+  },
+  {
+    "name": "开盲盒",
+    "rarity": "SR",
+    "skinId": "chance_blind_box",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "盲盒；撕封条、揭示服务端既定结果"
+  },
+  {
+    "name": "开卡包",
+    "rarity": "SR",
+    "skinId": "chance_pokemon_pack",
+    "mechanism": "gamble",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "通用卡包；撕开封口、按既定结果闪光，不重新抽取"
+  },
+  {
+    "name": "强化装备",
+    "rarity": "SR",
+    "skinId": "chance_gear_upgrade",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T11"
+    ],
+    "design": "铁砧和装备轮廓；敲击后按既定结果发光或裂开"
+  },
+  {
+    "name": "抄底",
+    "rarity": "SR",
+    "skinId": "chance_bottom_fishing",
+    "mechanism": "gamble",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "抄底折线与买入标记；揭示既定结果，不现场生成随机走势"
+  },
+  {
+    "name": "梭哈",
+    "rarity": "SR",
+    "skinId": "chance_all_in",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "筹码堆；推入后停顿，揭示服务端结果"
+  },
+  {
+    "name": "大乐透",
+    "rarity": "SR",
+    "skinId": "chance_super_lotto",
+    "mechanism": "gamble",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "号码球与彩票；依次点亮既定号码，不模拟二次开奖"
+  },
+  {
+    "name": "拆迁队误拆",
+    "rarity": "SSR",
+    "skinId": "chance_demolition_mistake",
+    "mechanism": "self_destroy",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T11"
+    ],
+    "design": "挖掘机铲斗与看反的图纸；误敲目标，再显示实际建筑损失"
+  },
+  {
+    "name": "火烧赤壁",
+    "rarity": "SSR",
+    "skinId": "chance_chibi_fire",
+    "mechanism": "self_destroy",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T15"
+    ],
+    "design": "火船与相连战船剪影；东风带火至实际受影响地产"
+  },
+  {
+    "name": "地鸣",
+    "rarity": "SSR",
+    "skinId": "chance_titan_trample",
+    "mechanism": "self_destroy",
+    "material": "C",
+    "actions": [
+      "T01",
+      "T15"
+    ],
+    "design": "巨足和墙体蒸汽剪影；脚步依次震落建筑副本，不画巨人行军全景"
+  },
+  {
+    "name": "嘶——嘣！",
+    "rarity": "SSR",
+    "skinId": "chance_creeper_boom",
+    "mechanism": "self_destroy",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T08"
+    ],
+    "design": "苦力怕特色脸／轮廓；闪白蓄力后方块爆开"
+  },
+  {
+    "name": "纽约大战",
+    "rarity": "SSR",
+    "skinId": "chance_ny_battle",
+    "mechanism": "disaster",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T08"
+    ],
+    "design": "飞行器残骸与碎块；落向实际目标，避免按题材扩大损失"
+  },
+  {
+    "name": "龙焰",
+    "rarity": "SSR",
+    "skinId": "chance_dragon_fire",
+    "mechanism": "disaster",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T15"
+    ],
+    "design": "龙头或龙翼剪影、扇形龙焰；火扫过真实目标，不画龙骑士"
+  },
+  {
+    "name": "基建狂魔",
+    "rarity": "SR",
+    "skinId": "chance_infra_madness",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "吊钩和模块楼；落件拼装，复用修楼动作"
+  },
+  {
+    "name": "愚公移山",
+    "rarity": "SR",
+    "skinId": "chance_yugong_house",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T04"
+    ],
+    "design": "土筐、铲子与石块；搬走阻挡后建筑升起"
+  },
+  {
+    "name": "义体升级",
+    "rarity": "SR",
+    "skinId": "chance_cyber_chrome",
+    "mechanism": "free_upgrade",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "义眼与接口零件；扫描、嵌入、亮起，映射到真实升级目标"
+  },
+  {
+    "name": "又是我？",
+    "rarity": "SR",
+    "skinId": "chance_scv_build",
+    "mechanism": "free_upgrade",
+    "material": "C",
+    "actions": [
+      "T04"
+    ],
+    "design": "SCV机械臂／焊枪；焊点依次亮起，金属框架成形"
+  },
+  {
+    "name": "红石大师",
+    "rarity": "SR",
+    "skinId": "chance_redstone_tech",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T10"
+    ],
+    "design": "红石粉、活塞与按钮；信号流过、活塞合拢完成升级"
+  },
+  {
+    "name": "金钟罩",
+    "rarity": "SSR",
+    "skinId": "chance_golden_bell",
+    "mechanism": "trap_immunity",
+    "material": "B",
+    "actions": [
+      "T12"
+    ],
+    "design": "金钟轮廓；罩下后轻震，陷阱免疫标记保留"
+  },
+  {
+    "name": "无懈可击",
+    "rarity": "SSR",
+    "skinId": "chance_zongzi_charm",
+    "mechanism": "next_waiver",
+    "material": "A",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "固定无懈卡背覆盖来袭标记；先获得状态，实际消耗时再短闪"
+  },
+  {
+    "name": "复活甲等队友",
+    "rarity": "SSR",
+    "skinId": "chance_guardian_angel",
+    "mechanism": "next_waiver",
+    "material": "C",
+    "actions": [
+      "T12",
+      "T16"
+    ],
+    "design": "复活甲与羽翼轮廓；光环蓄起，仅演本卡费用免除状态，不复活玩家"
+  },
+  {
+    "name": "超级加倍",
+    "rarity": "SSR",
+    "skinId": "chance_immobilize",
+    "mechanism": "rent_double",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "扑克牌与超级加倍按钮；按钮按下后留下倍率提示"
+  },
+  {
+    "name": "艺术就是爆炸",
+    "rarity": "UR",
+    "skinId": "chance_demolition_fanatic",
+    "mechanism": "opponent_destroy",
+    "material": "C",
+    "actions": [
+      "T02",
+      "T08"
+    ],
+    "design": "黏土小鸟；振翅式缩放飞出、远处爆点，独立短编排"
+  },
+  {
+    "name": "塔塔开",
+    "rarity": "SSR",
+    "skinId": "chance_tatakae",
+    "mechanism": "all_morale",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T14"
+    ],
+    "design": "镜面、披风角与号角；短呼应后全员移动增益标记，不画艾伦"
+  },
+  {
+    "name": "水神的审判",
+    "rarity": "SSR",
+    "skinId": "chance_meropide_day_trip",
+    "mechanism": "jail",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T12"
+    ],
+    "design": "复用枫丹审判套件；聚光转向实际被告，法槌敲下"
+  },
+  {
+    "name": "新时代",
+    "rarity": "SSR",
+    "skinId": "chance_onepiece_uta_concert",
+    "mechanism": "concert",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "乌塔特色耳机／麦克风；音符铺向实际命中的地产"
+  },
+  {
+    "name": "放课后茶会",
+    "rarity": "SSR",
+    "skinId": "chance_k_on_after_school",
+    "mechanism": "concert",
+    "material": "B",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "吉他、茶杯和蛋糕；茶杯放下后音符成串弹出"
+  },
+  {
+    "name": "μ’s，开场！",
+    "rarity": "SSR",
+    "skinId": "chance_lovelive_music_start",
+    "mechanism": "concert",
+    "material": "B",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "九色应援棒与舞台星形；节拍波纹展开，不绘九位人物"
+  },
+  {
+    "name": "God knows…",
+    "rarity": "SSR",
+    "skinId": "chance_anime_g20",
+    "mechanism": "concert",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "电吉他与 ENOZ 舞台小标；拨弦光波沿目标街区流动"
+  },
+  {
+    "name": "ROOM",
+    "rarity": "SSR",
+    "skinId": "chance_onepiece_room_shuffle",
+    "mechanism": "shuffle",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T06"
+    ],
+    "design": "半透明蓝色半球与切分网格；领域张开后多人同步错位"
+  },
+  {
+    "name": "乾坤大挪移",
+    "rarity": "SSR",
+    "skinId": "chance_qiankun_shift",
+    "mechanism": "shuffle",
+    "material": "A",
+    "actions": [
+      "T16",
+      "T06"
+    ],
+    "design": "环形掌风与旋转脚印；多人沿弧线换位，区别于传送门"
+  },
+  {
+    "name": "学级裁判",
+    "rarity": "SR",
+    "skinId": "chance_anime_u05",
+    "mechanism": "classTrial",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T15"
+    ],
+    "design": "复用黑白熊头像、言弹与裁判席轮廓；矛盾击破后展示实际结果"
+  },
+  {
+    "name": "如果智慧有颜色，那一定是蓝色",
+    "rarity": "SSR",
+    "skinId": "chance_crossover_aquaPurify",
+    "mechanism": "aquaPurify",
+    "material": "B",
+    "actions": [
+      "T15",
+      "T12"
+    ],
+    "design": "净化阵与卡通水浪；水波扫过实际清除目标，不额外治疗"
+  },
+  {
+    "name": "黑暗游戏",
+    "rarity": "SSR",
+    "skinId": "chance_crossover_darkGame",
+    "mechanism": "darkGame",
+    "material": "C",
+    "actions": [
+      "T15",
+      "T11"
+    ],
+    "design": "千年积木、桌面火光和阴影边界；围出对决空间，不演人物"
+  },
+  {
+    "name": "恩佐斯之怒",
+    "rarity": "UR",
+    "skinId": "chance_crossover_nzothWrath",
+    "mechanism": "nzothWrath",
+    "material": "C",
+    "actions": [
+      "T10",
+      "T15"
+    ],
+    "design": "恩佐斯巨眼与触须；裂隙伸出触须、巨眼睁开，独立范围编排"
+  },
+  {
+    "name": "发工资了",
+    "rarity": "R",
+    "skinId": "fortune_salary_day",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "工资到账消息与余额亮起；不新增棋盘等待"
+  },
+  {
+    "name": "基金终于回本",
+    "rarity": "R",
+    "skinId": "fortune_fund_breakeven",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "行情折线回到成本线；轻提示收益"
+  },
+  {
+    "name": "开宝箱爆金",
+    "rarity": "R",
+    "skinId": "fortune_chest_gold_drop",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用宝箱开盖和金光；只表现实际现金收益"
+  },
+  {
+    "name": "旅途的报酬",
+    "rarity": "R",
+    "skinId": "fortune_anime_g26",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "旅行日记、魔女徽章和扫帚；报酬夹进日记，不画伊蕾娜"
+  },
+  {
+    "name": "年终奖到账",
+    "rarity": "SR",
+    "skinId": "fortune_year_end_bonus",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "年终奖信封；揭开封口后提示到账"
+  },
+  {
+    "name": "拆迁款下来了",
+    "rarity": "SSR",
+    "skinId": "fortune_demolition_payout",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用拆迁通知和到账章；不演房屋被拆除"
+  },
+  {
+    "name": "越花越有钱",
+    "rarity": "SSR",
+    "skinId": "fortune_spend_more_earn_more",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "钱袋漏出的金币绕回袋中；循环一次后显示真实收益"
+  },
+  {
+    "name": "双十一退款",
+    "rarity": "R",
+    "skinId": "fortune_double11_refund",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "退款包裹和退回箭头；钱款图标回到账户"
+  },
+  {
+    "name": "又一个呀哈哈",
+    "rarity": "R",
+    "skinId": "fortune_korok_reward",
+    "mechanism": "income",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用克洛格叶面精灵与种子；石头掀开、种子弹出"
+  },
+  {
+    "name": "外卖红包膨胀",
+    "rarity": "R",
+    "skinId": "fortune_takeout_red_packet",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "红包与外卖袋；红包数字膨胀到真实金额"
+  },
+  {
+    "name": "这刀真砍成了",
+    "rarity": "R",
+    "skinId": "fortune_pdd_bargain",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T05",
+      "T11"
+    ],
+    "design": "复用剪刀和助力条；进度完成，现金提示，不演费用减半"
+  },
+  {
+    "name": "五元神明",
+    "rarity": "R",
+    "skinId": "fortune_anime_g05",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "五元硬币、委托便签；硬币落定后委托单亮起"
+  },
+  {
+    "name": "甲方结款",
+    "rarity": "SR",
+    "skinId": "fortune_client_payment",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "合同确认章与到账消息；直接接余额变化"
+  },
+  {
+    "name": "撤离带货回城",
+    "rarity": "SR",
+    "skinId": "fortune_extraction_loot",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用撤离背包和出口标志；包打开清点收益"
+  },
+  {
+    "name": "彩票中了小奖",
+    "rarity": "SR",
+    "skinId": "fortune_lottery_small_win",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用彩票号码条；小奖印章与实际收益"
+  },
+  {
+    "name": "终于过了",
+    "rarity": "SR",
+    "skinId": "fortune_boss_rune",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T09",
+      "T11"
+    ],
+    "design": "卢恩小符文；少量金光聚入余额区域，不重演BOSS战"
+  },
+  {
+    "name": "完成A级委托",
+    "rarity": "SR",
+    "skinId": "fortune_a_rank_mission",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "A级委托单与完成章；报酬滑出"
+  },
+  {
+    "name": "股票涨停",
+    "rarity": "SR",
+    "skinId": "fortune_stock_limit_up",
+    "mechanism": "income",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用涨停折线与印章；显示实际收益"
+  },
+  {
+    "name": "下把猛攻",
+    "rarity": "SSR",
+    "skinId": "fortune_african_star",
+    "mechanism": "income",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "复用非洲之星与背包；藏品收入包中，不演额外撤离移动"
+  },
+  {
+    "name": "创业失败继承家业",
+    "rarity": "UR",
+    "skinId": "fortune_fortune_jackpot",
+    "mechanism": "income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "创业计划书、家族来电和公司钥匙；计划书合起、钥匙落下，非阻塞收益提示"
+  },
+  {
+    "name": "十连双黄",
+    "rarity": "SR",
+    "skinId": "fortune_gacha_double_gold",
+    "mechanism": "cards_two",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "固定双金光的揭卡装饰；实际获得卡牌只向本人展示"
+  },
+  {
+    "name": "根本没喝福灵剂",
+    "rarity": "SR",
+    "skinId": "fortune_felix_felicis",
+    "mechanism": "cards_two",
+    "material": "C",
+    "actions": [
+      "T11"
+    ],
+    "design": "未倒空的福灵剂瓶与守门球；瓶轻晃后光点落到卡背，不画罗恩"
+  },
+  {
+    "name": "集齐无限宝石",
+    "rarity": "SR",
+    "skinId": "fortune_infinity_stones",
+    "mechanism": "cards_two",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T11"
+    ],
+    "design": "无限手套和宝石；宝石依次亮起后衔接私人补给"
+  },
+  {
+    "name": "挖到宝箱",
+    "rarity": "R",
+    "skinId": "fortune_treasure_chest_dig",
+    "mechanism": "cards_one",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T11"
+    ],
+    "design": "锄头与埋土宝箱；敲到箱盖、清土开箱"
+  },
+  {
+    "name": "开出紫装",
+    "rarity": "R",
+    "skinId": "fortune_epic_loot_drop",
+    "mechanism": "cards_one",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "紫色装备轮廓和战利品袋；紫光揭示后私人端获得卡牌"
+  },
+  {
+    "name": "锦囊妙计",
+    "rarity": "SSR",
+    "skinId": "fortune_silk_bag_plan",
+    "mechanism": "directed",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "锦囊与卷轴；解绳展开，具体候选仅本人可见"
+  },
+  {
+    "name": "掏出秘密道具",
+    "rarity": "SSR",
+    "skinId": "fortune_secret_gadget",
+    "mechanism": "directed",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "复用四次元口袋；掏出道具轮廓，真实选择保留私人揭示"
+  },
+  {
+    "name": "这个按钮别乱按",
+    "rarity": "SSR",
+    "skinId": "fortune_agasa_invention",
+    "mechanism": "directed",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "带大按钮的小发明；按钮闪烁、机关弹开，不提前公开候选"
+  },
+  {
+    "name": "扩建先欠着",
+    "rarity": "SR",
+    "skinId": "fortune_nook_expansion",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T04"
+    ],
+    "design": "扩建合同与房屋模块；翻到扩建页后拼装，不擅自增加欠款"
+  },
+  {
+    "name": "舔包舔到破防",
+    "rarity": "SR",
+    "skinId": "fortune_loot_crate_materials",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T04"
+    ],
+    "design": "物资箱和螺丝；零件倒出后参与拼装"
+  },
+  {
+    "name": "大龙BUFF",
+    "rarity": "SR",
+    "skinId": "fortune_baron_buff",
+    "mechanism": "free_upgrade",
+    "material": "C",
+    "actions": [
+      "T16",
+      "T04"
+    ],
+    "design": "纳什男爵增益标记；紫色符文环绕建筑后完成升级"
+  },
+  {
+    "name": "更多的水晶塔",
+    "rarity": "SR",
+    "skinId": "fortune_base_new_building",
+    "mechanism": "free_upgrade",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T10"
+    ],
+    "design": "水晶塔轮廓；晶体升起、供能环亮起"
+  },
+  {
+    "name": "精灵工匠",
+    "rarity": "SR",
+    "skinId": "fortune_elven_craftsman",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T04"
+    ],
+    "design": "精灵纹样工具与武器零件；轻敲修整，落到真实升级目标"
+  },
+  {
+    "name": "太空电梯通车",
+    "rarity": "SR",
+    "skinId": "fortune_space_elevator",
+    "mechanism": "free_upgrade",
+    "material": "B",
+    "actions": [
+      "T14",
+      "T04"
+    ],
+    "design": "缆索与电梯吊舱；吊舱上升带动建筑层级增长"
+  },
+  {
+    "name": "桃园结义",
+    "rarity": "SSR",
+    "skinId": "fortune_peach_garden_share",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "三只结义酒碗与桃花；碰碗后收益分别落向实际参与者"
+  },
+  {
+    "name": "压岁钱人人有",
+    "rarity": "SSR",
+    "skinId": "fortune_lucky_money_all",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "复用红包；同步递给所有实际收款者"
+  },
+  {
+    "name": "公会分红",
+    "rarity": "SSR",
+    "skinId": "fortune_guild_dividend",
+    "mechanism": "all_income",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "公会徽章、名单与钱袋；名单勾选后同步收益"
+  },
+  {
+    "name": "替身术",
+    "rarity": "SSR",
+    "skinId": "fortune_substitution_jutsu",
+    "mechanism": "next_waiver",
+    "material": "B",
+    "actions": [
+      "T01",
+      "T12"
+    ],
+    "design": "绑护额的木桩与白烟；受击时人影换成木头，获取状态时只亮信物"
+  },
+  {
+    "name": "固若金汤",
+    "rarity": "SSR",
+    "skinId": "fortune_zhongli_shield",
+    "mechanism": "next_waiver",
+    "material": "C",
+    "actions": [
+      "T12"
+    ],
+    "design": "玉璋护盾纹样；金色片层围合，受击时局部亮起"
+  },
+  {
+    "name": "千万别出这个圈",
+    "rarity": "SSR",
+    "skinId": "fortune_sling_ring_portal",
+    "mechanism": "next_waiver",
+    "material": "B",
+    "actions": [
+      "T12",
+      "T16"
+    ],
+    "design": "金箍棒画出的地面圈；环闭合后抵挡费用，不使用漫威传送门"
+  },
+  {
+    "name": "今晚全场我买单",
+    "rarity": "SSR",
+    "skinId": "fortune_wang_duoyu_pays",
+    "mechanism": "next_waiver",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "签字笔、菜单与买单印；账单被大手接走，实际免除时才盖章"
+  },
+  {
+    "name": "吊车尾逆袭",
+    "rarity": "SSR",
+    "skinId": "fortune_underdog_comeback",
+    "mechanism": "bottom_bonus",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "训练奖章与额外礼袋；先全员基础收益，再标实际加奖对象"
+  },
+  {
+    "name": "给新人的鼓励",
+    "rarity": "SSR",
+    "skinId": "fortune_frieren_encouragement",
+    "mechanism": "bottom_bonus",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "旅行礼物与花朵；向实际受助者多放一份，不画芙莉莲"
+  },
+  {
+    "name": "劫富济贫",
+    "rarity": "SSR",
+    "skinId": "fortune_rob_rich_feed_poor",
+    "mechanism": "bottom_bonus",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "银袋分发与破旧门牌；基础发放后突出实际额外受助者"
+  },
+  {
+    "name": "罗德岛救援",
+    "rarity": "SSR",
+    "skinId": "fortune_anime_g28",
+    "mechanism": "bottom_bonus",
+    "material": "C",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "罗德岛补给箱和医疗徽记；补给送往实际受助者，不增加治疗数值"
+  },
+  {
+    "name": "妖怪报恩",
+    "rarity": "SSR",
+    "skinId": "fortune_spirit_repayment",
+    "mechanism": "bottom_bonus",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "小妖怪爪印与袖口礼袋；分完后悄悄再递一份，不需完整妖怪"
+  },
+  {
+    "name": "触底反弹",
+    "rarity": "SSR",
+    "skinId": "fortune_bottom_rebound",
+    "mechanism": "bottom_bonus",
+    "material": "A",
+    "actions": [
+      "T11"
+    ],
+    "design": "折线触底回升与额外奖励标记；仅轻提示"
+  },
+  {
+    "name": "雪中送炭",
+    "rarity": "SSR",
+    "skinId": "fortune_timely_help_silver",
+    "mechanism": "bottom_bonus",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "炭筐、雪花和炉火；炭落炉中，暖光映出收益"
+  },
+  {
+    "name": "投资暴雷",
+    "rarity": "UR",
+    "skinId": "fortune_fortune_crash",
+    "mechanism": "fee",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "投资公告、下坠折线和裂开的印章；费用提示，不抢先完成付款"
+  },
+  {
+    "name": "基建狂魔",
+    "rarity": "UR",
+    "skinId": "fortune_construction_frenzy",
+    "mechanism": "full_upgrade",
+    "material": "B",
+    "actions": [
+      "T04"
+    ],
+    "design": "吊车钩与楼房模块；多地同步落件，复用建造动作"
+  },
+  {
+    "name": "三只小猪",
+    "rarity": "UR",
+    "skinId": "fortune_three_little_pigs",
+    "mechanism": "full_upgrade",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T10"
+    ],
+    "design": "三只小猪的简化头部或工具剪影、稻草木板砖墙；三种材质依次合成砖屋"
+  },
+  {
+    "name": "人才引进",
+    "rarity": "UR",
+    "skinId": "fortune_talent_recruitment",
+    "mechanism": "talent",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T04"
+    ],
+    "design": "简历、聘书与钥匙；聘书展开后分别揭示实际产权和奖励"
+  },
+  {
+    "name": "三顾茅庐",
+    "rarity": "UR",
+    "skinId": "fortune_three_visits",
+    "mechanism": "talent",
+    "material": "C",
+    "actions": [
+      "T01",
+      "T11"
+    ],
+    "design": "草庐门与叠起的礼物；三次敲门、门开，接实际奖励，不画三人队列"
+  },
+  {
+    "name": "龙卷风摧毁停车场",
+    "rarity": "UR",
+    "skinId": "fortune_parking_tornado",
+    "mechanism": "global_demolition",
+    "material": "A",
+    "actions": [
+      "T16",
+      "T08"
+    ],
+    "design": "现有龙卷风图集与碎瓦；按实际目标受损播放，不必画阿福"
+  },
+  {
+    "name": "大闹天宫",
+    "rarity": "UR",
+    "skinId": "fortune_wukong_heaven_riot",
+    "mechanism": "global_demolition",
+    "material": "B",
+    "actions": [
+      "T13",
+      "T01"
+    ],
+    "design": "复用金箍棒，加天宫瓦片；横扫、瓦片落下，按实际损失范围播放"
+  },
+  {
+    "name": "大秘宝",
+    "rarity": "SSR",
+    "skinId": "fortune_onepiece_treasure",
+    "mechanism": "treasure",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T01"
+    ],
+    "design": "泛黄藏宝图与叉号；卷轴展开、实际地产落宝藏标记"
+  },
+  {
+    "name": "黄金矿工",
+    "rarity": "SSR",
+    "skinId": "fortune_gold_miner",
+    "mechanism": "treasure",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T01"
+    ],
+    "design": "摆动钩爪与金块；钩爪拉出金块，宝藏落到真实目标"
+  },
+  {
+    "name": "宝箱怪",
+    "rarity": "SSR",
+    "skinId": "fortune_frieren_mimic",
+    "mechanism": "treasure",
+    "material": "C",
+    "actions": [
+      "T11",
+      "T03"
+    ],
+    "design": "有牙齿的宝箱怪和两只靴子；箱盖咬合、靴子晃动，不制作完整人物"
+  },
+  {
+    "name": "找到你了",
+    "rarity": "SSR",
+    "skinId": "fortune_anime_g09",
+    "mechanism": "treasure",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T01"
+    ],
+    "design": "捉迷藏信笺、花瓣与呼唤气泡；晨光点亮宝藏位置，不使用通用海盗箱作主体"
+  },
+  {
+    "name": "道具大派送",
+    "rarity": "SR",
+    "skinId": "fortune_dora_supply_all",
+    "mechanism": "all_cards",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "复用四次元口袋；固定道具轮廓向外分发，私人卡单独揭示"
+  },
+  {
+    "name": "原来大家都有",
+    "rarity": "SR",
+    "skinId": "fortune_gifts_for_everyone",
+    "mechanism": "all_cards",
+    "material": "B",
+    "actions": [
+      "T03",
+      "T11"
+    ],
+    "design": "同款蝴蝶结礼盒；礼盒依次出现，最后拉远显示大家都有"
+  },
+  {
+    "name": "樱花庄欢迎会",
+    "rarity": "SR",
+    "skinId": "fortune_anime_g18",
+    "mechanism": "all_cards",
+    "material": "B",
+    "actions": [
+      "T11"
+    ],
+    "design": "欢迎横幅、画笔与饮料杯；桌面拼好、礼盒分发"
+  },
+  {
+    "name": "樱花庄改造计划",
+    "rarity": "SSR",
+    "skinId": "fortune_sakurasou_all_construction",
+    "mechanism": "allConstruction",
+    "material": "B",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "改造蓝图与画笔；轮廓描出，实际建筑依次更新"
+  },
+  {
+    "name": "黄金树的恩惠",
+    "rarity": "SSR",
+    "skinId": "fortune_elden_erdtree_blessing",
+    "mechanism": "erdtreeBlessing",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T04"
+    ],
+    "design": "黄金树冠剪影和赐福叶片；金叶落向实际目标，远端依次回应"
+  },
+  {
+    "name": "天才俱乐部",
+    "rarity": "UR",
+    "skinId": "fortune_neta_genius_club",
+    "mechanism": "geniusClub",
+    "material": "B",
+    "actions": [
+      "T11",
+      "T04"
+    ],
+    "design": "方案卡、齿轮和推演线；多方案展开后突出实际选择，独立编排但不画三名角色"
+  },
+  {
+    "name": "世界的种子",
+    "rarity": "SSR",
+    "skinId": "fortune_crossover_worldSeed",
+    "mechanism": "worldSeed",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T15"
+    ],
+    "design": "发光种子和数据世界轮廓；点线铺成小世界，收束到真实建设结果"
+  },
+  {
+    "name": "白云无尽",
+    "rarity": "UR",
+    "skinId": "fortune_crossover_endlessClouds",
+    "mechanism": "endlessClouds",
+    "material": "C",
+    "actions": [
+      "T09",
+      "T15"
+    ],
+    "design": "红莲、折扇与白云；先评估既有卡面分层素材能否裁作主体，再做开莲光波，独立编排"
+  },
+  {
+    "name": "如果奇迹有颜色，那一定是粉色",
+    "rarity": "UR",
+    "skinId": "fortune_crossover_pinkMiracle",
+    "mechanism": "pinkMiracle",
+    "material": "C",
+    "actions": [
+      "T04",
+      "T11"
+    ],
+    "design": "衣橱、镜面、裙摆与饰品；几套轮廓轻换装后聚成实际奖励，不做人形换装动画"
+  }
+]

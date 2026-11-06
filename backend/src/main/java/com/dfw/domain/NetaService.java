@@ -62,12 +62,14 @@ public final class NetaService {
         state(room).thunder.remove(owner.id); Tile t=tile(room,mark.tileId);
         if(t==null || PropertyEffects.frozen(t)) { log(room,"神君追击结束：目标处于封印中"); return; }
         GameEffect e=effects.effect("NETA_DAMAGE",owner); e.tileId=t.id; e.targetId=t.ownerId; e.amount=mark.hits;
-        Card source=new Card(); source.kind="thunderLord"; source.mechanism=source.kind; source.pool="card"; source.name="神君追击"; e.content=source;
+        if(mark.source!=null) e.content=mark.source;
+        else { Card source=new Card(); source.kind="thunderLord"; source.mechanism=source.kind; source.pool="card"; source.name="神君追击"; e.content=source; }
         effects.submit(room,e); log(room,"神君追击 "+t.name+"，斩击 "+mark.hits+" 次");
     }
-    /** 输入固定标记分段，建立或替换施术者神君目标，无额外防御窗口。 */
-    public static void mark(Room room,Player actor,Tile target) {
+    /** 输入固定标记分段与已公开卡面，保存神君目标及追击来源，无额外防御窗口。 */
+    public static void mark(Room room,Player actor,Tile target,ContentResult source) {
         NetaState.Thunder mark=new NetaState.Thunder(); mark.tileId=target.id; mark.ownerId=target.ownerId; mark.untilTurn=actor.personalTurns+1;
+        mark.source=source;
         state(room).thunder.put(actor.id,mark); log(room,target.name+" 被神君锁定，初始2击");
     }
     /** 输入实际产生的正租金，在演唱会和付款防御之前消耗花瓣并按低一级计算。 */

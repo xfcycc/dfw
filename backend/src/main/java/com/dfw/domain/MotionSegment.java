@@ -8,6 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MotionSegment {
+    /** 已公开发动的卡面身份，缺省沿用通用演出。 */
+    public String sourceSkinId;
+    /** 来源卡牌实例，仅用于合并同次发动的展示分段。 */
+    public String sourceCardId;
     /** 可选棋盘演出事实，旧存档缺省为空；与移动共用有序展示队列。 */
     public BoardEffect boardEffect;
     /** 本段路径标识。 */

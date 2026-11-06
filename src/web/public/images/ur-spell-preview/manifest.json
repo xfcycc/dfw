@@ -1,0 +1,22 @@
+{
+  "createdAt": "2026-11-06",
+  "usage": "gameplay-and-local-preview",
+  "distribution": "oss; not-deployed",
+  "runtimeManifest": "../full-card-spells/oss-assets.json",
+  "file": "spell-atlas.png",
+  "source": "OpenAI ImageGen, generated for the four UR spell preview samples",
+  "originalFile": "exec-c8c65898-bde4-4e50-90ca-2d60e5a411f7.png",
+  "width": 1254,
+  "height": 1254,
+  "mode": "RGBA",
+  "bytes": 1359409,
+  "sha256": "bb3fba3ec59bdbad5b292542b861df0fecc179734f0c55a028980d630b3b2c10",
+  "layout": "2x2, equal 627px cells, CSS background-size 200% 200%",
+  "sprites": [
+    { "skinId": "card_naruto_kamui", "subject": "indigo violet spiral space vortex", "cell": [0, 0] },
+    { "skinId": "card_onepunch_serious_punch", "subject": "foreshortened red glove fist with white cuff", "cell": [1, 0] },
+    { "skinId": "card_neta_senbonzakura", "subject": "silver katana and three pink blade petals", "cell": [0, 1] },
+    { "skinId": "card_naruto_reaper_seal", "subject": "horned white-haired reaper spirit, pale robe, blade in mouth", "cell": [1, 1] }
+  ],
+  "prompt": "Create a production game VFX transparent PNG sprite atlas, square 1024x1024 with exactly 4 equal 512x512 quadrants. Each isolated subject centered fully within its quadrant with generous transparent margins, no overlaps between quadrants. Clean hand-drawn chibi anime cel shading, cohesive thick dark outlines, polished mobile game spell assets, transparent background throughout, no text no labels no panels no ground shadow. Top-left: a dramatic indigo violet Kamui space vortex, curved tapered spiral arms swirling into a black violet central rift, visible twisting motion, not a galaxy. Top-right: one large foreshortened red superhero glove fist, fingers clenched, pointing toward the right, chunky rounded chibi proportions, white cuff at left, only fist no person no arm, highlights and bold dark outline. Bottom-left: one elegant straight silver katana blade silhouette vertically upright with pale pink edge and small dark hilt, accompanied by exactly three separate clearly spaced pink sakura blade petals near it, isolated on transparent background. Bottom-right: a distinctive Naruto Reaper Death Seal shinigami spirit as a cute mysterious chibi apparition, pale lavender face, long flowing white mane, two short horns, yellow eyes, purple lips holding a short blade horizontally, off-white flowing spectral robe and purple aura, arms extended outward, upper body tapering into ghostly wisps; no gore, no other person. Objects should occupy about 75 percent of each quadrant. This is an asset sheet used by CSS cropping, keep all art inside its own quadrant."
+}

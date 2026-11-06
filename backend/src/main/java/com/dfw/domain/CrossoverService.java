@@ -206,7 +206,7 @@ public final class CrossoverService {
             case "darkGame" -> {
                 List<String> targets=room.players.stream().filter(p -> p!=owner && !p.bankrupt && p.hand.stream().anyMatch(c -> c.expiresAtTurn==0)).map(p -> p.id).toList();
                 if(owner.hand.stream().noneMatch(c -> c.expiresAtTurn==0) || targets.isEmpty()) return true;
-                CrossoverState.Duel duel=new CrossoverState.Duel(); duel.actorId=owner.id; state(room).duel=duel;
+                CrossoverState.Duel duel=new CrossoverState.Duel(); duel.actorId=owner.id; duel.source=source; state(room).duel=duel;
                 ContentChoice c=content.open(room,owner,"cross_duel_target"); c.content=source; c.playerIds.addAll(targets); c.prompt="邀请一名对手进行自愿暗押手牌赌局，也可以放弃。";
             }
             default -> { return false; }
@@ -389,12 +389,17 @@ public final class CrossoverService {
                 if(owner.id.equals(duel.actorId)) {
                     duel.actorCardId=stake.id; Player target=player(room,duel.targetId); close(room,c);
                     if(target==null || target.bankrupt || target.hand.stream().noneMatch(x -> x.expiresAtTurn==0)) { state(room).duel=null; return true; }
-                    ContentChoice next=content.open(room,target,"cross_duel_stake"); next.cards.addAll(target.hand.stream().filter(x -> x.expiresAtTurn==0).toList()); next.prompt=owner.name+" 邀请暗押一张手牌进行黑暗游戏；可以拒绝，双方各掷一次骰，平局退回。"; return true;
+                    ContentChoice next=content.open(room,target,"cross_duel_stake"); next.content=duel.source; next.cards.addAll(target.hand.stream().filter(x -> x.expiresAtTurn==0).toList()); next.prompt=owner.name+" 邀请暗押一张手牌进行黑暗游戏；可以拒绝，双方各掷一次骰，平局退回。"; return true;
                 }
                 Player actor=player(room,duel.actorId); require(actor!=null && !actor.bankrupt,"发起人已退出赌局"); Card first=ContentService.find(actor,duel.actorCardId);
                 duel.actorDie=random.nextInt(6)+1; duel.targetDie=random.nextInt(6)+1;
                 if(!duel.actorDie.equals(duel.targetDie)) { actor.hand.remove(first); owner.hand.remove(stake); Player winner=duel.actorDie>duel.targetDie?actor:owner; winner.hand.add(first); winner.hand.add(stake); winner.contentNotice=winner==actor?stake:first; winner.contentNoticeText="黑暗游戏获得手牌"; }
-                log(room,"黑暗游戏揭晓："+actor.name+" "+duel.actorDie+" 点，"+owner.name+" "+duel.targetDie+" 点"+(duel.actorDie.equals(duel.targetDie)?"，平局退回":"，胜者获得双方押牌")); state(room).duel=null;
+                log(room,"黑暗游戏揭晓："+actor.name+" "+duel.actorDie+" 点，"+owner.name+" "+duel.targetDie+" 点"+(duel.actorDie.equals(duel.targetDie)?"，平局退回":"，胜者获得双方押牌"));
+                if(duel.source!=null) {
+                    MotionSegment presentation=BoardEffect.begin("spell",actor); BoardEffect.source(presentation,duel.source);
+                    presentation.boardEffect.playerIds.add(owner.id); BoardEffect.publish(room,presentation);
+                }
+                state(room).duel=null;
             }
             default -> throw new GameError("素材选择尚未注册");
         }

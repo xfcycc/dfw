@@ -32,6 +32,7 @@ public final class EventService {
         var candidates=new java.util.ArrayList<>(room.board.stream().filter(target -> target.type.equals("property") && target.level>0 && owners.containsKey(target.ownerId) && !PropertyEffects.frozen(target)).toList());
         int targetCount=candidates.isEmpty() ? 0 : random.nextInt(Math.min(5,candidates.size()))+1;
         MotionSegment segment=BoardEffect.begin("tornado",player(room,effect.playerId));
+        BoardEffect.source(segment,effect.content);
         segment.beforeEvent=effect.content;
         int affected=0;
         for (int i=0; i<targetCount; i++) {

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { cardSpellSequence } from '../card-spell-presentation';
 import { computed, nextTick, ref, watch } from 'vue';
 import { RealtimeClient } from '../../shared/realtime.js';
 import type { CommandResult, ContentResult, GameAction, GameCommand, MotionSegment, PrivatePlayerState, PublicRoomState, Session } from '../../shared/types.js';
@@ -163,20 +164,29 @@ export const useGameStore = defineStore('game', () => {
     notifyBackground(mention ? '有人 @ 你' : '收到新聊天', latest.text, `dfw:chat:${state.roomId ?? state.code}`);
   }
 
+  /** 输入前后公开快照，按真实出牌日志区分同一实例的再次发动；同步旧快照不重复揭卡，无返回值。 */
+  function enqueuePlayedCard(state: PublicRoomState, previous: PublicRoomState): void {
+    const content = state.playedCard;
+    if (!content) return;
+    const used = state.logs.find(entry => entry.type === 'card_used' && entry.content?.id === content.id && entry.actorId === state.playedCardPlayerId);
+    if (used ? previous.logs.some(entry => entry.id === used.id) : content.id === previous.playedCard?.id) return;
+    enqueueCardReveal(content, 'play', state.players.find(player => player.id === state.playedCardPlayerId)?.name ?? '玩家', used?.id);
+  }
+
   /** 输入公开快照，先揭卡再播放移动或棋盘效果，全部完成后展示最终结算，无返回值。 */
   function applyPublicState(state: PublicRoomState, animate = true): void {
     const previous = room.value;
     if (animate && !publicBaseline && previous && state.version > previous.version && state.gameId === previous.gameId && !state.recoveryPending && !previous.recoveryPending && state.motion && state.motion.id !== previous.motion?.id && state.status !== 'lobby' && !document.hidden && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       movementResult = state; settling.value = true;
-      movementSegments.push(...(state.motion.segments?.length ? state.motion.segments : [state.motion]));
-      if (state.playedCard && state.playedCard.id !== previous.playedCard?.id) enqueueCardReveal(state.playedCard, 'play', state.players.find(player => player.id === state.playedCardPlayerId)?.name ?? '玩家');
+      movementSegments.push(...cardSpellSequence(state.motion.segments?.length ? state.motion.segments : [state.motion]));
+      enqueuePlayedCard(state, previous);
       presentMovement();
       return;
     }
     room.value = state;
     if (previous?.gameId !== state.gameId) { cardReveals.value = []; seenReveals.clear(); }
     if (!publicBaseline && previous && state.version >= previous.version && !state.recoveryPending && !previous.recoveryPending) {
-      if (state.playedCard && state.playedCard.id !== previous.playedCard?.id) enqueueCardReveal(state.playedCard, 'play', state.players.find(player => player.id === state.playedCardPlayerId)?.name ?? '玩家');
+      enqueuePlayedCard(state, previous);
       if (state.motion && state.motion.id !== previous.motion?.id) {
         for (const segment of state.motion.segments?.length ? state.motion.segments : [state.motion]) {
           const actor = state.players.find(player => player.id === segment.playerId)?.name ?? '玩家';
@@ -280,10 +290,10 @@ export const useGameStore = defineStore('game', () => {
   /** 输入动态效果偏好，启用减少动态效果时取消积压演出并同步最新局面，无返回值。 */
   function onMotionPreferenceChange(event: MediaQueryListEvent): void { if (event.matches) syncPresentation(); }
 
-  /** 输入服务端已确认的卡面和展示方式，按身份去重并排队，无返回值。 */
-  function enqueueCardReveal(content: ContentResult, mode: CardReveal['mode'], actor: string): void {
+  /** 输入服务端卡面、展示方式及可选出牌日志编号，获得按实例、发动按本次日志去重排队，无返回值。 */
+  function enqueueCardReveal(content: ContentResult, mode: CardReveal['mode'], actor: string, useId?: string): void {
     if (document.hidden) return;
-    const key = `${room.value?.gameId}:${mode}:${content.id}`;
+    const key = `${room.value?.gameId}:${mode}:${content.id}${mode === 'play' && useId ? `:${useId}` : ''}`;
     if (seenReveals.has(key)) return;
     seenReveals.add(key);
     const reveal = { key, content, mode, actor };

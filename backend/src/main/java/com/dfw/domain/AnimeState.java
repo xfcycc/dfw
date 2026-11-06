@@ -23,6 +23,10 @@ public class AnimeState {
     public List<String> voters = new ArrayList<>();
     /** 秘密票，仅揭晓时公开统计，不投影此集合。 */
     public Map<String,String> votes = new LinkedHashMap<>();
+    /** 学级裁判已公开的事件来源，旧存档可为空。 */
+    public ContentResult trialSource;
+    /** 学级裁判的原触发玩家，仅用于揭晓后的演出定位。 */
+    public String trialActorId;
     /** 一张来源牌的全部固定分段及一次性响应。 */
     @Getter @Setter
     public static class Attack {

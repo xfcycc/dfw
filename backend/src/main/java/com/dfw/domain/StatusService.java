@@ -13,6 +13,8 @@ public final class StatusService {
         PlayerStatus status = owner.statuses.stream().filter(value -> value.type.equals(effect.statusId)).findFirst().orElse(null);
         if (status == null) { status = new PlayerStatus(); status.type = effect.statusId; owner.statuses.add(status); }
         status.sourceEffectId = effect.id; status.appliedTurn = room.turnNumber; status.remainingTurns = (int)effect.amount;
+        boolean publicSource=effect.content==null || !effect.content.privateSupply || "card".equals(effect.content.pool);
+        status.sourceSkinId=publicSource?(effect.content==null?effect.sourceSkinId:effect.content.skinId):null;status.sourceCardId=publicSource?(effect.content==null?effect.sourceCardId:effect.content.id):null;
         log(room, owner.name + switch(effect.statusId) { case "TRAP_IMMUNITY" -> " 获得陷阱免疫，持续三个后续个人回合，休息也计数"; case "NEXT_PAYMENT_WAIVER" -> " 获得下次强制费用免单，不叠加"; case "NEXT_ROLL_HALF" -> " 下次掷骰或替代掷骰基础步数减半，向下取整，不叠加"; case "NEXT_MOVE_DOUBLE" -> " 获得塔塔开，下次最终移动距离翻倍，不叠加，传送与换位不消耗"; default -> " 下次正租金翻倍，不叠加"; });
     }
     /** 输入玩家和效果标签，返回有效状态是否免疫该标签。 */
@@ -37,6 +39,14 @@ public final class StatusService {
     }
     /** 输入玩家和一次性状态类型，存在时消费并返回真，重复获得不会累加。 */
     public static boolean consume(Player owner,String type) { return owner.statuses.removeIf(s -> s.type.equals(type) && s.remainingTurns > 0); }
+    /** 输入房间、持有人和状态类型，消费后记录原来源的短触发反馈，返回是否消费。 */
+    public static boolean consume(Room room,Player owner,String type,String kind) {
+        PlayerStatus origin=owner.statuses.stream().filter(s -> s.type.equals(type) && s.remainingTurns>0).findFirst().orElse(null);
+        if(!consume(owner,type))return false;
+        MotionSegment segment=BoardEffect.begin(kind,owner);segment.boardEffect.triggered=true;
+        if(origin!=null){segment.sourceSkinId=origin.sourceSkinId;segment.sourceCardId=origin.sourceCardId;}
+        BoardEffect.publish(room,segment);return true;
+    }
     /** 输入房间与结束回合的持有人，扣除后续个人回合并移除到期状态，无返回值。 */
     public static void endTurn(Room room, Player owner) {
         PropertyEffects.endTurn(room, owner);

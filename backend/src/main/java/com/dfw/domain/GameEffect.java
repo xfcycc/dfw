@@ -7,6 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class GameEffect {
+    /** 公开演出来源实例，继承仅用于展示，不参与效果选择。 */
+    public String sourceCardId;
+    /** 已发动卡牌的公开皮肤，仅供展示，不参与结算。 */
+    public String sourceSkinId;
     /** 已答复本次位移解控的玩家，恢复队列时不重复询问。 */
     public java.util.List<String> movementReleasePlayers = new java.util.ArrayList<>();
     /** 传送门位移被抵消后仍继续剩余步数，不消耗门或重算骰子。 */

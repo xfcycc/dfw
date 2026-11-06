@@ -58,6 +58,8 @@ public class CrossoverState {
     /** 双方暗押牌及固定骰点，绝不直接公开投影。 */
     @Getter @Setter
     public static class Duel {
+        /** 已公开的黑暗游戏事件来源，供揭晓演出使用，旧存档可为空。 */
+        public ContentResult source;
         /** 发起人。 */
         public String actorId;
         /** 被邀请的玩家。 */

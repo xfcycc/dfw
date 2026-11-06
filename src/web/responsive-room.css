@@ -122,6 +122,11 @@
 .modern-room.game-session.spectator-follow > main { padding: 0 8px max(8px, env(safe-area-inset-bottom)); }
 .modern-room.game-session.spectator-follow .immersive-layout { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(165px, .9fr) minmax(285px, 1.4fr); gap: 8px; }
 .modern-room.game-session.spectator-follow .map-panel { height: auto; }
+.modern-room.game-session.spectator-follow .immersive-layout:has(.live-card-spell,.full-card-spell) { grid-template-rows: auto minmax(280px, 1.6fr) minmax(140px, .7fr); }
+/* 专属招式期间把手机主屏空间让给棋盘，避免全图和目标缩成小图；结束即恢复。 */
+@media (max-width: 600px) and (orientation: portrait) {
+  .modern-room.game-session.detached-dashboard .immersive-layout:has(.live-card-spell,.full-card-spell) { grid-template-rows: auto minmax(280px, 1.6fr) minmax(140px, .7fr) auto; }
+}
 .modern-room.game-session.spectator-follow .room-dashboard .workbench-center { padding: 0; }
 .modern-room.spectator-follow .room-dashboard .dashboard-scroll { padding: 0; gap: 8px; }
 .modern-room.spectator-follow .room-dashboard .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(145px, 1.2fr) minmax(125px, .8fr); gap: 8px; height: 100%; }

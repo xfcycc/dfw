@@ -13,6 +13,7 @@ public class EffectResolver {
     /** 输入可暂停的结算前选择钩子，按注册顺序组合；返回真时保留队首效果等待私人答复。 */
     public void beforeEffect(java.util.function.BiPredicate<Room,GameEffect> hook) { beforeEffect=beforeEffect==null?hook:beforeEffect.or(hook); }
     private final ThreadLocal<Integer> insertionIndex = new ThreadLocal<>();
+    private final ThreadLocal<GameEffect> presentationParent = new ThreadLocal<>();
     /** 输入随机源，用于分配效果标识。 */
     public EffectResolver(RandomSource random) { this.random = random; }
     /** 输入类型及处理器，启动组装时注册一次，重复注册拒绝。 */
@@ -21,7 +22,10 @@ public class EffectResolver {
     }
     /** 输入类型和作用玩家，返回尚未入队的效果参数。 */
     public GameEffect effect(String type, Player player) {
-        GameEffect effect = new GameEffect(); effect.id = random.id(); effect.type = type; effect.playerId = player.id; return effect;
+        GameEffect effect = new GameEffect(); effect.id = random.id(); effect.type = type; effect.playerId = player.id;
+        GameEffect parent=presentationParent.get();
+        if(parent!=null && (parent.content==null || !parent.content.privateSupply || "card".equals(parent.content.pool))) { effect.sourceSkinId=parent.content==null?parent.sourceSkinId:parent.content.skinId; effect.sourceCardId=parent.content==null?parent.sourceCardId:parent.content.id; }
+        return effect;
     }
     /** 输入房间和效果，添加到当前效果之后、其兄弟效果之前，保证联动先完成。 */
     public void submit(Room room, GameEffect effect) {
@@ -48,10 +52,10 @@ public class EffectResolver {
             if (room.activity != null && !effect.resumesDecision) return;
             if(beforeEffect!=null && beforeEffect.test(room,effect)) return;
             insertionIndex.set(1);
-            BoardEffect.Observation presentation = BoardEffect.watch(room, effect);
-            CrossoverService.damageSource(room,effect);
-            try { handler(effect).accept(room, effect); }
-            finally { insertionIndex.remove(); }
+            presentationParent.set(effect);
+            BoardEffect.Observation presentation;
+            try { presentation=BoardEffect.watch(room,effect); CrossoverService.damageSource(room,effect); handler(effect).accept(room, effect); }
+            finally { insertionIndex.remove(); presentationParent.remove(); }
             if (presentation != null) presentation.finish(room);
             SettlementService.observe(room);
             HistoryTrace.event(room, "effect", effect.playerId, "游戏效果已结算", effect);

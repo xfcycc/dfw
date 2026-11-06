@@ -3,6 +3,7 @@ import type { EffectSpriteKind } from './effect-sprites';
 
 /** 已接入的表现目录；同一业务机制复用素材，时长只影响展示。 */
 export const BOARD_EFFECTS = {
+  spell: { label: '卡牌招式', duration: 1400, sprite: 'control', description: '按稳定卡牌身份展示实际结算的公开变化。' },
   swap: { label: '交换位置', duration: 1600, sprite: 'blackhole', description: '双方同时换位，完成后继续掷骰，不结算落点。' },
   swapAny: { label: '斗转星移', duration: 1600, sprite: 'blackhole', description: '选中的两名玩家同时换位，不结算落点或起点。' },
   shuffle: { label: 'ROOM · 错位空间', duration: 2200, sprite: 'blackhole', description: '全员接手另一人的原位置，不触发落点。' },

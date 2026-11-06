@@ -7,6 +7,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PlayerStatus {
+    /** 产生此状态的公开卡牌身份，仅供后续触发演出。 */
+    public String sourceSkinId;
+    /** 产生此状态的公开卡牌实例。 */
+    public String sourceCardId;
     /** 固定状态定义：陷阱免疫、连续控制保护及一次性费用、租金和移动状态。 */
     public String type;
     /** 连控保护是否仍在等待本次受控行动跳过；等待期间不递减保护期限。 */

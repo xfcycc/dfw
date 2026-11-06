@@ -18,6 +18,7 @@ public final class ExpansionService {
         effects.register("EVENT_RELOCATE", (room,effect) -> {
             Player target=player(room,effect.playerId); if(target==null || target.bankrupt) return;
             MotionSegment segment=BoardEffect.begin("shuffle",target); segment.beforeEvent=effect.content;
+            BoardEffect.source(segment,effect.content);
             relocate(room,segment,target,effect.destination); BoardEffect.publish(room,segment);
         });
     }
@@ -100,6 +101,7 @@ public final class ExpansionService {
                 List<Tile> targets=AnimeService.kamuiTargets(room,action);
                 ContentService.consume(room,actor,card,true,action);
                 MotionSegment presentation=BoardEffect.begin("kamui",actor);
+                BoardEffect.source(presentation,card);
                 for(Tile property:targets) {
                     presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(property));
                     property.kamuiCasterId=actor.id; property.kamuiTurns=3; property.kamuiAppliedTurn=room.turnNumber;
@@ -116,7 +118,7 @@ public final class ExpansionService {
                 if(card.kind.equals("exchange")) { price=PropertyEffects.exchangePrice(room,target); require(landlord!=null && !landlord.bankrupt && landlord!=actor && actor.cash>=price,"请选择付得起交换价的对手地产，最低为地价"); }
                 ContentService.consume(room,actor,card,true,action);
                 MotionSegment presentation=Set.of("blackhole","shield","exchange").contains(card.kind) ? BoardEffect.begin(card.kind,actor) : null;
-                if(presentation!=null) presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
+                if(presentation!=null) { BoardEffect.source(presentation,card); presentation.boardEffect.beforeTiles.add(BoardEffect.appearance(target)); }
                 switch(card.kind) {
                     case "shield" -> { target.demolitionShield=true; target.demolitionShieldCharges=card.parameters.getOrDefault("charges",1L).intValue(); }
                     case "exchange" -> {

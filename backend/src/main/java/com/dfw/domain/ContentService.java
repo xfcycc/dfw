@@ -343,7 +343,7 @@ public final class ContentService {
             case "fixed","move","remote" -> {
                 long steps=card.kind.equals("remote") ? (action.point==null?0:action.point) : card.parameters.get("steps");
                 require(!card.kind.equals("remote") || steps>=1 && steps<=6,"请选择 1～6 点"); consume(room,owner,card,true,action);
-                submit(room,"REPLACE_ROLL",owner,steps);
+                GameEffect movement=effects.effect("REPLACE_ROLL",owner); movement.amount=steps; movement.sourceSkinId=card.skinId; effects.submit(room,movement);
             }
             case "barrier" -> {
                 int distance=target==null?0:nearbyDistance(owner.position,target.id,room.board.size());
@@ -356,7 +356,7 @@ public final class ContentService {
             }
             case "swap" -> {
                 require(opponent!=null && !opponent.bankrupt && !opponent.id.equals(owner.id) && !opponent.jailed,"请选择未服刑的对手"); consume(room,owner,card,true,action);
-                GameEffect e=effects.effect("SWAP_POSITION",owner); e.targetId=opponent.id; effects.submit(room,e);
+                GameEffect e=effects.effect("SWAP_POSITION",owner); e.targetId=opponent.id; e.content=card; effects.submit(room,e);
             }
             case "blast" -> {
                 require(opponent!=null && !opponent.bankrupt,"请选择一名未破产玩家，可选择自己"); consume(room,owner,card,true,action);
@@ -395,7 +395,9 @@ public final class ContentService {
             require(card.kind.equals("halfPayment") || card.kind.equals("immunity") && debt.type.equals("rent"),"此道具不能减免本笔费用");
             consume(room,owner,card,false,action); long reduction=card.kind.equals("immunity")?debt.amount:debt.amount/2; debt.amount-=reduction;
             log(room,"log",owner.id,owner.name+" 减免 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",reduction)+"，剩余待支付 ¥"+String.format("%,d",debt.amount));
-            BoardEffect.cue(room,card.kind.equals("immunity")?"immunity":"halfPayment",owner);
+            MotionSegment presentation=BoardEffect.begin(card.kind.equals("immunity")?"immunity":"halfPayment",owner);
+            BoardEffect.source(presentation,card); presentation.boardEffect.paymentBefore=debt.amount+reduction; presentation.boardEffect.paymentAfter=debt.amount;
+            BoardEffect.publish(room,presentation);
         } else log(room,"log",owner.id,owner.name+" 放弃本笔付款防御，仍需支付 "+paymentDescription(room,debt)+" ¥"+String.format("%,d",debt.amount));
         debt.defenseResolved=true;
         if(debt.amount==0) { room.pending=null; room.phase="manage"; }

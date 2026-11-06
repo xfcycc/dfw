@@ -9,6 +9,12 @@ import DiceFace from './DiceFace.vue';
 import DesktopDiceThrow from './DesktopDiceThrow.vue';
 import HolidayDiceEffects from './HolidayDiceEffects.vue';
 import BoardEffectLayer from './BoardEffectLayer.vue';
+import LiveCardSpellLayer from './LiveCardSpellLayer.vue';
+import { cardSpellFor } from '../card-spell-presentation';
+import { fullCardSpellFor } from '../full-card-spells';
+import FullCardSpellLayer from './FullCardSpellLayer.vue';
+import UniqueUrSpellLayer from './UniqueUrSpellLayer.vue';
+import FullSpellProp from './FullSpellProp.vue';
 import TileTrapMarker from './TileTrapMarker.vue';
 import PlayerText from './PlayerText.vue';
 import PropertyGrade from './PropertyGrade.vue';
@@ -29,7 +35,7 @@ const zoom = ref(1);
 const fullMap = ref(false);
 const referencedTile = ref<number | null>(null);
 const following = computed(() => !!props.spectator && !!props.spectatorFollow);
-const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
+const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -71,9 +77,13 @@ const motionPlayer = computed(() => props.room.players.find(player => player.id 
 const followedPlayer = computed(() => motionPlayer.value ?? current.value);
 const visitedTiles = computed(() => new Set(motion.value?.path.slice(0, step.value) ?? []));
 const movementLabel = computed(() => motion.value?.teleport ? `直接传送至 ${props.room.board[motion.value.path.at(-1) ?? motion.value.from]?.name ?? '目的地'}` : rolling.value ? '正在掷骰…' : landing.value ? `到达 ${props.room.board[animatedPosition.value?.position ?? 0]?.name ?? '目的地'}` : moving.value ? `正在移动 · ${step.value} / ${motion.value?.path.length ?? 0} 格` : diceResult.value !== null ? `掷出 ${diceResult.value} 点` : '准备移动…');
-const effectTiles = computed(() => new Set(boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
+const effectTiles = computed(() => new Set(boardEffect.value && (cardSpellFor(boardEffect.value) || fullCardSpellFor(boardEffect.value)) ? [] : boardEffect.value?.boardEffect?.beforeTiles.map(tile => tile.id) ?? []));
 const effectPlayers = computed(() => new Set(boardEffect.value?.boardEffect?.moves.map(move => move.playerId) ?? []));
 const effectTileSize = computed(() => (size.value - (props.compact ? 20 : 18)) / dimensions.value.columns * zoom.value);
+const spellTileSize = computed(() => Math.min(effectTileSize.value, (height.value - (props.compact ? 20 : 18)) / dimensions.value.rows * zoom.value));
+const lightSpellPoint = computed(() => { const light=lightSpell.value; return light ? effectPlayerPoint(light.playerId,props.room.players.find(p=>p.id===light.playerId)!.position) : {x:0,y:0}; });
+// 金额轻提示读取实际公开参与者，既覆盖全员分红，也不把未获奖励的人补成目标。
+const lightSpellTargets = computed(() => { const light=lightSpell.value; if(!light)return []; const ids=light.effect?.playerIds; return (ids?.length?ids:[light.playerId]).map(id=>({id,...effectPlayerPoint(id,props.room.players.find(player=>player.id===id)!.position)})); });
 const trapTiles = computed(() => props.room.board.filter(tile => tile.barrier || (tile.meteorCharges ?? 0) > 0));
 /** 输入带截停效果的地块，返回读屏说明，封印期间保留标记并说明暂停。 */
 function trapLabel(tile: Tile): string {
@@ -209,6 +219,7 @@ function resizeBoard(): void {
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
   if (desktopSingleScreen.value) { zoom.value = 1; fullMap.value = true; return; }
+  if (boardEffect.value && (cardSpellFor(boardEffect.value) || fullCardSpellFor(boardEffect.value))) { fitBoard(); return; }
   if (props.targeting) return;
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
   else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
@@ -287,6 +298,18 @@ function fitBoard(): void {
   zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
 }
+let spellView: { zoom: number; fullMap: boolean; left: number; top: number } | undefined;
+// 输入当前专属演出，局部地图临时显示全图，让跨格目标可见；结束或跳过后恢复原视野。
+watch(boardEffect, effect => {
+  if (effect && (cardSpellFor(effect) || fullCardSpellFor(effect)) && !fullMap.value && !spellView) {
+    spellView = { zoom: zoom.value, fullMap: fullMap.value, left: viewport.value?.scrollLeft ?? 0, top: viewport.value?.scrollTop ?? 0 };
+    fitBoard();
+  } else if ((!effect || !(cardSpellFor(effect) || fullCardSpellFor(effect))) && spellView) {
+    const previous = spellView; spellView = undefined;
+    zoom.value = previous.zoom; fullMap.value = previous.fullMap;
+    void nextTick(() => viewport.value?.scrollTo({ left: previous.left, top: previous.top, behavior: 'instant' }));
+  }
+}, { flush: 'sync' });
 // 输入布局、观战模式与地图规模变化，重新测量可用区域。
 watch([() => props.classicLayout, () => props.dashboardTarget, () => props.stretch, () => props.spectator, () => props.room.board.length, following], async () => {
   fullMap.value = false; lastWidth = 0;
@@ -343,7 +366,12 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
           </div>
         </div>
         <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
-        <BoardEffectLayer v-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="size * zoom" :board-height="height * zoom" @done="finishBoardEffect" />
+        <LiveCardSpellLayer v-if="boardEffect && cardSpellFor(boardEffect)" :key="boardEffect.id" :segment="boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="spellTileSize" :width="size * zoom" :height="height * zoom" @done="finishBoardEffect" />
+        <FullCardSpellLayer v-else-if="boardEffect && fullCardSpellFor(boardEffect)" :key="boardEffect.id" :segment="boardEffect" :players="room.players" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="spellTileSize" :width="size * zoom" :height="height * zoom" @done="finishBoardEffect" />
+        <BoardEffectLayer v-else-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="size * zoom" :board-height="height * zoom" @done="finishBoardEffect" />
+        <slot name="effect-overlay" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="effectTileSize" :width="size * zoom" :height="height * zoom" />
+        <UniqueUrSpellLayer v-if="lightSpell?.card.rarity==='UR'" :key="lightSpell.key" :card="lightSpell.card" :actor="lightSpellPoint" :targets="[lightSpellPoint]" :effect="lightSpell.effect??undefined" :width="size*zoom" :height="height*zoom" :tile-size="spellTileSize" compact/>
+        <template v-else-if="lightSpell"><div v-for="target in lightSpellTargets" :key="`${lightSpell.key}:${target.id}`" class="light-spell" :style="{left:`${target.x}px`,top:`${target.y}px`}"><FullSpellProp :card="lightSpell.card"/></div></template>
         <Teleport :to="dashboardTarget || 'body'" :disabled="!dashboardTarget" defer>
         <div class="board-center" :class="{ 'workbench-center': compact && $slots.controls, 'has-decision': decision }" :style="dashboardTarget ? undefined : centerStyle">
           <span class="center-label"><span class="status-dot"></span>{{ spectator ? '公共观战席' : '大富翁-奇迹大陆' }}</span>
@@ -390,6 +418,8 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 .board-state-legend > span { display:inline-flex; align-items:center; gap:4px; }
 .board-state-legend .tile-trap-marker { --trap-size:20px; }
 .board-container { position:relative; }
+.light-spell { position:absolute;z-index:21;width:48px;height:48px;transform:translate(-50%,-120%);pointer-events:none;animation:light-spell .9s ease-out both; }
+@keyframes light-spell { 0% { opacity:0;scale:.5; } 20%,65% { opacity:1;scale:1; } 100% { opacity:0;translate:0 -16px; } }
 .board-local-feedback { position:absolute; inset:0; pointer-events:none; z-index:13; }
 .board-local-feedback .dice-overlay { position:absolute; gap:12px; background:#fff9ebb8; backdrop-filter:blur(2px); pointer-events:none; touch-action:auto; }
 .board-local-feedback .dice-overlay .die { width:92px; height:92px; padding:16px; gap:7px; }

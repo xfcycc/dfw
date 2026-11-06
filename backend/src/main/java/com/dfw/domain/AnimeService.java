@@ -311,11 +311,12 @@ public final class AnimeService {
         if(choice.type.equals("anime_vote")) offerVote(room);
         return true;
     }
-    /** 输入抽到学级裁判的玩家，固定参与者并开始秘密投票。 */
+    /** 输入抽到学级裁判的玩家及公开事件，保存演出来源并开始秘密投票，无返回值。 */
     public void trial(Room room,Player actor,ContentResult result) {
-        AnimeState state=state(room); state.voters=new ArrayList<>(room.players.stream().filter(p -> !p.bankrupt).map(p -> p.id).toList()); state.votes.clear(); offerVote(room);
+        AnimeState state=state(room); state.trialSource=result; state.trialActorId=actor.id;
+        state.voters=new ArrayList<>(room.players.stream().filter(p -> !p.bankrupt).map(p -> p.id).toList()); state.votes.clear(); offerVote(room);
     }
-    /** 输入已提交票，逐位等待后一次揭晓，最高票并列仅抽样一次。 */
+    /** 输入含已提交票的房间，逐位等待后揭晓真实目标并发布来源，最高票并列仅抽样一次，无返回值。 */
     private void offerVote(Room room) {
         AnimeState state=state(room);
         for(String id:state.voters) {
@@ -325,7 +326,16 @@ public final class AnimeService {
         Map<String,Integer> counts=new LinkedHashMap<>(); for(String id:state.votes.values()) if(!id.isEmpty() && player(room,id)!=null && !player(room,id).bankrupt) counts.merge(id,1,Integer::sum);
         log(room,"学级裁判投票揭晓："+state.voters.stream().map(id -> player(room,id).name+"→"+(state.votes.getOrDefault(id,"").isEmpty()?"弃权":player(room,state.votes.get(id)).name)).toList());
         state.voters.clear(); state.votes.clear();
-        if(!counts.isEmpty()) { int max=Collections.max(counts.values()); List<String> tied=counts.keySet().stream().filter(id -> counts.get(id)==max).toList(); Player target=player(room,tied.get(random.nextInt(tied.size()))); content.restrict(room,target,1,false); }
+        Player target=null;
+        if(!counts.isEmpty()) { int max=Collections.max(counts.values()); List<String> tied=counts.keySet().stream().filter(id -> counts.get(id)==max).toList(); target=player(room,tied.get(random.nextInt(tied.size()))); }
+        Player actor=player(room,state.trialActorId);
+        if(state.trialSource!=null && actor!=null) {
+            MotionSegment presentation=BoardEffect.begin("spell",actor); BoardEffect.source(presentation,state.trialSource);
+            if(target!=null && target!=actor) presentation.boardEffect.playerIds.add(target.id);
+            BoardEffect.publish(room,presentation);
+        }
+        state.trialSource=null; state.trialActorId=null;
+        if(target!=null) content.restrict(room,target,1,false);
     }
     /** 输入付款人及回归牌，校验真实清算条件后仅取消当前余额，返回空。 */
     public void deathReturn(Room room,Player owner,Card card,Action action) {
@@ -346,7 +356,7 @@ public final class AnimeService {
                     GameEffect damage=effects.effect("NETA_DAMAGE",actor); damage.tileId=tile.id; damage.amount=Math.min(3,1+shields); damage.content=e.content; effects.submit(room,damage);
                 }
             }
-            case "thunderMark" -> NetaService.mark(room,actor,tile);
+            case "thunderMark" -> NetaService.mark(room,actor,tile,e.content);
             case "lowerPiercing" -> { if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0) { recordDamage(room,tile); tile.level=Math.max(0,tile.level-(int)e.amount); } }
             case "rushTeleport" -> { GameEffect move=effects.effect("DIRECTED_TELEPORT",actor); move.tileId=tile.id; effects.submit(room,move); }
             case "lower" -> lower(room,tile,(int)e.amount);
@@ -360,7 +370,10 @@ public final class AnimeService {
             case "portal" -> { if(tile.portalTileId!=null) { Tile old=tile(room,tile.portalTileId); if(old!=null && Objects.equals(old.portalTileId,tile.id)) old.portalTileId=null; } tile.portalTileId=e.destination; }
             case "blackhole" -> CrossoverService.clear(room,tile,false);
             case "exchange" -> { if(actor.cash<e.amount) { log(room,"现金已变化，等价交换未执行"); break; } actor.cash-=e.amount; if(target!=null) target.cash=Math.addExact(target.cash,e.amount); tile.ownerId=actor.id; observeOwnership(room); }
-            case "teleport","gather" -> relocate(room,target,(int)e.amount,"teleport");
+            case "teleport","gather" -> {
+                if(e.content!=null) relocateSpell(room,actor,target,(int)e.amount,e.content);
+                else relocate(room,target,(int)e.amount,"teleport");
+            }
             case "blast" -> { relocate(room,target,(int)e.amount,"teleport"); effects.submit(room,effects.effect("SETTLE_TILE",target)); }
             case "jail" -> { GameEffect jail=effects.effect("SEND_TO_JAIL",target); jail.voluntaryRestriction=actor==target; jail.content=e.content; effects.submit(room,jail); }
             case "rest" -> content.restrict(room,target,1,false,actor!=target);
@@ -386,5 +399,15 @@ public final class AnimeService {
     /** 输入玩家及已固定目的地，只记录直接传送，不产生路径、奖励或落点。 */
     private static void relocate(Room room,Player target,int destination,String kind) {
         if(target==null || target.bankrupt) return; MotionSegment segment=BoardEffect.begin(kind,target); BoardEffect.movement(segment,target,destination); target.position=destination; BoardEffect.publish(room,segment);
+    }
+    /** 输入实际传送分段及已发动卡，同次换位合并展示；不重算目的地。 */
+    private static void relocateSpell(Room room,Player actor,Player target,int destination,ContentResult source) {
+        if(target==null || target.bankrupt) return;
+        String kind=Set.of("swap","swapAny").contains(source.mechanism)?"swap":"teleport";
+        MotionSegment segment=BoardEffect.begin(kind,actor); BoardEffect.source(segment,source);
+        BoardEffect.movement(segment,target,destination); target.position=destination;
+        MotionSegment previous=room.movementSequence.isEmpty()?null:room.movementSequence.getLast();
+        if(previous!=null && previous.boardEffect!=null && previous.boardEffect.kind.equals(kind) && Objects.equals(previous.sourceCardId,source.id) && Objects.equals(previous.playerId,actor.id)) previous.boardEffect.moves.addAll(segment.boardEffect.moves);
+        else BoardEffect.publish(room,segment);
     }
 }

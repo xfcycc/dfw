@@ -87,6 +87,7 @@ public class TurnService {
     private void moveEffect(Room room, GameEffect effect) {
         int first = room.movementSequence.size();
         move(room, player(room, effect.playerId), (int) effect.amount,effect.selector);
+        room.movementSequence.stream().skip(first).filter(segment -> segment.boardEffect == null).forEach(segment -> segment.sourceSkinId=effect.sourceSkinId);
         if("NORMAL".equals(effect.selector) && "RANDOM".equals(room.runtime.rollMode) && CrossoverService.state(room).boostTurn==room.turnNumber) effects.submit(room,effects.effect("CROSS_BOOST",player(room,effect.playerId)));
         if (effect.content != null && !effect.content.privateSupply) room.movementSequence.stream().skip(first).filter(segment -> segment.boardEffect == null).findFirst().ifPresent(segment -> segment.beforeEvent = effect.content);
         if (effect.message != null) log(room, effect.message);
@@ -100,7 +101,7 @@ public class TurnService {
     /** 输入已换算步数、移动模式及是否续走，续走不重复消费翻倍状态或领取原地奖励。 */
     private void move(Room room,Player player,int steps,String mode,boolean continuing) {
         boolean flash="FLASH".equals(mode), boost="BOOST".equals(mode);
-        if (!continuing && !flash && !boost && StatusService.consume(player,"NEXT_MOVE_DOUBLE")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); BoardEffect.cue(room,"morale",player); }
+        if (!continuing && !flash && !boost && StatusService.consume(room,player,"NEXT_MOVE_DOUBLE","morale")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;

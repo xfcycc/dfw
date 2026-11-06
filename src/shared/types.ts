@@ -192,7 +192,12 @@ export interface ChatReference { start: number; end: number; playerId?: string; 
 export interface PublicLog { content?: ContentResult | null; type?: string; actorId?: string; references?: ChatReference[]; mentions?: PlayerMention[]; id: string; text: string; at: number }
 /** 服务端记录的棋盘演出事实，外观与位移只用于展示，不重新计算结算。 */
 export interface BoardEffect {
-  kind: 'swap' | 'swapAny' | 'shuffle' | 'gravity' | 'kamui' | 'kamuiRelease' | 'blackhole' | 'meteor' | 'tornado'
+  /** 既有状态的短触发反馈。 */
+  triggered?: boolean;
+  /** 防御前后真实待付金额，不表示已支付。 */
+  paymentBefore?: number | null;
+  paymentAfter?: number | null;
+  kind: 'spell' | 'swap' | 'swapAny' | 'shuffle' | 'gravity' | 'kamui' | 'kamuiRelease' | 'blackhole' | 'meteor' | 'tornado'
     | 'barrier' | 'barrierHit' | 'trapImmune' | 'demolish' | 'shield' | 'shieldBlock' | 'upgrade' | 'exchange'
     | 'slow' | 'seal' | 'steal' | 'recycle' | 'discover' | 'handDestruction' | 'supply' | 'treasure' | 'treasureClaim'
     | 'concert' | 'concertRent' | 'morale' | 'waiver' | 'rentDouble' | 'immunity' | 'halfPayment' | 'income' | 'fee'
@@ -204,9 +209,12 @@ export interface BoardEffect {
   afterTiles: BoardEffectTile[];
 }
 /** 演出前后的地产公开外观，可包含实际产权变化，不覆盖抵押或资金。 */
-export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn'> & { ownerId?: string | null };
+export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn' | 'corruptionTurns' | 'nzothOwnerId' | 'zeroCasterId' | 'zeroUntilTurn' | 'portalTileId' | 'petalCasterId' | 'petalOwnerId' | 'petalUntilTurn'> & { ownerId?: string | null };
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
+  /** 已公开发动卡的皮肤；旧片段缺省时使用通用表现。 */
+  sourceSkinId?: string | null;
+  sourceCardId?: string | null;
   id: string; playerId: string; from: number; path: number[];
   /** 与走格共用同一播放队列；缺省为空时沿用旧移动动画。 */
   boardEffect?: BoardEffect | null;

@@ -136,7 +136,9 @@ public class RoomService {
                     value.recoveryPending = false;
                 } else {
                     if (value.recoveryPending) throw new GameError("请等待房主分配角色并继续对局");
+                    BoardEffect.Observation spell=BoardEffect.command(value,session.playerId(),action);
                     workflow.apply(value, engine, session.playerId(), action);
+                    if(spell!=null) spell.finish(value);
                 }
                 workflow.refresh(value, engine); value.version++;
                 CommandResult committed = new CommandResult(); committed.ok = true; committed.version = value.version;
@@ -226,7 +228,9 @@ public class RoomService {
         String quote = action.type.equals("tradeOffer") ? BotPlanner.quoteKey(StateViews.publicRoom(latest), action) : null;
         transaction.executeWithoutResult(status -> {
             HistoryTrace.event(value, action.type, actorId, actionText(action.type), action);
+            BoardEffect.Observation spell=BoardEffect.command(value,actorId,action);
             workflow.apply(value, engine, actorId, action);
+            if(spell!=null) spell.finish(value);
             if (quote != null) {
                 Player bot = GameSupport.player(value, actorId); bot.botTradeTurn = value.turnNumber;
                 bot.botTradeQuotes.put(quote, value.turnNumber);

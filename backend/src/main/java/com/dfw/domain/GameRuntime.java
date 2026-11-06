@@ -19,6 +19,8 @@ public class GameRuntime {
     public String windowExit;
     /** 当前移动来源，RANDOM、REPLACE 或直接入狱后跳过移动的 JAIL。 */
     public String rollMode;
+    /** 替代移动的已公开皮肤，跨阶段保存，回合开始清空。 */
+    public String movementSkinId;
     /** 最近开放开局自选骰点的全局回合，防止保留原结果或重连后重复开放。 */
     public int openingRollOfferedTurn = -1;
     /** 已确定但尚未执行的移动步数。 */

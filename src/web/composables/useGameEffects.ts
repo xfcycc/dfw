@@ -3,6 +3,9 @@ import type { PublicRoomState } from '../../shared/types';
 import { playSound, type Sound } from '../audio';
 import { boardEffectDuration } from '../board-effect-presentation';
 import { prepareEffectSprite } from '../effect-sprites';
+import { cardSpellFor } from '../card-spell-presentation';
+import { prepareUrSpellAtlas } from '../ur-spell-preview';
+import { fullCardSpellFor, prepareFullSpell } from '../full-card-spells';
 
 const DICE_ROLL_MS = 780;
 const DICE_HOLD_MS = 220;
@@ -17,6 +20,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   const celebrating = ref(false);
   const motion = ref<PublicRoomState['motion']>(null);
   const boardEffect = ref<PublicRoomState['motion']>(null);
+  const lightSpell = ref<{key:number;card:NonNullable<ReturnType<typeof fullCardSpellFor>>;playerId:string;effect:NonNullable<PublicRoomState['motion']>['boardEffect']}|null>(null);
   const animatedPosition = ref<{ id: string; position: number } | null>(null);
   const moving = ref(false);
   const landing = ref(false);
@@ -26,6 +30,8 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   const diceRollMs = ref(DICE_ROLL_MS);
   const timers = new Set<ReturnType<typeof setTimeout>>();
   const motionTimers = new Set<ReturnType<typeof setTimeout>>();
+  let lightEpoch=0;
+  let lightGroup:{sourceCardId:string|null|undefined;skinId:string;value:NonNullable<typeof lightSpell.value>}|null=null;
   let baseline = false;
   /** 输入延时、清理操作及可选定时器组，登记短动画的清理定时器，无返回值。 */
   function later(delay: number, cleanup: () => void, group = timers): void {
@@ -43,6 +49,20 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if (boardEffect.value?.id !== id) return;
     clearMotion(); settled(id);
   }
+  /** 输入零等待片段及卡面，合并连续同来源的真实收款人；预加载与提示均不阻塞原结算。 */
+  function presentLightSpell(movement:NonNullable<PublicRoomState['motion']>,card:NonNullable<ReturnType<typeof fullCardSpellFor>>):void {
+    const merge=!!movement.sourceCardId&&lightGroup?.sourceCardId===movement.sourceCardId&&lightGroup.skinId===card.skinId&&lightGroup.value.effect?.kind===movement.boardEffect!.kind;
+    const group=merge?lightGroup!:{sourceCardId:movement.sourceCardId,skinId:card.skinId,value:{key:++lightEpoch,card,playerId:movement.playerId,effect:movement.boardEffect}};
+    if(merge) group.value={...group.value,effect:{...group.value.effect!,playerIds:[...new Set([...(group.value.effect!.playerIds??[]),...(movement.boardEffect!.playerIds??[])])]}};
+    lightGroup=group;
+    if(merge) { if(lightSpell.value?.key===group.value.key) lightSpell.value=group.value; return; }
+    const epoch=group.value.key;
+    void prepareFullSpell(card).then(()=>{
+      if(epoch!==lightEpoch||document.hidden)return;
+      lightSpell.value=group.value;
+      later(card.rarity==='UR'?card.duration:900,()=>{if(epoch===lightEpoch){lightSpell.value=null;if(lightGroup===group)lightGroup=null;}});
+    }).catch(error=>{if(lightGroup===group)lightGroup=null;console.warn('轻提示素材不可用，保留原金额反馈',error);});
+  }
   /** 输入快照、掷骰标识及落点反馈，播放移动或启用特效；零时长片段直接继续，无返回值。 */
   function animateMotion(next: PublicRoomState, roll: boolean, feedback: () => void): void {
     clearMotion();
@@ -50,17 +70,29 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if (roll) playSound('dice');
     if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { feedback(); settled(movement.id); return; }
     if (movement.boardEffect) {
-      if (boardEffectDuration(movement.boardEffect.kind) === 0) { feedback(); settled(movement.id); return; }
+      if (boardEffectDuration(movement.boardEffect.kind) === 0) {
+        const card=fullCardSpellFor(movement);
+        if(card) presentLightSpell(movement,card); else lightGroup=null;
+        feedback(); settled(movement.id); return;
+      }
+      lightGroup=null;
       motion.value = movement;
-      void prepareEffectSprite(movement.boardEffect.kind).then(() => {
+      const spell = cardSpellFor(movement);
+      const full = fullCardSpellFor(movement);
+      const prepare = spell?.theme === 'kamui' ? prepareUrSpellAtlas() : spell ? Promise.resolve() : full ? prepareFullSpell(full) : prepareEffectSprite(movement.boardEffect.kind);
+      void Promise.race([prepare, new Promise<never>((_, reject) => later(4000, () => reject(new Error('素材加载超时')), motionTimers))]).catch(error => {
+        console.warn('招式素材不可用，使用通用效果', error);
+        return 'fallback' as const;
+      }).then(result => {
         if (motion.value?.id !== movement.id) return;
         if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { clearMotion(); settled(movement.id); return; }
-        boardEffect.value = movement; playSound('magic');
+        boardEffect.value = result === 'fallback' ? { ...movement, sourceSkinId: null } : movement; playSound('magic');
         // 图集解码完成后才启动时间轴和兜底计时，首次加载不占用播放时长。
-        later(boardEffectDuration(movement.boardEffect!.kind) + 250, () => finishBoardEffect(movement.id), motionTimers);
+        later((result === 'fallback' ? boardEffectDuration(movement.boardEffect!.kind) : spell?.duration ?? full?.duration ?? boardEffectDuration(movement.boardEffect!.kind)) + 250, () => finishBoardEffect(movement.id), motionTimers);
       });
       return;
     }
+    lightGroup=null;
     motion.value = movement; diceResult.value = roll ? movement.dice ?? next.dice : null;
     animatedPosition.value = { id: movement.playerId, position: movement.from };
     rolling.value = roll; diceFace.value = 1;
@@ -84,7 +116,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     later(delay + movement.path.length * MOVE_STEP_MS + LANDING_MS, () => { clearMotion(); settled(movement.id); }, motionTimers);
   }
   /** 无入参，停止当前展示并清理动画定时器，无返回值。 */
-  function clear(): void { timers.forEach(clearTimeout); timers.clear(); money.value = []; tiles.value = []; celebrating.value = false; clearMotion(); }
+  function clear(): void { lightEpoch++;lightGroup=null;timers.forEach(clearTimeout); timers.clear(); money.value = []; tiles.value = []; lightSpell.value=null; celebrating.value = false; clearMotion(); }
   /** 无入参，切到后台时取消未播放反馈，防止返回页面补播旧路径，无返回值。 */
   function onVisibilityChange(): void { if (document.hidden) clear(); }
   document.addEventListener('visibilitychange', onVisibilityChange);
@@ -93,6 +125,8 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if (epoch !== previousEpoch) { baseline = false; clear(); return; }
     if (!live()) return;
     if (baseline || !previous || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending) { baseline = false; clear(); return; }
+    // 队列被提前完成时，最终快照可能沿用同一 motion id；先撤下旧层，再判断是否需要新动画。
+    if (motion.value?.boardEffect && (!next.motion?.boardEffect || next.motion.id !== motion.value.id)) clearMotion();
     if (next.version < previous.version || next.version === previous.version && next.motion?.id === previous.motion?.id || next.status === 'lobby') return;
     let sound: Sound | null = null;
     let cashSound: Sound | null = null;
@@ -145,5 +179,5 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     }
   }, { flush: 'pre' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
-  return { money, tiles, rolling, celebrating, motion, boardEffect, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
+  return { money, tiles, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
 }

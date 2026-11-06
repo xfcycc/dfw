@@ -134,10 +134,11 @@ public final class ConstructionService {
                 log(room,owner.name+" 建立所闻遍计连接，无回合期限，最多成功联动两次");
             }
             case "sereniteaPot" -> {
+                BoardEffect.Observation presentation=BoardEffect.watch(room,"upgrade",owner);
                 int[] levels={firstLevel,secondLevel};
                 // 重新分配和额外新增一级均不占本回合升级次数，落地后仍按正常规则付费建造。
                 for(int i=0;i<targets.size();i++) { Tile target=targets.get(i); if(target.level>levels[i]) { target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; } target.level=levels[i]; target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; }
-                SettlementService.observe(room); owner.matchStats.builtLevels++; log(room,owner.name+" 调整尘歌壶布局，建筑总数新增一级，最终等级 "+firstLevel+"／"+secondLevel); BoardEffect.cue(room,"upgrade",owner);
+                SettlementService.observe(room); owner.matchStats.builtLevels++; log(room,owner.name+" 调整尘歌壶布局，建筑总数新增一级，最终等级 "+firstLevel+"／"+secondLevel); presentation.finish(room);
             }
             case "createBuild" -> { owner.hand.removeAll(materials); targets.forEach(t -> build(room,owner,t)); }
             case "remoteConstruction" -> { state(room).remoteUntil.put(owner.id,ended(room,owner.id)+2); log(room,owner.name+" 开启基建轮班，本回合及下一个人回合各可远程七五折建造一次"); }
