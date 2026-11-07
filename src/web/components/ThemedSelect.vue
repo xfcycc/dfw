@@ -105,9 +105,6 @@ onBeforeUnmount(() => { window.removeEventListener('resize', close); window.remo
 .themed-select-option[aria-disabled='true'] { opacity: .45; cursor: not-allowed; }
 .themed-select-check { flex-shrink: 0; }
 .chibi-modal .themed-select, .cottage-lobby .themed-select { --select-bg: #fffdf5; --select-menu-bg: #fff9eb; --select-border: #e0cfaf; --select-text: #705a43; --select-hover: #f5ead3; --select-selected: #edf5dd; --select-selected-text: #5c7844; border-width: 2px; border-radius: 14px; }
-.cottage-lobby .bot-level-select { border-radius: 10px; }
-.themed-select.bot-level-select .themed-select-trigger { gap: 4px; padding: 5px 6px; font-size: 12px; }
-.themed-select.bot-level-select svg { width: 12px; height: 12px; }
 .modern-room .records-scroll .field .themed-select { margin-top: 4px; border-radius: 9px; font-size: 11px; }
 .modern-room .records-scroll .themed-select-trigger { min-height: 32px; padding: 6px 10px; }
 .central-card-selection .field .themed-select, .central-action-panel .field .themed-select { margin-top: 5px; }

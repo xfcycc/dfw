@@ -72,10 +72,6 @@ async function surrender(): Promise<void> {
 const nickname = ref('');
 const botDifficulty = ref<BotDifficulty>('normal');
 const botLevels = [{ value: 'easy', label: '简单' }, { value: 'normal', label: '普通' }, { value: 'hard', label: '困难' }] as const;
-/** 输入机器人席位与难度，通过已有命令更新大厅难度，显示值沿用服务器状态。 */
-async function changeBotDifficulty(playerId: string, level: BotDifficulty): Promise<void> {
-  await game.act({ type: 'setBotDifficulty', playerId, botDifficulty: level });
-}
 const canRename = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.settling && !game.room?.recoveryPending);
 /** 无入参，使用本人当前昵称打开改名弹窗，无返回值。 */
 function openRename(): void {
@@ -513,14 +509,13 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
             <div v-for="player in game.room.players" :key="player.id" class="lobby-seat" :class="{ 'is-me': player.id === game.me?.id, offline: !player.online }">
               <CharacterPawn :avatar-id="player.avatarId" :color="player.color" />
               <div class="seat-identity"><strong :style="{ color: player.color }" :title="player.name">{{ player.name }}</strong><small>{{ player.botDifficulty ? `机器人 · ${botLevels.find(level => level.value === player.botDifficulty)?.label}` : player.id === game.room.hostId ? '房主' : player.id === game.me?.id ? '我' : '玩家' }}{{ player.id === game.room.hostId && player.id === game.me?.id ? ' · 我' : '' }}</small></div>
-              <ThemedSelect v-if="game.isHost && player.botDifficulty" class="bot-level-select" :label="`${player.name}的难度`" :model-value="player.botDifficulty" :options="botLevels" :disabled="game.busy || !game.canAct" @update:model-value="changeBotDifficulty(player.id, $event)" />
               <ReadyIcon class="seat-ready" :ready="player.ready" :offline="!player.online" />
               <button v-if="game.isHost && (!player.online || player.botDifficulty) && player.id !== game.me?.id" class="seat-remove" :disabled="game.busy" :aria-label="`移出 ${player.name}`" @click="game.act({ type: 'removePlayer', playerId: player.id })">移出</button>
             </div>
             <div v-for="seat in 6 - game.room.players.length" :key="`empty-${seat}`" class="lobby-seat empty"><span class="empty-seat-mark" aria-hidden="true">＋</span><span>待加入</span></div>
           </div>
           <div class="cottage-map"><span>地图</span><div class="map-size-options" role="group" aria-label="地图大小"><button v-for="size in MAP_SIZES" :key="size.value" type="button" :class="{ selected: (game.room.mapSize ?? 'large') === size.value }" :aria-pressed="(game.room.mapSize ?? 'large') === size.value" :disabled="spectator || !game.isHost || !game.canAct" @click="changeMapSize(size.value)">{{ size.name }}<small>{{ mapLength(previewPlayers, size.value) }} 格</small></button></div></div>
-          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<ThemedSelect v-model="botDifficulty" label="机器人难度" :options="botLevels" :disabled="!game.canAct" /></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；开局前可调整难度。</p></div>
+          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<ThemedSelect v-model="botDifficulty" label="机器人难度" :options="botLevels" :disabled="!game.canAct" /></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；调整难度请移出后重新添加。</p></div>
           <section v-if="game.me && !spectator" class="lobby-avatar-picker"><div class="lobby-avatar-heading"><h2>选择头像</h2><button type="button" class="button secondary small lobby-rename" :disabled="!canRename" @click="openRename">改名</button></div><AvatarPicker /></section>
           <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : allReady ? game.isHost ? '大家都准备好了' : '等待房主开局' : '等待所有玩家准备' }}</p></div>
           <p v-else class="lobby-hint">观战中 · 等待开局</p>

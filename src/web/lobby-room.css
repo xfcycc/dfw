@@ -92,7 +92,6 @@
 .lobby-bot-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
 .lobby-bot-controls .field { margin: 0; flex: 1 1 100px; }
 .lobby-bot-controls p { flex-basis: 100%; margin: 0; }
-.cottage-lobby .bot-level-select { width: 68px; flex: 0 0 auto; min-height: 32px; border: 1px solid #d7b88b; border-radius: 8px; background: #fff7e8; color: #69442c; font: inherit; font-size: 12px; }
 .lobby-room .lobby-chat { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e9dfc9; }
 .lobby-room .lobby-chat > h2 { margin: 0 0 8px; color: #695037; font-size: 14px; }
 .lobby-room .lobby-chat-records { height: 180px; padding: 0 10px; border: 1px solid #e3d7b9; border-radius: 14px; background: #fffdf580; }
