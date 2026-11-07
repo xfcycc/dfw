@@ -23,13 +23,15 @@ const emojiStyle = ref<Record<string, string>>({});
 function toggleEmoji(): void {
   if (emojiOpen.value) { emojiMenu.value?.hidePopover(); return; }
   const rect = emojiTrigger.value!.getBoundingClientRect();
-  const width = Math.min(336, window.innerWidth - 24);
+  const scale = Number(getComputedStyle(document.body).getPropertyValue('--room-scale')) || 1;
+  const width = Math.min(336 * scale, window.innerWidth - 24);
   const upwards = rect.top > window.innerHeight - rect.bottom;
   emojiStyle.value = {
-    left: `${Math.max(12, Math.min(rect.right - width, window.innerWidth - width - 12))}px`,
-    top: `${upwards ? rect.top - 8 : rect.bottom + 8}px`,
-    width: `${width}px`,
-    maxHeight: `${Math.min(300, (upwards ? rect.top : window.innerHeight - rect.bottom) - 20)}px`,
+    zoom: String(scale),
+    left: `${Math.max(12, Math.min(rect.right - width, window.innerWidth - width - 12)) / scale}px`,
+    top: `${(upwards ? rect.top - 8 : rect.bottom + 8) / scale}px`,
+    width: `${width / scale}px`,
+    maxHeight: `${Math.min(300 * scale, (upwards ? rect.top : window.innerHeight - rect.bottom) - 20) / scale}px`,
     transform: upwards ? 'translateY(-100%)' : 'none',
   };
   dismissed.value = true;
@@ -134,7 +136,7 @@ onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); docu
     <textarea id="room-chat-message" ref="input" :value="message" maxlength="300" rows="1" :disabled="disabled || sending" :placeholder="placeholder" :aria-expanded="suggestions.length > 0" :aria-controls="suggestions.length ? 'room-chat-suggestions' : undefined" :aria-activedescendant="suggestions.length ? `chat-option-${selected}` : undefined" aria-autocomplete="list" @input="edit" @click="dismissed = false; updateCaret()" @keyup="updateCaret" @select="updateCaret" @focus="focused = true; dismissed = false; updateCaret()" @blur="focused = false" @compositionstart="composing = true" @compositionend="composing = false; updateCaret()" @keydown="keydown" />
     <div class="chat-composer-actions"><button ref="emojiTrigger" type="button" class="button secondary chat-emoji-toggle game-action-button" :disabled="disabled || sending || composing" aria-label="选择表情" title="表情" aria-haspopup="dialog" :aria-expanded="emojiOpen" @click="toggleEmoji"><img :src="CHAT_EMOJIS[0]!.url" alt="" width="26" height="26" /><small>表情</small></button><button type="submit" class="button primary chat-send game-action-button" :disabled="disabled || sending || !message.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
   </div></form>
-  <div ref="emojiMenu" popover="auto" class="chat-emoji-popover" role="dialog" aria-label="选择表情" :style="emojiStyle" @toggle="emojiOpen = $event.newState === 'open'"><div class="chat-emoji-grid"><button v-for="emoji in CHAT_EMOJIS" :key="emoji.code" type="button" :disabled="disabled || sending || message.length - (selectionEnd - caret) + emoji.code.length > 300" :title="emoji.name" :aria-label="`插入表情：${emoji.name}`" @click="insertEmoji(emoji)"><img :src="emoji.url" :alt="emoji.name" width="36" height="36" /><small>{{ emoji.name }}</small></button></div></div>
+  <Teleport to="body"><div ref="emojiMenu" popover="auto" class="chat-emoji-popover" role="dialog" aria-label="选择表情" :style="emojiStyle" @toggle="emojiOpen = $event.newState === 'open'"><div class="chat-emoji-grid"><button v-for="emoji in CHAT_EMOJIS" :key="emoji.code" type="button" :disabled="disabled || sending || message.length - (selectionEnd - caret) + emoji.code.length > 300" :title="emoji.name" :aria-label="`插入表情：${emoji.name}`" @click="insertEmoji(emoji)"><img :src="emoji.url" :alt="emoji.name" width="36" height="36" /><small>{{ emoji.name }}</small></button></div></div></Teleport>
   <Teleport to="body"><div v-if="suggestions.length" id="room-chat-suggestions" ref="menu" class="chat-suggestions" role="listbox" aria-label="玩家和地块联想" :style="menuStyle">
     <button v-for="(option, index) in suggestions" :id="`chat-option-${index}`" :key="option.key" type="button" role="option" :aria-selected="selected === index" tabindex="-1" @pointerdown.prevent @click="choose(option)"><span :style="{ color: option.color }">{{ option.label }}</span><small>{{ option.detail }}</small></button>
   </div></Teleport>

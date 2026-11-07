@@ -16,10 +16,11 @@ const value = computed({ get: () => props.modelValue, set: value => emit('update
 function close(): void { menu.value?.hidePopover(); open.value = false; }
 /** 无入参，滚动到键盘当前指向的选项，无返回值。 */
 function reveal(): void { void nextTick(() => menu.value?.children[active.value]?.scrollIntoView({ block: 'nearest' })); }
-/** 无入参，按视口剩余空间展开菜单，保留原生表单校验。 */
+/** 无入参，将视口坐标换算为选择框缩放前的坐标后展开菜单，保留原生表单校验。 */
 function show(): void {
   if (props.disabled || !enhanced || !trigger.value || !menu.value) return;
   const rect = trigger.value.getBoundingClientRect();
+  const scale = rect.width / trigger.value.offsetWidth;
   const viewport = window.visualViewport;
   const top = viewport?.offsetTop ?? 0;
   const left = viewport?.offsetLeft ?? 0;
@@ -29,10 +30,10 @@ function show(): void {
   const above = rect.top - top - 10;
   const upwards = below < 180 && above > below;
   position.value = {
-    left: `${Math.max(left + 8, Math.min(rect.left, left + width - rect.width - 8))}px`,
-    top: `${upwards ? rect.top - 6 : rect.bottom + 6}px`,
-    width: `${Math.min(rect.width, width - 16)}px`,
-    maxHeight: `${Math.max(0, Math.min(280, upwards ? above : below))}px`,
+    left: `${Math.max(left + 8, Math.min(rect.left, left + width - rect.width - 8)) / scale}px`,
+    top: `${(upwards ? rect.top - 6 : rect.bottom + 6) / scale}px`,
+    width: `${Math.min(rect.width, width - 16) / scale}px`,
+    maxHeight: `${Math.max(0, Math.min(280, (upwards ? above : below) / scale))}px`,
     transform: upwards ? 'translateY(-100%)' : 'none',
   };
   active.value = selected.value >= 0 && !props.options[selected.value]?.disabled ? selected.value : props.options.findIndex(option => !option.disabled);

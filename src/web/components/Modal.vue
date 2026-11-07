@@ -69,6 +69,8 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
   .map-picking-backdrop .modal.chibi-modal { max-height: calc(100dvh - 100px); }
 }
 .modal.chibi-modal.wide { width: min(100%, 920px); }
+/* 外层遮罩仍覆盖真实视口，正文和固定操作区与桌面棋盘使用相同比例。 */
+.modal-backdrop:not(.map-picking-backdrop) > .modal.chibi-modal:not(.card-reveal-modal) { zoom: var(--room-scale, 1); max-height: calc((100dvh - 48px) / var(--room-scale, 1)); }
 .modal.chibi-modal.home-archive-modal { width: min(100%, 960px); }
 .modal.chibi-modal.game-tools-modal { width: min(100%, 420px); }
 .chibi-modal > .modal-heading { position: relative; top: auto; flex-shrink: 0; z-index: 3; gap: 12px; margin: 0 0 20px; padding: 0 0 16px; border-bottom: 2px dashed #e5d5b7; background: #fff9eb; }

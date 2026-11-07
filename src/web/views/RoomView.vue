@@ -139,8 +139,8 @@ const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow
 const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
 const detachedDashboard = computed(() => spectatorFollowing.value || !props.spectator && mobileViewport.value);
 const desktopViewport = ref({ width: window.innerWidth, height: window.innerHeight });
-const desktopScale = computed(() => classicLayout.value || !isSingleScreen.value || props.spectator || detachedDashboard.value ? 1 : Math.min(1, desktopViewport.value.width / 1920, desktopViewport.value.height / 900));
-/** 无入参，按窗口可用宽高更新桌面单屏比例；手机、经典布局和观战保持原布局，无返回值。 */
+const desktopScale = computed(() => !isGameSession.value || props.spectator || detachedDashboard.value ? 1 : Math.min(1, desktopViewport.value.width / 1920, desktopViewport.value.height / 900));
+/** 无入参，按窗口可用宽高更新两种桌面布局和弹框的比例，无返回值。 */
 function resizeDesktopViewport(): void { desktopViewport.value = { width: window.innerWidth, height: window.innerHeight }; }
 window.addEventListener('resize', resizeDesktopViewport);
 onBeforeUnmount(() => window.removeEventListener('resize', resizeDesktopViewport));
@@ -203,6 +203,9 @@ const canRoll = computed(() => !drafting.value && canPlay.value && !game.room?.r
 const isGameSession = computed(() => !!game.room && game.room.status !== 'lobby');
 const isLobby = computed(() => game.room?.status === 'lobby');
 const isSingleScreen = computed(() => isGameSession.value && !game.room?.recoveryPending);
+/** 输入房间缩放比例，同步传送到 body 的弹框尺寸，无返回值。 */
+watch(desktopScale, scale => document.body.style.setProperty('--room-scale', String(scale)), { immediate: true });
+onBeforeUnmount(() => document.body.style.removeProperty('--room-scale'));
 const hasCentralDecision = computed(() => !game.opening && !game.settling && game.canDecide && !game.room?.tradePending && !!game.room?.pending);
 const decisionTitle = computed(() => payment.value ? '选择支付方式' : choice.value ? choice.value.content?.name ?? '处理当前选择' : game.room?.pending?.type === 'choice' ? '处理当前选择' : game.room?.phase === 'buy' ? '购买地产' : '升级建筑');
 const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
