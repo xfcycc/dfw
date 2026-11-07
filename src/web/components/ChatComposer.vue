@@ -161,7 +161,9 @@ onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); docu
   /* 输入操作置于装饰边框之上，避免边框遮住表情图标。 */
   .room-chat .chat-composer { position: relative; z-index: 4; flex-direction: column; align-items: stretch; gap: 4px; }
   .room-chat .chat-composer textarea { flex: none; width: 100%; box-sizing: border-box; }
-  .room-chat .chat-composer-actions { align-self: flex-end; }
-  .chat-emoji-toggle > small { display: none; }
+  .room-chat .chat-composer-actions { align-self: flex-end; min-height: 44px; align-items: center; }
+  .room-chat .chat-composer-actions .button.game-action-button { box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 36px; height: 36px; min-height: 36px; padding: 0; gap: 0; }
+  .room-chat .chat-composer-actions img, .room-chat .chat-composer-actions :deep(.action-icon) { display: block; flex: none; width: 26px; height: 26px; }
+  .room-chat .chat-composer-actions .game-action-button > small { display: none; }
 }
 </style>
