@@ -20,7 +20,9 @@ function reveal(): void { void nextTick(() => menu.value?.children[active.value]
 function show(): void {
   if (props.disabled || !enhanced || !trigger.value || !menu.value) return;
   const rect = trigger.value.getBoundingClientRect();
-  const scale = rect.width / trigger.value.offsetWidth;
+  // 顶层浮层继承 CSS zoom，但不继承 FitPanel 的 transform；只补偿实际 zoom。
+  let scale = 1;
+  for (let node: HTMLElement | null = trigger.value; node; node = node.parentElement) scale *= Number(getComputedStyle(node).zoom) || 1;
   const viewport = window.visualViewport;
   const top = viewport?.offsetTop ?? 0;
   const left = viewport?.offsetLeft ?? 0;

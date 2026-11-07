@@ -126,16 +126,10 @@ const dashboardView = ref<HTMLElement>();
 const classicLayout = ref(localStorage.getItem('dfw:room-layout') === 'classic');
 /** 无入参，切换布局并记住本机偏好，不改变对局或当前行动，无返回值。 */
 function toggleLayout(): void { classicLayout.value = !classicLayout.value; localStorage.setItem('dfw:room-layout', classicLayout.value ? 'classic' : 'single'); }
-const classicMobileQuery = window.matchMedia('(max-width: 800px), (max-width: 1000px) and (max-height: 500px)');
-const classicMobileViewport = ref(classicMobileQuery.matches);
-/** 输入经典布局的屏幕匹配结果，更新其手机断点，无返回值。 */
-function updateClassicViewport(event: MediaQueryListEvent): void { classicMobileViewport.value = event.matches; }
-classicMobileQuery.addEventListener('change', updateClassicViewport);
-onBeforeUnmount(() => classicMobileQuery.removeEventListener('change', updateClassicViewport));
-const mobileQuery = window.matchMedia('(max-width: 1100px), (max-height: 579px)');
+const mobileQuery = window.matchMedia('(max-width: 1100px), (max-height: 579px), (pointer: coarse)');
 const singleMobileViewport = ref(mobileQuery.matches);
-const mobileViewport = computed(() => classicLayout.value ? classicMobileViewport.value : singleMobileViewport.value);
-const spectatorMode = ref<'follow' | 'landscape'>(mobileViewport.value ? 'follow' : 'landscape');
+const mobileViewport = computed(() => singleMobileViewport.value);
+const spectatorMode = ref<'follow' | 'landscape'>('landscape');
 const spectatorFollowing = computed(() => props.spectator && spectatorMode.value === 'follow');
 const detachedDashboard = computed(() => spectatorFollowing.value || !props.spectator && mobileViewport.value);
 const desktopViewport = ref({ width: window.innerWidth, height: window.innerHeight });
@@ -532,7 +526,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       <RecoverySeats v-if="!spectator" />
       <section v-if="game.room.researchCandidates?.length" class="panel" aria-label="天才俱乐部公共研究"><h3>天才俱乐部 · 公共研究</h3><p class="muted">每人秘密投入0～2张手牌，或放弃；触发者额外＋1贡献。最高者胜，并列随机，仅胜者支付投入牌并自选1张UR。</p><div class="choice-card-grid"><ContentCard v-for="candidate in game.room.researchCandidates" :key="candidate.id" :content="candidate" compact thumbnail /></div></section>
       <section v-if="isLobby" class="lobby-layout cottage-lobby" aria-label="房间大厅">
-        <FitPanel class="lobby-fit">
+        <FitPanel class="lobby-fit" :disabled="mobileViewport">
         <div class="lobby-panel cottage-panel">
           <div class="lobby-settings">
           <div class="cottage-heading"><h1>好友房间 <small>{{ game.room.players.length }} / 6</small></h1><button class="button secondary small" @click="inviteFriends">邀请朋友</button></div>
@@ -588,10 +582,10 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <Teleport to="#mobile-card-reveal" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :embedded="classicLayout" :paused="game.opening || boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
+                      <Teleport :to="classicLayout && detachedDashboard && !spectator ? '#mobile-card-reveal' : 'body'" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :embedded="classicLayout" :paused="game.opening || boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
-                      <Teleport to="#desktop-hand-chat" :disabled="!pagedHand" defer>
+                      <Teleport :to="pagedHand ? '#desktop-hand-chat' : 'body'" :disabled="!pagedHand" defer>
                       <ChatComposer v-if="!spectator" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和大家聊聊，输入 @ 提及玩家或地块…'" />
                       </Teleport>
                     </section>
@@ -610,7 +604,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 
                   <div v-show="pagedHand" id="desktop-hand-chat" class="desktop-hand-chat"></div>
 
-                  <Teleport to="#classic-workbench" :disabled="!classicLayout" defer>
+                  <Teleport :to="classicLayout ? '#classic-workbench' : 'body'" :disabled="!classicLayout" defer>
                   <section v-if="game.me && !spectator && !detachedDashboard" class="dashboard-workbench workspace-panel" aria-label="工作台">
                     <PanelFrame variant="workbench" ornament="right" />
                     <div class="workbench-actions">

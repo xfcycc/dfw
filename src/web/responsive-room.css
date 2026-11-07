@@ -234,3 +234,15 @@
 }
 /* 避免桌面回合徽章和骰子的高优先级样式在手机状态栏生成多余网格行。 */
 .modern-room.game-session .mobile-turn .workbench-center .turn-display > :is(.hub-turn-callout, .die) { display: none; }
+/* 竖屏观战仍完整展示地图，工具栏换行，内圈公开信息上下排列。 */
+@media (max-width: 600px) {
+  .modern-room.game-session.spectator-page .room-header { flex-wrap: wrap; }
+  .modern-room.spectator-page .room-utilities { flex: 1 0 100%; justify-content: center; }
+  .modern-room.spectator-landscape .dashboard-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  .modern-room.spectator-landscape .dashboard-records { grid-column: 1; grid-row: 1; }
+  .modern-room.spectator-landscape .dashboard-ranking { grid-column: 1; grid-row: 2; }
+  .modern-room.spectator-landscape .workbench-center :is(.city-feed-panel, .dashboard-ranking) { padding: 8px 10px; }
+}
+@media (max-width: 1100px), (pointer: coarse) {
+  .modern-room.spectator-landscape .ranking-stats { flex-basis: 100%; }
+}
