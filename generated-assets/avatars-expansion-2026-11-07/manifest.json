@@ -1,0 +1,1393 @@
+{
+  "date": "2026-11-07",
+  "provider": "image_gen",
+  "styleReference": "https://pic.caiguoyu.cn/typora/20261016163650210.webp",
+  "stylePrompt": "Create ONE square transparent-background game avatar, a single centered head-and-shoulders chibi portrait. Match the supplied existing avatar's visual style closely: huge expressive glossy eyes where appropriate, large head, small shoulders, crisp detailed anime lineart, polished cel shading, warm cute look. Preserve the requested character's iconic features and individual face. Entire head, ears, accessories and hair fit within the canvas with a small margin; shoulders can end at bottom. Clear at 64px. No frame, labels, lettering, watermark, scenery, other characters, or background. The supplied image is only a STYLE reference. Character: ",
+  "compression": {
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  },
+  "entries": [
+    {
+      "id": "kaito_kid",
+      "name": "怪盗基德",
+      "description": "Kaito Kid from Magic Kaito, white top hat with blue band, white suit and cape, blue tie, single monocle over right eye with fine chain, tousled dark hair, confident playful smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6cd0c7f7-057d-4e73-b898-21410ee91306.png",
+      "sourceSha256": "f38beaac99f120f93149e77b4820d0ba19e4472d8a5949ece55935a48707ff1a",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kaito_kid.webp",
+      "webpBytes": 218776,
+      "webpSha256": "2b5bb737793381ce4630b2a7dcb327b3b398c7b0cd97f7b59cdaa7e06a6d0f2a",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100561.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 218776,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "minato",
+      "name": "波风水门",
+      "description": "Minato Namikaze from Naruto, bright blond spiky hair framing face, blue eyes, Leaf village metal forehead protector, green jonin vest, white Hokage cloak with red flame trim, calm sunny smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-d2337096-27cb-45c6-9f59-a6ec986633da.png",
+      "sourceSha256": "1aaa0bda7d0baa28a9b28513c2405a7f05872e569ce7e0bd0cea5a28fd10d1ac",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/minato.webp",
+      "webpBytes": 272902,
+      "webpSha256": "49dac7c59c0cdeb86728a950c664811e35a04b8accc44f0a938364ac47322877",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100562.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 272902,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kakashi",
+      "name": "卡卡西",
+      "description": "Kakashi Hatake from Naruto, upright silver spiky hair, Leaf village forehead protector tilted covering left eye, visible relaxed dark right eye, dark navy mask covering nose and mouth, green jonin vest.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-59020b71-6c20-411a-a9d0-014a43b82551.png",
+      "sourceSha256": "f2f2c149673d779fcb163f65908ef38e97a4c9fc9b66ea1d904a3fc8c2ebd007",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kakashi.webp",
+      "webpBytes": 199364,
+      "webpSha256": "0965a72526573af391006cfe7461a7fa7c248853688ef349f5e80ff97d9bcc14",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100563.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 199364,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "ichigo",
+      "name": "黑崎一护",
+      "description": "Ichigo Kurosaki from Bleach, short bright orange spiky hair, brown eyes, confident determined gentle expression, black shihakusho robe with white collar, small sword hilt behind shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-96879a73-522d-4076-bcf3-691c42740431.png",
+      "sourceSha256": "a8c4a46859ef19e07752eaa4e9897df72b72542149ef9f5b5176fbb1a7955b23",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/ichigo.webp",
+      "webpBytes": 267538,
+      "webpSha256": "ab7bb732c258a7c71e9b6c5a0b8922f6301ca64eb23ba8f575e806b7e6f0c77f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100564.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 267538,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "aizen",
+      "name": "蓝染",
+      "description": "Sosuke Aizen from Bleach in his recognizable gentle captain appearance: neat parted brown hair with small forelock, rectangular black glasses, warm composed brown eyes, white captain haori over black shihakusho, subtle knowing smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-698069ed-9606-4584-b339-fe60ef98de5a.png",
+      "sourceSha256": "fb810eb3913f6cf4b9b998fea08311a888ddbb4e7487ded690bd194c65ff5ccf",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/aizen.webp",
+      "webpBytes": 212260,
+      "webpSha256": "a8988e476e7df33f1fb6f1c904978e7765f0adc5140e3b4508d7c74c6e29e11d",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100565.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 212260,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "su_mucheng",
+      "name": "苏沐橙",
+      "description": "Su Mucheng from The King's Avatar (Quan Zhi Gao Shou), long warm orange-brown hair with straight bangs and soft side locks, lively green eyes, cheerful warm smile, stylish white and orange esports jacket, small orange hair clip. Her human esports player appearance.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a7d6e644-3503-486b-b286-0c7798add012.png",
+      "sourceSha256": "9a5b84c9888cacc45f39dc656d828e5bfa0a33007272824c119e28ccc6e182b5",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/su_mucheng.webp",
+      "webpBytes": 308266,
+      "webpSha256": "5d0825a084a6de3de1b5d839213b9884666d144e3cd578bed1d6bd73a592b95c",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100566.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 308266,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "goku",
+      "name": "孙悟空",
+      "description": "Son Goku from Dragon Ball in normal base form: iconic huge black spiky hair, dark eyes, cheerful confident grin, orange gi with dark blue undershirt, muscular small chibi shoulders. Dragon Ball Goku, no monkey crown or staff.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-79d65cb2-505e-4b74-9369-94c3f50807ec.png",
+      "sourceSha256": "b0eec1cca7bb81681efa445f3530687bd3507b94b0e238c4908502691008816f",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/goku.webp",
+      "webpBytes": 199950,
+      "webpSha256": "7aec47dc006a39455595552e499a068377e2e057dff726613ee23d57a2f93c7f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100567.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 199950,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "levi",
+      "name": "利威尔",
+      "description": "Levi Ackerman from Attack on Titan, neat short black undercut with parted bangs, narrow steel-gray eyes, reserved mildly stern expression, Survey Corps green cloak, white cravat and brown uniform, no weapon crossing face.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-9e2f8628-a365-4d8d-93ad-8be24457af65.png",
+      "sourceSha256": "0acf620642f75eaf9d5d2529e7aa433df79ce54b464d08a473db5d38016f6ead",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/levi.webp",
+      "webpBytes": 207132,
+      "webpSha256": "adfb176005b1301ea7e3c837c4973bd62cd1bf200be49618bcfe8764b5563795",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100568.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 207132,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "saitama",
+      "name": "埼玉",
+      "description": "Saitama from One Punch Man, completely bald shiny round head, simple deadpan dark oval eyes, tiny neutral mouth, yellow hero suit, white cape with round fasteners and red glove just visible. Preserve his iconic plain funny face.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-8190612c-5596-4d12-901b-2127d647d2f8.png",
+      "sourceSha256": "ba635d7fbae5be2e5e060e9d86c02747010003eb94828ef041ce7efc6a1bd793",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/saitama.webp",
+      "webpBytes": 144876,
+      "webpSha256": "3acead14691dfdbac39911aaedab4f659b3d5fb306a40fe826f8885cfb87489c",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100569.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 144876,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "gintoki",
+      "name": "坂田银时",
+      "description": "Gintoki Sakata from Gintama, messy silver-white wavy hair, half-lidded reddish eyes, lazy friendly smirk, black shirt with red collar under white yukata draped over one shoulder with blue swirl trim.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-bfb6ec4d-54ba-4f7d-80d6-3ef95d7b8ad0.png",
+      "sourceSha256": "018a2a3de67df102b0b9110265085e2acf88e457c79a5d2e1e929a6848c55bc3",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/gintoki.webp",
+      "webpBytes": 273856,
+      "webpSha256": "de5825e1f4b56291ff8ec049446c87dea09c7a9d9de7adb815c6f16d232285b8",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210100570.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 273856,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kagura",
+      "name": "神乐",
+      "description": "Kagura from Gintama, bright orange hair in two round side buns wrapped in red covers with gold trim, blue eyes, cheerful mischievous smile, red Chinese-style high collar dress with golden trim, small purple umbrella handle beside shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-934d3817-920e-4cea-b2c8-8566a976d2a1.png",
+      "sourceSha256": "04550fa4a80bf9fb91c7eed93844cd261e0b3f1a79dc765516e318c5942a743a",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kagura.webp",
+      "webpBytes": 300520,
+      "webpSha256": "1a31b99eeef2b2c1a6cf211fdfb18f2bd0f4ec1d2a8750a03f77414bc7bf3f3e",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103225.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 300520,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "sakura",
+      "name": "木之本樱",
+      "description": "Sakura Kinomoto from Cardcaptor Sakura, short chestnut brown bob with signature long side locks and small flyaway hair, bright emerald green eyes, cheerful smile, pink magical girl costume with white frills, pink beret and red bow, tiny gold wing-star ornament near shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c91482a8-b0a3-49d7-999c-7734b1feed04.png",
+      "sourceSha256": "30b521a2a5b370abc58369433794fcf88fbc311e67f31b4fc93fc12685868ccd",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/sakura.webp",
+      "webpBytes": 346288,
+      "webpSha256": "7da3e5be10caadbe0e33bbb21c108a13a406186ca4b78b789e6cdfaa7f3ffa82",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103226.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 346288,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "madoka",
+      "name": "鹿目圆",
+      "description": "Madoka Kaname from Puella Magi Madoka Magica, short pastel pink twin pigtails tied with red ribbons, pink eyes, sweet hopeful smile, pink magical girl bodice with white frills and red ribbon, innocent cute headshot.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-7a3a612a-246f-4d43-8096-9161fc01913e.png",
+      "sourceSha256": "aa2026d6378f4db3cb0653899f1cdfc7ac065fc230120e48a830083fc630bd21",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/madoka.webp",
+      "webpBytes": 295130,
+      "webpSha256": "9ee1c2c4501bf7fea10daf7d951c505a6cde9f7ab3d40e57103da3f729474ee6",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103227.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 295130,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "saber",
+      "name": "Saber",
+      "description": "Artoria Pendragon Saber from Fate, golden blonde hair with neat bangs and signature ahoge, braided crown hair gathered in back with blue ribbon, emerald green eyes, gentle resolute smile, blue dress with silver breastplate and white ruffled collar.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-2933061b-1431-40a5-839c-f3970b853a63.png",
+      "sourceSha256": "a3d19eb849932bd0d9e09a0e019c9ef2c47d9236e085cd5f552f52d482236ba0",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/saber.webp",
+      "webpBytes": 327838,
+      "webpSha256": "c2b52cff609288403d6297d035c702a6d059fddb4431baeac04b7483f1937c85",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103228.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 327838,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kirito",
+      "name": "桐人",
+      "description": "Kirito Kazuto Kirigaya from Sword Art Online, short black hair with layered pointed bangs, dark eyes, friendly confident smile, signature black coat with silver-white piping, small black sword hilt behind one shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-9359ed95-ae6d-4cd0-9891-2d8b716a42ad.png",
+      "sourceSha256": "e73f97a8968b5ef9356d1613ba40db170c4c4a91e4adea00c351b6700aef1a41",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kirito.webp",
+      "webpBytes": 194818,
+      "webpSha256": "901ab66858d2c1eae396a1e8e7f1a971eccbd4247e448908d4d94a9d8b7d451d",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103229.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 194818,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "asuna",
+      "name": "亚丝娜",
+      "description": "Asuna Yuuki from Sword Art Online, long chestnut light brown hair with braided sides, amber brown eyes, warm confident smile, Knights of the Blood red-and-white outfit with white high collar and red trim, no weapon in front of face.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-7d8a098f-f5dd-446a-988f-4873bd8dbf6a.png",
+      "sourceSha256": "9ead070df8cf993541a05f1e9c2becc284c713357b12802b80a76f64ab5ff177",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/asuna.webp",
+      "webpBytes": 322876,
+      "webpSha256": "32e8e1662fc32fede53d757741dc8f68b9c7c86061fc17256b06a481f59301c6",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103230.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 322876,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "rem",
+      "name": "雷姆",
+      "description": "Rem from Re Zero, short powder blue bob covering her right eye, visible bright blue left eye, small pink hairpin and white flower hairband, black-and-white maid outfit with violet neck ribbon, tender smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-f869d561-c0ae-4407-bb68-0c7cee1ea2ef.png",
+      "sourceSha256": "95bd7a08cf9b39c1e235ecc5fe382a9adb7bb07606e002369bcb1fc4f8fe7e2a",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/rem.webp",
+      "webpBytes": 293538,
+      "webpSha256": "bcc010604f27b985511a2ef303a59f4f2bcd855c11754fab210544f8e9aaca5d",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103231.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 293538,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "aqua",
+      "name": "阿库娅",
+      "description": "Aqua from KonoSuba, long vibrant light blue hair gathered in high loop ponytail with blue spherical hair ornament and green accent, blue eyes, cheerful slightly smug smile, blue goddess dress neckline with green bow and blue gem.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b5a4d61a-006a-42af-9905-e0e14104c1fb.png",
+      "sourceSha256": "afe43506346f4e4c33de713280407f34c8d8a80f6a796dc8acaffa01c71e16ff",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/aqua.webp",
+      "webpBytes": 310460,
+      "webpSha256": "e134d7934354af038ef3627f83f9c05dfafcaa8fbdabf407a03d12cc7953fe52",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103232.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 310460,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "misaka",
+      "name": "御坂美琴",
+      "description": "Mikoto Misaka from A Certain Scientific Railgun, short light brown bob, small white flower hair clip on her left side, brown eyes, lively confident smile, Tokiwadai beige sweater vest over white short sleeve collared shirt, subtle tiny blue electric arc near shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-afc088a9-5969-4bc8-ba08-4fbe7078944b.png",
+      "sourceSha256": "ac95979744c9554548f1c8bf1b9db9c99f4f2127fcfca9a410bc689cb0f40e40",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/misaka.webp",
+      "webpBytes": 303720,
+      "webpSha256": "0caeeba9985af515ed774bd42f4b5ad8f68e5f68ef993b0f6bb3ca3b253ee2bb",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103233.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 303720,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "accelerator",
+      "name": "一方通行",
+      "description": "Accelerator from A Certain Magical Index, shaggy short pure white hair, narrow red eyes, pale skin, mischievous confident smirk, black high-collar shirt and white accents, black electrode choker around neck.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a7552a02-f7a6-4e1d-8862-c3109aa4faf7.png",
+      "sourceSha256": "d68d2a4c3e996f7550c0e11d34e6497878e82a4b44c42f20f4773b2092508a89",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/accelerator.webp",
+      "webpBytes": 250254,
+      "webpSha256": "d623c2c236077aef63c79a23c6d9da2249673fd7e73e4fe1833b092eae803e6e",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210103234.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 250254,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "touma",
+      "name": "上条当麻",
+      "description": "Touma Kamijou from A Certain Magical Index, iconic very spiky black hair, blue eyes, good-natured determined smile, open white school uniform shirt over orange undershirt, right hand lightly raised beside shoulder with palm partly visible.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6af74c67-1552-4742-8c79-cdd25e0097c3.png",
+      "sourceSha256": "a8e8a5f01f5c769bd05eb19354c127d947e022773fbd2615a2fc628f91bc148f",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/touma.webp",
+      "webpBytes": 216858,
+      "webpSha256": "43834995c673e67cb5e12451e23f69e5ce427c2444f9a92ad3a65b50c44761bb",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105931.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 216858,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "index",
+      "name": "茵蒂克丝",
+      "description": "Index Librorum Prohibitorum from A Certain Magical Index, very long silver hair, bright green eyes, big white nun veil with golden trim, white church habit with gold trim and small safety-pin detail, cheerful gentle smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b980d354-c3d8-4de5-841f-61483274447f.png",
+      "sourceSha256": "1751f8b2fb05dcd68758d42482901f72cc5365157b5faee079869d404de0187d",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/index.webp",
+      "webpBytes": 280596,
+      "webpSha256": "4eae935318ad11498a5f75dca4e287abf220b763d37007171974ee71fe1c1063",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105932.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 280596,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kurumi",
+      "name": "时崎狂三",
+      "description": "Kurumi Tokisaki from Date A Live, long black twin tails unevenly tied with red ribbons, heterochromia red right eye and golden clock-face left eye, black-and-red gothic lolita dress with ruffles, red-black lace hair ornament, playful elegant smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1cbc4ed2-aa91-4447-b62d-df298951322c.png",
+      "sourceSha256": "b4e25b57a893929501facdbfa51c6de2e1acdf3e170b947527d1cdad723ac9d4",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kurumi.webp",
+      "webpBytes": 375788,
+      "webpSha256": "ba1a7d3da8d684c6b1a3a286e9a724f06054b5c8fbeb2a7252cc715c076dbf1f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105933.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 375788,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "tohka",
+      "name": "夜刀神十香",
+      "description": "Tohka Yatogami from Date A Live, long dark violet hair with straight bangs and two long face framing strands, violet eyes, cheerful innocent smile, purple and white armored astral dress collar with pink bow, small gold accents.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-98460a38-86b6-43ec-ab97-565bd619755f.png",
+      "sourceSha256": "4e4552d8ea4d0572e1358ec39c9c530dafc6727b88aca7f334d3a957ce3288d8",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/tohka.webp",
+      "webpBytes": 329744,
+      "webpSha256": "25fc111b37f9396ccf8584d9a70f98e01cf797e5834a81068aed312abb7fede0",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105934.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 329744,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "megumi",
+      "name": "加藤惠",
+      "description": "Megumi Kato from Saekano, short dark brown bob with neat bangs, warm brown eyes, gentle understated smile, white beret with red ribbon accent, cream-white cardigan over red dress neckline, soft approachable expression.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-97260bdc-efcb-4006-a691-dd23ddfd075a.png",
+      "sourceSha256": "57677e1096016a0c10340e8e03fbb42e7c503631c0b12dc1220c98ea3df3e84a",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/megumi.webp",
+      "webpBytes": 214288,
+      "webpSha256": "14ac7fe26293de4024bb60aa068fd590030f9fb1f264a1e4a228232d4f46e8de",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105935.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 214288,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "chitoge",
+      "name": "桐崎千棘",
+      "description": "Chitoge Kirisaki from Nisekoi, long blonde hair with pale pink tips, bright blue eyes, iconic large red ribbon tied atop head like rabbit ears, blue school uniform collar with white shirt and red tie, bright confident smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-4ca8d47b-a2ce-49c6-b555-42f449772db9.png",
+      "sourceSha256": "762fc57c6a01b1344437086a617a6a1243b258d43c5f9c6594ef4610bd76971f",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/chitoge.webp",
+      "webpBytes": 346102,
+      "webpSha256": "b4ca4787709992269f113c69bdb12a96af435ef0b14ef54b208dcea1cc253f6a",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105936.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 346102,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "inori",
+      "name": "楪祈",
+      "description": "Inori Yuzuriha from Guilty Crown, long pale pink hair with deeper pink-red tips, red eyes, small red flowerlike hair ornaments at both sides, white and red stage costume neckline, quiet gentle expression, delicate luminous styling.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c94301cb-ecea-4d94-8bc0-f7f62ac9f0f0.png",
+      "sourceSha256": "8dcaa308ae6b9861ead0486aa0e53159acad51d03379c4d60a564c1a4637bcd8",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/inori.webp",
+      "webpBytes": 313574,
+      "webpSha256": "8d6872e1c382dabd95204eed87ef09aed3413198d40aacc077b427f1ce43c069",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105937.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 313574,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "inuyasha",
+      "name": "犬夜叉",
+      "description": "Inuyasha, long white-silver hair, triangular white dog ears on top of head, golden eyes, red fire-rat robe and dark prayer bead necklace, confident friendly grin, preserve dog ears and no human ears visible.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-89e1705f-d116-405b-8898-649993273c49.png",
+      "sourceSha256": "7993b37e84c72cb4ca4b90f7bca7b1a0e9a25df761426e1432685ce434f194b3",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/inuyasha.webp",
+      "webpBytes": 269414,
+      "webpSha256": "d6dc4ed9c6bd6bf5277ebfbb2d7c2d00d66b4b5bed9b477ccd1aaefdfd9c47e1",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105938.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 269414,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kosaki",
+      "name": "小野寺小咲",
+      "description": "Kosaki Onodera from Nisekoi, short dark brown bob with long side lock near cheek, gentle brown eyes, small white cross-shaped hairpin, white sailor school top with navy collar and yellow neck ribbon, shy warm smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1ac94673-d513-488c-b124-4f3e357c3e7d.png",
+      "sourceSha256": "09d25b46e96d214cef90d8eb7b38e6ebca2087680cb0961c6234dc226ec97e24",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kosaki.webp",
+      "webpBytes": 249972,
+      "webpSha256": "74c27a8330e791b5e26cf9d9e255be03ee3b1e400351776a44354a558e7d45a8",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105939.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 249972,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "kuroyukihime",
+      "name": "黑雪姬",
+      "description": "Kuroyukihime from Accel World in human appearance, long sleek black hair, dark red-brown eyes, black butterfly hair ornament, black and plum gothic dress with pale neckline, elegant reserved smile, tiny black-violet butterfly wing silhouette near shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5f68a4b1-338b-4fd9-aa97-662c5452192e.png",
+      "sourceSha256": "282694194224e0143769f2701bab107461e7f167a0a9997d5031cb54b36e5309",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/kuroyukihime.webp",
+      "webpBytes": 278892,
+      "webpSha256": "a4eba895881d5955188b5fe2c81a3571d784ca94f6dfbc21584bba8e266455b6",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210105940.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 278892,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "umaru",
+      "name": "土间埋",
+      "description": "Umaru Doma from Himouto Umaru-chan in iconic home chibi form, round face, golden blonde bangs, big warm brown eyes, bright orange hamster hood with two small rounded ears and tiny hamster face on top, happy playful smile, white shirt neckline.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-67bb9b8a-ecba-4cfa-ab7c-f8a3034bafa8.png",
+      "sourceSha256": "c2c052ce19af139fdb992602ed024d9d280aa346152a6e1d9844d2ed47c192ae",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/umaru.webp",
+      "webpBytes": 226346,
+      "webpSha256": "a0df1087b55ce7c0a29c1a68968ce917e3b6f9dbb69b55a90cd900b10089b809",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108810.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 226346,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "edward",
+      "name": "爱德华",
+      "description": "Edward Elric from Fullmetal Alchemist, golden blond hair with center-parted bangs and long braid visible behind one shoulder, gold eyes, signature ahoge, red coat over black high collar shirt, confident mischievous grin, small silver automail hand lightly raised beside shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5a2ad169-c9e8-4340-9c81-9cb34a35bbb2.png",
+      "sourceSha256": "4dc16c7da1653e833bb5558ee1479d21325a554ceab2404105223814b6cfb778",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/edward.webp",
+      "webpBytes": 258370,
+      "webpSha256": "c84fe0a0e270061fcf3bd4a58623bbb5766068ede59365e233a2a98749a85388",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108811.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 258370,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "susu",
+      "name": "涂山苏苏",
+      "description": "Tushan Susu from Fox Spirit Matchmaker, long golden blonde hair, large fluffy tan fox ears, green eyes, pink ribbon bow on head, pale pink and white Chinese-inspired dress neckline, sweet innocent smile, cute fluffy styling.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-afbb149c-5981-4e3a-97bb-06e3a28f3c8f.png",
+      "sourceSha256": "24c77a9ab5367e89c5b36267668b1e89ee35674cefcbb826937215edcede6703",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/susu.webp",
+      "webpBytes": 340410,
+      "webpSha256": "8636054b5aa06c8ea3bd9aa9b2c71dfddd0218accdf0ba2268c6bd8f0fd9b472",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108812.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 340410,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "mashiro",
+      "name": "椎名真白",
+      "description": "Mashiro Shiina from The Pet Girl of Sakurasou, long pale cream blonde hair with straight bangs, soft reddish amber eyes, calm slightly dreamy expression, white school blouse with red neck ribbon and dark collar trim, tiny paintbrush held low beside shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5f1f8021-8062-44c2-b6f3-50b609f5e745.png",
+      "sourceSha256": "829ab0af126efd53a54fdd6f7c6483985a92b565699448cf2006caf10692f3d1",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/mashiro.webp",
+      "webpBytes": 291788,
+      "webpSha256": "2acfd1456aaf999c191e0276430fe3be1f77d5a6451a2c50471e86311b7ab32c",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108813.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 291788,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "haruhi",
+      "name": "凉宫春日",
+      "description": "Haruhi Suzumiya, shoulder-length brown hair, bright brown eyes, iconic yellow headband with yellow ribbons at both sides, white sailor school uniform with blue collar and red ribbon, energetic confident smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-276b6d95-420a-4429-81e4-5b74063a8af9.png",
+      "sourceSha256": "ddbe3b5eea2bb4532a3d2b66814d07239e6b8f69ea807e67bad35017e1d42a59",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/haruhi.webp",
+      "webpBytes": 290626,
+      "webpSha256": "ebc02e8209966d35675c4d511e549629549b9fa04a526b5b6c74efc9a9f0bd66",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108814.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 290626,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "yugi",
+      "name": "武藤游戏",
+      "description": "Yugi Muto from Yu-Gi-Oh, iconic tall black and magenta spiked hair with bold blonde lightning-shaped bangs, large violet eyes, dark blue high collar school jacket, gold Millennium Puzzle pendant with chain clearly visible at chest, confident friendly smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b71a18aa-b4d7-4d6f-aec7-40966eecf24a.png",
+      "sourceSha256": "5fb4279cd0b076ffbdd9b16fe84a1fd843c2640951084b650103d354ad510bc3",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/yugi.webp",
+      "webpBytes": 227632,
+      "webpSha256": "13904bbd5ac7ecfc66e67418a0e3a4ce47d8fb258ed9cb46cc014528b8835852",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108815.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 227632,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "monokuma",
+      "name": "黑白熊",
+      "description": "Monokuma from Danganronpa, iconic round teddy bear split vertically white on viewer-left and black on viewer-right, white half with simple round black eye, black half with jagged red eye and toothy grin, two round ears, small round belly, playful sinister but cute expression. No human hair.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6744e2a3-80db-4b3c-ae4e-0338913b6a7f.png",
+      "sourceSha256": "9ca91fc8b623f5f20dc162bceb26d8a2240e403ff300132a1e2476ef6b963b7e",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/monokuma.webp",
+      "webpBytes": 122876,
+      "webpSha256": "e2c229743723e51b22b375749047a00609821b6e5329dbbae1eb39fb7d4b21da",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108816.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 122876,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "furina",
+      "name": "芙宁娜",
+      "description": "Furina from Genshin Impact, short layered white and pale blue hair with curled side locks and ahoge, heterochromatic blue eyes, small navy top hat with blue bow and gold trim, ornate navy and white aristocratic coat and white cravat with blue gem, theatrical playful smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1d84801c-ddb8-46b8-8059-e474f585b6c7.png",
+      "sourceSha256": "68a71d2d4d4d219ea9059f2261199fffb1464637d5473ccc6fe848e429344fc0",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/furina.webp",
+      "webpBytes": 315078,
+      "webpSha256": "4094f0ae30a73d1f80aced16205888b2d935823a83db7081bcb1d6cba0ece357",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108817.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 315078,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "paimon",
+      "name": "派蒙",
+      "description": "Paimon from Genshin Impact, short fluffy white hair with pale pink tips, big dark blue eyes, dark four-point hair ornament, floating small peach-gold halo above head fully within frame, white and peach outfit with navy starry scarf, cheerful open smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c6ddda37-4f52-47a7-963f-308c08e9b7c9.png",
+      "sourceSha256": "e7a7323cc582482cd88a73ce5c1231f97b139de98630552426cfb07054e9c6b6",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/paimon.webp",
+      "webpBytes": 246482,
+      "webpSha256": "7914e0a968cba7fd9a8dcf30d511f87249a1fbc57d9a7917e716caa8e036020b",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108818.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 246482,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "zhongli",
+      "name": "钟离",
+      "description": "Zhongli from Genshin Impact, layered dark brown hair with amber tips and long small tail behind shoulder, amber golden eyes, single long geometric earring, elegant dark brown and black coat with gold trim and white collar, calm refined smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-52aeae1e-092c-47fa-b25a-f330320c98c4.png",
+      "sourceSha256": "75ebe4b9b91326411c898ed018abdcdd7c2283b661c0fe97cd91868736940681",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/zhongli.webp",
+      "webpBytes": 273252,
+      "webpSha256": "78a1cff265187f05d5c09f4568c138755e4ca7d0e27d55adf51dfa87f97ffc33",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210108819.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 273252,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "keqing",
+      "name": "刻晴",
+      "description": "Keqing from Genshin Impact, long lilac purple twin tails and signature cat-ear-shaped hair buns (hair not animal ears), violet eyes, purple and white dress with gold collar decoration and dark choker, confident gentle smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-8777c8d0-76a5-4df7-acc2-cb9b3b5f1d5b.png",
+      "sourceSha256": "589e70f1b173c1ede8603f5fdfbfe5f2133ae4db22083901a441b7bed128d48b",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/keqing.webp",
+      "webpBytes": 362574,
+      "webpSha256": "d5d657b78e944ef9b5042c392ce77c51a9108124754a5e92d250ac2fae51c1ef",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111384.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 362574,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "ayaka",
+      "name": "神里绫华",
+      "description": "Kamisato Ayaka from Genshin Impact, pale blue-silver hair in high ponytail tied with dark blue ribbon, straight bangs and two face framing strands, pale blue eyes, blue white and black kimono armor with pink cord and gold crest, gentle refined smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-28a573c0-abdf-4fb5-a403-ef3837aa71ba.png",
+      "sourceSha256": "4d560a2fefc8d4ac8bf462bda452957771762e6174bf635e447f8e2972683806",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/ayaka.webp",
+      "webpBytes": 333540,
+      "webpSha256": "7cba19a36a2b3e66e730fee494db381cf7253c8d6f2ed78427e1ec8986c7513e",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111386.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 333540,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "firefly",
+      "name": "流萤",
+      "description": "Firefly from Honkai Star Rail in human form, long silver hair with pale turquoise tips, blue-pink gradient eyes, dark headband with small green bow and accessory, teal white and black dress neckline, gentle hopeful smile, tiny emerald firefly glow near shoulder. No mech armor.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-4f405c29-ede0-443f-a60d-568c6cdf8c80.png",
+      "sourceSha256": "85c2ba2a6028668c893513c50f328ef97ba44cb6215a03d49288a3c35de5b176",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/firefly.webp",
+      "webpBytes": 325458,
+      "webpSha256": "e0f971aef8dd4f0027602af23f12b697846654ffa34389acda4cdc485e7135e1",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111387.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 325458,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "jingyuan",
+      "name": "景元",
+      "description": "Jing Yuan from Honkai Star Rail, long fluffy white hair tied back with red ribbon, side swept bangs partially covering one eye, golden eyes, calm relaxed smile, ornate black white and gold Xianzhou armor collar, subtle small golden lion motif.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-64141bee-c04b-4f8c-957f-a23dbdf49b1b.png",
+      "sourceSha256": "e83312a29956b49ead339d5f08efd787def8b09f92a6bdf5652ca152ccfcc949",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/jingyuan.webp",
+      "webpBytes": 336536,
+      "webpSha256": "220de738140097bfc35f5305e23dea98e7990ebdbf496db2e73d21b70df8c386",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111388.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 336536,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "herta",
+      "name": "黑塔",
+      "description": "Herta from Honkai Star Rail in her iconic puppet appearance, long ash-brown hair with blunt bangs, violet eyes, small dark beret decorated with a purple flower and white lace, black white and purple dress with bow and lace collar, quietly smug cute smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-e341c14f-875e-4910-90aa-168c738d1a1d.png",
+      "sourceSha256": "7056ad5a8b394279e6db889f527bac43c39b40662804033eee4fbf4a0a3b2720",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/herta.webp",
+      "webpBytes": 294574,
+      "webpSha256": "5708fc71d5b47fcf1c498ce7292176e39fa82a6f5243ba5f3e1909a81c57bbcf",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111389.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 294574,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "ruan_mei",
+      "name": "阮·梅",
+      "description": "Ruan Mei from Honkai Star Rail, long dark brown hair with subtle teal ends, turquoise eyes, elegant teal and white Chinese-inspired high-collar dress with gold flower fastenings, pale plum-blossom hair ornament, calm serene smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-506fce4f-d97d-498a-9cac-5023160f0c80.png",
+      "sourceSha256": "2fb32c8514d3a633e6d7d4ebec06f8878bd89b791e5814749d08f48d8457eb0e",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/ruan_mei.webp",
+      "webpBytes": 315400,
+      "webpSha256": "f6fa664b975e6a10144f719c0769e51899cd2fce373384c2ed5b0ce5b30e68d5",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111390.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 315400,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "amiya",
+      "name": "阿米娅",
+      "description": "Amiya from Arknights, long dark brown hair, two tall brown rabbit ears fully inside canvas, vivid blue eyes, blue and black Rhodes Island jacket with white shirt and blue necktie, earnest warm smile, rings on a small gloved hand near shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-0091957a-24ef-4469-bca6-6ed564d0f6e8.png",
+      "sourceSha256": "c129e3d2d546f2a32f77b7f5ddf315ec9849f364cb4924653d92e1fd3517a880",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/amiya.webp",
+      "webpBytes": 315078,
+      "webpSha256": "e7f9f4cf7026dd8adbf7e184adbee1af14548d3524a55afe81b03c540cb47afd",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111391.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 315078,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "darius",
+      "name": "德莱厄斯",
+      "description": "Darius from League of Legends, short dark hair with slight silver at temples, strong eyebrows, rugged mature face rendered cute chibi, stern confident expression, heavy dark steel Noxian armor with red scarf and sharp shoulder plate accents, no axe crossing portrait.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a1676ae6-4657-4b7f-8f77-2cf95d034eef.png",
+      "sourceSha256": "8b86dc6f51023ecb7d5f990f5fbfaaa37fa590af86e31dc5e3656d89c31dcecf",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/darius.webp",
+      "webpBytes": 238190,
+      "webpSha256": "bfc74f87924d71d8475a3cd10545d850b2cad35ad3b1484aeff93464da02df1f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111392.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 238190,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "teemo",
+      "name": "提莫",
+      "description": "Teemo from League of Legends, cute small furry tan yordle, rounded furry ears, happy squinting eyes, iconic green scout cap with red goggles on top and tiny feather, green scarf and leather shoulder straps, cheerful grin.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-60da2c8a-7705-4b9e-8cb7-5d969e06b0c7.png",
+      "sourceSha256": "26887731a57c857cabffcaa13ca8a289ae0bee5bef854f95d48009fb50aa0c4d",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/teemo.webp",
+      "webpBytes": 262688,
+      "webpSha256": "2782b2cf81005cb8773e6db070e60b3bc192457bfe5b228c3d0282eef4be7c77",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111393.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 262688,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "creeper",
+      "name": "苦力怕",
+      "description": "Creeper from Minecraft, iconic green pixel block creature with square cuboid head, black pixel eyes and black downturned pixel mouth, recognizable mottled green square textures, cute stylized polished chibi rendering while keeping the angular cubic silhouette, small upper torso visible, no human face or ears.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-808dd36e-37d1-4609-a3e7-ce77f2cbc8ce.png",
+      "sourceSha256": "cff89a1acf071c36746c671f4728bb64563ff2c89a3231cb919c53da71e5778f",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/creeper.webp",
+      "webpBytes": 141924,
+      "webpSha256": "a062e9c9ed06a47e44a50f205328991f7726d599e3dcaaebdfd291300dd11ee2",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210111394.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 141924,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "hanli",
+      "name": "韩立",
+      "description": "Han Li from A Record of a Mortal's Journey to Immortality, recognizable reserved Chinese young adult cultivator, long black hair half tied in high topknot with simple dark hairpiece and long loose side strands, dark brown eyes, dark teal blue traditional robe with pale inner collar, cautious calm slight smile, small green jade bottle held low beside shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-0b7a6f7a-eca3-4507-a114-4e170219121d.png",
+      "sourceSha256": "d72b91c93f8a83351b37545ac4ef4c2edb019da838642b3236d8b3b3c9027a1e",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/hanli.webp",
+      "webpBytes": 268448,
+      "webpSha256": "b50edb5f036148468d8016a76596ec7837d9444e7416b717bf4ce3084495f05a",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210113992.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 268448,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "tangsan",
+      "name": "唐三",
+      "description": "Tang San from Soul Land in grown blue-haired appearance, long blue hair tied in high ponytail with loose face-framing strands, blue eyes, dark blue Chinese fantasy Tang sect outfit with silver and gold edging, composed determined smile, a small glowing blue silver grass sprig beside shoulder.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-80c9b6b1-6be3-4ad9-87e6-73df84892461.png",
+      "sourceSha256": "90ffbd91375f9a75449c14f1410b705c0510f1662210e7d13aeed9a4ee4d9635",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/tangsan.webp",
+      "webpBytes": 362878,
+      "webpSha256": "4b7c78700183f67a233c0708df92b461092de9fc4c40ef8b9e1fe609d4bee43c",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210113993.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 362878,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "xiaowu",
+      "name": "小舞",
+      "description": "Xiao Wu from Soul Land, long dark brown hair in thick braid visible beside shoulder, pink eyes, two long pink rabbit-ear hair ornaments fully within canvas, pink dress neckline with white fur trim and small carrot ornament, cheerful sweet smile.",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b8e21d5f-8260-4a82-a076-46f331a57cd4.png",
+      "sourceSha256": "42c5e40077f2b8e0a3c5e98f29806949aeca3f5d773162db2be8c3226c662846",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-expansion-2026-11-07/xiaowu.webp",
+      "webpBytes": 327540,
+      "webpSha256": "0236c92673847012c9683bb0548d68058b2032419c40db1b99a4fc571d51bc4f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107210113994.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 327540,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    }
+  ]
+}

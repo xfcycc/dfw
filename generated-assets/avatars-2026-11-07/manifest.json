@@ -1,0 +1,115 @@
+{
+  "date": "2026-11-07",
+  "provider": "image_gen",
+  "styleReference": "https://pic.caiguoyu.cn/typora/20261016163650210.webp",
+  "stylePrompt": "One centered transparent-background square head-and-shoulders chibi avatar matching the existing wizard avatar: huge expressive glossy eyes, large head, small shoulders, crisp detailed anime lineart and polished cel shading, warm cute friendly look; recognizable character features; no text, frame or scenery.",
+  "compression": {
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  },
+  "entries": [
+    {
+      "id": "su_nuannuan",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5d80c6e0-5845-4044-b43e-29425fd5b10e.png",
+      "sourceSha256": "5eef36053b1670c5ec123825e397569c08b5ffafd5cfd01d02816e2a699764ec",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-2026-11-07/su_nuannuan.webp",
+      "webpBytes": 359286,
+      "webpSha256": "00282274cca2d07d64fe551c6662334012a6e968bb51d8214dc1c503f4725e1f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107183512502.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 359286,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      },
+      "description": "苏暖暖 (Nikki), the project's pink-haired heroine: long soft pink curly hair, a pink ribbon bow, large warm brown eyes, sweet smile, pink-and-white frilled dress neckline, tiny cream shoulder bag strap."
+    },
+    {
+      "id": "shana",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a55dd2f8-9a9c-4e7b-a2a6-5494d748280d.png",
+      "sourceSha256": "2fb63784a13d4aad41ba5a642aa3466bcdbbfa161d1ad6728eb32d864f841604",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-2026-11-07/shana.webp",
+      "webpBytes": 334440,
+      "webpSha256": "7466bca0c8f4b3ffe2a23e8f64114ad1434a723858fd5f4ed53047d57f9f260f",
+      "url": "https://pic.caiguoyu.cn/typora/20261107183512503.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 334440,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      },
+      "description": "Shana from Shakugan no Shana, recognizable Flame-Haired Burning-Eyed Hunter: long flowing flaming red hair, bright red eyes, confident but cute gentle smile, dark coat over sailor-school uniform with red ribbon and pendant. One subtle small warm flame accent beside shoulder, no weapon crossing face."
+    },
+    {
+      "id": "doraemon",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-8822e156-8dfc-4cbc-a900-9bdf36f477dc.png",
+      "sourceSha256": "9a6dfbdd05b82665cb80b2fdb9066497f4c29154421c630d7ef57766094ffa6c",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-2026-11-07/doraemon.webp",
+      "webpBytes": 164244,
+      "webpSha256": "468f17fd87e68c24dba141b95ef2e9a6f589c7ce55329682201bdea49972dda2",
+      "url": "https://pic.caiguoyu.cn/typora/20261107183512504.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 164244,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      },
+      "description": "Doraemon, the recognizable blue robotic cat: round blue head, white face, red round nose, six whiskers, happy wide smile, red collar and golden bell, white round belly top and short blue arms. No human hair, no human ears, preserve his iconic friendly cartoon features while matching the polished chibi avatar rendering."
+    },
+    {
+      "id": "conan",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c3ae6d08-67c8-4964-bd9d-33bbb998aff9.png",
+      "sourceSha256": "cc86c7381708897a7031c80a40fb32c22a3e4c9604a2f7a24df30742caa18ee1",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpPath": "/Users/caiguoyu/projects/dfw/generated-assets/avatars-2026-11-07/conan.webp",
+      "webpBytes": 220336,
+      "webpSha256": "4e1ad5211c9e79d56fd921b15b0adc484ceabd6eb39c806e842e89bc203cf8b0",
+      "url": "https://pic.caiguoyu.cn/typora/20261107183512505.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 220336,
+        "sha256Matches": true,
+        "contentMd5Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      },
+      "description": "Edogawa Conan from Detective Conan: dark brown-black hair with distinctive pointed forelock and cowlick, large blue eyes, round glasses, blue blazer, white shirt, bright red bow tie, knowing friendly smile, one hand lightly touching glasses near temple, face completely clear."
+    }
+  ]
+}

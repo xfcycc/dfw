@@ -1,0 +1,267 @@
+[
+  {
+    "id": "kaito_kid",
+    "name": "怪盗基德",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6cd0c7f7-057d-4e73-b898-21410ee91306.png"
+  },
+  {
+    "id": "minato",
+    "name": "波风水门",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-d2337096-27cb-45c6-9f59-a6ec986633da.png"
+  },
+  {
+    "id": "kakashi",
+    "name": "卡卡西",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-59020b71-6c20-411a-a9d0-014a43b82551.png"
+  },
+  {
+    "id": "ichigo",
+    "name": "黑崎一护",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-96879a73-522d-4076-bcf3-691c42740431.png"
+  },
+  {
+    "id": "aizen",
+    "name": "蓝染",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-698069ed-9606-4584-b339-fe60ef98de5a.png"
+  },
+  {
+    "id": "su_mucheng",
+    "name": "苏沐橙",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a7d6e644-3503-486b-b286-0c7798add012.png"
+  },
+  {
+    "id": "goku",
+    "name": "孙悟空",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-79d65cb2-505e-4b74-9369-94c3f50807ec.png"
+  },
+  {
+    "id": "levi",
+    "name": "利威尔",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-9e2f8628-a365-4d8d-93ad-8be24457af65.png"
+  },
+  {
+    "id": "saitama",
+    "name": "埼玉",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-8190612c-5596-4d12-901b-2127d647d2f8.png"
+  },
+  {
+    "id": "gintoki",
+    "name": "坂田银时",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-bfb6ec4d-54ba-4f7d-80d6-3ef95d7b8ad0.png"
+  },
+  {
+    "id": "kagura",
+    "name": "神乐",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-934d3817-920e-4cea-b2c8-8566a976d2a1.png"
+  },
+  {
+    "id": "sakura",
+    "name": "木之本樱",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c91482a8-b0a3-49d7-999c-7734b1feed04.png"
+  },
+  {
+    "id": "madoka",
+    "name": "鹿目圆",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-7a3a612a-246f-4d43-8096-9161fc01913e.png"
+  },
+  {
+    "id": "saber",
+    "name": "Saber",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-2933061b-1431-40a5-839c-f3970b853a63.png"
+  },
+  {
+    "id": "kirito",
+    "name": "桐人",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-9359ed95-ae6d-4cd0-9891-2d8b716a42ad.png"
+  },
+  {
+    "id": "asuna",
+    "name": "亚丝娜",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-7d8a098f-f5dd-446a-988f-4873bd8dbf6a.png"
+  },
+  {
+    "id": "rem",
+    "name": "雷姆",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-f869d561-c0ae-4407-bb68-0c7cee1ea2ef.png"
+  },
+  {
+    "id": "aqua",
+    "name": "阿库娅",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b5a4d61a-006a-42af-9905-e0e14104c1fb.png"
+  },
+  {
+    "id": "misaka",
+    "name": "御坂美琴",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-afc088a9-5969-4bc8-ba08-4fbe7078944b.png"
+  },
+  {
+    "id": "accelerator",
+    "name": "一方通行",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a7552a02-f7a6-4e1d-8862-c3109aa4faf7.png"
+  },
+  {
+    "id": "touma",
+    "name": "上条当麻",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6af74c67-1552-4742-8c79-cdd25e0097c3.png"
+  },
+  {
+    "id": "index",
+    "name": "茵蒂克丝",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b980d354-c3d8-4de5-841f-61483274447f.png"
+  },
+  {
+    "id": "kurumi",
+    "name": "时崎狂三",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1cbc4ed2-aa91-4447-b62d-df298951322c.png"
+  },
+  {
+    "id": "tohka",
+    "name": "夜刀神十香",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-98460a38-86b6-43ec-ab97-565bd619755f.png"
+  },
+  {
+    "id": "megumi",
+    "name": "加藤惠",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-97260bdc-efcb-4006-a691-dd23ddfd075a.png"
+  },
+  {
+    "id": "chitoge",
+    "name": "桐崎千棘",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-4ca8d47b-a2ce-49c6-b555-42f449772db9.png"
+  },
+  {
+    "id": "inori",
+    "name": "楪祈",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c94301cb-ecea-4d94-8bc0-f7f62ac9f0f0.png"
+  },
+  {
+    "id": "inuyasha",
+    "name": "犬夜叉",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-89e1705f-d116-405b-8898-649993273c49.png"
+  },
+  {
+    "id": "kosaki",
+    "name": "小野寺小咲",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1ac94673-d513-488c-b124-4f3e357c3e7d.png"
+  },
+  {
+    "id": "kuroyukihime",
+    "name": "黑雪姬",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5f68a4b1-338b-4fd9-aa97-662c5452192e.png"
+  },
+  {
+    "id": "umaru",
+    "name": "土间埋",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-67bb9b8a-ecba-4cfa-ab7c-f8a3034bafa8.png"
+  },
+  {
+    "id": "edward",
+    "name": "爱德华",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5a2ad169-c9e8-4340-9c81-9cb34a35bbb2.png"
+  },
+  {
+    "id": "susu",
+    "name": "涂山苏苏",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-afbb149c-5981-4e3a-97bb-06e3a28f3c8f.png"
+  },
+  {
+    "id": "mashiro",
+    "name": "椎名真白",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-5f1f8021-8062-44c2-b6f3-50b609f5e745.png"
+  },
+  {
+    "id": "haruhi",
+    "name": "凉宫春日",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-276b6d95-420a-4429-81e4-5b74063a8af9.png"
+  },
+  {
+    "id": "yugi",
+    "name": "武藤游戏",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b71a18aa-b4d7-4d6f-aec7-40966eecf24a.png"
+  },
+  {
+    "id": "monokuma",
+    "name": "黑白熊",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-6744e2a3-80db-4b3c-ae4e-0338913b6a7f.png"
+  },
+  {
+    "id": "furina",
+    "name": "芙宁娜",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-1d84801c-ddb8-46b8-8059-e474f585b6c7.png"
+  },
+  {
+    "id": "paimon",
+    "name": "派蒙",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-c6ddda37-4f52-47a7-963f-308c08e9b7c9.png"
+  },
+  {
+    "id": "zhongli",
+    "name": "钟离",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-52aeae1e-092c-47fa-b25a-f330320c98c4.png"
+  },
+  {
+    "id": "keqing",
+    "name": "刻晴",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-8777c8d0-76a5-4df7-acc2-cb9b3b5f1d5b.png"
+  },
+  {
+    "id": "ayaka",
+    "name": "神里绫华",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-28a573c0-abdf-4fb5-a403-ef3837aa71ba.png"
+  },
+  {
+    "id": "firefly",
+    "name": "流萤",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-4f405c29-ede0-443f-a60d-568c6cdf8c80.png"
+  },
+  {
+    "id": "jingyuan",
+    "name": "景元",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-64141bee-c04b-4f8c-957f-a23dbdf49b1b.png"
+  },
+  {
+    "id": "herta",
+    "name": "黑塔",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-e341c14f-875e-4910-90aa-168c738d1a1d.png"
+  },
+  {
+    "id": "ruan_mei",
+    "name": "阮·梅",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-506fce4f-d97d-498a-9cac-5023160f0c80.png"
+  },
+  {
+    "id": "amiya",
+    "name": "阿米娅",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-0091957a-24ef-4469-bca6-6ed564d0f6e8.png"
+  },
+  {
+    "id": "darius",
+    "name": "德莱厄斯",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-a1676ae6-4657-4b7f-8f77-2cf95d034eef.png"
+  },
+  {
+    "id": "teemo",
+    "name": "提莫",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-60da2c8a-7705-4b9e-8cb7-5d969e06b0c7.png"
+  },
+  {
+    "id": "creeper",
+    "name": "苦力怕",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-808dd36e-37d1-4609-a3e7-ce77f2cbc8ce.png"
+  },
+  {
+    "id": "hanli",
+    "name": "韩立",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-0b7a6f7a-eca3-4507-a114-4e170219121d.png"
+  },
+  {
+    "id": "tangsan",
+    "name": "唐三",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-80c9b6b1-6be3-4ad9-87e6-73df84892461.png"
+  },
+  {
+    "id": "xiaowu",
+    "name": "小舞",
+    "source": "/Users/caiguoyu/.codex/generated_images/01a1b586-e00c-7fa0-9926-e3ef5f26848c/exec-b8e21d5f-8260-4a82-a076-46f331a57cd4.png"
+  }
+]
