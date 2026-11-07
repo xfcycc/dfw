@@ -157,4 +157,9 @@ onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); docu
 .chat-suggestions button[aria-selected="true"], .chat-suggestions button:hover { background: #f3e4c7; }
 .chat-suggestions span { min-width: 0; overflow-wrap: anywhere; font-weight: 700; }
 .chat-suggestions small { flex-shrink: 0; color: #88775b; font-size: 11px; }
+@media (max-width: 1100px), (max-height: 579px), (pointer: coarse) {
+  /* 输入操作置于装饰边框之上，避免边框遮住表情图标。 */
+  .chat-composer { position: relative; z-index: 4; }
+  .chat-emoji-toggle > small { display: none; }
+}
 </style>

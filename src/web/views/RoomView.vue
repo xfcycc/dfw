@@ -413,19 +413,27 @@ async function fullscreen(): Promise<void> {
   try { if (document.fullscreenElement) await document.exitFullscreen(); else await document.documentElement.requestFullscreen(); }
   catch { game.notify('当前浏览器不支持全屏，请使用浏览器全屏或投屏功能。'); }
 }
-/** 输入观战模式，跟随时恢复上下布局，横屏时请求全屏和横向锁定；不支持时保留全图并提示，无返回值。 */
-async function switchSpectatorView(mode: 'follow' | 'landscape'): Promise<void> {
+/** 输入观战模式及可选全屏请求，切换跟随或全图；仅显式全屏时锁定横屏，无返回值。 */
+async function switchSpectatorView(mode: 'follow' | 'landscape', fullscreen = false): Promise<void> {
   spectatorMode.value = mode;
   if (mode === 'follow') {
     screen.orientation?.unlock?.();
     if (document.fullscreenElement) await document.exitFullscreen().catch(() => game.notify('请使用浏览器退出全屏。'));
     return;
   }
+  if (!fullscreen) return;
   try { if (!document.fullscreenElement) await document.documentElement.requestFullscreen(); }
   catch { game.notify('已切换完整地图，当前浏览器不支持自动全屏，可横放手机观看。'); return; }
   const orientation = screen.orientation as ScreenOrientation & { lock?: (value: 'landscape') => Promise<void> };
   try { if (orientation?.lock) await orientation.lock('landscape'); else if (window.innerHeight > window.innerWidth) game.notify('请横放手机，查看完整地图。'); }
   catch { if (window.innerHeight > window.innerWidth) game.notify('当前设备不支持自动横屏，请横放手机观看。'); }
+}
+/** 无入参，切换观战全屏；退出全屏时保留单屏地图，无返回值。 */
+async function toggleSpectatorFullscreen(): Promise<void> {
+  if (document.fullscreenElement) {
+    screen.orientation?.unlock?.();
+    await document.exitFullscreen().catch(() => game.notify('请使用浏览器退出全屏。'));
+  } else await switchSpectatorView('landscape', true);
 }
 /** 输入本人手牌，在窗口中查看或准备使用；付款防御复用当前费用窗口。 */
 function chooseCard(card: Card): void {
@@ -498,8 +506,9 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       <button class="room-tag" aria-label="复制房间号" @click="game.copy(code)">房间 <strong>{{ code }}</strong></button>
       <div v-if="isGameSession" class="room-utilities game-utilities" role="group" aria-label="游戏工具栏">
         <span class="connection-label" :class="game.connection"><i></i>{{ game.connection === 'online' ? '实时同步' : game.connection === 'connecting' ? '连接中' : '已断开' }}</span>
-        <button v-if="spectator && !spectatorFollowing" type="button" class="button" @click="switchSpectatorView('follow')">跟随模式</button>
-        <button v-if="spectator" type="button" class="button spectator-fullscreen" :aria-pressed="fullscreenActive && !spectatorFollowing" @click="switchSpectatorView(fullscreenActive && !spectatorFollowing ? 'follow' : 'landscape')">{{ fullscreenActive && !spectatorFollowing ? '退出横屏' : '横屏模式' }}</button>
+        <button v-if="spectator" type="button" class="button" :aria-pressed="spectatorFollowing" @click="switchSpectatorView('follow')">经典跟随</button>
+        <button v-if="spectator" type="button" class="button" :aria-pressed="!spectatorFollowing" @click="switchSpectatorView('landscape')">单屏模式</button>
+        <button v-if="spectator" type="button" class="button spectator-fullscreen" :aria-pressed="fullscreenActive" @click="toggleSpectatorFullscreen">{{ fullscreenActive ? '退出全屏' : '全屏' }}</button>
         <AudioSettings class="room-audio-control" />
         <button v-if="!spectator" type="button" class="button layout-toggle" :aria-label="classicLayout ? '切换为单屏布局' : '切换为经典布局'" :title="classicLayout ? '当前经典布局，点击切换单屏布局' : '当前单屏布局，点击切换经典布局'" :aria-pressed="classicLayout" @click="toggleLayout"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><path :d="classicLayout ? 'M3 14h18M14 4v10' : 'M9 4v16M16 4v16M9 14h7'"/></svg><span>{{ classicLayout ? '经典' : '单屏' }}</span></button>
         <button class="button game-tools-trigger" aria-label="打开游戏工具" aria-haspopup="dialog" @click="modal = 'tools'">

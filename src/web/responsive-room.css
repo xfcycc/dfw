@@ -234,6 +234,10 @@
 }
 /* 避免桌面回合徽章和骰子的高优先级样式在手机状态栏生成多余网格行。 */
 .modern-room.game-session .mobile-turn .workbench-center .turn-display > :is(.hub-turn-callout, .die) { display: none; }
+/* 移动端单屏固定完整地图，经典模式继续提供局部跟随与定位操作。 */
+.modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .board-controls { display: none; }
+.modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .map-character { --pawn-size: clamp(16px, calc(84px * var(--map-zoom)), 40px); }
+.modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .map-character.acting::before { width: 18px; height: 18px; top: -19px; }
 /* 竖屏观战仍完整展示地图，工具栏换行，内圈公开信息上下排列。 */
 @media (max-width: 600px) {
   .modern-room.game-session.spectator-page .room-header { flex-wrap: wrap; }

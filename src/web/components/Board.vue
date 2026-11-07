@@ -35,6 +35,7 @@ const zoom = ref(1);
 const fullMap = ref(false);
 const referencedTile = ref<number | null>(null);
 const following = computed(() => !!props.spectator && !!props.spectatorFollow);
+const mobileOverview = computed(() => !!props.dashboardTarget && !props.spectator && !props.classicLayout);
 const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
@@ -222,7 +223,7 @@ function resizeBoard(): void {
   if (boardEffect.value && (cardSpellFor(boardEffect.value) || fullCardSpellFor(boardEffect.value))) { fitBoard(); return; }
   if (props.targeting) return;
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
-  else if (props.spectator || fullMap.value || !props.stretch) fitBoard();
+  else if (props.spectator || mobileOverview.value || fullMap.value || !props.stretch) fitBoard();
   else expandBoard();
 }
 /** 输入待定位玩家，默认使用当前移动者；恢复可读格距并调整局部视野，无返回值。 */
