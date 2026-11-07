@@ -529,7 +529,9 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       <RecoverySeats v-if="!spectator" />
       <section v-if="game.room.researchCandidates?.length" class="panel" aria-label="天才俱乐部公共研究"><h3>天才俱乐部 · 公共研究</h3><p class="muted">每人秘密投入0～2张手牌，或放弃；触发者额外＋1贡献。最高者胜，并列随机，仅胜者支付投入牌并自选1张UR。</p><div class="choice-card-grid"><ContentCard v-for="candidate in game.room.researchCandidates" :key="candidate.id" :content="candidate" compact thumbnail /></div></section>
       <section v-if="isLobby" class="lobby-layout cottage-lobby" aria-label="房间大厅">
+        <FitPanel class="lobby-fit">
         <div class="lobby-panel cottage-panel">
+          <div class="lobby-settings">
           <div class="cottage-heading"><h1>好友房间 <small>{{ game.room.players.length }} / 6</small></h1><button class="button secondary small" @click="inviteFriends">邀请朋友</button></div>
           <div class="lobby-seats">
             <div v-for="player in game.room.players" :key="player.id" class="lobby-seat" :class="{ 'is-me': player.id === game.me?.id, offline: !player.online }">
@@ -541,15 +543,17 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
             <div v-for="seat in 6 - game.room.players.length" :key="`empty-${seat}`" class="lobby-seat empty"><span class="empty-seat-mark" aria-hidden="true">＋</span><span>待加入</span></div>
           </div>
           <div class="cottage-map"><span>地图</span><div class="map-size-options" role="group" aria-label="地图大小"><button v-for="size in MAP_SIZES" :key="size.value" type="button" :class="{ selected: (game.room.mapSize ?? 'large') === size.value }" :aria-pressed="(game.room.mapSize ?? 'large') === size.value" :disabled="spectator || !game.isHost || !game.canAct" @click="changeMapSize(size.value)">{{ size.name }}<small>{{ mapLength(previewPlayers, size.value) }} 格</small></button></div></div>
-          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<ThemedSelect v-model="botDifficulty" label="机器人难度" :options="botLevels" :disabled="!game.canAct" /></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button><p class="muted">与玩家遵守相同规则，自动准备；调整难度请移出后重新添加。</p></div>
+          <div v-if="game.isHost && !spectator" class="lobby-bot-controls"><label class="field">机器人难度<ThemedSelect v-model="botDifficulty" label="机器人难度" :options="botLevels" :disabled="!game.canAct" /></label><button class="button secondary" :disabled="!game.canAct || game.room.players.length >= 6" @click="game.act({ type: 'addBot', botDifficulty })">＋ 添加机器人</button></div>
           <section v-if="game.me && !spectator" class="lobby-avatar-picker"><div class="lobby-avatar-heading"><h2>选择头像</h2><button type="button" class="button secondary small lobby-rename" :disabled="!canRename" @click="openRename">改名</button></div><AvatarPicker /></section>
-          <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : allReady ? game.isHost ? '大家都准备好了' : '等待房主开局' : '等待所有玩家准备' }}</p></div>
+          <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p v-if="game.room.players.length < 2 || allReady" class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : game.isHost ? '大家都准备好了' : '等待房主开局' }}</p></div>
           <p v-else class="lobby-hint">观战中 · 等待开局</p>
+          </div>
           <section class="lobby-chat" aria-label="房间聊天">
             <h2>房间聊天</h2><div class="lobby-chat-records"><LiveRecords :room="game.room" :token="game.session?.token" compact journal chat-only /></div>
             <ChatComposer v-if="!spectator" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和朋友聊聊，支持表情和 @ 玩家…'" />
           </section>
         </div>
+        </FitPanel>
       </section>
       <template v-else>
         <div class="game-layout immersive-layout">

@@ -4,7 +4,6 @@ import type { ChatReference, PublicRoomState } from '../../shared/types';
 import { CHAT_EMOJIS, type ChatEmoji } from '../chat-emojis';
 import ActionIcon from './ActionIcon.vue';
 import PanelFrame from './PanelFrame.vue';
-import Modal from './Modal.vue';
 const props = defineProps<{ room: PublicRoomState; disabled: boolean; placeholder: string; send: (message: string, references: ChatReference[]) => Promise<boolean> }>();
 const message = ref('');
 const references = ref<ChatReference[]>([]);
@@ -17,6 +16,25 @@ const dismissed = ref(false);
 const selected = ref(0);
 const sending = ref(false);
 const emojiOpen = ref(false);
+const emojiTrigger = ref<HTMLButtonElement>();
+const emojiMenu = ref<HTMLElement>();
+const emojiStyle = ref<Record<string, string>>({});
+/** 无入参，在表情按钮旁展开或收起浮层，按视口空间选择方向，无返回值。 */
+function toggleEmoji(): void {
+  if (emojiOpen.value) { emojiMenu.value?.hidePopover(); return; }
+  const rect = emojiTrigger.value!.getBoundingClientRect();
+  const width = Math.min(336, window.innerWidth - 24);
+  const upwards = rect.top > window.innerHeight - rect.bottom;
+  emojiStyle.value = {
+    left: `${Math.max(12, Math.min(rect.right - width, window.innerWidth - width - 12))}px`,
+    top: `${upwards ? rect.top - 8 : rect.bottom + 8}px`,
+    width: `${width}px`,
+    maxHeight: `${Math.min(300, (upwards ? rect.top : window.innerHeight - rect.bottom) - 20)}px`,
+    transform: upwards ? 'translateY(-100%)' : 'none',
+  };
+  dismissed.value = true;
+  emojiMenu.value?.showPopover();
+}
 const selectionEnd = ref(0);
 const menuStyle = ref({ left: '0px', bottom: '0px', width: '0px', maxHeight: '240px' });
 const query = computed(() => {
@@ -34,8 +52,10 @@ const suggestions = computed(() => {
     ...props.room.board.map(tile => ({ key: `tile-${tile.id}`, label: `@${tile.name}（${tile.id}号）`, detail: `地块 · ${tile.id}号`, color: '#9a692b', playerId: undefined as string | undefined, tileId: tile.id, search: `${tile.name} ${tile.id} 地块` })),
   ].filter(option => option.search.toLocaleLowerCase().includes(query.value!.text));
 });
-/** 无入参，按输入框位置更新顶层联想菜单；手机面板裁切不影响候选可见性，无返回值。 */
-function positionMenu(): void {
+/** 输入可选的滚动或缩放事件，更新联想菜单位置，外部滚动时收起表情浮层，无返回值。 */
+function positionMenu(event?: Event): void {
+  if (event?.target instanceof Node && emojiMenu.value?.contains(event.target)) return;
+  if (emojiOpen.value) emojiMenu.value?.hidePopover();
   if (!input.value) return;
   const bounds = input.value.closest('.chat-composer')!.getBoundingClientRect();
   menuStyle.value = { left: `${bounds.left}px`, bottom: `${window.innerHeight - bounds.top + 6}px`, width: `${bounds.width}px`, maxHeight: `${Math.max(60, Math.min(240, bounds.top - 12))}px` };
@@ -67,7 +87,7 @@ async function insertEmoji(emoji: ChatEmoji): Promise<void> {
   if (props.disabled || sending.value || message.value.length - (selectionEnd.value - caret.value) + emoji.code.length > 300) return;
   const end = caret.value + emoji.code.length;
   updateMessage(message.value.slice(0, caret.value) + emoji.code + message.value.slice(selectionEnd.value));
-  caret.value = end; selectionEnd.value = end; dismissed.value = true; emojiOpen.value = false;
+  caret.value = end; selectionEnd.value = end; dismissed.value = true; emojiMenu.value?.hidePopover();
   await nextTick(); input.value?.focus(); input.value?.setSelectionRange(end, end);
 }
 /** 输入候选项，在当前 @ 查询位置插入可读引用并保存目标身份；恢复输入焦点，无返回值。 */
@@ -109,18 +129,19 @@ onMounted(() => { window.addEventListener('resize', positionMenu); document.addE
 onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); document.removeEventListener('scroll', positionMenu, true); });
 </script>
 <template>
-  <form class="room-chat" @submit.prevent="submit"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3><small>{{ room.status === 'lobby' ? '聊天自动保存，开局后并入本局记录' : '输入 @ 提及玩家或引用地块' }}</small></div><div class="chat-composer">
+  <form class="room-chat" @submit.prevent="submit"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3><small v-if="room.status !== 'lobby'">输入 @ 提及玩家或引用地块</small></div><div class="chat-composer">
     <label class="sr-only" for="room-chat-message">房间聊天，输入 @ 搜索玩家或地块</label>
     <textarea id="room-chat-message" ref="input" :value="message" maxlength="300" rows="1" :disabled="disabled || sending" :placeholder="placeholder" :aria-expanded="suggestions.length > 0" :aria-controls="suggestions.length ? 'room-chat-suggestions' : undefined" :aria-activedescendant="suggestions.length ? `chat-option-${selected}` : undefined" aria-autocomplete="list" @input="edit" @click="dismissed = false; updateCaret()" @keyup="updateCaret" @select="updateCaret" @focus="focused = true; dismissed = false; updateCaret()" @blur="focused = false" @compositionstart="composing = true" @compositionend="composing = false; updateCaret()" @keydown="keydown" />
-    <div class="chat-composer-actions"><button type="button" class="button secondary chat-emoji-toggle game-action-button" :disabled="disabled || sending || composing" aria-label="选择小红书表情" title="小红书表情" aria-haspopup="dialog" :aria-expanded="emojiOpen" @click="emojiOpen = true"><img :src="CHAT_EMOJIS[0]!.url" alt="" width="26" height="26" /><small>表情</small></button><button type="submit" class="button primary chat-send game-action-button" :disabled="disabled || sending || !message.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
+    <div class="chat-composer-actions"><button ref="emojiTrigger" type="button" class="button secondary chat-emoji-toggle game-action-button" :disabled="disabled || sending || composing" aria-label="选择表情" title="表情" aria-haspopup="dialog" :aria-expanded="emojiOpen" @click="toggleEmoji"><img :src="CHAT_EMOJIS[0]!.url" alt="" width="26" height="26" /><small>表情</small></button><button type="submit" class="button primary chat-send game-action-button" :disabled="disabled || sending || !message.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
   </div></form>
-  <Modal v-if="emojiOpen" title="小红书表情" @close="emojiOpen = false"><p class="muted">点击插入消息，发送后会和聊天一起保存在对局记录中。</p><div class="chat-emoji-grid"><button v-for="emoji in CHAT_EMOJIS" :key="emoji.code" type="button" :disabled="disabled || sending || message.length - (selectionEnd - caret) + emoji.code.length > 300" :title="emoji.name" :aria-label="`插入表情：${emoji.name}`" @click="insertEmoji(emoji)"><img :src="emoji.url" :alt="emoji.name" width="36" height="36" /><small>{{ emoji.name }}</small></button></div></Modal>
+  <div ref="emojiMenu" popover="auto" class="chat-emoji-popover" role="dialog" aria-label="选择表情" :style="emojiStyle" @toggle="emojiOpen = $event.newState === 'open'"><div class="chat-emoji-grid"><button v-for="emoji in CHAT_EMOJIS" :key="emoji.code" type="button" :disabled="disabled || sending || message.length - (selectionEnd - caret) + emoji.code.length > 300" :title="emoji.name" :aria-label="`插入表情：${emoji.name}`" @click="insertEmoji(emoji)"><img :src="emoji.url" :alt="emoji.name" width="36" height="36" /><small>{{ emoji.name }}</small></button></div></div>
   <Teleport to="body"><div v-if="suggestions.length" id="room-chat-suggestions" ref="menu" class="chat-suggestions" role="listbox" aria-label="玩家和地块联想" :style="menuStyle">
     <button v-for="(option, index) in suggestions" :id="`chat-option-${index}`" :key="option.key" type="button" role="option" :aria-selected="selected === index" tabindex="-1" @pointerdown.prevent @click="choose(option)"><span :style="{ color: option.color }">{{ option.label }}</span><small>{{ option.detail }}</small></button>
   </div></Teleport>
 </template>
 <style scoped>
 .room-chat { position: relative; }
+.chat-emoji-popover { position: fixed; inset: auto; margin: 0; box-sizing: border-box; padding: 10px; overflow-y: auto; overscroll-behavior: contain; border: 2px solid #c5ac7d; border-radius: 16px; background: #fffaf0; box-shadow: 0 8px 24px #62472630; scrollbar-width: thin; }
 .chat-emoji-toggle img { object-fit: contain; }
 .chat-emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
 .chat-emoji-grid button { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; padding: 8px 2px; border: 1px solid #e3d7b9; border-radius: 12px; background: #fffdf5; color: #806344; font: inherit; }

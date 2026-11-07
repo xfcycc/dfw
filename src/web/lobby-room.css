@@ -91,9 +91,40 @@
 /* 机器人管理复用大厅表单和按钮，窄屏允许换行。 */
 .lobby-bot-controls { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
 .lobby-bot-controls .field { margin: 0; flex: 1 1 100px; }
-.lobby-bot-controls p { flex-basis: 100%; margin: 0; }
 .lobby-room .lobby-chat { margin-top: 20px; padding-top: 16px; border-top: 1px solid #e9dfc9; }
-.lobby-room .lobby-chat > h2 { margin: 0 0 8px; color: #695037; font-size: 14px; }
+.lobby-room .lobby-chat > h2, .lobby-room .lobby-chat .chat-heading { display: none; }
 .lobby-room .lobby-chat-records { height: 180px; padding: 0 10px; border: 1px solid #e3d7b9; border-radius: 14px; background: #fffdf580; }
-.lobby-room .lobby-chat .room-chat { padding: 14px; background: #f5f4e8; }
-.lobby-room .lobby-chat textarea { font-size: 16px; }
+.lobby-room .lobby-chat .room-chat { padding: 14px; background: #fffdf580; }
+.lobby-room .lobby-chat textarea { color: #705a43; font-size: 16px; }
+.lobby-room .lobby-chat textarea::placeholder { color: #a18d6c; }
+
+/* 右侧房间面板复用自适应缩放，完整展示操作、头像和聊天入口。 */
+.modern-room.lobby-room { height: 100dvh; min-height: 0; display: flex; flex-direction: column; }
+.modern-room.lobby-room .room-header { flex-shrink: 0; width: 100%; box-sizing: border-box; padding: 12px 40px; justify-content: flex-end; flex-wrap: nowrap; gap: 10px; }
+.lobby-room .room-header > a { margin-left: auto; }
+.modern-room.lobby-room .room-tag { margin: 0; }
+.modern-room.lobby-room .room-utilities { margin-left: 0; }
+.modern-room.lobby-room .room-tag, .modern-room.lobby-room .room-utilities .audio-settings-button { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 10px 16px; border: 1px solid #fff7df; border-radius: 24px; background: #fff9e6e6; color: #746346; font-size: 12px; font-weight: 600; box-shadow: 0 3px 10px #70523310; }
+.modern-room.lobby-room > main { display: flex; flex: 1; min-height: 0; width: 100%; box-sizing: border-box; padding-bottom: 16px; }
+.lobby-room .cottage-lobby { flex: 1; min-width: 0; min-height: 0; padding: 0; justify-content: flex-end; }
+.lobby-room .lobby-fit { flex: none; width: min(100%, 580px); height: 100%; }
+.lobby-room .cottage-panel { display: flex; flex: 1; flex-direction: column; gap: 12px; width: 100%; min-height: min-content; box-sizing: border-box; padding: 18px; }
+.lobby-room .lobby-settings { flex-shrink: 0; padding: 2px 4px 6px; }
+.lobby-room .lobby-seat { min-height: 90px; padding: 8px 5px; }
+.lobby-room .avatar-picker { grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-flow: row; grid-auto-rows: 84px; height: 174px; gap: 6px; overflow-x: hidden; overflow-y: auto; scroll-snap-type: y mandatory; scrollbar-width: thin; }
+.lobby-room .avatar-option { flex-direction: column; justify-content: center; padding: 0; overflow: hidden; scroll-snap-align: start; }
+.lobby-room .avatar-option > span:not(.character-pawn) { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.lobby-room .avatar-option .character-pawn { width: 100%; height: 100%; border: 0; border-radius: inherit; box-shadow: none; }
+.lobby-room .avatar-option .character-pawn img { object-fit: cover; }
+.lobby-room .lobby-chat { display: flex; flex: 1; flex-direction: column; min-width: 0; margin: 0; padding: 10px 0 0; border-top: 1px solid #e9dfc9; }
+.lobby-room .lobby-chat-records { flex: 1; min-height: 80px; height: 80px; overflow: hidden; }
+.lobby-room .lobby-chat .room-chat { margin-top: 10px; border: 0; box-shadow: none; }
+.lobby-room .lobby-chat .room-chat > .panel-frame { display: none; }
+.modern-room.lobby-room .room-utilities { padding: 0; border: 0; background: transparent; }
+.lobby-room .room-footer { display: none; }
+@media (max-width: 700px) {
+  .modern-room.lobby-room .room-header { padding: 12px 10px; }
+  .modern-room.lobby-room > main { padding: 0 10px 10px; }
+  .lobby-room .cottage-panel { padding: 12px; }
+  .lobby-room .lobby-chat .room-chat { padding: 8px 10px; gap: 4px; }
+}
