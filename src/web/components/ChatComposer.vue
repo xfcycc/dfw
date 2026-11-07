@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import type { ChatReference, PublicRoomState } from '../../shared/types';
+import { CHAT_EMOJIS, type ChatEmoji } from '../chat-emojis';
 import ActionIcon from './ActionIcon.vue';
 import PanelFrame from './PanelFrame.vue';
+import Modal from './Modal.vue';
 const props = defineProps<{ room: PublicRoomState; disabled: boolean; placeholder: string; send: (message: string, references: ChatReference[]) => Promise<boolean> }>();
 const message = ref('');
 const references = ref<ChatReference[]>([]);
@@ -14,6 +16,8 @@ const composing = ref(false);
 const dismissed = ref(false);
 const selected = ref(0);
 const sending = ref(false);
+const emojiOpen = ref(false);
+const selectionEnd = ref(0);
 const menuStyle = ref({ left: '0px', bottom: '0px', width: '0px', maxHeight: '240px' });
 const query = computed(() => {
   if (!focused.value || composing.value || dismissed.value || props.disabled || sending.value) return null;
@@ -41,16 +45,30 @@ function updateCaret(): void {
   const position = input.value?.selectionStart ?? 0;
   if (position !== caret.value) dismissed.value = false;
   caret.value = position; positionMenu();
+  selectionEnd.value = input.value?.selectionEnd ?? position;
 }
 /** 输入原生编辑事件，移动未被编辑的引用偏移，删除与编辑范围相交的引用，无返回值。 */
 function edit(event: Event): void {
-  const next = (event.target as HTMLTextAreaElement).value; const before = message.value;
+  updateMessage((event.target as HTMLTextAreaElement).value);
+  dismissed.value = false; updateCaret();
+}
+/** 输入编辑后的正文，更新引用偏移并移除被改写的引用，无返回值。 */
+function updateMessage(next: string): void {
+  const before = message.value;
   let start = 0; let oldEnd = before.length; let newEnd = next.length;
   while (start < oldEnd && start < newEnd && before[start] === next[start]) start++;
   while (oldEnd > start && newEnd > start && before[oldEnd - 1] === next[newEnd - 1]) { oldEnd--; newEnd--; }
   const shift = newEnd - oldEnd;
   references.value = references.value.flatMap(reference => reference.end <= start ? [reference] : reference.start >= oldEnd ? [{ ...reference, start: reference.start + shift, end: reference.end + shift }] : []);
-  message.value = next; dismissed.value = false; updateCaret();
+  message.value = next;
+}
+/** 输入表情，在原光标或选区插入保存代码，保留未被改写的 @ 引用并恢复输入焦点，无返回值。 */
+async function insertEmoji(emoji: ChatEmoji): Promise<void> {
+  if (props.disabled || sending.value || message.value.length - (selectionEnd.value - caret.value) + emoji.code.length > 300) return;
+  const end = caret.value + emoji.code.length;
+  updateMessage(message.value.slice(0, caret.value) + emoji.code + message.value.slice(selectionEnd.value));
+  caret.value = end; selectionEnd.value = end; dismissed.value = true; emojiOpen.value = false;
+  await nextTick(); input.value?.focus(); input.value?.setSelectionRange(end, end);
 }
 /** 输入候选项，在当前 @ 查询位置插入可读引用并保存目标身份；恢复输入焦点，无返回值。 */
 async function choose(option: typeof suggestions.value[number]): Promise<void> {
@@ -62,14 +80,14 @@ async function choose(option: typeof suggestions.value[number]): Promise<void> {
   references.value.push({ start: current.start, end: current.start + option.label.length, ...(option.playerId ? { playerId: option.playerId } : { tileId: option.tileId }) });
   references.value.sort((a, b) => a.start - b.start);
   message.value = message.value.slice(0, current.start) + text + message.value.slice(end);
-  caret.value = current.start + text.length; dismissed.value = true;
+  caret.value = current.start + text.length; selectionEnd.value = caret.value; dismissed.value = true;
   await nextTick(); input.value?.focus(); input.value?.setSelectionRange(caret.value, caret.value);
 }
 /** 无入参，发送正文与已选引用；成功清空，失败保留，无返回值。 */
 async function submit(): Promise<void> {
   if (props.disabled || sending.value || composing.value || !message.value.trim()) return;
   sending.value = true;
-  try { if (await props.send(message.value, references.value)) { message.value = ''; references.value = []; caret.value = 0; } }
+  try { if (await props.send(message.value, references.value)) { message.value = ''; references.value = []; caret.value = 0; selectionEnd.value = 0; } }
   finally { sending.value = false; }
 }
 /** 输入键盘事件，联想支持上下选择、回车或 Tab 插入、Esc 关闭；输入法选词和 Shift+Enter 保留原行为。 */
@@ -91,16 +109,25 @@ onMounted(() => { window.addEventListener('resize', positionMenu); document.addE
 onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); document.removeEventListener('scroll', positionMenu, true); });
 </script>
 <template>
-  <form class="room-chat" @submit.prevent="submit"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3><small>输入 @ 提及玩家或引用地块</small></div><div class="chat-composer">
+  <form class="room-chat" @submit.prevent="submit"><PanelFrame variant="chat" /><div class="chat-heading"><h3>房间聊天</h3><small>{{ room.status === 'lobby' ? '聊天自动保存，开局后并入本局记录' : '输入 @ 提及玩家或引用地块' }}</small></div><div class="chat-composer">
     <label class="sr-only" for="room-chat-message">房间聊天，输入 @ 搜索玩家或地块</label>
     <textarea id="room-chat-message" ref="input" :value="message" maxlength="300" rows="1" :disabled="disabled || sending" :placeholder="placeholder" :aria-expanded="suggestions.length > 0" :aria-controls="suggestions.length ? 'room-chat-suggestions' : undefined" :aria-activedescendant="suggestions.length ? `chat-option-${selected}` : undefined" aria-autocomplete="list" @input="edit" @click="dismissed = false; updateCaret()" @keyup="updateCaret" @select="updateCaret" @focus="focused = true; dismissed = false; updateCaret()" @blur="focused = false" @compositionstart="composing = true" @compositionend="composing = false; updateCaret()" @keydown="keydown" />
-    <div class="chat-composer-actions"><button type="submit" class="button primary chat-send game-action-button" :disabled="disabled || sending || !message.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
+    <div class="chat-composer-actions"><button type="button" class="button secondary chat-emoji-toggle game-action-button" :disabled="disabled || sending || composing" aria-label="选择小红书表情" title="小红书表情" aria-haspopup="dialog" :aria-expanded="emojiOpen" @click="emojiOpen = true"><img :src="CHAT_EMOJIS[0]!.url" alt="" width="26" height="26" /><small>表情</small></button><button type="submit" class="button primary chat-send game-action-button" :disabled="disabled || sending || !message.trim()" aria-label="发送消息" title="发送消息"><ActionIcon action="send" /><small>发送</small></button></div>
   </div></form>
+  <Modal v-if="emojiOpen" title="小红书表情" @close="emojiOpen = false"><p class="muted">点击插入消息，发送后会和聊天一起保存在对局记录中。</p><div class="chat-emoji-grid"><button v-for="emoji in CHAT_EMOJIS" :key="emoji.code" type="button" :disabled="disabled || sending || message.length - (selectionEnd - caret) + emoji.code.length > 300" :title="emoji.name" :aria-label="`插入表情：${emoji.name}`" @click="insertEmoji(emoji)"><img :src="emoji.url" :alt="emoji.name" width="36" height="36" /><small>{{ emoji.name }}</small></button></div></Modal>
   <Teleport to="body"><div v-if="suggestions.length" id="room-chat-suggestions" ref="menu" class="chat-suggestions" role="listbox" aria-label="玩家和地块联想" :style="menuStyle">
     <button v-for="(option, index) in suggestions" :id="`chat-option-${index}`" :key="option.key" type="button" role="option" :aria-selected="selected === index" tabindex="-1" @pointerdown.prevent @click="choose(option)"><span :style="{ color: option.color }">{{ option.label }}</span><small>{{ option.detail }}</small></button>
   </div></Teleport>
 </template>
 <style scoped>
+.room-chat { position: relative; }
+.chat-emoji-toggle img { object-fit: contain; }
+.chat-emoji-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(54px, 1fr)); gap: 6px; }
+.chat-emoji-grid button { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 0; padding: 8px 2px; border: 1px solid #e3d7b9; border-radius: 12px; background: #fffdf5; color: #806344; font: inherit; }
+.chat-emoji-grid button:hover:not(:disabled), .chat-emoji-grid button:focus-visible { border-color: #9bb18b; background: #f1f6e9; }
+.chat-emoji-grid button:disabled { opacity: .5; }
+.chat-emoji-grid img { object-fit: contain; }
+.chat-emoji-grid small { font-size: 10px; }
 .chat-heading small { color: #80927c; font-size: 11px; }
 .chat-suggestions { position: fixed; z-index: 150; overflow-y: auto; overscroll-behavior: contain; padding: 5px; border: 2px solid #c5ac7d; border-radius: 12px; background: #fffaf0; box-shadow: 0 8px 24px #62472630; scrollbar-width: thin; }
 .chat-suggestions button { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; min-height: 40px; padding: 8px 10px; border: 0; border-radius: 7px; background: transparent; text-align: left; font: inherit; font-size: 13px; }

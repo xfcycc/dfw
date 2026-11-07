@@ -29,3 +29,6 @@ backend/target/
 # README 使用的用户提供截图。
 !/docs/images/game-board.png
 !/docs/images/player-trade.jpg
+
+# 聊天表情随代码分发，保证历史消息显示及进入房间时预加载。
+!/src/web/public/images/chat/xiaohongshu/*.webp

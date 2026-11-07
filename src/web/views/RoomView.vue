@@ -45,6 +45,7 @@ import RecoverySeats from '../components/RecoverySeats.vue';
 import PublicLeaderboard from '../components/PublicLeaderboard.vue';
 import RoomHistory from '../components/RoomHistory.vue';
 import ChatComposer from '../components/ChatComposer.vue';
+import { preloadChatEmojis } from '../chat-emojis';
 import LiveRecords from '../components/LiveRecords.vue';
 import PlayerText from '../components/PlayerText.vue';
 import CharacterPawn from '../components/CharacterPawn.vue';
@@ -146,6 +147,7 @@ const selectedTile = ref<Tile | null>(null);
 const recordMode = ref<'live' | 'history'>('live');
 const board = ref<InstanceType<typeof Board>>();
 const canChat = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.room?.recoveryPending);
+watch(() => game.room?.status, status => { if (status) void preloadChatEmojis(); }, { immediate: true });
 /** 输入公开聊天正文与已选引用，成功切换实时记录，返回是否发送成功。 */
 async function sendChat(message: string, references: ChatReference[]): Promise<boolean> {
   if (!canChat.value || !message.trim()) return false;
@@ -522,6 +524,10 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
           <section v-if="game.me && !spectator" class="lobby-avatar-picker"><div class="lobby-avatar-heading"><h2>选择头像</h2><button type="button" class="button secondary small lobby-rename" :disabled="!canRename" @click="openRename">改名</button></div><AvatarPicker /></section>
           <div v-if="!spectator" class="lobby-controls"><div class="cottage-buttons"><button class="button" :class="game.me?.ready ? 'secondary' : 'primary'" :disabled="!game.canAct" @click="game.act({ type: 'ready', value: !game.me?.ready })">{{ game.me?.ready ? '取消准备' : '准备好了' }}</button><button v-if="game.isHost" class="button primary" :disabled="!game.canAct || !allReady" @click="game.act({ type: 'start' })">开始游戏</button></div><p class="lobby-hint" role="status">{{ game.room.players.length < 2 ? '等待朋友加入' : allReady ? game.isHost ? '大家都准备好了' : '等待房主开局' : '等待所有玩家准备' }}</p></div>
           <p v-else class="lobby-hint">观战中 · 等待开局</p>
+          <section class="lobby-chat" aria-label="房间聊天">
+            <h2>房间聊天</h2><div class="lobby-chat-records"><LiveRecords :room="game.room" :token="game.session?.token" compact journal chat-only /></div>
+            <ChatComposer v-if="!spectator" :room="game.room" :disabled="!canChat" :send="sendChat" :placeholder="game.connection !== 'online' ? '恢复连接后可发送消息' : '和朋友聊聊，支持表情和 @ 玩家…'" />
+          </section>
         </div>
       </section>
       <template v-else>

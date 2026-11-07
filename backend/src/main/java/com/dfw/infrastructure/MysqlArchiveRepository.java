@@ -73,10 +73,14 @@ public class MysqlArchiveRepository implements ArchiveRepository {
     private Object[] snapshotRow(Room room) { return new Object[]{snapshotId(room), room.roomId, room.gameId, room.version, room.turnNumber, room.status, System.currentTimeMillis(), ArchiveRules.FORMAT, rules.digest, json.write(room), json.write(StateViews.publicRoom(room))}; }
     /** 输入候选与实际事实，返回批量写入参数；内部明细不作为公开接口输出。 */
     private Object[] historyRow(Room room, HistoryTrace.Entry entry) { return new Object[]{room.roomId, snapshotId(room), entry.gameId(), room.version, entry.turnNumber(), entry.phase(), entry.actorId(), entry.actorName(), entry.type(), entry.text(), entry.at(), entry.details() == null ? null : json.write(entry.details())}; }
-    /** 输入候选，在外层事务中一次保存完整快照并批量追加本次事实。 */
+    /** 输入候选，在外层事务保存快照与事实；开局时将本轮大厅聊天归入新对局，保留原保存点。 */
     public void append(Room room) {
         identify(room); ensure(room); jdbc.update(SNAPSHOT_INSERT, snapshotRow(room));
         List<HistoryTrace.Entry> entries = HistoryTrace.entries();
+        if (entries.stream().anyMatch(entry -> "game_started".equals(entry.type()))) {
+            jdbc.update("UPDATE room_history SET game_id=? WHERE room_id=? AND game_id IS NULL AND type='chat' AND version>COALESCE((SELECT MAX(version) FROM room_snapshots WHERE room_id=? AND game_id IS NOT NULL AND version<?),0)",
+                    room.gameId, room.roomId, room.roomId, room.version);
+        }
         if (entries.isEmpty()) entries = List.of(new HistoryTrace.Entry(room.gameId, room.turnNumber, room.phase, null, null, "state", "局面已保存", System.currentTimeMillis(), null));
         jdbc.batchUpdate(HISTORY_INSERT, entries.stream().map(entry -> historyRow(room, entry)).toList());
     }
