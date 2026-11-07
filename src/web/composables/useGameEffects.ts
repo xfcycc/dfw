@@ -12,14 +12,18 @@ const DICE_HOLD_MS = 220;
 const MOVE_STEP_MS = 190;
 const LANDING_MS = 500;
 
-/** 输入实时房间、连接状态、路径回调、现金栏玩家、重置标记、骰子模式及揭卡等待状态，返回视听状态。 */
-export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0, desktopDice: () => boolean = () => false, paused: () => boolean = () => false) {
+/** 输入实时房间、连接状态、路径回调、现金栏玩家、重置标记、骰子模式、揭卡等待及局部演出条件，返回视听状态。 */
+export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0, desktopDice: () => boolean = () => false, paused: () => boolean = () => false, localEffects: () => boolean = () => false) {
   const money = ref<{ key: string; tileId: number; name: string; amount: number }[]>([]);
   const tiles = ref<{ key: string; tileId: number; kind: 'bought' | 'built' | 'magic' }[]>([]);
   const rolling = ref(false);
   const celebrating = ref(false);
   const motion = ref<PublicRoomState['motion']>(null);
   const boardEffect = ref<PublicRoomState['motion']>(null);
+  const boardEffectKey = ref(0);
+  let effectQueue: NonNullable<PublicRoomState['motion']>[] = [];
+  let effectDuration = 0;
+  let effectTimer: ReturnType<typeof setTimeout> | undefined;
   const lightSpell = ref<{key:number;card:NonNullable<ReturnType<typeof fullCardSpellFor>>;playerId:string;effect:NonNullable<PublicRoomState['motion']>['boardEffect']}|null>(null);
   const animatedPosition = ref<{ id: string; position: number } | null>(null);
   const moving = ref(false);
@@ -42,6 +46,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   }
   /** 无入参，取消旧路径和延迟声音，恢复服务端位置，无返回值。 */
   function clearMotion(): void {
+    clearTimeout(effectTimer); effectQueue = [];
     motionTimers.forEach(clearTimeout); motionTimers.clear();
     motion.value = null; boardEffect.value = null; animatedPosition.value = null; rolling.value = false;
     moving.value = false; landing.value = false; step.value = 0; diceResult.value = null;
@@ -49,7 +54,25 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   /** 输入已完成的演出标识，幂等释放本段，服务端结算结果交原队列展示，无返回值。 */
   function finishBoardEffect(id: string): void {
     if (boardEffect.value?.id !== id) return;
+    clearTimeout(effectTimer);
+    if (effectQueue.length) { playNextEffect(); return; }
     clearMotion(); settled(id);
+  }
+  /** 无入参，播放下一个真实目标并重建时间轴，所有目标结束后才通知原结算队列。 */
+  function playNextEffect(): void {
+    boardEffectKey.value++;
+    boardEffect.value = effectQueue.shift()!;
+    effectTimer = setTimeout(() => finishBoardEffect(boardEffect.value!.id), effectDuration + 250);
+  }
+  /** 输入服务端演出，移动端按地产、位移或参与玩家拆分展示目标，返回不改变结算标识的片段。 */
+  function localSegments(movement: NonNullable<PublicRoomState['motion']>): NonNullable<PublicRoomState['motion']>[] {
+    const effect = movement.boardEffect!;
+    if (!localEffects()) return [movement];
+    const card = fullCardSpellFor(movement);
+    const targets = effect.beforeTiles.length ? effect.beforeTiles.map(tile => ({ ...effect, beforeTiles: [tile], afterTiles: effect.afterTiles.filter(after => after.id === tile.id), moves: [], playerIds: [] }))
+      : effect.moves.length ? effect.moves.map(move => ({ ...effect, moves: [move], playerIds: [move.playerId] }))
+      : (effect.playerIds ?? []).filter(id => !card || id !== movement.playerId || ['all_cards', 'all_morale', 'all_income', 'bottom_bonus', 'handDestruction'].includes(card.mechanism)).map(id => ({ ...effect, playerIds: [id] }));
+    return targets.length ? targets.map(boardEffect => ({ ...movement, boardEffect })) : [movement];
   }
   /** 输入零等待片段及卡面，合并连续同来源的真实收款人；预加载与提示均不阻塞原结算。 */
   function presentLightSpell(movement:NonNullable<PublicRoomState['motion']>,card:NonNullable<ReturnType<typeof fullCardSpellFor>>):void {
@@ -92,9 +115,10 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       }).then(result => {
         if (motion.value?.id !== movement.id) return;
         if (document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) { clearMotion(); settled(movement.id); return; }
-        boardEffect.value = result === 'fallback' ? { ...movement, sourceSkinId: null } : movement; playSound('magic');
+        effectQueue = localSegments(result === 'fallback' ? { ...movement, sourceSkinId: null } : movement); playSound('magic');
         // 图集解码完成后才启动时间轴和兜底计时，首次加载不占用播放时长。
-        later((result === 'fallback' ? boardEffectDuration(movement.boardEffect!.kind) : spell?.duration ?? full?.duration ?? boardEffectDuration(movement.boardEffect!.kind)) + 250, () => finishBoardEffect(movement.id), motionTimers);
+        effectDuration = result === 'fallback' ? boardEffectDuration(movement.boardEffect!.kind) : spell?.duration ?? full?.duration ?? boardEffectDuration(movement.boardEffect!.kind);
+        playNextEffect();
       });
       return;
     }
@@ -191,5 +215,5 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     }
   }, { flush: 'post' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
-  return { money, tiles, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
+  return { money, tiles, rolling, celebrating, motion, boardEffect, boardEffectKey, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
 }

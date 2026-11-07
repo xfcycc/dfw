@@ -36,7 +36,23 @@ const fullMap = ref(false);
 const referencedTile = ref<number | null>(null);
 const following = computed(() => !!props.spectator && !!props.spectatorFollow);
 const mobileOverview = computed(() => !!props.dashboardTarget && !props.spectator && !props.classicLayout);
-const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice, () => !!props.paused);
+/** 无入参，判断是否使用移动端局部演出，返回玩家和观战共用的视口条件。 */
+function localEffects(): boolean { return !!(props.dashboardTarget || props.spectator) && window.matchMedia('(max-width:1100px), (max-height:579px), (pointer:coarse)').matches; }
+const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, boardEffectKey, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice, () => !!props.paused, localEffects);
+const localEffectCamera = computed(() => !!boardEffect.value && localEffects());
+const effectCamera = ref({ left: 0, top: 0 });
+const spellWidth = computed(() => localEffectCamera.value ? availableWidth.value : size.value * zoom.value);
+const spellHeight = computed(() => localEffectCamera.value ? availableViewportHeight.value : height.value * zoom.value);
+/** 输入地块编号，将实际坐标转换到当前演出视窗，返回动画锚点。 */
+function spellPoint(id: number): { x: number; y: number } {
+  const point = effectPoint(id);
+  return localEffectCamera.value ? { x: point.x - effectCamera.value.left, y: point.y - effectCamera.value.top } : point;
+}
+/** 输入玩家、格号及终点标记，返回演出视窗坐标，远处施术者从视窗边缘入场。 */
+function spellPlayerPoint(playerId: string, position: number, after = false): { x: number; y: number } {
+  const point = effectPlayerPoint(playerId, position, after);
+  return localEffectCamera.value ? { x: Math.max(24, Math.min(spellWidth.value - 24, point.x - effectCamera.value.left)), y: Math.max(24, Math.min(spellHeight.value - 24, point.y - effectCamera.value.top)) } : point;
+}
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -71,7 +87,7 @@ const tradeMarkers = computed(() => {
   if (props.spectator || !props.room.tradePending || !trade || trade.toId !== props.meId) return [];
   return [...trade.giveTiles.map(id => ({ id, gaining: true, label: '将收到' })), ...trade.wantTiles.map(id => ({ id, gaining: false, label: '将失去' }))];
 });
-const height = computed(() => { if (desktopSingleScreen.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 2); if (props.spectator && props.compact && !following.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
+const height = computed(() => { if (desktopSingleScreen.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 2); if (props.spectator && props.compact && !following.value && !localEffectCamera.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
 const diceFullscreen = computed(() => !!motion.value && diceResult.value !== null && !moving.value && !landing.value);
 const motionPlayer = computed(() => props.room.players.find(player => player.id === motion.value?.playerId));
@@ -125,7 +141,6 @@ function effectPlayerPoint(playerId: string, position: number, after = false): {
   const point = effectPoint(position);
   return { x: point.x + offset, y: point.y };
 }
-// 效果沿用当前缩放与视野，不在播放前后强制切换全图或恢复地图位置。
 const rotating = ref(false);
 const displayedActivityKinds = ref<Record<number, ActivityKind>>({});
 let rotationTimer: ReturnType<typeof setTimeout> | undefined;
@@ -223,6 +238,7 @@ function resizeBoard(): void {
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
   if (desktopSingleScreen.value) { zoom.value = 1; fullMap.value = true; return; }
+  if (localEffectCamera.value) { focusEffect(); return; }
   if (boardEffect.value && (cardSpellFor(boardEffect.value) || fullCardSpellFor(boardEffect.value))) { fitBoard(); return; }
   if (props.targeting) return;
   if (props.spectator && following.value) { fullMap.value = false; zoom.value = 1; }
@@ -302,15 +318,32 @@ function fitBoard(): void {
   zoom.value = Math.max(detached ? 0.01 : props.bounded ? 0.15 : 0.3, Math.min(1, heightLimit, ((container.value?.clientWidth ?? size.value) - 6) / size.value));
   void nextTick(() => viewport.value?.scrollTo({ left: 0, top: 0, behavior: 'instant' }));
 }
-let spellView: { zoom: number; fullMap: boolean; left: number; top: number } | undefined;
-// 输入当前专属演出，局部地图临时显示全图，让跨格目标可见；结束或跳过后恢复原视野。
+let spellView: { zoom: number; size: number; fullMap: boolean; left: number; top: number } | undefined;
+/** 无入参，保持可读格距，将镜头定位到当前唯一生效目标，无返回值。 */
+function focusEffect(): void {
+  const segment = boardEffect.value;
+  if (!segment?.boardEffect) return;
+  cancelAnimationFrame(followFrame);
+  fullMap.value = false; zoom.value = 1;
+  size.value = Math.max(size.value, dimensions.value.columns * 112 + 16);
+  void nextTick(() => {
+    if (boardEffect.value !== segment || !viewport.value) return;
+    const effect = segment.boardEffect!;
+    const playerId = effect.playerIds?.[0] ?? segment.playerId;
+    const position = effect.paymentBefore != null ? segment.from : effect.beforeTiles[0]?.id ?? effect.moves[0]?.to ?? props.room.players.find(player => player.id === playerId)?.position ?? segment.from;
+    const point = effectPoint(position);
+    viewport.value.scrollTo({ left: point.x - viewport.value.clientWidth / 2, top: point.y - viewport.value.clientHeight / 2, behavior: 'instant' });
+    effectCamera.value = { left: viewport.value.scrollLeft, top: viewport.value.scrollTop };
+  });
+}
+// 输入当前目标演出，移动端局部定位并逐个播放，结束后恢复原模式和视野。
 watch(boardEffect, effect => {
-  if (effect && (cardSpellFor(effect) || fullCardSpellFor(effect)) && !fullMap.value && !spellView) {
-    spellView = { zoom: zoom.value, fullMap: fullMap.value, left: viewport.value?.scrollLeft ?? 0, top: viewport.value?.scrollTop ?? 0 };
-    fitBoard();
-  } else if ((!effect || !(cardSpellFor(effect) || fullCardSpellFor(effect))) && spellView) {
+  if (effect && (localEffects() || cardSpellFor(effect) || fullCardSpellFor(effect))) {
+    if (!spellView && (localEffects() || !fullMap.value)) spellView = { zoom: zoom.value, size: size.value, fullMap: fullMap.value, left: viewport.value?.scrollLeft ?? 0, top: viewport.value?.scrollTop ?? 0 };
+    if (localEffects()) focusEffect(); else fitBoard();
+  } else if (spellView) {
     const previous = spellView; spellView = undefined;
-    zoom.value = previous.zoom; fullMap.value = previous.fullMap;
+    zoom.value = previous.zoom; size.value = previous.size; fullMap.value = previous.fullMap;
     void nextTick(() => viewport.value?.scrollTo({ left: previous.left, top: previous.top, behavior: 'instant' }));
   }
 }, { flush: 'sync' });
@@ -370,9 +403,11 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
           </div>
         </div>
         <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
-        <LiveCardSpellLayer v-if="boardEffect && cardSpellFor(boardEffect)" :key="boardEffect.id" :segment="boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="spellTileSize" :width="size * zoom" :height="height * zoom" @done="finishBoardEffect" />
-        <FullCardSpellLayer v-else-if="boardEffect && fullCardSpellFor(boardEffect)" :key="boardEffect.id" :segment="boardEffect" :players="room.players" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="spellTileSize" :width="size * zoom" :height="height * zoom" @done="finishBoardEffect" />
-        <BoardEffectLayer v-else-if="boardEffect?.boardEffect" :key="boardEffect.id" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="effectPoint" :player-point="effectPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="size * zoom" :board-height="height * zoom" @done="finishBoardEffect" />
+        <div v-if="boardEffect" class="board-spell-stage" :style="{left:`${localEffectCamera ? effectCamera.left : 0}px`,top:`${localEffectCamera ? effectCamera.top : 0}px`,width:`${spellWidth}px`,height:`${spellHeight}px`}">
+        <LiveCardSpellLayer v-if="cardSpellFor(boardEffect)" :key="boardEffectKey" :segment="boardEffect" :players="room.players" :board="room.board" :point="spellPoint" :player-point="spellPlayerPoint" :tile-size="spellTileSize" :width="spellWidth" :height="spellHeight" @done="finishBoardEffect" />
+        <FullCardSpellLayer v-else-if="fullCardSpellFor(boardEffect)" :key="boardEffectKey" :segment="boardEffect" :players="room.players" :point="spellPoint" :player-point="spellPlayerPoint" :tile-size="spellTileSize" :width="spellWidth" :height="spellHeight" @done="finishBoardEffect" />
+        <BoardEffectLayer v-else-if="boardEffect.boardEffect" :key="boardEffectKey" :id="boardEffect.id" :actor-id="boardEffect.playerId" :effect="boardEffect.boardEffect" :players="room.players" :board="room.board" :point="spellPoint" :player-point="spellPlayerPoint" :zoom="zoom" :tile-size="effectTileSize" :board-width="spellWidth" :board-height="spellHeight" @done="finishBoardEffect" />
+        </div>
         <slot name="effect-overlay" :point="effectPoint" :player-point="effectPlayerPoint" :tile-size="effectTileSize" :width="size * zoom" :height="height * zoom" />
         <UniqueUrSpellLayer v-if="lightSpell?.card.rarity==='UR'" :key="lightSpell.key" :card="lightSpell.card" :actor="lightSpellPoint" :targets="[lightSpellPoint]" :effect="lightSpell.effect??undefined" :width="size*zoom" :height="height*zoom" :tile-size="spellTileSize" compact/>
         <template v-else-if="lightSpell"><div v-for="target in lightSpellTargets" :key="`${lightSpell.key}:${target.id}`" class="light-spell" :style="{left:`${target.x}px`,top:`${target.y}px`}"><FullSpellProp :card="lightSpell.card"/></div></template>
@@ -422,6 +457,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 .board-state-legend > span { display:inline-flex; align-items:center; gap:4px; }
 .board-state-legend .tile-trap-marker { --trap-size:20px; }
 .board-container { position:relative; }
+.board-spell-stage { position:absolute;z-index:20;pointer-events:none; }
 .light-spell { position:absolute;z-index:21;width:48px;height:48px;transform:translate(-50%,-120%);pointer-events:none;animation:light-spell .9s ease-out both; }
 @keyframes light-spell { 0% { opacity:0;scale:.5; } 20%,65% { opacity:1;scale:1; } 100% { opacity:0;translate:0 -16px; } }
 .board-local-feedback { position:absolute; inset:0; pointer-events:none; z-index:13; }

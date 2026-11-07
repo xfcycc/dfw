@@ -159,9 +159,9 @@ onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); docu
 .chat-suggestions small { flex-shrink: 0; color: #88775b; font-size: 11px; }
 @media (max-width: 1100px), (max-height: 579px), (pointer: coarse) {
   /* 输入操作置于装饰边框之上，避免边框遮住表情图标。 */
-  .room-chat .chat-composer { position: relative; z-index: 4; flex-direction: column; align-items: stretch; gap: 4px; }
-  .room-chat .chat-composer textarea { flex: none; width: 100%; box-sizing: border-box; }
-  .room-chat .chat-composer-actions { align-self: flex-end; min-height: 44px; align-items: center; }
+  .room-chat .chat-composer { position: relative; z-index: 4; flex-direction: row; align-items: center; gap: 8px; min-height: 52px; }
+  .room-chat .chat-composer textarea { flex: 1; width: 0; min-width: 0; box-sizing: border-box; }
+  .room-chat .chat-composer-actions { align-self: center; min-height: 44px; align-items: center; gap: 6px; }
   .room-chat .chat-composer-actions .button.game-action-button { box-sizing: border-box; display: flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 36px; height: 36px; min-height: 36px; padding: 0; gap: 0; }
   .room-chat .chat-composer-actions img, .room-chat .chat-composer-actions :deep(.action-icon) { display: block; flex: none; width: 26px; height: 26px; }
   .room-chat .chat-composer-actions .game-action-button > small { display: none; }
