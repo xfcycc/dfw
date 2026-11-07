@@ -4,6 +4,7 @@ import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
 import { buildCost } from '../../shared/rules';
 import ThemedSelect from './ThemedSelect.vue';
+import MapTileSelect from './MapTileSelect.vue';
 import ContentCard from './ContentCard.vue';
 
 const props = defineProps<{ choice: ContentChoice }>();
@@ -53,17 +54,17 @@ async function submit(accept: boolean): Promise<void> {
     <ContentCard v-if="choice.content" :content="choice.content" />
     <p class="notice">{{ choice.prompt ?? choice.content?.effect }}</p>
     <template v-if="kind !== 'remoteConstruction'">
-      <label class="field">{{ two ? '第一处地产' : '建设地产' }}<ThemedSelect v-model="first" label="第一处建设地产" :options="options(secondNeeded ? second : '')" /></label>
+      <label class="field">{{ two ? '第一处地产' : '建设地产' }}<MapTileSelect v-model="first" label="第一处建设地产" :options="options(secondNeeded ? second : '')" /></label>
       <template v-if="kind === 'createBuild'">
         <p>选择一至两张其他手牌作为材料，每张建设一处不同地产，材料不折现。</p>
         <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: materials.includes(card.id) }"><input v-model="materials" type="checkbox" :value="card.id" :disabled="!materials.includes(card.id) && materials.length >= 2" /><ContentCard :content="card" compact thumbnail /></label></div>
       </template>
-      <label v-if="secondNeeded" class="field">第二处地产<ThemedSelect v-model="second" label="第二处建设地产" :options="options(first)" /></label>
+      <label v-if="secondNeeded" class="field">第二处地产<MapTileSelect v-model="second" label="第二处建设地产" :options="options(first)" /></label>
       <template v-if="kind === 'sereniteaPot' && first !== '' && second !== ''">
         <p>两处最终建筑合计 {{ total }} 级，包含免费新增的一级，每处最高三级。</p>
         <label class="field">第一处最终等级<ThemedSelect v-model="firstLevel" label="第一处最终建筑等级" :options="levels" /></label>
         <p>第二处最终等级：{{ secondLevel }} 级</p>
-        <label class="field">新增一级的位置<ThemedSelect v-model="bonus" label="新增建筑所在地产" :options="[{ value: first, label: '第一处地产' }, { value: second, label: '第二处地产' }]" /></label>
+        <label class="field">新增一级的位置<MapTileSelect v-model="bonus" label="新增建筑所在地产" :options="[{ value: first, label: '第一处地产' }, { value: second, label: '第二处地产' }]" /></label>
       </template>
     </template>
     <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="submit(false)">{{ choice.cardId ? '取消并保留卡' : '放弃本次建设' }}</button><button class="button primary" :disabled="!enabled || !valid" @click="submit(true)">{{ kind === 'remoteConstruction' ? '开启基建轮班' : kind === 'remote' ? '支付并远程建造' : '确认建设' }}</button></div>

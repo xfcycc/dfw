@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue';
 import ThemedSelect from './ThemedSelect.vue';
+import MapTileSelect from './MapTileSelect.vue';
 import { useGameStore } from '../stores/game';
 import { isKamui, rentFor } from '../../shared/rules';
 import type { Card, GameAction, Tile } from '../../shared/types';
@@ -19,6 +20,8 @@ const board = computed(() => game.room?.board ?? []);
 const enemies = computed(() => board.value.filter(t => t.type === 'property' && !isKamui(t) && t.level > 0 && t.ownerId && t.ownerId !== game.me?.id && !game.room?.players.find(p => p.id === t.ownerId)?.bankrupt));
 /** 输入格号，按真实矩形边长返回所属边。 */
 function side(id: number): number { const h = Math.ceil(board.value.length / 4), v = Math.floor(board.value.length / 4); return id < h ? 0 : id < h + v ? 1 : id < 2 * h + v ? 2 : 3; }
+/** 输入冰封区域的代表格号，返回该边的所有格号，允许直接点击边内任意格。 */
+function edgeTiles(value: string): number[] { return board.value.filter(tile => side(tile.id) === side(Number(value))).map(tile => tile.id); }
 const sealCandidates = computed(() => board.value.filter(t => t.type === 'property' && !isKamui(t)));
 const sealSides = computed(() => [{ value: '', label: '请选择一条边', disabled: true }, ...Array.from({ length: 4 }, (_, index) => {
   const count = sealCandidates.value.filter(t => side(t.id) === index).length;
@@ -88,26 +91,26 @@ watchEffect(() => {
 </script>
 <template>
   <div class="anime-card-controls">
-    <label v-if="['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<ThemedSelect v-model="first" label="选择目标地产" :options="options" /></label>
-    <template v-if="card.kind === 'fireBurial'"><label class="field">献祭自家建筑<ThemedSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label><p class="notice warning">确认后先献祭一级建筑，无退款且四之弹不可恢复；攻击被防御也不返还。</p></template>
+    <label v-if="['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<MapTileSelect v-model="first" label="选择目标地产" :options="options" :tile-ids="card.kind === 'absoluteZero' ? edgeTiles : undefined" /></label>
+    <template v-if="card.kind === 'fireBurial'"><label class="field">献祭自家建筑<MapTileSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label><p class="notice warning">确认后先献祭一级建筑，无退款且四之弹不可恢复；攻击被防御也不返还。</p></template>
     <template v-if="card.kind === 'xiaowuSacrifice'">
-      <label class="field">第一处献祭地产<ThemedSelect v-model="first" label="第一处献祭地产" :options="[{ value: '', label: '请选择自家未抵押地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== second).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
-      <label class="field">第二处献祭地产<ThemedSelect v-model="second" label="第二处献祭地产" :options="[{ value: '', label: '请选择另一处自家地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== first).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
+      <label class="field">第一处献祭地产<MapTileSelect v-model="first" label="第一处献祭地产" :options="[{ value: '', label: '请选择自家未抵押地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== second).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
+      <label class="field">第二处献祭地产<MapTileSelect v-model="second" label="第二处献祭地产" :options="[{ value: '', label: '请选择另一处自家地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== first).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
       <p class="notice warning">确认后失去两处土地及全部建筑，无退款、无补偿且不可修复。获得十万年魂环：含本回合共8个本人回合，自选免除最多3笔正租金；每笔看到金额后再决定。</p>
       <p v-if="game.privateData?.soulRingRemaining" class="notice">十万年魂环仍在生效，不能重复发动或刷新。</p>
     </template>
     <p v-if="rushRent" class="notice warning">{{ rushRent }}</p>
     <p v-if="card.kind === 'bankai'" class="notice">{{ (card.parameters?.version ?? 0) >= 2 ? '发动后，本回合最多再出2张其他主动牌，含UR；不能再用卍解或投影。替代移动后结束出牌，其他限制和费用照常。' : '确认发动后消耗卡与主动次数，并固定两枚骰点；随后必须选一枚前进或后退。' }}</p>
     <p v-if="card.kind === 'igniteSea' && first !== ''" class="notice warning">先移除所选地产全部护盾，再降低 {{ Math.min(3, 1 + (tiles.find(t => String(t.id) === first)?.demolitionShieldCharges || (tiles.find(t => String(t.id) === first)?.demolitionShield ? 1 : 0))) }} 级建筑（不低于0级）；对手可主动防御，其他附加效果保留。</p>
-    <label v-if="card.kind === 'voidTears'" class="field">第二处空间端点<ThemedSelect v-model="second" label="选择第二端点" :options="options.filter(v => v.value !== first || v.value === '')" /></label>
+    <label v-if="card.kind === 'voidTears'" class="field">第二处空间端点<MapTileSelect v-model="second" label="选择第二端点" :options="options.filter(v => v.value !== first || v.value === '')" /></label>
     <label v-if="['commandSpell', 'swordRain'].includes(card.kind)" class="field">目标玩家<ThemedSelect v-model="player" label="选择目标玩家" :options="playerOptions" /></label>
     <label v-if="card.kind === 'commandSpell'" class="field">命令移动点数<ThemedSelect v-model="point" label="命令移动点数" :options="Array.from({ length: 6 }, (_, i) => ({ value: i + 1, label: `${i + 1} 点` }))" /></label>
     <label v-if="card.kind === 'railgun'" class="field">贯穿方向<ThemedSelect v-model="direction" label="贯穿方向" :options="[{ value: 1, label: '顺时针前方六格' }, { value: -1, label: '逆时针前方六格' }]" /></label>
-    <template v-if="card.kind === 'sevenSwords'"><p class="notice">分配3道剑气，可重复选地集火，也可留空；每层护盾抵挡1道，未分配的剑气作废。</p><label v-for="(_, index) in swords" :key="index" class="field">第 {{ index + 1 }} 道剑气<ThemedSelect v-model="swords[index]" :label="`第${index + 1}道剑气`" :options="[{ value: '', label: '本剑气不使用' }, ...options.filter(v => v.value !== '')]" /></label></template>
+    <template v-if="card.kind === 'sevenSwords'"><p class="notice">分配3道剑气，可重复选地集火，也可留空；每层护盾抵挡1道，未分配的剑气作废。</p><label v-for="(_, index) in swords" :key="index" class="field">第 {{ index + 1 }} 道剑气<MapTileSelect v-model="swords[index]" :label="`第${index + 1}道剑气`" :options="[{ value: '', label: '本剑气不使用' }, ...options.filter(v => v.value !== '')]" /></label></template>
     <template v-if="card.kind === 'kamui'">
       <p class="notice">同一条边手选 1～3 处地产，不必连续，可以混选自己、对手和无主地产；封印三个施术者后续个人回合。</p>
-      <label class="field">封印范围<ThemedSelect v-model="sealSide" label="选择封印所在边" :options="sealSides" /></label>
-      <template v-if="sealSide !== ''"><label v-for="(_, index) in seals" :key="index" class="field">第 {{ index + 1 }} 处地产<ThemedSelect v-model="seals[index]" :label="`第${index + 1}处封印地产`" :options="sealOptions(index)" /></label><p class="muted" role="status">已选 {{ sealCount }}／3 处，选择一处即可确认。</p></template>
+      <label class="field">封印范围<MapTileSelect v-model="sealSide" label="选择封印所在边" :options="sealSides" :tile-ids="value => sealCandidates.filter(tile => side(tile.id) === Number(value)).map(tile => tile.id)" /></label>
+      <template v-if="sealSide !== ''"><label v-for="(_, index) in seals" :key="index" class="field">第 {{ index + 1 }} 处地产<MapTileSelect v-model="seals[index]" :label="`第${index + 1}处封印地产`" :options="sealOptions(index)" /></label><p class="muted" role="status">已选 {{ sealCount }}／3 处，选择一处即可确认。</p></template>
       <p v-if="sealingOwn" class="notice warning">自家地产封印期间同样不能收租、升级、交易或变现；建筑与原有附加效果保留。</p>
     </template>
     <p v-if="preview" class="notice">作用路径：{{ preview }}</p>

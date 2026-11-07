@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ThemedSelect from './ThemedSelect.vue';
+import MapTargetButton from './MapTargetButton.vue';
 import ConstructionChoice from './ConstructionChoice.vue';
 import CrossoverChoice from './CrossoverChoice.vue';
 import { computed, ref, watch } from 'vue';
@@ -68,6 +69,7 @@ async function decide(accept: boolean): Promise<void> {
       <button class="button primary full" :disabled="!enabled || !discovered" @click="decide(true)">支付竞标材料并获得所选UR</button>
     </template>
     <template v-else-if="choice.type === 'neta_petals'">
+      <MapTargetButton label="选择花瓣攻击地产" :options="choice.tileIds.map(id => ({ value: id, label: `${id}号 ${game.room?.board[id]?.name}`, disabled: !petalTiles.includes(id) && petalTiles.length >= (choice.numbers?.[0] ?? 0) }))" :selected="petalTiles" :disabled="!enabled" multiple @select="id => { petalTiles = petalTiles.includes(id) ? petalTiles.filter(value => value !== id) : [...petalTiles, id]; }" />
       <div class="choice-card-grid"><label v-for="id in choice.tileIds" :key="id" class="keep-card" :class="{ selected: petalTiles.includes(id) }"><input v-model="petalTiles" type="checkbox" :value="id" :disabled="!petalTiles.includes(id) && petalTiles.length >= (choice.numbers?.[0] ?? 0)" /><PlayerText :text="`${id}号 ${game.room?.board[id]?.name} · ${game.room?.players.find(p => p.id === game.room?.board[id]?.ownerId)?.name} · ${game.room?.board[id]?.level}级`" /></label></div>
       <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="decide(false)">取消并保留花瓣</button><button class="button primary" :disabled="!enabled || !petalTiles.length" @click="decide(true)">消耗 {{ petalTiles.length }} 片并释放</button></div>
     </template>

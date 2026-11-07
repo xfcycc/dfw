@@ -4,6 +4,8 @@ import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
 import ContentCard from './ContentCard.vue';
 import ThemedSelect from './ThemedSelect.vue';
+import MapTileSelect from './MapTileSelect.vue';
+import MapTargetButton from './MapTargetButton.vue';
 const props = defineProps<{ choice: ContentChoice }>();
 const emit = defineEmits<{ done: [] }>();
 const game = useGameStore();
@@ -71,9 +73,10 @@ async function decide(accept: boolean): Promise<void> {
       <div v-for="material in choice.materialIds" :key="material"><p>{{ choice.cards.find(c => c.id === material)?.name }} · 选择同档新效果</p><div class="choice-card-grid"><label v-for="c in choice.cardOptions?.[material] ?? []" :key="c.id" class="keep-card" :class="{ selected: replacements[material] === c.id }"><input v-model="replacements[material]" type="radio" :name="material" :value="c.id" /><ContentCard :content="c" compact thumbnail /></label></div></div>
     </template>
     <template v-else-if="type === 'cross_mend'">
+      <MapTargetButton label="选择最多三处修复地产" :options="tileOptions.map(option => ({ ...option, disabled: option.value === '' || !tiles.includes(Number(option.value)) && tiles.length >= 3 }))" :selected="tiles" :disabled="!enabled" multiple @select="id => { tiles = tiles.includes(id) ? tiles.filter(value => value !== id) : [...tiles, id]; }" />
       <label v-for="id in choice.tileIds" :key="id" class="field"><input v-model="tiles" type="checkbox" :value="id" :disabled="!tiles.includes(id) && tiles.length >= 3" />{{ id }}号 {{ game.room?.board[id]?.name }} · 当前{{ game.room?.board[id]?.level }}级</label>
     </template>
-    <template v-else-if="type === 'cross_purify' || type === 'cross_charge'"><label class="field">目标地产<ThemedSelect v-model="tile" label="目标地产" :options="tileOptions" /></label><label v-if="type === 'cross_purify'" class="field">弃置材料<ThemedSelect v-model="card" label="弃置材料" :options="cardOptions" /></label></template>
+    <template v-else-if="type === 'cross_purify' || type === 'cross_charge'"><label class="field">目标地产<MapTileSelect v-model="tile" label="目标地产" :options="tileOptions" /></label><label v-if="type === 'cross_purify'" class="field">弃置材料<ThemedSelect v-model="card" label="弃置材料" :options="cardOptions" /></label></template>
     <label v-else-if="type === 'cross_duel_target'" class="field">邀请对手<ThemedSelect v-model="player" label="邀请对手" :options="[{ value: '', label: '请选择对手', disabled: true }, ...(choice.playerIds ?? []).map(id => ({ value: id, label: game.room?.players.find(p => p.id === id)?.name ?? id }))]" /></label>
     <template v-else-if="type === 'cross_duel_stake' || type === 'cross_bind_release'"><div class="choice-card-grid"><label v-for="c in choice.cards" :key="c.id" class="keep-card" :class="{ selected: card === c.id }"><input v-model="card" type="radio" :name="choice.id" :value="c.id" /><ContentCard :content="c" compact thumbnail /></label></div></template>
     <div class="button-row choice-actions">

@@ -4,6 +4,7 @@ import type { Card, GameAction } from '../../shared/types';
 import { isKamui } from '../../shared/rules';
 import { useGameStore } from '../stores/game';
 import ThemedSelect from './ThemedSelect.vue';
+import MapTileSelect from './MapTileSelect.vue';
 /** 输入两个棋盘索引和总格数，返回环形最短格距。 */
 function nearbyDistance(first: number, second: number, size: number): number { const distance = Math.abs(first - second); return Math.min(distance, size - distance); }
 const props = defineProps<{ card: Card }>();
@@ -40,7 +41,7 @@ watchEffect(() => {
   <div class="crossover-card-controls">
     <label v-if="card.kind === 'asunaFlash'" class="field">突进距离<ThemedSelect v-model="point" label="突进距离" :options="[1, 2, 3].map(value => ({ value, label: `向前突进 ${value} 格` }))" /></label>
     <label v-if="hasPlayer" class="field">目标玩家<ThemedSelect v-model="target" label="目标玩家" :options="[{ value: '', label: '请选择对手', disabled: true }, ...players.map(p => ({ value: p.id, label: p.name }))]" /></label>
-    <template v-if="card.kind === 'shadowBlade'"><label class="field">第一处地产<ThemedSelect v-model="first" label="第一处地产" :options="firstOptions" /></label><label class="field">紧邻地产<ThemedSelect v-model="second" label="紧邻地产" :options="secondOptions" /></label></template>
+    <template v-if="card.kind === 'shadowBlade'"><label class="field">第一处地产<MapTileSelect v-model="first" label="第一处地产" :options="firstOptions" /></label><label class="field">紧邻地产<MapTileSelect v-model="second" label="紧邻地产" :options="secondOptions" /></label></template>
     <p v-if="card.kind === 'fusion'" class="muted">接下来依次选择两张材料；第一张决定优先类别，查看固定结果后再确认消耗。</p>
     <p v-if="card.kind === 'goldenCore' || card.kind === 'namelessSword'" class="notice warning">确认后放弃本回合主动移动，仍可经营、交易和防御。</p>
     <p v-if="card.kind === 'goldenCore' && game.me?.cultivated" class="notice">本局已经成功结丹，不能重复结丹。</p>

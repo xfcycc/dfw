@@ -3,7 +3,8 @@ import { holidayTheme } from '../holiday-theme';
 import HolidayDecorations from '../components/HolidayDecorations.vue';
 import ThemedSelect from '../components/ThemedSelect.vue';
 import { imageUrl } from '../image-assets';
-import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeUnmount, provide, ref, shallowRef, watch } from 'vue';
+import { mapTargetKey, type MapTargetRequest } from '../composables/useMapTarget';
 import { useRoute } from 'vue-router';
 import { isKamui, hasPropertyEffects, baseRentFor, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
 import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
@@ -103,6 +104,21 @@ const selectedTarget = ref('');
 const selectedSecondTarget = ref('');
 const mapPicking = ref(false);
 const mapConfirmOpen = ref(false);
+const fieldMapRequest = shallowRef<MapTargetRequest | null>(null);
+const fieldMapOptions = computed(() => fieldMapRequest.value?.options() ?? []);
+const fieldMapSelected = computed(() => fieldMapRequest.value?.selected() ?? []);
+provide(mapTargetKey, {
+  /** 输入字段的实时候选与回填方法，收起表单并聚焦合法地图目标，无返回值。 */
+  async open(request: MapTargetRequest): Promise<void> {
+    fieldMapRequest.value = request;
+    selectedTile.value = null;
+    await nextTick();
+    const id = request.selected()[0] ?? request.options()[0]?.id;
+    if (id != null) mapView.value?.querySelector<HTMLElement>(`[data-cash-tile="${id}"]`)?.focus({ preventScroll: true });
+  },
+  /** 输入卸载字段的请求，只清理该字段自己的地图会话，无返回值。 */
+  close(request: MapTargetRequest): void { if (fieldMapRequest.value === request) fieldMapRequest.value = null; },
+});
 const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
@@ -169,6 +185,7 @@ const allReady = computed(() => !!game.room && game.room.players.length >= 2 && 
 const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2));
 const canPlay = computed(() => !props.spectator && !boardAnimating.value && (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending);
 const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
+watch([modal, () => choice.value?.id, () => selectedCard.value?.id], () => { fieldMapRequest.value = null; });
 const defenseCards = computed(() => game.privateData?.hand.filter(card => !game.privateData?.disabledCardIds?.includes(card.id) && (card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent')) ?? []);
 const defenseOptions = computed(() => [{ value: '', label: '不使用道具' }, ...defenseCards.value.map(card => ({ value: card.id, label: card.name ?? ITEMS[card.kind].name }))]);
 const pendingTile = computed(() => game.room?.board[game.room.pending?.tileId ?? -1]);
@@ -448,6 +465,15 @@ async function switchTargetMode(picking: boolean): Promise<void> {
 function closeTargetPicker(): void { if (mapPicking.value) void switchTargetMode(true); else modal.value = null; }
 /** 输入地图地块，选择合法目标或打开普通地块详情，不提交游戏命令。 */
 function selectTile(tile: Tile): void {
+  if (fieldMapRequest.value) {
+    if (!fieldMapOptions.value.some(option => option.id === tile.id)) { game.notify('该地块不在当前字段的可选范围内，请选择高亮地块。'); return; }
+    if (game.canAct) {
+      const request = fieldMapRequest.value;
+      request.select(tile.id);
+      if (!request.multiple) fieldMapRequest.value = null;
+    }
+    return;
+  }
   if (!targeting.value) { selectedTile.value = tile; return; }
   if (targetKind.value === 'player') { game.notify('正在使用玩家道具，请点击排行榜的玩家姓名或头像。'); return; }
   const reason = tileReason(tile);
@@ -529,7 +555,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <div class="game-layout immersive-layout">
           <div v-if="detachedDashboard" class="mobile-turn game-board immersive-board"><div id="mobile-turn-status" class="workbench-center"></div></div>
           <section class="map-panel"><div ref="mapView" class="board-view">
-            <Board ref="board" :classic-layout="classicLayout" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="mapTargeting" :target-hint="targetHint" :eligible-tiles="eligibleTiles" :selected-target="targetTileId" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
+            <Board ref="board" :classic-layout="classicLayout" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="!!fieldMapRequest || mapTargeting" :target-hint="fieldMapRequest?.label ?? targetHint" :eligible-tiles="fieldMapRequest ? fieldMapOptions.map(option => option.id) : eligibleTiles" :selected-target="targetTileId" :selected-targets="fieldMapRequest ? fieldMapSelected : undefined" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
                 <ActivityDialog :paused="boardAnimating || game.settling || !!game.cardReveals.length" :spectator="spectator">
                 <template v-if="game.me && !spectator && !game.settling && !boardAnimating">
@@ -625,8 +651,6 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                         <template v-if="game.canDecide">
                           <template v-if="game.room.pending?.type === 'choice'">
                             <p v-if="game.isMyTurn && game.privateData?.bankaiActive && game.room?.phase === 'pre_roll'" class="notice">天锁斩月：剩余 {{ game.privateData.bankaiRemaining }} 次后续出牌，不能使用卍解或投影。</p>
-                            <button v-if="game.isMyTurn && game.room?.phase === 'pre_roll' && !game.room?.pending && !game.room?.tradePending && game.privateData?.petalsAvailable" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'senbonzakuraStrike' })">释放千本樱 · 剩余{{ game.privateData.petalsRemaining }}片</button>
-                            <button v-if="game.isMyTurn && !game.room?.pending && !game.room?.tradePending && game.room?.board.some(t => t.nzothOwnerId === game.me?.id && t.ownerId === game.me?.id)" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'purifyPollution' })">弃牌净化污染</button>
                             <template v-if="choice"><p class="muted">{{ choice.content?.name ?? '当前选择' }} · {{ choice.type === 'hand_limit' ? '整理手牌后继续行动' : '请打开窗口处理本次选择' }}</p><button class="button primary small" :disabled="!game.canAct" @click="openWorkbench('choice')">处理当前选择</button></template>
                             <p v-else class="muted">正在恢复选择内容…</p>
                           </template>
@@ -644,6 +668,8 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                         </template>
                         </div></Modal>
     <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null">
+      <button v-if="game.isMyTurn && game.room?.phase === 'pre_roll' && !game.room?.pending && !game.room?.tradePending && game.privateData?.petalsAvailable" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'senbonzakuraStrike' })">释放千本樱 · 剩余{{ game.privateData.petalsRemaining }}片</button>
+      <button v-if="game.isMyTurn && !game.room?.pending && !game.room?.tradePending && game.room?.board.some(t => t.nzothOwnerId === game.me?.id && t.ownerId === game.me?.id)" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'purifyPollution' })">弃牌净化污染</button>
       <button v-if="game.privateData?.remoteBuildAvailable" class="button primary" :disabled="!game.canAct" @click="openRemoteConstruction">基建轮班：七五折远程施工</button><Assets />
       <template v-if="game.room?.status === 'playing' && !game.me.bankrupt" #footer><button type="button" class="button danger" :disabled="!canSurrender" @click="modal = 'surrender'">一键投降</button></template>
     </Modal>
@@ -652,7 +678,8 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
       <p class="muted">若有待付玩家债务，将按现有清算规则优先偿还。</p>
       <div class="button-row"><button type="button" class="button secondary" :disabled="game.busy" @click="modal = 'assets'">继续游戏</button><button type="button" class="button danger" :disabled="!canSurrender" @click="surrender">{{ game.busy ? '正在投降…' : '确认投降并退出竞争' }}</button></div>
     </Modal>
-    <Modal :panel-class="mapTargeting ? 'modern-modal' : ['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card' && (!mapTargeting || mapConfirmOpen)" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :wide="!mapTargeting" @close="closeTargetPicker">
+    <Teleport to="body"><div v-if="fieldMapRequest" class="field-map-toolbar" role="region" aria-label="地图选点"><span>{{ fieldMapRequest.label }} · {{ fieldMapOptions.length }} 处可选<span v-if="fieldMapRequest.multiple"> · 已选 {{ fieldMapSelected.length }} 处，点击已选地块可取消</span></span><button type="button" class="button secondary small" @click="fieldMapRequest = null">返回表单</button></div></Teleport>
+    <Modal :panel-class="mapTargeting ? 'modern-modal' : ['modern-modal', 'card-use-modal']" v-if="selectedCard" :open="modal === 'card' && !fieldMapRequest && (!mapTargeting || mapConfirmOpen)" :title="selectedCard.name ?? ITEMS[selectedCard.kind].name" :wide="!mapTargeting" @close="closeTargetPicker">
       <div v-show="!mapTargeting" class="card-use-layout" :class="{ 'has-targets': drafting && targetKind }">
         <div class="card-use-preview"><ContentCard :content="selectedCard" compact preview /></div>
         <div class="card-use-controls">
@@ -676,7 +703,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !game.opening && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !fieldMapRequest && !game.opening && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
       <p v-if="mapChoice && !mapTargeting" class="map-target-instructions">{{ targetHint }}</p>
       <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
       <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>
@@ -763,6 +790,9 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 </template>
 
 <style scoped>
+.field-map-toolbar { position: fixed; z-index: 100; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100vw - 24px); padding: 12px 16px; border: 2px solid #e6be80; border-radius: 16px; background: #fff8e8; box-shadow: 0 6px 24px #65441c33; }
+.field-map-toolbar > span { min-width: 0; }
+.field-map-toolbar > button { flex-shrink: 0; }
 .tile-detail-actions { margin-top: 12px; }
 .tile-detail-actions > .button { width: 100%; }
 </style>
