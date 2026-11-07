@@ -517,7 +517,7 @@
 .map-character .character-pawn { width: var(--pawn-size); height: var(--pawn-size); }
 .map-character.mine { --pawn-size: 40px; }
 .map-character.mine .character-pawn { filter: drop-shadow(0 0 4px #f1b649); }
-.map-character.acting::before { content: ''; position: absolute; width: 48px; height: 46px; top: -50px; left: 50%; transform: translateX(-50%); background: var(--turn-arrow) center / contain no-repeat; animation: pawn-arrow 1.8s ease-in-out infinite; }
+.map-character.acting::before { content: ''; position: absolute; width: var(--pawn-arrow-size, 48px); height: var(--pawn-arrow-size, 46px); top: calc(-1 * var(--pawn-arrow-size, 46px) - 4px); left: 50%; transform: translateX(-50%); background: var(--turn-arrow) center / contain no-repeat; animation: pawn-arrow 1.8s ease-in-out infinite; }
 .map-character.acting.is-moving::before, .map-character.acting.is-landing::before { animation: none; }
 @keyframes pawn-arrow { 50% { transform: translate(-50%, 3px); } }
 @media (prefers-reduced-motion: reduce) { .map-character.acting::before { animation: none; } }

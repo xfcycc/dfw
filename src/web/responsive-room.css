@@ -193,7 +193,6 @@
   .modern-room.game-session.spectator-landscape .workbench-center .board-center-controls { max-height: calc(100% - 46px); }
   .modern-room.spectator-landscape .workbench-center :is(.city-feed-panel, .dashboard-ranking) { padding: 8px 12px; }
   .modern-room.spectator-landscape .map-character { --pawn-size: 28px; }
-  .modern-room.spectator-landscape .map-character.acting::before { width: 30px; height: 28px; top: -29px; }
   .modern-room.spectator-landscape .game-board .tile > strong { font-size: 9px; padding: 0 2px; }
   .modern-room.spectator-landscape .game-board .tile :is(.property-grade, small, .tile-owner-label .character-pawn) { display: none; }
   .modern-room.spectator-landscape .tile-owner-label { height: 10px; bottom: 0; font-size: 8px; }
@@ -236,8 +235,6 @@
 .modern-room.game-session .mobile-turn .workbench-center .turn-display > :is(.hub-turn-callout, .die) { display: none; }
 /* 移动端单屏固定完整地图，经典模式继续提供局部跟随与定位操作。 */
 .modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .board-controls { display: none; }
-.modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .map-character { --pawn-size: clamp(16px, calc(84px * var(--map-zoom)), 40px); }
-.modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .map-character.acting::before { width: 18px; height: 18px; top: -19px; }
 /* 竖屏观战仍完整展示地图，工具栏换行，内圈公开信息上下排列。 */
 @media (max-width: 600px) {
   .modern-room.game-session.spectator-page .room-header { flex-wrap: wrap; }

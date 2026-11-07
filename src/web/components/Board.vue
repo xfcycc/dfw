@@ -23,7 +23,7 @@ import { activityArt } from '../activity-art';
 import { playSound } from '../audio';
 import '../activities.css';
 import { useGameEffects } from '../composables/useGameEffects';
-const props = defineProps<{ room: PublicRoomState; classicLayout?: boolean; dashboardTarget?: string; statusTarget?: string; diceTarget?: string; desktopDice?: boolean; spectator?: boolean; spectatorFollow?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; incomingTrade?: Trade | null; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; selectedTargets?: number[]; live?: boolean; presentationEpoch?: number }>();
+const props = defineProps<{ room: PublicRoomState; classicLayout?: boolean; dashboardTarget?: string; statusTarget?: string; diceTarget?: string; desktopDice?: boolean; spectator?: boolean; spectatorFollow?: boolean; compact?: boolean; bounded?: boolean; decision?: boolean; stretch?: boolean; meId?: string; incomingTrade?: Trade | null; targeting?: boolean; targetHint?: string; eligibleTiles?: number[]; selectedTarget?: number | null; selectedTargets?: number[]; live?: boolean; presentationEpoch?: number; paused?: boolean }>();
 const emit = defineEmits<{ select: [tile: Tile]; animating: [active: boolean]; settled: [id: string]; view: [mode: 'follow' | 'landscape'] }>();
 const container = ref<HTMLElement>();
 const viewport = ref<HTMLElement>();
@@ -36,7 +36,7 @@ const fullMap = ref(false);
 const referencedTile = ref<number | null>(null);
 const following = computed(() => !!props.spectator && !!props.spectatorFollow);
 const mobileOverview = computed(() => !!props.dashboardTarget && !props.spectator && !props.classicLayout);
-const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice);
+const { money, tiles: tileEffects, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs } = useGameEffects(() => props.room, () => !!props.live, id => { emit('settled', id); }, () => props.meId, () => props.presentationEpoch ?? 0, () => !!props.desktopDice, () => !!props.paused);
 let observer: ResizeObserver | undefined;
 let lastWidth = 0;
 let lastHeight = 0;
@@ -147,7 +147,7 @@ watch([() => props.room, () => props.presentationEpoch], ([next, epoch], [previo
 }, { immediate: true });
 watch(turnsUntilRotation, (next, previous) => { if (previous && next !== previous && next >= 1 && next <= 3 && props.live && !props.room.recoveryPending && !rotationBaseline) playSound('rotation_count'); });
 onBeforeUnmount(() => { clearTimeout(rotationTimer); clearTimeout(artSwapTimer); });
-watch([motion, () => rotating.value], ([value, rotation]) => { emit('animating', !!value || !!rotation); }, { flush: 'sync' });
+watch([motion, () => rotating.value, lightSpell], ([value, rotation, light]) => { emit('animating', !!value || !!rotation || !!light); }, { flush: 'sync' });
 // 操作面板置于未缩放的内圈，保持手机端文字和按钮可读。
 const centerStyle = computed(() => {
   const inset = props.compact ? 10 : 9;
@@ -181,13 +181,16 @@ function tileOwner(tile: Tile): PublicPlayer | undefined { return props.room.pla
 function occupants(id: number) {
   return props.room.players.filter(player => !player.bankrupt && (animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position) === id);
 }
-/** 输入公开玩家，返回不随地图文字缩小的小人位置；同格角色略错开显示。 */
+/** 输入公开玩家，返回棋子位置和箭头尺寸；全图按格子缩小，同格角色略错开显示。 */
 function pawnStyle(player: PublicPlayer) {
   const position = animatedPosition.value?.id === player.id ? animatedPosition.value.position : player.position;
   const cell = tileCoordinates(position, props.room.board.length);
   const together = occupants(position); const offset = (together.findIndex(p => p.id === player.id) - (together.length - 1) / 2) * 16;
   const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3;
-  return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color };
+  const overview = fullMap.value && (!!props.dashboardTarget || !!props.spectator);
+  return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset * (overview ? Math.min(1, zoom.value) : 1)}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color,
+    '--pawn-size': overview ? `${Math.max(12, Math.min(42, spellTileSize.value * .72))}px` : undefined,
+    '--pawn-arrow-size': overview ? `${Math.max(8, Math.min(22, spellTileSize.value * .42))}px` : props.dashboardTarget || props.spectator ? '28px' : undefined };
 }
 /** 输入报价地产编号，返回内圈侧的箭头坐标、朝向及文字偏移，箭头向外指向对应地块。 */
 function tradeMarkerStyle(id: number) {

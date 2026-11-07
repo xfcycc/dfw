@@ -8,7 +8,7 @@ import { useGameStore } from '../stores/game';
 import FullSpellProp from './FullSpellProp.vue';
 import UniqueUrSpellLayer from './UniqueUrSpellLayer.vue';
 import { FULL_CARD_SPELLS, prepareFullSpell } from '../full-card-spells';
-const props = defineProps<{ paused?: boolean; embedded?: boolean; preview?: CardReveal }>();
+const props = defineProps<{ paused?: boolean; embedded?: boolean; preview?: CardReveal; spectator?: boolean }>();
 const emit = defineEmits<{ close: [] }>();
 const game = useGameStore();
 const reveal = computed(() => props.preview ?? game.cardReveals[0]);
@@ -30,14 +30,14 @@ function dismiss(): void {
   if (props.preview) emit('close');
   else game.dismissCardReveal();
 }
-/** 输入揭卡标识和暂停状态，按布局在新鲜事或全屏展示原揭卡动画；事件与已用道具六秒后关闭，新获道具由玩家收起，无返回值。 */
+/** 输入揭卡标识和暂停状态，观战两秒后收起；玩家事件六秒关闭，新获道具手动收起，无返回值。 */
 watch([() => reveal.value?.key, () => props.paused], ([key, paused], _, onCleanup) => {
   if (!key || paused) return;
   shownKey.value = key;
-  if (props.preview || isItem.value && reveal.value?.mode === 'draw') return;
+  if (props.preview || !props.spectator && isItem.value && reveal.value?.mode === 'draw') return;
   const timer = setTimeout(() => {
     if (reveal.value?.key === key) game.dismissCardReveal();
-  }, 6000);
+  }, props.spectator ? 2000 : 6000);
   onCleanup(() => clearTimeout(timer));
 }, { immediate: true, flush: 'post' });
 // 输入展示区与卡面元素，卡面按舞台尺寸等比缩放；右侧提示与收起操作独立排布。

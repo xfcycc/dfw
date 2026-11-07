@@ -12,8 +12,8 @@ const DICE_HOLD_MS = 220;
 const MOVE_STEP_MS = 190;
 const LANDING_MS = 500;
 
-/** 输入实时房间、连接状态、路径回调、现金栏玩家、重置标记及桌面掷骰模式，返回视听状态；同步重置时取消旧反馈。 */
-export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0, desktopDice: () => boolean = () => false) {
+/** 输入实时房间、连接状态、路径回调、现金栏玩家、重置标记、骰子模式及揭卡等待状态，返回视听状态。 */
+export function useGameEffects(room: () => PublicRoomState, live: () => boolean, settled: (id: string) => void = () => {}, cashPlayer: () => string | undefined = () => undefined, presentationEpoch: () => number = () => 0, desktopDice: () => boolean = () => false, paused: () => boolean = () => false) {
   const money = ref<{ key: string; tileId: number; name: string; amount: number }[]>([]);
   const tiles = ref<{ key: string; tileId: number; kind: 'bought' | 'built' | 'magic' }[]>([]);
   const rolling = ref(false);
@@ -33,6 +33,8 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
   let lightEpoch=0;
   let lightGroup:{sourceCardId:string|null|undefined;skinId:string;value:NonNullable<typeof lightSpell.value>}|null=null;
   let baseline = false;
+  let deferredPrevious: PublicRoomState | null = null;
+  let deferredLight: (() => void) | null = null;
   /** 输入延时、清理操作及可选定时器组，登记短动画的清理定时器，无返回值。 */
   function later(delay: number, cleanup: () => void, group = timers): void {
     const timer = setTimeout(() => { group.delete(timer); cleanup(); }, delay);
@@ -58,9 +60,13 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     if(merge) { if(lightSpell.value?.key===group.value.key) lightSpell.value=group.value; return; }
     const epoch=group.value.key;
     void prepareFullSpell(card).then(()=>{
-      if(epoch!==lightEpoch||document.hidden)return;
-      lightSpell.value=group.value;
-      later(card.rarity==='UR'?card.duration:900,()=>{if(epoch===lightEpoch){lightSpell.value=null;if(lightGroup===group)lightGroup=null;}});
+      /** 无入参，素材就绪且卡牌遮罩关闭后播放轻提示，无返回值。 */
+      const show = (): void => {
+        if(epoch!==lightEpoch||document.hidden)return;
+        lightSpell.value=group.value;
+        later(card.rarity==='UR'?card.duration:900,()=>{if(epoch===lightEpoch){lightSpell.value=null;if(lightGroup===group)lightGroup=null;}});
+      };
+      if(paused()) deferredLight=show; else show();
     }).catch(error=>{if(lightGroup===group)lightGroup=null;console.warn('轻提示素材不可用，保留原金额反馈',error);});
   }
   /** 输入快照、掷骰标识及落点反馈，播放移动或启用特效；原地投骰结束后停留两秒再释放选择，无返回值。 */
@@ -117,14 +123,19 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     later(delay + movement.path.length * MOVE_STEP_MS + (diceOnly ? 0 : LANDING_MS), () => { clearMotion(); settled(movement.id); }, motionTimers);
   }
   /** 无入参，停止当前展示并清理动画定时器，无返回值。 */
-  function clear(): void { lightEpoch++;lightGroup=null;timers.forEach(clearTimeout); timers.clear(); money.value = []; tiles.value = []; lightSpell.value=null; celebrating.value = false; clearMotion(); }
+  function clear(): void { lightEpoch++;lightGroup=null;deferredLight=null;timers.forEach(clearTimeout); timers.clear(); money.value = []; tiles.value = []; lightSpell.value=null; celebrating.value = false; clearMotion(); }
   /** 无入参，切到后台时取消未播放反馈，防止返回页面补播旧路径，无返回值。 */
   function onVisibilityChange(): void { if (document.hidden) clear(); }
   document.addEventListener('visibilitychange', onVisibilityChange);
   watch(live, enabled => { if (!enabled) { baseline = true; clear(); } }, { flush: 'sync' });
-  watch([room, presentationEpoch], ([next, epoch], [previous, previousEpoch]) => {
-    if (epoch !== previousEpoch) { baseline = false; clear(); return; }
-    if (!live()) return;
+  watch([room, presentationEpoch, paused], ([next, epoch, blocked], [last, previousEpoch]) => {
+    if (epoch !== previousEpoch) { deferredPrevious = null; baseline = false; clear(); return; }
+    if (!live()) { deferredPrevious = null; return; }
+    // 卡牌遮罩期间保留动画开始前的局面，关闭并更新 DOM 后再播放地图演出。
+    if (blocked) { deferredPrevious ??= last; return; }
+    const previous = deferredPrevious ?? last;
+    deferredPrevious = null;
+    deferredLight?.(); deferredLight = null;
     if (baseline || !previous || next.roomId !== previous.roomId || next.gameId !== previous.gameId || next.recoveryPending || previous.recoveryPending) { baseline = false; clear(); return; }
     // 队列被提前完成时，最终快照可能沿用同一 motion id；先撤下旧层，再判断是否需要新动画。
     if (motion.value?.boardEffect && (!next.motion?.boardEffect || next.motion.id !== motion.value.id)) clearMotion();
@@ -178,7 +189,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       if (!next.motion || next.turnNumber !== previous.turnNumber || next.status !== previous.status || (actor && next.players.find(player => player.id === actor)?.position !== previousPlayers.get(actor)?.position)) clearMotion();
       feedback();
     }
-  }, { flush: 'pre' });
+  }, { flush: 'post' });
   onBeforeUnmount(() => { document.removeEventListener('visibilitychange', onVisibilityChange); clear(); });
   return { money, tiles, rolling, celebrating, motion, boardEffect, lightSpell, finishBoardEffect, animatedPosition, moving, landing, step, diceFace, diceResult, diceRollMs, moveStepMs: MOVE_STEP_MS };
 }

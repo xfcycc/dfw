@@ -159,7 +159,9 @@ onBeforeUnmount(() => { window.removeEventListener('resize', positionMenu); docu
 .chat-suggestions small { flex-shrink: 0; color: #88775b; font-size: 11px; }
 @media (max-width: 1100px), (max-height: 579px), (pointer: coarse) {
   /* 输入操作置于装饰边框之上，避免边框遮住表情图标。 */
-  .chat-composer { position: relative; z-index: 4; }
+  .room-chat .chat-composer { position: relative; z-index: 4; flex-direction: column; align-items: stretch; gap: 4px; }
+  .room-chat .chat-composer textarea { flex: none; width: 100%; box-sizing: border-box; }
+  .room-chat .chat-composer-actions { align-self: flex-end; }
   .chat-emoji-toggle > small { display: none; }
 }
 </style>
