@@ -138,7 +138,7 @@ export const useGameStore = defineStore('game', () => {
     /** 无入参，按实际经过时间刷新演出阶段，到期自动解除操作等待，无返回值。 */
     function tick(): void {
       const left = Math.max(0, deadline - performance.now());
-      openingElapsed.value = 5200 - left;
+      openingElapsed.value = 5900 - left;
       opening.value = left > 0;
       if (!opening.value) clearInterval(openingTimer);
     }

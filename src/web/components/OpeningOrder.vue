@@ -54,8 +54,6 @@ watch(() => {
         <template v-if="departing && first"><span class="opening-star" aria-hidden="true">✦</span><strong :style="{ color: first.color }">{{ first.name }}</strong><span>，率先出发！</span></template>
         <template v-else>{{ settled ? '行动队列已就位' : '每人一张号码牌，即将揭晓…' }}</template>
       </div>
-      <div class="opening-progress" aria-hidden="true"><span :style="{ width: `${Math.min(100, elapsed / 5200 * 100)}%` }" /></div>
-      <p class="opening-footnote">{{ animated ? '抽签结束后自动开始' : '行动顺序已确定，即将开始' }}</p>
     </div>
   </Modal>
 </template>
@@ -89,9 +87,6 @@ watch(() => {
 .opening-announcement { display: flex; align-items: center; justify-content: center; min-height: 36px; gap: 4px; margin: 22px 0 12px; font-size: 14px; overflow-wrap: anywhere; }
 .opening-announcement strong { max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .opening-star { margin-right: 5px; color: #d7a449; font-size: 25px; }
-.opening-progress { height: 5px; max-width: 220px; margin: 0 auto; overflow: hidden; border-radius: 99px; background: #eddfc5; }
-.opening-progress > span { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #e7bd71, #c78b49); }
-.opening-footnote { margin: 10px 0 0; color: #ae987c; font-size: 10px; }
 .opening-seats-move { transition: transform .7s cubic-bezier(.2, .8, .2, 1); }
 .is-dealing .opening-ticket-wrap { animation: opening-deal .55s both; animation-delay: calc(var(--seat-index) * 55ms); }
 .is-shuffling .opening-ticket-wrap { animation: opening-shuffle .32s ease-in-out infinite alternate; animation-delay: calc(var(--seat-index) * -90ms); }
@@ -127,7 +122,7 @@ watch(() => {
   :global(.modal.chibi-modal.opening-order-modal) { padding: 16px; }
   .opening-heading { margin-bottom: 8px; }
   .opening-heading h2 { margin: 5px 0; font-size: 22px; }
-  .opening-heading p, .opening-footnote { display: none; }
+  .opening-heading p { display: none; }
   .opening-ticket-wrap { height: 96px; width: 72px; margin-bottom: 8px; }
   .ticket-front > b { font-size: 40px; }
   .ticket-back > b { height: 32px; width: 32px; font-size: 24px; }

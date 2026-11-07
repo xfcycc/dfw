@@ -65,7 +65,8 @@ public class GameEngine {
         room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
         for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); }
-        room.openingEndsAt = System.currentTimeMillis() + 5200;
+        // 首位亮相在 3900 毫秒完成，保留两秒后解除开场等待，机器人同样受此期限约束。
+        room.openingEndsAt = System.currentTimeMillis() + 5900;
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
         HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
         HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
