@@ -23,6 +23,8 @@ public class GameRuntime {
     public String movementSkinId;
     /** 最近开放开局自选骰点的全局回合，防止保留原结果或重连后重复开放。 */
     public int openingRollOfferedTurn = -1;
+    /** 最近已在选择窗口前展示普通骰点的全局回合，重掷后清空。 */
+    public int dicePresentedTurn = -1;
     /** 已确定但尚未执行的移动步数。 */
     public Integer movementSteps;
     /** Flowable 实例标识。 */

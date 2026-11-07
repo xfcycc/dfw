@@ -78,12 +78,13 @@ public final class AnimeService {
     }
     /** 输入地产，返回零域是否仍生效；此状态只停止收租及升级。 */
     public static boolean iced(Tile tile) { return tile!=null && tile.zeroCasterId!=null && tile.zeroUntilTurn>0; }
-    /** 输入房间及普通骰点，在移动前向持有人开放一次重掷选择，返回是否等待。 */
+    /** 输入房间及普通骰点，登记投骰演出并在移动前向持有人开放一次重掷选择，返回是否等待。 */
     public boolean offerRewind(Room room) {
         AnimeState state=state(room); Player owner=current(room);
         if(state.rewindOfferedTurn==room.turnNumber || owner.hand.stream().noneMatch(c -> c.kind.equals("timeRewind") && CrossoverService.handAllowed(room,owner,c,false))) return false;
         state.rewindOfferedTurn=room.turnNumber;
         ContentChoice choice=content.open(room,owner,"anime_rewind"); choice.cards.addAll(owner.hand.stream().filter(c -> c.kind.equals("timeRewind") && CrossoverService.handAllowed(room,owner,c,false)).toList());
+        content.presentRoll(room,owner);
         choice.prompt="本次普通骰点为 "+room.dice+"，可以使用时间溯行重新掷一次，必须接受新结果。"; return true;
     }
     /** 输入主动牌和参数，处理投影、契约、修复或完整攻击计划；无合法目标不消费。 */
@@ -298,6 +299,7 @@ public final class AnimeService {
         } else if(choice.type.equals("anime_rewind") && action.accept) {
             Card card=ContentService.find(owner,action.cardId); require(card.kind.equals("timeRewind"),"请选择时间溯行"); ContentService.consume(room,owner,card,false,action);
             room.dice=random.nextInt(6)+1; room.runtime.movementSteps=room.dice; log(room,owner.name+" 时间溯行后掷出 "+room.dice+" 点，必须接受此次结果");
+            room.runtime.dicePresentedTurn=-1;
         } else if(choice.type.equals("anime_defense") && action.accept) {
             Card defense=choice.cards.stream().filter(c -> Objects.equals(c.id,action.cardId)).findFirst().orElseThrow(() -> new GameError("请选择本次合法防御牌"));
             ContentService.consume(room,owner,ContentService.find(owner,defense.id),false,action); AnimeState.Attack frame=state(room).attack; frame.defenses.put(owner.id,defense.kind);

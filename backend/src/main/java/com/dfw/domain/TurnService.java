@@ -98,13 +98,13 @@ public class TurnService {
     private void move(Room room,Player player,int steps,String mode) {
         move(room,player,steps,mode,false);
     }
-    /** 输入已换算步数、移动模式及是否续走，续走不重复消费翻倍状态或领取原地奖励，自选窗口后的移动不重播投骰。 */
+    /** 输入已换算步数、移动模式及是否续走，续走不重复消费翻倍状态或领取原地奖励；选择窗口后仅重掷的新骰点播放投骰。 */
     private void move(Room room,Player player,int steps,String mode,boolean continuing) {
         boolean flash="FLASH".equals(mode), boost="BOOST".equals(mode);
         if (!continuing && !flash && !boost && StatusService.consume(room,player,"NEXT_MOVE_DOUBLE","morale")) { steps=Math.multiplyExact(steps,2); log(room,player.name+" 消耗塔塔开，最终移动距离变为 "+steps+" 格"); }
         Motion motion = new Motion(); motion.id = random.id(); motion.playerId = player.id; motion.from = player.position;
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
-        segment.dice = room.runtime.openingRollOfferedTurn != room.turnNumber && room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;
+        segment.dice = room.runtime.dicePresentedTurn != room.turnNumber && room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;
         boolean rewarded = false, immune = false, portalPaused = false;
         BoardEffect.Observation trap = null;
         if (!continuing && steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }

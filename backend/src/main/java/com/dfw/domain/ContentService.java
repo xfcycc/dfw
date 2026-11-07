@@ -236,12 +236,18 @@ public final class ContentService {
         if(owner.openingRollUsedTurn>=0 || owner.personalTurns<1 || owner.personalTurns>3 || room.runtime.openingRollOfferedTurn==room.turnNumber || CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")>0) return false;
         ContentChoice choice=open(room,owner,"opening_roll");
         room.runtime.openingRollOfferedTurn=room.turnNumber;
-        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=owner.id; motion.from=owner.position;
-        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=owner.id; segment.from=owner.position; segment.dice=room.dice;
-        motion.segments=List.of(segment); room.motion=motion;
+        presentRoll(room,owner);
         choice.numbers=List.of(1,2,3,4,5,6);
         choice.prompt="第 "+owner.personalTurns+"／3 个个人回合，本次掷出 "+room.dice+" 点。可消耗本局唯一机会自选 1～6 点，不消耗手牌或主动次数；保留原骰点则不消耗机会。迟缓、加码和移动翻倍仍照常生效。";
         return true;
+    }
+    /** 输入房间与掷骰玩家，登记选择窗口前的原地投骰演出；同回合已展示时不重复登记，无返回值。 */
+    void presentRoll(Room room,Player owner) {
+        if(room.runtime.dicePresentedTurn==room.turnNumber) return;
+        Motion motion=new Motion(); motion.id=random.id(); motion.playerId=owner.id; motion.from=owner.position;
+        MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=owner.id; segment.from=owner.position; segment.dice=room.dice;
+        motion.segments=List.of(segment); room.motion=motion;
+        room.runtime.dicePresentedTurn=room.turnNumber;
     }
     /** 输入选择拥有者和类型，保存父事项并开放唯一私人选择，返回可填写参数的选择帧。 */
     ContentChoice open(Room room,Player owner,String type) {
