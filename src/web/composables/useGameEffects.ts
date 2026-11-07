@@ -63,7 +63,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
       later(card.rarity==='UR'?card.duration:900,()=>{if(epoch===lightEpoch){lightSpell.value=null;if(lightGroup===group)lightGroup=null;}});
     }).catch(error=>{if(lightGroup===group)lightGroup=null;console.warn('轻提示素材不可用，保留原金额反馈',error);});
   }
-  /** 输入快照、掷骰标识及落点反馈，播放移动或启用特效；零时长片段直接继续，无返回值。 */
+  /** 输入快照、掷骰标识及落点反馈，播放移动或启用特效；原地投骰结束后停留半秒再释放选择，无返回值。 */
   function animateMotion(next: PublicRoomState, roll: boolean, feedback: () => void): void {
     clearMotion();
     const movement = next.motion!;
@@ -97,7 +97,8 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     animatedPosition.value = { id: movement.playerId, position: movement.from };
     rolling.value = roll; diceFace.value = 1;
     diceRollMs.value = desktopDice() ? 1400 : DICE_ROLL_MS;
-    const holdMs = desktopDice() ? 650 : DICE_HOLD_MS;
+    const diceOnly = roll && !movement.path.length;
+    const holdMs = diceOnly ? 500 : desktopDice() ? 650 : DICE_HOLD_MS;
     const delay = roll ? diceRollMs.value + holdMs : 0;
     if (roll) {
       for (let at = 80; at < diceRollMs.value; at += 80) later(at, () => { diceFace.value = diceFace.value % 6 + 1; }, motionTimers);
@@ -113,7 +114,7 @@ export function useGameEffects(room: () => PublicRoomState, live: () => boolean,
     later(delay + movement.path.length * MOVE_STEP_MS, () => {
       moving.value = false; landing.value = true; feedback();
     }, motionTimers);
-    later(delay + movement.path.length * MOVE_STEP_MS + LANDING_MS, () => { clearMotion(); settled(movement.id); }, motionTimers);
+    later(delay + movement.path.length * MOVE_STEP_MS + (diceOnly ? 0 : LANDING_MS), () => { clearMotion(); settled(movement.id); }, motionTimers);
   }
   /** 无入参，停止当前展示并清理动画定时器，无返回值。 */
   function clear(): void { lightEpoch++;lightGroup=null;timers.forEach(clearTimeout); timers.clear(); money.value = []; tiles.value = []; lightSpell.value=null; celebrating.value = false; clearMotion(); }
