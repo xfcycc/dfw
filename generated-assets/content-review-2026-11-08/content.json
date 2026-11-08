@@ -1,0 +1,6368 @@
+[
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "remote",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_dora_anywhere_door",
+    "name": "任意门",
+    "rarity": "SSR",
+    "quote": "哆啦A梦！",
+    "description": "大雄哭着扑进房间，一把抱住哆啦A梦，鼻涕眼泪蹭得满脸都是。哆啦A梦叹了口气，从口袋里掏出一扇粉红色的门：好啦，这次你想去哪里？大雄的哭声立刻停了，手已经搭上门把。",
+    "cardType": "主动",
+    "number": "001",
+    "effect": "自选1～6点移动并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "remote",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_yugioh_destiny_draw",
+    "name": "神抽",
+    "rarity": "SSR",
+    "quote": "这一抽，就是我要的答案！",
+    "description": "场上的局势已经被逼到最后一步，游戏却把手轻轻搭上了牌组。对手抱着手臂等他认输，他低下头，像是在确认什么。下一刻，抽出的卡划过半空。游戏抬起眼睛，对面那副胜券在握的表情，终于停住了。",
+    "cardType": "主动",
+    "number": "002",
+    "effect": "自选1～6点移动并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "remote",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g17",
+    "name": "这就是「空白」",
+    "rarity": "SSR",
+    "quote": "我们两个，才是「空白」。",
+    "description": "白在脑中推演棋盘上的变化，空则注视着对手迟疑的表情。精密的计算与对人心的判断在兄妹之间接上，最后一枚棋子落下，两人共用的名字仍留在胜者的位置。",
+    "cardType": "主动",
+    "number": "003",
+    "effect": "自选1～6点移动并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-0",
+    "baseParameters": {
+      "steps": 0
+    },
+    "actualParameters": {
+      "steps": 0
+    },
+    "id": "card_jojo_time_stop",
+    "name": "时间停止",
+    "rarity": "SSR",
+    "quote": "砸瓦鲁多！",
+    "description": "DIO抬起手，钟声仿佛也在这一刻停住。半空的飞刀一动不动，承太郎站在原地，帽檐遮住了眼睛。DIO正要露出胜券在握的笑容，却忽然发现那根手指好像动了一下。",
+    "cardType": "主动",
+    "number": "004",
+    "effect": "原地停留并重新结算当前格，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-0",
+    "baseParameters": {
+      "steps": 0
+    },
+    "actualParameters": {
+      "steps": 0
+    },
+    "id": "card_moon_box",
+    "name": "月光宝盒",
+    "rarity": "SSR",
+    "quote": "般若波罗蜜！",
+    "description": "至尊宝举起月光宝盒，认真念完咒语，四周的景物顿时卷成一团。再睁眼，又是那个熟悉的地方，熟悉的人，熟悉的一句你怎么又回来了。他看了看手里的盒子，决定这次先别急着答话。",
+    "cardType": "主动",
+    "number": "005",
+    "effect": "原地停留并重新结算当前格，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-4",
+    "baseParameters": {
+      "steps": 4
+    },
+    "actualParameters": {
+      "steps": 4
+    },
+    "id": "card_dragonball_fly_air",
+    "name": "舞空术",
+    "rarity": "R",
+    "quote": "原来不用坐飞机，真的能飞啊！",
+    "description": "悟饭伸出手，教比迪丽一点点把气聚到掌心。她的双脚终于离开地面，先是小心翼翼，接着越升越高。悟饭还在下面喊慢一点，她已经笑着往前飞了出去。",
+    "cardType": "主动",
+    "number": "006",
+    "effect": "前进 4 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-4",
+    "baseParameters": {
+      "steps": 4
+    },
+    "actualParameters": {
+      "steps": 4
+    },
+    "id": "card_delta_extract",
+    "name": "撤离",
+    "rarity": "R",
+    "quote": "别架了，撤离点都开了！",
+    "description": "撤离信号一亮，你立刻把背包抱紧，跑得比开局抢物资还认真。队友刚说再搜一间，你已经在远处疯狂招手。",
+    "cardType": "主动",
+    "number": "007",
+    "effect": "前进 4 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-4",
+    "baseParameters": {
+      "steps": 4
+    },
+    "actualParameters": {
+      "steps": 4
+    },
+    "id": "card_minecraft_ender_pearl",
+    "name": "末影珍珠",
+    "rarity": "R",
+    "quote": "珍珠扔了，落点别坑我啊！",
+    "description": "珍珠划过半空，你下一秒就出现在它落下的地方。落地姿势没选好，脸先亲了地，旁边的羊嚼着草看得很投入。",
+    "cardType": "主动",
+    "number": "008",
+    "effect": "前进 4 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-4",
+    "baseParameters": {
+      "steps": 4
+    },
+    "actualParameters": {
+      "steps": 4
+    },
+    "id": "card_anime_g13",
+    "name": "翔",
+    "rarity": "R",
+    "quote": "翔（FLY）！",
+    "description": "小樱让封印之杖轻触“翔”的卡面，白色羽翼随即从杖的两侧展开。她坐稳杖身，小可飞在身旁提醒方向；夜风掠过友枝町，屋顶与街灯渐渐落到脚下。",
+    "cardType": "主动",
+    "number": "009",
+    "effect": "前进 4 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "card_naruto_shunshin",
+    "name": "瞬步",
+    "rarity": "R",
+    "quote": "你在看哪里呢？",
+    "description": "碎蜂的攻击落下，面前却只留下一道残影。夜一已经出现在她身后，语气轻松得像刚刚只是散了个步。等她转身追上去，那个熟悉的身影又一次消失，只剩衣角擦过指尖。",
+    "cardType": "主动",
+    "number": "010",
+    "effect": "前进 3 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "card_dora_takecopter",
+    "name": "竹蜻蜓",
+    "rarity": "R",
+    "quote": "大雄，别把帽子压在上面！",
+    "description": "哆啦A梦把竹蜻蜓往头上一放，轻轻升到半空。大雄急着跟上，脚刚离地就开始手忙脚乱，书包还挂在窗沿。两个人在窗外拉扯半天，楼下的妈妈只看见一双鞋慢慢飘了过去。",
+    "cardType": "主动",
+    "number": "011",
+    "effect": "前进 3 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-2",
+    "baseParameters": {
+      "steps": 2
+    },
+    "actualParameters": {
+      "steps": 2
+    },
+    "id": "card_flash_summoner",
+    "name": "闪现向前",
+    "rarity": "R",
+    "quote": "我是天选，也是唯一！",
+    "description": "团战还没分出胜负，JackeyLove的霞突然交出闪现，迎着对面往前一步。羽毛铺开，血条一起往下掉，语音里的声音瞬间盖过了技能音效。解说刚吸了一口气，这波已经打完了。",
+    "cardType": "主动",
+    "number": "012",
+    "effect": "前进 2 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-6",
+    "baseParameters": {
+      "steps": 6
+    },
+    "actualParameters": {
+      "steps": 6
+    },
+    "id": "card_journey_kite_cloud",
+    "name": "筋斗云",
+    "rarity": "R",
+    "quote": "俺老孙去去就来！",
+    "description": "你踩上筋斗云，学着大圣翻了个跟头。云是跟上了，发型没跟上，落地先找镜子比找路还急。",
+    "cardType": "主动",
+    "number": "013",
+    "effect": "前进 6 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps-5",
+    "baseParameters": {
+      "steps": 5
+    },
+    "actualParameters": {
+      "steps": 5
+    },
+    "id": "card_trisolaris_curvature",
+    "name": "全速前进",
+    "rarity": "R",
+    "quote": "前进三！",
+    "description": "舰桥里安静得只剩设备的低鸣，章北海望着舷窗外的星海，平静地下达指令。自然选择号开始加速，身后的舰队还在等待解释，他的目光已经越过所有人，落在遥远的黑暗里。",
+    "cardType": "主动",
+    "number": "014",
+    "effect": "前进 5 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps--3",
+    "baseParameters": {
+      "steps": -3
+    },
+    "actualParameters": {
+      "steps": -3
+    },
+    "id": "card_tactic_retreat_best",
+    "name": "眉头一皱",
+    "rarity": "R",
+    "quote": "诸位道友，且上前一探。",
+    "description": "前方禁制忽然亮起，韩立眉头一皱，发现事情并不简单。他不动声色地后退半步，将众人护至身前，手里却已经扣住一张遁符。道友们还在商量谁打头阵，韩道友连退路都看好了。",
+    "cardType": "主动",
+    "number": "015",
+    "effect": "后退 3 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps--2",
+    "baseParameters": {
+      "steps": -2
+    },
+    "actualParameters": {
+      "steps": -2
+    },
+    "id": "card_meme_reverse_parking",
+    "name": "倒车入库",
+    "rarity": "R",
+    "quote": "倒，倒，倒！好，停！",
+    "description": "你紧握方向盘，跟着朋友的手势一点点往后倒。车停稳了，朋友却还在喊倒，原来他一直在指挥旁边那辆车。",
+    "cardType": "主动",
+    "number": "016",
+    "effect": "后退 2 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "move",
+    "parameterId": "steps--2",
+    "baseParameters": {
+      "steps": -2
+    },
+    "actualParameters": {
+      "steps": -2
+    },
+    "id": "card_starcraft_warp",
+    "name": "时空断裂",
+    "rarity": "R",
+    "quote": "我宁愿犯错，也不愿什么都不做。",
+    "description": "艾克的身影冲进混战，下一秒又被刺眼的蓝光拉回原处。刚才溅起的碎片重新落下，他扶住时间装置，望了一眼远处的残影。这一回，他已经知道哪一步会出错。",
+    "cardType": "主动",
+    "number": "017",
+    "effect": "后退 2 格并结算落点，替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_journey_immobilize",
+    "name": "定住七仙女",
+    "rarity": "SSR",
+    "quote": "七个仙女定住了，大圣又吃桃去了。",
+    "description": "七仙女提着花篮来到蟠桃园，迎面碰上正吃得起劲的孙悟空。大圣抬手一指，仙女们全定在原地。他绕着看了一圈，转身摘下一个更大的桃子，咔嚓一口，吃得比刚才还香。",
+    "cardType": "主动",
+    "number": "018",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_lol_teemo_mushroom",
+    "name": "提莫必须死",
+    "rarity": "SSR",
+    "quote": "团战可以输，提莫必须死！",
+    "description": "大龙坑里打得天昏地暗，地图另一头的提莫刚露出脑袋，五个人同时掉头。谁也没再看大龙一眼，连刚才还在劝大家冷静的辅助，都把闪现留给了这只蘑菇精。",
+    "cardType": "主动",
+    "number": "019",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_yugioh_trap_card",
+    "name": "草丛三兄弟",
+    "rarity": "SSR",
+    "quote": "这草怎么还站起来三个人？",
+    "description": "盖伦、德玛西亚皇子和赵信挤在同一丛草里，谁都不肯先走。路过的人刚插下眼，三个人已经同时冲了出来。眼还没把草照亮，屏幕先灰了。",
+    "cardType": "主动",
+    "number": "020",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_minecraft_dig_hole",
+    "name": "师傅别填",
+    "rarity": "SSR",
+    "quote": "师傅，这里有个坑，哎哎别填上啊！",
+    "description": "你探头提醒师傅脚下有坑，一脚没踩稳，自己先滑了进去。上面的人只听清了前半句，铲车已经开始倒土。你从坑里举起双手，第一次觉得一句话能不能说完整，真的很重要。",
+    "cardType": "主动",
+    "number": "021",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hp_obstacle_charm",
+    "name": "昏昏倒地",
+    "rarity": "SSR",
+    "quote": "昏昏倒地！",
+    "description": "魔杖尖端迸出一道红光，对面的人还没来得及念完咒语，就直挺挺地倒了下去。罗恩低头看了看自己的魔杖，赶紧把杖尖挪开：这次总算没打到自己人。",
+    "cardType": "主动",
+    "number": "022",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_meme_concrete_block",
+    "name": "实心水泥墩",
+    "rarity": "SSR",
+    "quote": "谁家路障里面是实心的啊！",
+    "description": "你看那只路障歪在路边，抬腿就想把它踢正。鞋尖碰上的瞬间，人先站得笔直，脸色接着变得十分丰富。路障一动没动，里面那块水泥比你的嘴还硬。",
+    "cardType": "主动",
+    "number": "023",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_starcraft_spider_mine",
+    "name": "走不动道",
+    "rarity": "SSR",
+    "quote": "等一下，我突然不想走了。",
+    "description": "你刚才还说赶时间，迎面看见漂亮姐姐，脚步立刻从快走切成了慢动作。朋友拽了两次袖子都没拽动，回头一看，你连路边那块毫无内容的告示牌都看得格外认真。",
+    "cardType": "主动",
+    "number": "024",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g16",
+    "name": "七之弹",
+    "rarity": "SSR",
+    "quote": "刻刻帝——七之弹（Zayin）！",
+    "description": "狂三微笑着举起枪，刻刻帝为弹丸注入停止时间的力量。七之弹命中，对方的动作凝在尚未完成的那一瞬。她从停滞的身影旁从容走过，裙摆仍随步伐轻轻晃动。",
+    "cardType": "主动",
+    "number": "025",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "barrier",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g22",
+    "name": "禁止通行",
+    "rarity": "SSR",
+    "quote": "想从这里过去？先过我这一关。",
+    "description": "一方通行挡在路中央，脚尖轻轻点向地面。沿地表传开的冲击掀起碎石，将追来的脚步逼停。他没有退开，视线始终盯着还想继续向前的人。",
+    "cardType": "主动",
+    "number": "026",
+    "effect": "在前后6格内放置1处路障，不含当前格；首位受影响的经过者停下并结算落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_kungfu_buddha_palm",
+    "name": "如来神掌",
+    "rarity": "SR",
+    "quote": "想学啊，我教你啊。",
+    "description": "阿星收起掌势，面前的火云邪神跪在地上，终于问出这是什么功夫。尘土从两人之间慢慢落下，阿星没有再出手，只平静地伸出一只手。刚才还打得天翻地覆的院子，忽然安静了下来。",
+    "cardType": "主动",
+    "number": "027",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_journey_golden_staff",
+    "name": "如意金箍棒",
+    "rarity": "SR",
+    "quote": "再小些，再细些！",
+    "description": "东海龙宫里，孙悟空围着那根铁柱转了一圈，嫌它又粗又长。话音刚落，金箍棒便缩进掌心。他越试越欢喜，最后捻成一根绣花针塞进耳朵，龙王在旁边连笑都笑得小心翼翼。",
+    "cardType": "主动",
+    "number": "028",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_meme_demolition_crew",
+    "name": "专业装修队",
+    "rarity": "SR",
+    "quote": "曾小贤，你把我家拆成什么样了！",
+    "description": "曾小贤拍着胸口保证找来了专业师傅，门一开，两个马里奥打扮的人扛着工具就进了屋。墙那边传来第一声巨响，胡一菲的笑容已经僵住。曾小贤刚想解释施工方案，第二声又来了。",
+    "cardType": "主动",
+    "number": "029",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_minecraft_tnt",
+    "name": "沙漠神殿压力板",
+    "rarity": "SR",
+    "quote": "别踩中间那块——",
+    "description": "你顺着沙漠神殿的洞口往下跳，四个宝箱端端正正摆在角落。落地时脚下轻轻一响，你低头看见压力板，终于想起攻略里那句没看完的话。背包还没打开，屏幕已经开始回忆人生。",
+    "cardType": "主动",
+    "number": "030",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_civ6_catapult",
+    "name": "花花草草也是生命",
+    "rarity": "SR",
+    "quote": "砸不到小朋友，砸到花花草草也不好嘛。",
+    "description": "唐僧追着孙悟空讲道理，从乱扔东西一路讲到花草也有生命。悟空攥着金箍棒，额头上的筋跳了又跳。旁边刚飞过去一件东西，唐僧又转过头，认真地准备从头讲一遍。",
+    "cardType": "主动",
+    "number": "031",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "demolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g23",
+    "name": "风之伤",
+    "rarity": "SR",
+    "quote": "风之伤！",
+    "description": "犬夜叉嗅见了两股妖气相撞时显露的缝隙。铁碎牙化作巨刃，顺着那道“风之伤”猛然斩下，金色冲击撕开地面，沿着剑锋指向奔涌而去。",
+    "cardType": "主动",
+    "number": "032",
+    "effect": "对手1处有建筑地产降1级，无退款；护盾可抵挡。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_tactic_golden_cicada",
+    "name": "金蝉脱壳",
+    "rarity": "SR",
+    "quote": "衣服还在，人先走了。",
+    "description": "追兵将那件外袍团团围住，越喊越觉得里面的人镇定得过头。刀尖一挑，袍子轻飘飘落了下来，底下什么也没有。巷口卖茶的摊子上，刚坐下的客人不紧不慢地端起了碗。",
+    "cardType": "主动",
+    "number": "033",
+    "effect": "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_tactic_lure_tiger",
+    "name": "道友请留步",
+    "rarity": "SR",
+    "quote": "道友请留步！",
+    "description": "身后传来申公豹那句熟悉的招呼，你的脚步先停了半拍。还没回头，他已经满脸热情地追了上来，拉着你说只耽误片刻。风吹过山道，旁边的坐骑却悄悄往后退了一步。",
+    "cardType": "主动",
+    "number": "034",
+    "effect": "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hp_apparition",
+    "name": "移形换位",
+    "rarity": "SR",
+    "quote": "位置不错，借我一下。",
+    "description": "复仇之魂从阴影里抬起手，两道身影在紫光中瞬间交换。刚才还躲在队友身后的核心，转眼站进五个人中间；她已经落在原来的位置，队友的控制技能刚好接上。",
+    "cardType": "主动",
+    "number": "035",
+    "effect": "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_dora_time_machine",
+    "name": "我们真的回不去了吗",
+    "rarity": "SR",
+    "quote": "我们真的回不去了吗？",
+    "description": "聊天记录停在很久以前，输入框里的那句话删了又打。你翻到当初说永远的截图，窗外的天已经黑了。对方终于回复了一个字，你盯着屏幕，忽然不知道该接什么。",
+    "cardType": "主动",
+    "number": "036",
+    "effect": "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_flying_thunder",
+    "name": "飞雷神之术",
+    "rarity": "SR",
+    "quote": "飞雷神之术！",
+    "description": "带土的手刚穿过水门的身影，背后的苦无就亮起了术式。水门瞬间出现在他上方，螺旋丸紧随而下。交锋只在一瞬间结束，地上的标记却早已留在了那里。",
+    "cardType": "主动",
+    "number": "037",
+    "effect": "与1名未服刑的对手交换位置，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sgyy_empty_city",
+    "name": "空城计",
+    "rarity": "SSR",
+    "quote": "城门开着，来坐坐？",
+    "description": "城门大开，几名老兵低头洒扫，诸葛亮在城楼上焚香抚琴。司马懿勒住马，越看那副从容模样越觉得不对。琴声还没停，大军已经缓缓后撤，楼上握着琴弦的手这才松了一点。",
+    "cardType": "防御",
+    "number": "038",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sgyy_borrow_arrows",
+    "name": "草船借箭",
+    "rarity": "SSR",
+    "quote": "谢丞相赠箭！",
+    "description": "江面大雾弥漫，草船两侧很快扎满箭矢。鲁肃攥着船沿不敢出声，诸葛亮却还在慢慢斟酒。等船头一转，士卒齐声道谢，岸上的曹军这才听出哪里不对。",
+    "cardType": "防御",
+    "number": "039",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hp_invisibility_cloak",
+    "name": "隐形衣",
+    "rarity": "SSR",
+    "quote": "脚收进去，脚！",
+    "description": "哈利把隐形衣往罗恩和赫敏头上一罩，三个人挤成一团溜出门。费尔奇的灯光扫过走廊，他们屏住呼吸，一点点往墙边挪。赫敏低头看了一眼，罗恩的鞋尖还露在外面。",
+    "cardType": "防御",
+    "number": "040",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_jjk_domain_expansion",
+    "name": "掩耳盗铃",
+    "rarity": "SSR",
+    "quote": "我都听不见，你们怎么可能听见？",
+    "description": "你看中了门口那只铃铛，伸手一碰，响声立刻传遍整条街。想了一会儿，你认真堵住自己的耳朵，再次伸手。身后的脚步声越来越近，你对这次计划的信心却空前充足。",
+    "cardType": "防御",
+    "number": "041",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_zelda_shield_parry",
+    "name": "我能打一整天",
+    "rarity": "SSR",
+    "quote": "我能这样打一整天。",
+    "description": "史蒂夫扶着盾牌站起来，抹掉嘴角的血，重新摆好架势。对面的人看了看他，又看了看那块怎么也打不坏的盾。盾面上的划痕又多了一道，他却还是没有后退。",
+    "cardType": "防御",
+    "number": "042",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_lol_zhonya",
+    "name": "金身等死",
+    "rarity": "SSR",
+    "quote": "我有金身！你们人呢？",
+    "description": "中娅按下去的瞬间，你化作一尊金色雕像，自信地等队友进场。两秒多过去，队友的头像已经整整齐齐灰在屏幕上方。对面五个人围成一圈，技能都捏着没放，就等你重新做人。",
+    "cardType": "防御",
+    "number": "043",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_bullet_flying_play_dumb",
+    "name": "马什么梅",
+    "rarity": "SSR",
+    "quote": "马什么梅啊？",
+    "description": "夏洛扶着车把问了半天，楼下大爷始终只听清其中两个字。马冬梅三个字来来回回拆了几遍，问路的人已经开始怀疑自己会不会说话。大爷倒很热情，还准备再听一遍。",
+    "cardType": "防御",
+    "number": "044",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g03",
+    "name": "风王结界",
+    "rarity": "SSR",
+    "quote": "请退后。这里由我守住。",
+    "description": "Saber双手握剑，缠绕剑身的风隐去了圣剑的形状。对手只能从她的站姿猜测锋刃的长度，试探的进攻接连被无形之剑挡住。她始终没有让出身后的那一步。",
+    "cardType": "防御",
+    "number": "045",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "immunity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g24",
+    "name": "存在感消失",
+    "rarity": "SSR",
+    "quote": "安艺君，你是不是又把我忘了？",
+    "description": "伦也热火朝天地讨论着理想中的女主角，惠就在同一张桌边听着。她放下手机，平静地补上一句被忽略的意见。那份淡淡的存在感，总要等他说错话时才显得格外清楚。",
+    "cardType": "防御",
+    "number": "046",
+    "effect": "免除本笔全部租金，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-2",
+    "baseParameters": {
+      "steps": 2
+    },
+    "actualParameters": {
+      "steps": 2
+    },
+    "id": "card_wukong_great_sage",
+    "name": "换个颜色再打",
+    "rarity": "R",
+    "quote": "打不过就换个颜色。",
+    "description": "迪迦交叉双臂，额前水晶亮起，身上的颜色转为紫色。怪兽的攻击擦着身侧落空，他已经轻巧地跃上高处。地面上的队员刚把镜头转过去，画面里又只剩一片天空。",
+    "cardType": "持续",
+    "number": "047",
+    "effect": "本次掷骰额外前进 2 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-1",
+    "baseParameters": {
+      "steps": 1
+    },
+    "actualParameters": {
+      "steps": 1
+    },
+    "id": "card_lol_swiftness_boots",
+    "name": "五速鞋游走",
+    "rarity": "R",
+    "quote": "鞋买好了，中路我来了！",
+    "description": "辅助刚回城补出五速鞋，转头就沿河道冲向中路。ADC望着身边空荡荡的草丛，连续发了三个问号。人已经跑出半张地图，语音里才传来一句：你先稳住，我去游走。",
+    "cardType": "持续",
+    "number": "048",
+    "effect": "本次掷骰额外前进 1 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-1",
+    "baseParameters": {
+      "steps": 1
+    },
+    "actualParameters": {
+      "steps": 1
+    },
+    "id": "card_wow_sprint",
+    "name": "你最好现在就跑",
+    "rarity": "R",
+    "quote": "你最好现在就开始跑。",
+    "description": "诺手开着疾跑从河道里冲出来，斧子还没抬，你已经先交了闪现。屏幕上的流血层数继续往上跳，他追得不紧不慢。队友刚打出撤退信号，第一声断头台已经落下。",
+    "cardType": "持续",
+    "number": "049",
+    "effect": "本次掷骰额外前进 1 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "card_aot_odm_gear",
+    "name": "一米六怎么了",
+    "rarity": "R",
+    "quote": "别看身高，看刀。",
+    "description": "利威尔借着钢索掠过墙头，双刃在半空划出连续的圆弧。巨人还没来得及转身，他已经落在另一侧收刀。地上的新兵仰着头看了半天，终于把那句关于身高的话咽了回去。",
+    "cardType": "持续",
+    "number": "050",
+    "effect": "本次掷骰额外前进 3 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "card_anime_g15",
+    "name": "超频加速",
+    "rarity": "R",
+    "quote": "Burst Link！",
+    "description": "春雪呼出加速指令，现实的喧闹沉入青蓝色的寂静。进入对战后，银色之鸦在背后展开金属羽翼，振翅冲上建筑之间的高空。曾经总是低着头的少年，如今终于能从天空俯瞰战场。",
+    "cardType": "主动",
+    "number": "051",
+    "effect": "本次掷骰额外前进 3 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bonus",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "card_anime_g29",
+    "name": "靖妖傩舞",
+    "rarity": "R",
+    "quote": "靖妖傩舞！",
+    "description": "降魔傩面覆上面庞，魈握紧长枪，青色风元素裹住身形。他跃向高处，又循枪锋俯冲而下，妖邪在风中退散。傩面之下，护法夜叉仍独自承受着长久征战留下的业障。",
+    "cardType": "主动",
+    "number": "052",
+    "effect": "本次掷骰额外前进 3 格，合并移动并只结算最终落点。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_onepiece_shipwright",
+    "name": "SUPER！",
+    "rarity": "SR",
+    "quote": "Super！",
+    "description": "弗兰奇把可乐补进身体，两只大手啪地合在一起，摆出那套谁也拦不住的招牌姿势。乌索普和乔巴立刻跟着喊，罗宾在旁边平静地看了一眼。船还没修完，甲板上先热闹起来。",
+    "cardType": "主动",
+    "number": "053",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_wow_goblin_engineer",
+    "name": "改车消星",
+    "rarity": "SR",
+    "quote": "换个颜色，警察就不认识了。",
+    "description": "你把冒着烟的车开进改装店，卷帘门缓缓落下。几分钟后，凹下去的车门修好了，车漆也换了，街上的警笛还在四处转。你从出口慢慢开出去，刚才追得最凶的警车从旁边直接路过。",
+    "cardType": "主动",
+    "number": "054",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_shadow_clone",
+    "name": "多重影分身",
+    "rarity": "SR",
+    "quote": "多重影分身之术！",
+    "description": "训练场上烟雾炸开，数不清的鸣人挤满了空地，每个人都拍着胸口说交给我。树上的卡卡西合起书，还没来得及点名，分身们已经为了谁最像本体吵成一团。",
+    "cardType": "主动",
+    "number": "055",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_zhenhuan_promotion",
+    "name": "熹妃回宫",
+    "rarity": "SR",
+    "quote": "熹妃回宫！",
+    "description": "宫门缓缓打开，仪仗一路排到长阶之下。甄嬛扶着人走下轿辇，抬眼望向那座曾经离开的宫城。沿途众人一齐低头，往日熟悉的称呼，这回谁也不敢再叫。",
+    "cardType": "主动",
+    "number": "056",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_eldenring_blessing",
+    "name": "一步一步走到最高",
+    "rarity": "SR",
+    "quote": "我要一步一步，走到最高！",
+    "description": "赵高站在阶下，抬头望着那把所有人都不敢久看的椅子。他把腰背一点点挺直，话也一句比一句响。旁边的人还想劝他低头，他已经踏上了第一级台阶。",
+    "cardType": "主动",
+    "number": "057",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "freeUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hp_reparo",
+    "name": "修复如初",
+    "rarity": "SR",
+    "quote": "别急，碎的还能拼回去！",
+    "description": "赫敏举起魔杖，散落的砖块和木板便从地面升了起来。断开的楼梯重新接合，歪斜的窗框自己摆正，连碎掉的玻璃都争先恐后地回到了原位。罗恩刚伸手去扶一块木板，整面墙已经从他掌边飞了过去。",
+    "cardType": "主动",
+    "number": "058",
+    "effect": "1处自家地产免费升1级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_meme_groupon",
+    "name": "团购",
+    "rarity": "SR",
+    "quote": "等一下，我有团购券！",
+    "description": "你从手机里翻出一张快过期的团购券，店员的笑容顿时有些复杂。你赶紧调高屏幕亮度：看清楚，今天还算今天。",
+    "cardType": "防御",
+    "number": "059",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_meme_pdd_cut",
+    "name": "帮我砍一刀",
+    "rarity": "SR",
+    "quote": "兄弟，帮我再砍最后一刀！",
+    "description": "群里的朋友终于肯再点一下，你盯着屏幕激动得拍了桌子。客服还没说话，你先截了十张图，生怕这次成功又变成错觉。",
+    "cardType": "防御",
+    "number": "060",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_watermargin_songjiang",
+    "name": "及时雨",
+    "rarity": "SR",
+    "quote": "兄弟有难，怎么不早说！",
+    "description": "宋江听完来人的遭遇，放下酒碗，先让人把银两拿来。对方还在解释日后如何报答，他已经端起酒，连名字都没让人说完。桌边一声公明哥哥，喊得比刚进门时亲近了许多。",
+    "cardType": "防御",
+    "number": "061",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sgyy_debate",
+    "name": "舌战群儒",
+    "rarity": "SR",
+    "quote": "公既知一，其未知其二。",
+    "description": "江东群儒轮番发难，诸葛亮摇着羽扇，等对方说完才慢慢开口。堂上的声音起初一个比一个高，后来只剩扇子轻轻晃动。鲁肃站在旁边，几次想插话，最后全咽了回去。",
+    "cardType": "防御",
+    "number": "062",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_avengers_time_stone",
+    "name": "时间宝石",
+    "rarity": "SR",
+    "quote": "多玛姆，我是来谈条件的。",
+    "description": "多玛姆刚结束这一轮，斯特兰奇又完好无损地站到了面前。相同的开场白再一次响起，绿色的时间印记缓缓转动。地球法师还没有不耐烦，黑暗维度的主人先受不了了。",
+    "cardType": "防御",
+    "number": "063",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "halfPayment",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_conan_reasoning",
+    "name": "真相只有一个",
+    "rarity": "SR",
+    "quote": "真相只有一个！",
+    "description": "柯南低头看了一眼麻醉手表，毛利小五郎随即歪进椅子里。众人正要上前，他躲到桌后调好变声器，熟悉的推理声已经响了起来。小兰望着椅子里的父亲，总觉得今天坐得有点歪。",
+    "cardType": "防御",
+    "number": "064",
+    "effect": "本笔强制费用减免50%，减免额向下取整；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_gintama_break_jail",
+    "name": "踹牢门",
+    "rarity": "SR",
+    "quote": "阿银我，今天不蹲这儿！",
+    "description": "银时对着牢门猛踹一脚，锁没撑住，拖鞋也没撑住。门外终于自由了，他却先蹲下来找那只飞得更远的鞋。",
+    "cardType": "即时",
+    "number": "065",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sekiro_escape",
+    "name": "月下的魔术师",
+    "rarity": "SR",
+    "quote": "Ladies and gentlemen！",
+    "description": "预告函上的时间刚到，展厅灯光骤然熄灭。白色披风掠过月光，怪盗基德已经站在屋顶，抬手压住礼帽。警察冲上来时，四周先飞起一群白鸽，谁也没看清他走的是哪一边。",
+    "cardType": "即时",
+    "number": "066",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_pokemon_escape_rope",
+    "name": "关不住的鸟",
+    "rarity": "SR",
+    "quote": "有些鸟儿是关不住的。",
+    "description": "安迪举着双手站在暴雨里，仰头任雨水冲过脸庞。那条漫长的通道终于留在身后，雷声盖过远处监狱的动静。他缓缓张开双臂，第一次没有去看围墙的方向。",
+    "cardType": "即时",
+    "number": "067",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_dora_pass_ring",
+    "name": "穿透环乌龙",
+    "rarity": "SR",
+    "quote": "等一下，出口好像放反了！",
+    "description": "大雄把穿透环贴上墙，催着哆啦A梦赶紧跟来。两人钻过去才发现，这头是塞满杂物的储物间。扫帚、纸箱和旧被褥一齐倒下，哆啦A梦从最底下伸出手：先听完说明书啊！",
+    "cardType": "即时",
+    "number": "068",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hp_portkey",
+    "name": "多比是自由的",
+    "rarity": "SR",
+    "quote": "多比是一个自由的小精灵！",
+    "description": "马尔福庄园的吊灯轰然坠下，多比冲进混乱之中，紧紧抓住哈利和同伴的手。追来的咒语擦过耳边，幻影移形的响声骤然炸开。屋里的人再伸手时，原地只剩扬起的灰尘。",
+    "cardType": "即时",
+    "number": "069",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "release",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g04",
+    "name": "约定的钥匙",
+    "rarity": "SR",
+    "quote": "等长大以后，再用这把钥匙打开它。",
+    "description": "童年的少女把钥匙收好，一条乐则将那把锁留在胸前。许多年过去，相同的约定与不同的钥匙再次相遇；千棘和小咲的反应，让他愈发难以拼回那段记忆。",
+    "cardType": "即时",
+    "number": "070",
+    "effect": "解除刚施加的监禁或休息，或抵消1次对自己的强制位移（含入狱传送）；不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_watermargin_shiqian",
+    "name": "顺手牵羊",
+    "rarity": "SR",
+    "quote": "这次可没有距离1的限制了！",
+    "description": "你把顺手牵羊往桌上一拍，手已经越过旁边两个人，伸向最远那位的手牌。对方连忙低头算距离，你很贴心地把牌推过去：别算了，这次真够得着。",
+    "cardType": "主动",
+    "number": "071",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_bullet_flying_rob",
+    "name": "乡绅的钱如数奉还",
+    "rarity": "SR",
+    "quote": "乡绅的钱如数奉还，百姓的钱三七分成。",
+    "description": "黄四郎刚把银子摆上桌，张麻子就顺着话往下谈。分账的规矩越讲越明白，旁边的人点头点到一半，忽然觉得哪里不对。钱还没收上来，怎么分倒先安排好了。",
+    "cardType": "主动",
+    "number": "072",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_idiom_empty_hand",
+    "name": "以彼之道，还施彼身",
+    "rarity": "SR",
+    "quote": "以彼之道，还施彼身。",
+    "description": "慕容复看准对方来势，衣袖一转，将那股劲力原样送了回去。出招的人踉跄退开，低头看着自己惯用的起手式。招还是那一招，这次挨上的却换成了自己。",
+    "cardType": "主动",
+    "number": "073",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_stardew_trash_dive",
+    "name": "潜行100",
+    "rarity": "SR",
+    "quote": "把桶扣上，他就看不见了。",
+    "description": "你把一只木桶轻轻扣在商店老板头上，蹲下，潜行的眼睛慢慢合拢。货架就在手边，老板还在热情介绍商品。等你把桶拿走，他看着空了一截的架子，继续问要不要再看看。",
+    "cardType": "主动",
+    "number": "074",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_gintama_yorozuya",
+    "name": "东西我收下了",
+    "rarity": "SR",
+    "quote": "东西我收下了，下次见。",
+    "description": "鲁邦刚把战利品装进口袋，窗外就响起钱形警部熟悉的怒吼。他冲对方挥了挥手，翻身跳上等在楼下的车。次元压低帽檐踩下油门，警部的声音追了半条街。",
+    "cardType": "主动",
+    "number": "075",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_wuxia_sleight_hand",
+    "name": "移花接木",
+    "rarity": "SR",
+    "quote": "你再摸摸，东西还在不在？",
+    "description": "两人错身而过时，侠盗伸手扶了扶对方快滑落的包袱。失主连声道谢，还顺手拍了拍腰间，确认东西都在。等他低头细看，袋口不知何时多了一枝小花。街角那人已经走远，袖口里，一只刚到手的锦囊轻轻晃了一下。",
+    "cardType": "主动",
+    "number": "076",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g07",
+    "name": "虚空抽取",
+    "rarity": "SR",
+    "quote": "祈，把你的力量借给我。",
+    "description": "集伸出拥有“王之能力”的右手，祈的虚空在光中逐渐显形。那把来自她内心的巨剑落入掌中，他迟疑的目光随之坚定，终于向原本不敢面对的敌人走去。",
+    "cardType": "主动",
+    "number": "077",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "steal",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g30",
+    "name": "偷窃",
+    "rarity": "SR",
+    "quote": "Steal！",
+    "description": "和真抬手使出从克莉丝那里学来的偷窃技能，掌心立刻多出一件战利品。他靠着高幸运值得意地扬起嘴角，阿库娅凑过来一看，催他先确认这东西究竟值不值钱。",
+    "cardType": "主动",
+    "number": "078",
+    "effect": "随机抢走指定对手1张手牌；对方无牌时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "card_meme_eu_king",
+    "name": "十连三金",
+    "rarity": "SR",
+    "quote": "我是神里绫华的狗！",
+    "description": "祈愿的金光刚划过天空，你已经站了起来。结果页面翻开，三个金色头像排在一起，神里绫华的名字让你当场失去语言组织能力。群里还在说发图不发种，你的截图已经连着刷了三屏。",
+    "cardType": "主动",
+    "number": "079",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "card_delta_sell_gold",
+    "name": "摸出非洲之星",
+    "rarity": "SR",
+    "quote": "我靠，非洲之星！",
+    "description": "箱子打开的那一刻，红色光芒照亮了整个搜索界面。你愣了半秒，立刻把麦克风推到嘴边，又突然压低声音。刚才还嫌队友报点太慢，现在连自己的呼吸都怕传出去。",
+    "cardType": "主动",
+    "number": "080",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "card_avengers_ironman_money",
+    "name": "我买下了银行",
+    "rarity": "SR",
+    "quote": "我买下了银行。",
+    "description": "超人问布鲁斯，是怎么把肯特家的房子拿回来的。布鲁斯说自己买下了银行，语气平静得像顺路买了一杯咖啡。克拉克等了一会儿，终于确认这句话没有后半句。",
+    "cardType": "主动",
+    "number": "081",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "card_mario_coin",
+    "name": "顶金币",
+    "rarity": "R",
+    "quote": "这块砖还能再顶一下！",
+    "description": "马里奥跳起来顶中问号砖，金币伴着熟悉的音效弹了出来。你刚准备往前走，发现那块砖还亮着，于是又跳了一次。公主还在城堡里等，头顶这点存款得先收完。",
+    "cardType": "主动",
+    "number": "082",
+    "effect": "获得现金 ¥1200。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "card_genshin_chest",
+    "name": "开宝箱",
+    "rarity": "R",
+    "quote": "开了！这箱总算不是萝卜。",
+    "description": "你翻山越岭摸到宝箱，掀开盖子终于看见了亮闪闪的摩拉。派蒙刚想凑近数数，你已经连箱子一起抱走了。",
+    "cardType": "主动",
+    "number": "083",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "card_civ6_golden_age",
+    "name": "黄金时代的错觉",
+    "rarity": "R",
+    "quote": "这是她成年以来最好的夏天。",
+    "description": "一个韩国女孩发来消息，说工作找到了，股票也涨了，机票便宜得连海边都像在招手。你听得心动，刚打开行情软件，就发现自己还没买。别人的黄金时代已经开始，你的开户链接还没填完。",
+    "cardType": "主动",
+    "number": "084",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "cash",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "card_wow_auction",
+    "name": "拍卖会捡漏",
+    "rarity": "R",
+    "quote": "还有人加价吗？没有我可拿走了。",
+    "description": "拍卖师连喊三遍，台下没人举牌。你用起拍价抱走那件灰扑扑的拍品，出门一擦，里面竟露出一层漂亮的纹路。刚才说不值的几个人追了出来，称呼已经从哥们变成了老师。",
+    "cardType": "主动",
+    "number": "085",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-20000_probability-50_wager-5000",
+    "baseParameters": {
+      "wager": 5000,
+      "probability": 50,
+      "prize": 20000
+    },
+    "actualParameters": {
+      "wager": 5000,
+      "probability": 50,
+      "prize": 20000
+    },
+    "id": "card_fate_coin",
+    "name": "命运硬币",
+    "rarity": "UR",
+    "quote": "来个回血，别又劈我！",
+    "description": "血条只剩一丝，你咬牙点下命运硬币。硬币在半空转了几圈，队友已经默默退开。圣光和落雷到底哪个先到，全看这枚硬币愿不愿意把你当自己人。",
+    "cardType": "主动",
+    "number": "086",
+    "effect": "用现有现金下注 ¥5000，50%概率获得 ¥20000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-10000_probability-20_wager-1000",
+    "baseParameters": {
+      "wager": 1000,
+      "probability": 20,
+      "prize": 10000
+    },
+    "actualParameters": {
+      "wager": 2000,
+      "probability": 20,
+      "prize": 20000
+    },
+    "id": "card_all_in_ticket",
+    "name": "孤注一掷",
+    "rarity": "UR",
+    "quote": "今天睡地板，明天当老板！",
+    "description": "陆经理在台上振臂高喊，台下的人跟着拍手，声音一轮比一轮整齐。潘生站在人群里，看了一眼紧闭的大门，又看了一眼墙上的高薪海报。掌声越热闹，他越想知道出口在哪里。",
+    "cardType": "主动",
+    "number": "087",
+    "effect": "用现有现金下注 ¥2000，20%概率获得 ¥20000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "blast",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_ziggs_blast",
+    "name": "爆破鬼才",
+    "rarity": "SSR",
+    "quote": "我算过了，应该只会炸一点点。",
+    "description": "吉格斯戴好护目镜，把新作品摆上工作台，郑重宣布这次实验绝对可控。助手刚翻开记录本，整扇窗户就从眼前飞了出去。烟尘里，他兴奋地竖起一根手指：很好，现在我们知道窗户不够结实了。",
+    "cardType": "主动",
+    "number": "088",
+    "effect": "指定1名玩家随机传送并结算落点，可选自己；不发起点奖励，随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "jail",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_oratrice_verdict",
+    "name": "谕示裁定",
+    "rarity": "SSR",
+    "quote": "我魔神芙卡洛斯，就连这世间的诸神都可以审判！",
+    "description": "欧庇克莱歌剧院的灯光亮起，芙宁娜站在高处，张开双臂向满座观众宣告自己的神名。聚光灯随她的手势转向被告席，方才还喧闹的剧场骤然安静。她得意地抬起下巴，仿佛下一场审判的主角，已经由她亲手选定。",
+    "cardType": "主动",
+    "number": "089",
+    "effect": "指定1名玩家入狱，可选自己；跳过下次个人行动，服刑期间不收租，可当场解控；对自己使用替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "jail",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g14",
+    "name": "黑白熊登场",
+    "rarity": "SSR",
+    "quote": "噗呼呼……特别课程开始啦！",
+    "description": "广播屏幕忽然亮起，黑白熊笑着宣布自己的学园长身份。校规被一条条念出，走廊尽头的门缓缓闭合。它热情地欢迎新同学，黑白两半的笑脸却让人一点也放松不下来。",
+    "cardType": "主动",
+    "number": "090",
+    "effect": "指定1名玩家入狱，可选自己；跳过下次个人行动，服刑期间不收租，可当场解控；对自己使用替代掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fullDemolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_shinra_tensei",
+    "name": "神罗天征",
+    "rarity": "UR",
+    "quote": "让世界感受痛苦吧！神罗天征！",
+    "description": "黑底红云的衣袍在高空翻动，佩恩俯视着脚下的木叶，缓缓张开双臂。喧闹的村落仿佛在这一刻静止，随即，无形的斥力从天而降。街道、房屋与尘土被一并推向远方，只留下巨大的凹坑，以及烟尘中那道悬空的身影。",
+    "cardType": "主动",
+    "number": "091",
+    "effect": "拆除对手1处地产的全部建筑，无补偿；无视护盾。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fullDemolish",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_onepunch_serious_punch",
+    "name": "认真一拳",
+    "rarity": "UR",
+    "quote": "说好了，就一拳。",
+    "description": "埼玉往前迈了一步，平平常常地挥出拳头。杰诺斯刚翻开记录本，扑面的风已经把纸页吹得哗啦作响。烟尘散去，远处的建筑只剩下空荡荡的轮廓。埼玉收回手，看了眼时间，突然想起超市的特卖还没结束。",
+    "cardType": "主动",
+    "number": "092",
+    "effect": "拆除对手1处地产的全部建筑，无补偿；无视护盾。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fullUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_wood_houses",
+    "name": "连柱家之术",
+    "rarity": "UR",
+    "quote": "木遁·连柱家之术！",
+    "description": "赶了一天的路，众人正准备找地方过夜，大和已经走到空地中央，双手结印。木柱接连破土，梁架自行交错，一排木屋转眼拔地而起。别人执行任务还要考虑露宿，他随队出发，连住宿都能当场解决——木遁的用途，在大和队长手里格外实在。",
+    "cardType": "主动",
+    "number": "093",
+    "effect": "1处自家地产免费直升3级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fullUpgrade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_dragonball_shenron_wish",
+    "name": "神龙许愿",
+    "rarity": "UR",
+    "quote": "先说好，这次谁也不许抢愿望！",
+    "description": "七颗龙珠亮起，神龙从盘旋的光芒中升上夜空。悟空抬起头，正要开口，乌龙已经踮起脚往前挤。布尔玛眼疾手快地拽住他的衣领，把人拖了回来。神龙等了片刻，低下头，看着地上还在争先后的几个人。",
+    "cardType": "主动",
+    "number": "094",
+    "effect": "1处自家地产免费直升3级，计入本回合升级；取消或无目标时保留卡和主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shield",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_eva_at_field",
+    "name": "A.T.力场",
+    "rarity": "SSR",
+    "quote": "A.T.力场，全开！",
+    "description": "橙色的光壁在初号机面前层层展开。迎面而来的冲击撞上屏障，空气随之扭曲，身后的建筑却依然安静地立在那里。",
+    "cardType": "主动",
+    "number": "095",
+    "effect": "为1处自家地产添加 1 层护盾，每层抵挡1次建筑拆除或降级，连击逐层消耗；不叠加，不保护主动出售或清算。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shield",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g02",
+    "name": "缎带结界",
+    "rarity": "SSR",
+    "quote": "别怕，站到我身后。",
+    "description": "麻美抬起戴着手套的手，金色缎带从腕边延展，在同伴身前交织成防护。她稳住帽檐，确认身后的人已经安全，才从容地转向结界深处的魔女。",
+    "cardType": "主动",
+    "number": "096",
+    "effect": "为1处自家地产添加 1 层护盾，每层抵挡1次建筑拆除或降级，连击逐层消耗；不叠加，不保护主动出售或清算。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shield",
+    "parameterId": "charges-3",
+    "baseParameters": {
+      "charges": 3
+    },
+    "actualParameters": {
+      "charges": 3
+    },
+    "id": "card_naruto_triple_rashomon",
+    "name": "三重罗生门",
+    "rarity": "UR",
+    "quote": "先过这三道门，再来碰我。",
+    "description": "大蛇丸按下手掌，地面随之一震。第一道巨门破土而出，后方紧接着又立起两道狰狞的门影。迎面的冲击撞上门面，卷起一层层尘土。他站在最后一道门后，缓缓抬起眼睛，嘴角仍挂着那点从容的笑。",
+    "cardType": "主动",
+    "number": "097",
+    "effect": "为1处自家地产添加 3 层护盾，每层抵挡1次建筑拆除或降级，连击逐层消耗；不叠加，不保护主动出售或清算。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "recycle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sgs_zhiheng",
+    "name": "制衡",
+    "rarity": "SR",
+    "quote": "容我三思。",
+    "description": "孙权将案上的几封奏报移到一旁，又从余下的文书中抽出新的几封。群臣还在争论方才的安排，他已经重新审视起整盘局势。",
+    "cardType": "主动",
+    "number": "098",
+    "effect": "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "recycle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g10",
+    "name": "UMR上线",
+    "rarity": "SR",
+    "quote": "TSF，下一局也一起赢吧！",
+    "description": "游戏厅的屏幕上，UMR与TSF的名字并排亮起。小埋压低帽檐，收起在家懒散的一面，和兴致高昂的希尔芬一起盯住下一关。两个游戏伙伴的默契，在按键声中越来越熟练。",
+    "cardType": "主动",
+    "number": "099",
+    "effect": "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "recycle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g25",
+    "name": "从零开始",
+    "rarity": "SR",
+    "quote": "昴是雷姆的英雄。",
+    "description": "雷姆听完昴想要逃走的话，仍认真说起自己眼中的那个少年。她记得他曾经伸出的手，也愿意相信他还能够站起来。昴终于抬起头，把这份信任带回尚未走完的路，从零开始。",
+    "cardType": "主动",
+    "number": "100",
+    "effect": "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "discover",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_hs_discover",
+    "name": "发现",
+    "rarity": "SSR",
+    "quote": "好吧，只能带一件。",
+    "description": "遗迹深处的石门缓缓升起，三件古怪的宝物同时亮了起来。雷诺挽起袖子，刚想全抱走，脚下的机关便发出了不太友善的响声。",
+    "cardType": "主动",
+    "number": "101",
+    "effect": "从3张不同效果的随机道具中选1张；确认后才消耗，取消重选不刷新候选。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "sap",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_wow_sap",
+    "name": "闷棍",
+    "rarity": "SR",
+    "quote": "睡一会儿，东西我替你保管。",
+    "description": "你正低头清点行囊，身后的影子忽然近了一步。后脑勺传来一声闷响，再醒来时，四周很安静，包里却像是少了点什么。",
+    "cardType": "主动",
+    "number": "102",
+    "effect": "前后3格内1名对手休息1个个人回合（含同格），并随机偷取其1张手牌；解控不撤销偷牌。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "exchange",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_fma_exchange",
+    "name": "等价交换",
+    "rarity": "UR",
+    "quote": "想得到什么，就得付出代价。",
+    "description": "爱德华双手合十，将手掌重重按向地面。蓝色电光沿着阵纹奔走，原有的形态在光中分解，再以另一种形式重新组合。",
+    "cardType": "主动",
+    "number": "103",
+    "effect": "用现有现金向对手支付该地产的无修正租金，最低为地价，取得产权并承接建筑、抵押及附加效果。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "slow",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_onepiece_slow",
+    "name": "迟缓光线",
+    "rarity": "R",
+    "quote": "别急，好戏才刚开始！",
+    "description": "福克西咧开嘴，摆出那个古怪的手势。一束光扫过，你明明已经迈出了腿，身体却像还在等上一秒的自己追上来。",
+    "cardType": "主动",
+    "number": "104",
+    "effect": "指定对手，下次掷骰或替代掷骰的基础步数减半，向下取整，再计算加码与塔塔开；不叠加。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swapAny",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_tianlong_star_shift",
+    "name": "斗转星移",
+    "rarity": "SSR",
+    "quote": "以彼之道，还施彼身。",
+    "description": "慕容复侧身接住来势，手腕轻轻一转。出招的人只觉眼前一晃，原本对准别人的方向，转眼便成了自己最不愿面对的处境。",
+    "cardType": "主动",
+    "number": "105",
+    "effect": "交换任意2名玩家的位置，可含自己；不结算落点或起点奖励，不解除监禁或休息。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swapAny",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g19",
+    "name": "红线续缘",
+    "rarity": "SSR",
+    "quote": "道士哥哥，我们一起把这段缘续上吧！",
+    "description": "苏苏抱着天书追上白月初，认真核对委托中的信物与线索。前世的约定还藏在遗失的记忆里，她却已经相信那份心意能够传达。苦情树下，一段未完的缘分等待着红线仙重新牵起。",
+    "cardType": "主动",
+    "number": "106",
+    "effect": "交换任意2名玩家的位置，可含自己；不结算落点或起点奖励，不解除监禁或休息。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "kamui",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_kamui",
+    "name": "神威",
+    "rarity": "UR",
+    "quote": "这里，已经不属于这个世界了。",
+    "description": "写轮眼中的纹样缓缓转动，眼前的空间随之卷成漩涡。整座建筑被无声地吸入中心，原地只剩一道逐渐合拢的扭曲。",
+    "cardType": "主动",
+    "number": "107",
+    "effect": "封印同一条边1～3处地产，无需连续，可含自家、对手或无主地产；持续3个后续个人回合，暂停收租、经营和附加效果，期间不受其他地产效果影响，仍可破产清算。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "kamui",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g08",
+    "name": "封绝",
+    "rarity": "UR",
+    "quote": "封绝。",
+    "description": "火线在地面勾出赤红纹章，阳炎般的壁将战场与外界隔开。普通人的动作停在半途，炎发灼眼的少女却仍握着贽殿遮那走向前方。封绝之中，红世的战斗刚刚开始。",
+    "cardType": "主动",
+    "number": "108",
+    "effect": "封印同一条边1～3处地产，无需连续，可含自家、对手或无主地产；持续3个后续个人回合，暂停收租、经营和附加效果，期间不受其他地产效果影响，仍可破产清算。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "handDestruction",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_yugioh_hand_destruction",
+    "name": "手牌抹杀",
+    "rarity": "SSR",
+    "quote": "这手牌，全部重来！",
+    "description": "魔法卡翻开的瞬间，双方手中的卡片同时化作碎光。刚刚还握在掌心的布局消失了，新一轮命运已经落到指间。",
+    "cardType": "主动",
+    "number": "109",
+    "effect": "全体玩家弃掉剩余手牌并等量重抽，包含自己；本牌不参与重抽，弃牌不折现。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "gravity",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_chibaku_tensei",
+    "name": "地爆天星",
+    "rarity": "SSR",
+    "quote": "都到这里来。",
+    "description": "黑色球体缓缓升起，碎石开始脱离地面。下一刻，四周的一切都被无形的力量扯向同一个中心，连站稳都成了奢望。",
+    "cardType": "主动",
+    "number": "110",
+    "effect": "将其他所有玩家传送到自己所在格，不结算落点或起点奖励；随后正常掷骰。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "reaper",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_reaper_seal",
+    "name": "尸鬼封尽",
+    "rarity": "UR",
+    "quote": "这份代价，你我一起承担。",
+    "description": "死神的虚影在身后浮现，冰冷的手臂穿过施术者的身体，伸向面前的敌人。这场封印从一开始，就没有为任何一方留下完整的退路。",
+    "cardType": "主动",
+    "number": "111",
+    "effect": "自己与指定对手的本局手牌上限永久各减1，最低1张；可叠加，超限时选择保留。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shadowstep",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_wow_shadowstep",
+    "name": "暗影步",
+    "rarity": "SR",
+    "quote": "往哪儿看呢？",
+    "description": "前方的人还在留意街口，你的身影已经融进脚边的暗处。再出现时，你与他的距离，只剩下一个转身。",
+    "cardType": "主动",
+    "number": "112",
+    "effect": "传送到前后6格内另一名玩家所在格并结算，含同格，替代掷骰；传至起点可领取奖励。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "homeTeleport",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_lol_teleport",
+    "name": "传送",
+    "rarity": "SSR",
+    "quote": "守住，我到了。",
+    "description": "紫色光柱在远处的建筑旁亮起，旋转的符文越来越清晰。守在原地的人还没看清来者，一道身影已经落在光芒中央。",
+    "cardType": "主动",
+    "number": "113",
+    "effect": "传送到1处自家地产并结算，替代掷骰，可付费升级。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "homeTeleport",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_wow_hearthstone_home",
+    "name": "炉石回城",
+    "rarity": "SSR",
+    "quote": "炉石好了，回家！",
+    "description": "冒险者在泥地里坐下，终于从背包底翻出了那块熟悉的石头。淡绿色的光绕着指尖亮起，耳边的风雨声慢慢远去。再睁眼时，壁炉烧得正旺，旅店老板刚擦好一只杯子。冒险者松了口气，背包上的泥水却已经滴了一地。",
+    "cardType": "主动",
+    "number": "114",
+    "effect": "传送到1处自家地产并结算，替代掷骰，可付费升级。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "homeTeleport",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g01",
+    "name": "赐福指引",
+    "rarity": "SSR",
+    "quote": "循着赐福，继续前行。",
+    "description": "幽微的金光在地面汇聚，细长的光束指向远方。褪色者在赐福旁起身，沿着指引踏入交界地的风沙。即使王座尚在远方，那道微光仍为失路之人留下方向。",
+    "cardType": "主动",
+    "number": "115",
+    "effect": "传送到1处自家地产并结算，替代掷骰，可付费升级。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "homeTeleport",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_g06",
+    "name": "转移水晶",
+    "rarity": "SSR",
+    "quote": "转移——起始之城！",
+    "description": "桐人举起转移水晶，清楚地报出目的地的城镇名。亚丝娜也取出自己的水晶，两道传送光先后亮起；随着道具发动，熟悉的城镇取代了眼前的景色。",
+    "cardType": "主动",
+    "number": "116",
+    "effect": "传送到1处自家地产并结算，替代掷骰，可付费升级。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "blackhole",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_original_blackhole",
+    "name": "黑洞",
+    "rarity": "SSR",
+    "quote": "多余的东西，就到此为止。",
+    "description": "一点漆黑在街道中央张开，周围的光线都向它弯去。旗帜、碎石与悬浮的符文被卷入其中，旋涡闭合时，街面已恢复平静。",
+    "cardType": "主动",
+    "number": "117",
+    "effect": "清除1处地产的全部附加效果，包含护盾、宝藏、演唱会及建设标记；不改变建筑、产权或抵押。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "meteor",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_naruto_meteor",
+    "name": "陨星",
+    "rarity": "SSR",
+    "quote": "那么，下一颗呢？",
+    "description": "巨大的阴影忽然遮住天空，众人抬起头，才发现云层之上还有更庞大的轮廓。第一声轰鸣尚未散去，下一颗陨石已经逼近地面。",
+    "cardType": "主动",
+    "number": "118",
+    "effect": "随机在1～3处不同地产各放1颗陨星，每颗截停1次并结算落点；可叠加，不损坏建筑。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "timeRewind",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u01",
+    "name": "时间溯行",
+    "rarity": "SSR",
+    "quote": "无论重来多少次，我都会救你。",
+    "description": "沙漏翻转，熟悉的病房再次出现在眼前。晓美焰记得接下来一个月的每一次相遇，也记得小圆走向的结局。她握紧圆盾，再一次把那句约定带回时间的起点。",
+    "cardType": "即时",
+    "number": "119",
+    "effect": "普通骰点公开后、移动前重掷1次，必须接受新结果；不适用替代掷骰，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "projection",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u02",
+    "name": "投影魔术",
+    "rarity": "UR",
+    "quote": "投影，开始。",
+    "description": "士郎闭目解析见过的武器，构造与材质在意识中逐层成形。魔术回路亮起，想象中的剑逐渐有了重量与锋刃。他握紧重现的武器，向前迈出一步。",
+    "cardType": "主动",
+    "number": "120",
+    "effect": "复制上个已结束个人回合使用过的1张主动道具，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "starburst",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u03",
+    "name": "星爆气流斩",
+    "rarity": "SSR",
+    "quote": "星爆——气流斩！",
+    "description": "桐人同时拔出阐释者与逐暗者，挡在青眼恶魔面前。二刀流的连续斩击几乎连成一道不间断的剑光，一剑接上另一剑，直到最后一击才肯停下。",
+    "cardType": "主动",
+    "number": "121",
+    "effect": "对手1处有建筑地产连续降级2次，每次降1级；每层护盾抵挡1击，无退款。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "imagineBreaker",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u04",
+    "name": "幻想杀手",
+    "rarity": "UR",
+    "quote": "首先，打碎你那幻想！",
+    "description": "面对压来的魔法与超能力，当麻迎着攻击伸出右手。异能在触及那只手的地方失去效力，原本无可逾越的术式出现了缺口。他没有停下，继续向被困在后方的人跑去。",
+    "cardType": "防御",
+    "number": "122",
+    "effect": "抵消1张主动道具对自己及自家地产的全部效果，含UR；群体效果只抵消自己一方，对方仍消耗卡和次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "timeRestore",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u06",
+    "name": "刻刻帝·四之弹",
+    "rarity": "SSR",
+    "quote": "刻刻帝——四之弹（Dalet）！",
+    "description": "刻刻帝在狂三身后显现，枪弹承载着回溯时间的力量。四之弹命中，目标刚刚留下的伤损沿时间逆流消退。她仍旧含笑，金色时钟眼中的指针映着枪口的余光。",
+    "cardType": "主动",
+    "number": "123",
+    "effect": "在自己的下个个人回合结束前，将1处自家地产恢复至最近一次敌方或事件破坏前的建筑等级；产权须未变化，不恢复主动卖房或其他状态。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "vectorReflect",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u07",
+    "name": "矢量反射",
+    "rarity": "UR",
+    "quote": "就这点能耐，还想碰到我？",
+    "description": "弹道逼近，一方通行却连躲避的动作都省下了。触及体表的力量被重新指定方向，攻击沿着相反的轨迹折返。他抬起眼，迎着骤然变色的对手露出笑容。",
+    "cardType": "防御",
+    "number": "124",
+    "effect": "将1张主动道具对自己的效果反弹给施术者，含UR；不保护地产，群体只反弹自己部分，反弹不再触发反射。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "deathReturn",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u08",
+    "name": "死亡回归",
+    "rarity": "UR",
+    "quote": "下一次，我一定会改变结局。",
+    "description": "昴再次在熟悉的街口睁开眼，摊主说出与记忆里一模一样的话。上一轮的痛楚仍留在意识中，周围的人却什么也不知道。他把快要脱口而出的话咽回去，记住这一次必须改变的分岔。",
+    "cardType": "防御",
+    "number": "125",
+    "effect": "达到破产清算条件时，免除当前剩余强制债务，回到最近本人回合开始位置，获得现金 ¥3000并休息1个个人回合；不结算落点或起点奖励，不回滚已完成的付款、卖房或交易。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "explosion",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u09",
+    "name": "爆裂魔法",
+    "rarity": "UR",
+    "quote": "Explosion！",
+    "description": "惠惠高举法杖，把所有魔力倾注进这一发爆裂魔法。巨大的火光与轰鸣吞没远处的目标，她满意地看着烟柱升起，随后耗尽力气倒下。和真叹了口气，熟练地走过去把她背起。",
+    "cardType": "主动",
+    "number": "126",
+    "effect": "拆除连续3格内的全部建筑，包含自家地产，无补偿；每处地产可消耗1层护盾抵挡全拆；自己随后休息1个个人回合。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "corruption",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u10",
+    "name": "猩红腐败",
+    "rarity": "SSR",
+    "quote": "现在，腐败吧。",
+    "description": "猩红花蕾在玛莲妮亚周身舒展，花瓣与腐败蝶一同涌出。金色义肢从雾中缓缓抬起，腐败已随着绽放的余波侵入战场。即使花光渐暗，侵蚀仍未停止。",
+    "cardType": "主动",
+    "number": "127",
+    "effect": "对手1处有建筑地产，在接下来3次业主个人回合开始时各降1级；每层护盾抵挡1次，降至0级结束，重复施加刷新次数，可清除。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "contract",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u11",
+    "name": "契约成立",
+    "rarity": "SSR",
+    "quote": "和我签订契约，成为魔法少女吧。",
+    "description": "丘比平静地提出邀请：一个愿望，换取成为魔法少女的契约。它等待少女说出心中最想实现的事，仿佛只是在确认一项理所当然的交换。灵魂宝石的光芒，映亮了那双始终没有变化的红眼睛。",
+    "cardType": "主动",
+    "number": "128",
+    "effect": "获得现金 ¥5000，本局手牌上限永久减1，最低1张；上限为1时不可使用，超限时选择保留。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "commandSpell",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u12",
+    "name": "令咒",
+    "rarity": "UR",
+    "quote": "以令咒之名，命令你——",
+    "description": "御主抬起刻有令咒的手背，说出无法轻易收回的命令。一道红色纹路随之消退，契约中的魔力化为强制的力量，推动从者完成眼前的行动。",
+    "cardType": "主动",
+    "number": "129",
+    "effect": "指定另一名玩家立即移动1～6格，点数自选，正常结算沿途和落点；不占其正常行动，奖励、费用及落点选择归移动者。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "sevenSwords",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u13",
+    "name": "火舞旋风",
+    "rarity": "UR",
+    "quote": "火舞旋风！",
+    "description": "虹猫握紧长虹剑，剑锋随着旋身划出炽热的圆弧。火光层层回旋，卷成冲向前方的旋风；纷乱的杀意与杂念渐渐退去，只余长虹剑不断向前的剑势。",
+    "cardType": "主动",
+    "number": "130",
+    "effect": "将3道剑气分配给对手有建筑的地产，可集火或分散，每道降1级；每层护盾抵挡1道，未分配的剑气作废。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "railgun",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u14",
+    "name": "超电磁炮",
+    "rarity": "UR",
+    "quote": "呐，你知道超电磁炮吗？",
+    "description": "御坂美琴将一枚游戏币抵在拇指上，蓝白色电弧沿指尖聚拢。下一瞬，硬币被电磁力加速至三倍音速，橙色光轨笔直贯穿街道，轰鸣与风压紧随而至。她站在尚未散去的电光里，目光仍牢牢锁着前方。",
+    "cardType": "主动",
+    "number": "131",
+    "effect": "选择顺或逆时针贯穿前方6格，自己不移动；无视护盾，清除沿途路障、陨星和全部护盾，对手地产各降1级。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "sealCard",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u15",
+    "name": "回到你原来的样子",
+    "rarity": "UR",
+    "quote": "恢复你原来的样子——库洛牌！",
+    "description": "小可在旁提醒，小樱握稳封印之杖，直面失控的库洛牌。鸟首杖头点向展开的魔法阵，散乱的魔力被封印之力收拢，重新凝成落入她手中的卡牌。",
+    "cardType": "防御",
+    "number": "132",
+    "effect": "抵消并收服另一玩家仅针对自己或1处自家地产的单目标主动道具，含UR；收服后按正常时机使用，不适用群体或范围效果。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "swordRain",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u16",
+    "name": "剑雨",
+    "rarity": "SSR",
+    "quote": "别挡路。",
+    "description": "雨水划过刀锋，德克萨斯迎着叙拉古的街灯切入战场。剑影接连坠下，逼近的敌人在交错的锋芒中停住。她没有多作解释，只收紧手中的剑，走向下一处必须解决的麻烦。",
+    "cardType": "主动",
+    "number": "133",
+    "effect": "前后6格内1名对手休息1个个人回合，可解控；本牌可用2次，每个人回合限1次，被防御也消耗次数，转移不刷新次数或冷却。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "voidTears",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u17",
+    "name": "虚空之泪",
+    "rarity": "SSR",
+    "quote": "虚空之泪！",
+    "description": "一滴泪在白月初眼角凝起，映出的空间随之扭曲。泪光掠过，原本连成一片的景物骤然错开，挡在前方的阻隔被撕出裂隙。他抬起头，视线追向泪光消失的方向。",
+    "cardType": "主动",
+    "number": "134",
+    "effect": "连接2处地产；首位步行进入任一端者传至另一端，再走剩余步数，随后裂隙消失；跳过的路径无奖励，只结算最终落点，传送或换位不触发。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "absoluteZero",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_anime_u18",
+    "name": "绝对零域",
+    "rarity": "UR",
+    "quote": "绝对零域。",
+    "description": "雅雅抬起无尽酒葫，饮下酒后，寒性妖气在身周骤然攀升。九尾舒展，霜雪无声地吞没四周，连撕裂空间的泪光也被封在冰中。她冷冷望着前方，凝结的寒雾久久未散。",
+    "cardType": "主动",
+    "number": "135",
+    "effect": "冰封一条边的全部地产至自己的下个个人回合结束，包含自家地产；期间不能收租或升级，其他效果及资产操作照常。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "geoResonance",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_genshin_geo_resonance",
+    "name": "岩脊共鸣",
+    "rarity": "SSR",
+    "quote": "此地，正宜立基。",
+    "description": "钟离抬起手，金色纹路从岩脊底部向两侧延伸。相邻的岩造物依次回应，原本分散的轮廓在共鸣中连成一片。",
+    "cardType": "主动",
+    "number": "136",
+    "effect": "选择1处自家地产，与左右紧邻的自家地产各免费升1级，最多3处。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "growthLink",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_genshin_growth_link",
+    "name": "所闻遍计",
+    "rarity": "SSR",
+    "quote": "让它们，一起成长吧。",
+    "description": "纳西妲伸出手，绿色印记分别落在两处轮廓上。细小的光线将它们连接，一侧刚刚发生变化，另一侧便也绽出了新的枝叶。",
+    "cardType": "持续",
+    "number": "137",
+    "effect": "连接2处自家地产，无回合期限；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "sereniteaPot",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_genshin_serenitea_pot",
+    "name": "尘歌壶",
+    "rarity": "UR",
+    "quote": "这座搬过去，那边再添一间。",
+    "description": "旅行者展开洞天布局，阿圆在旁边认真看着。刚才还立在山脚的屋舍，转眼便出现在水边；空出来的位置上，一座新亭子已经搭起了轮廓。",
+    "cardType": "主动",
+    "number": "138",
+    "effect": "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "createBuild",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_sakura_create_build",
+    "name": "创",
+    "rarity": "SSR",
+    "quote": "把想象中的样子，变出来！",
+    "description": "小樱握住法杖，注视着卡牌浮现出的光。纸面上的线条慢慢立起，门窗、屋顶和阶梯逐一成形，小可已经绕着新出现的轮廓飞了一圈。",
+    "cardType": "主动",
+    "number": "139",
+    "effect": "弃置1～2张其他手牌，每张换1处不同自家地产免费升1级；弃牌不折现，确认后才消耗。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "remoteConstruction",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_arknights_remote_construction",
+    "name": "基建轮班",
+    "rarity": "SR",
+    "quote": "人可以没到，施工不能停。",
+    "description": "可露希尔把新的施工安排推到桌前，通讯器另一头接连传来确认。干员们换好班，尚未完工的设施重新亮起灯，工具声很快又响了起来。",
+    "cardType": "持续",
+    "number": "140",
+    "effect": "本回合及下个个人回合，在资产管理阶段各可远程建造1次，支付标准建造费的75%，向下取整。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shrineGrowth",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_noragami_shrine_growth",
+    "name": "给我建座神社吧",
+    "rarity": "SR",
+    "quote": "不用太大！先有个屋顶就行！",
+    "description": "夜斗把理想中的神社比画得越来越大，雪音已经开始怀疑预算。日和捧着刚做好的小小神社走过来，他的声音忽然停住，接过去时比谁都小心。",
+    "cardType": "持续",
+    "number": "141",
+    "effect": "标记1处自家地产；其他玩家正常停留并结算后，该地产免费升1级，最多触发2次；暂不能升级时保留次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "keqingRush",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_neta_keqing_rush",
+    "name": "斩尽牛杂",
+    "rarity": "SSR",
+    "quote": "斩尽牛杂！",
+    "description": "刻晴抬剑，雷光中的身影接连闪现。剑影收拢时，她已越过面前的阻挡，落在最后一道雷楔旁。",
+    "cardType": "主动",
+    "number": "142",
+    "effect": "对前后6格内1处对手有建筑地产降1级，再传送到该地并正常结算，替代掷骰；护盾可抵挡降级，主动防御不取消自己的传送。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "thunderLord",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_neta_thunder_lord",
+    "name": "煌煌威灵",
+    "rarity": "UR",
+    "quote": "煌煌威灵，尊吾敕命！",
+    "description": "景元抬起阵刀，金色巨影在身后缓缓成形。他的动作从容得像随手落下一子，神君的兵刃已越过肩头，等待下一声敕令。",
+    "cardType": "主动",
+    "number": "143",
+    "effect": "标记1处对手有建筑地产，初始2击；每名其他玩家首次消耗主动次数用牌增加1击，最多4击，下个本人回合开始逐击降级；护盾逐击抵挡，标记可清除，转手或施术者淘汰失效。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "hollowfication",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_neta_hollowfication",
+    "name": "虚化",
+    "rarity": "SSR",
+    "quote": "这一次，换我来。",
+    "description": "一护抬手划过脸侧，白色面具沿着指尖浮现。压来的攻击尚未落下，他已握紧斩月抬起头，面具后的目光与刚才判若两人。",
+    "cardType": "防御",
+    "number": "144",
+    "effect": "抵消1张敌方主动道具对本人的强制位移、休息和监禁；不保护地产或手牌，不抵挡事件，不占主动次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fireBurial",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_neta_fire_burial",
+    "name": "一刀火葬",
+    "rarity": "SSR",
+    "quote": "破道之九十六·一刀火葬！",
+    "description": "山本将力量压入这一击，地面骤然亮起炽红纹路。巨大的火刃自下而上升起，火光映在他的脸上，出手的代价也已一并落下。",
+    "cardType": "主动",
+    "number": "145",
+    "effect": "献祭自家1级建筑，使对手1处地产降低最多2级，无视但不消耗护盾；献祭无退款、不可修复，被主动防御也不返还。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "bankai",
+    "parameterId": "version-2",
+    "baseParameters": {
+      "version": 2
+    },
+    "actualParameters": {
+      "version": 2
+    },
+    "id": "card_neta_bankai",
+    "name": "天锁斩月",
+    "rarity": "UR",
+    "quote": "卍解！天锁斩月！",
+    "description": "扩散的灵压突然向内收拢，宽大的刀身化为漆黑长刀。一护压低身体，衣摆刚刚扬起，人已经从原地消失。",
+    "cardType": "主动",
+    "number": "146",
+    "effect": "发动后，本回合最多再使用2张其他主动道具，含UR；期间不能再用天锁斩月或投影魔术，额外出牌统一计数；替代移动后结束出牌窗口，费用和限制照常。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "asunaFlash",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_asunaFlash",
+    "name": "闪光的亚丝娜",
+    "rarity": "UR",
+    "quote": "这一剑，绝不退让。",
+    "description": "白红色身影从怪物的攻击间隙穿过，细剑拖出连贯的光轨。突刺结束时，亚丝娜已立于敌阵另一侧，身后的攻击才刚刚落下。她握紧剑柄，再次望向前方。",
+    "cardType": "主动",
+    "number": "147",
+    "effect": "自选向前突进1～3格，替代掷骰；忽略路径效果并清除沿途附加效果，每处护盾只削1层，神威除外；不降建筑，正常结算终点，可被通常主动防御响应。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "defenseSpecialization",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_defenseSpecialization",
+    "name": "怕痛就全点防御了",
+    "rarity": "UR",
+    "quote": "因为怕痛，所以防御力全点满！",
+    "description": "梅普露抱着大盾站在爆炸中央，密集攻击在周围接连炸开。烟尘散去，她小心地从盾后探出头，确认自己毫发无伤，才露出安心的笑容。",
+    "cardType": "主动",
+    "number": "148",
+    "effect": "本回合及后续两个本人回合，自己及自家地产免疫敌方主动牌和负面事件，并免除租金、债务等一切强制费用；奖励照常，基础移动固定1，不能替代移动或主动攻击。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "revealingSwords",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_revealingSwords",
+    "name": "光的护封剑",
+    "rarity": "UR",
+    "quote": "发动魔法卡——光的护封剑！",
+    "description": "金色巨剑从天而降，贯入战场，构成耀眼的封锁剑阵。被困其中的怪兽仰头怒吼，却无法越过光芒形成的边界；剑阵外的决斗者已经准备好下一次行动。",
+    "cardType": "主动",
+    "number": "149",
+    "effect": "指定1名对手，接下来3个个人回合禁止使用所有手牌，包含防御、解控和救援响应；掷骰、经营、收租、交易及弃牌照常，重复刷新不叠加。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "fusion",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_fusion",
+    "name": "融合",
+    "rarity": "UR",
+    "quote": "发动魔法卡——融合！",
+    "description": "蓝橙交错的漩涡席卷战场，两道截然不同的怪兽轮廓被卷入中心。旋涡深处的光越来越亮，一个更强大的身影正从融合的力量中显现。",
+    "cardType": "主动",
+    "number": "150",
+    "effect": "消耗本牌及额外任意2张手牌，融合为1张普通UR；优先在第一张材料的玩法类别内均分抽取，无同类UR才抽全部UR，不额外赠送使用次数。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "shadowBlade",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_shadowBlade",
+    "name": "双龙魔影剑",
+    "rarity": "SSR",
+    "quote": "剑锋未至，魔影先行。",
+    "description": "漆黑的剑身从幽暗中显露，锋刃映出冷冽的光泽。挥斩掠过，两道交错的龙形魔影冲入敌阵；剑鸣停下后，残留的暗影仍盘旋在刃端。",
+    "cardType": "主动",
+    "number": "151",
+    "effect": "选择2处紧邻、不同的对手有建筑地产，各降1级；可属于不同对手，护盾逐地抵挡，不退款，不能集火。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "doubleBoost",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_doubleBoost",
+    "name": "双喷",
+    "rarity": "SSR",
+    "quote": "出弯，双喷！",
+    "description": "赛车贴着弯道内侧滑出，车尾拖出清晰的轮胎烟痕。两段喷焰接连点亮，车身在速度残影中冲向直道，后视镜里的对手已经被甩出一段距离。",
+    "cardType": "主动",
+    "number": "152",
+    "effect": "普通掷骰前使用；骰子移动结束或被截停后，可依次追加两次前进1格。喷射忽略且不消耗陨星，路障仍截停并终止喷射；只结算最终落点，喷射不受翻倍与加码放大。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "blueSilverBind",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_blueSilverBind",
+    "name": "蓝银缠绕",
+    "rarity": "SR",
+    "quote": "你也有取死之道！",
+    "description": "蓝银草从地面骤然生长，绕过武器与护甲，缠住目标的四肢。蓝色光点沿草叶流动，唐三抬手收拢，藤蔓在敌人挣脱前骤然绷紧。",
+    "cardType": "主动",
+    "number": "153",
+    "effect": "前后6格内1名对手下个个人回合不能掷骰或替代移动；可使用其他牌、经营、交易、收租与防御，不重新结算原地，可解控，沿用连续控制保护。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "goldenCore",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_goldenCore",
+    "name": "结丹",
+    "rarity": "UR",
+    "quote": "大道漫漫，今日结丹。",
+    "description": "洞府石门紧闭，韩立盘坐阵中，四周灵气不断向丹田汇聚。一点金光逐渐凝实，洞府外的天地灵气随之涌动；他收敛心神，守住这来之不易的突破。",
+    "cardType": "主动",
+    "number": "154",
+    "effect": "掷骰前闭关，放弃本回合主动移动；回合结束结丹，手牌上限永久加1，并获得1张随机SSR道具。经营、交易及防御照常，每人每局限成功1次。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "nuwaMend",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_nuwaMend",
+    "name": "女娲补天",
+    "rarity": "UR",
+    "quote": "炼五色石，以补苍天。",
+    "description": "天穹裂开巨大的缺口，五色神光自女娲石中升起，沿裂隙缓缓铺展。残破山河映在光中，渺小的人影立于天地之间，仰望那片终于开始愈合的苍穹。",
+    "cardType": "主动",
+    "number": "155",
+    "effect": "下个本人回合结束前，修复最近同一次敌方攻击或灾害损坏的最多3处自家地产，恢复损坏前等级；产权须未变，不恢复主动卖房，不回滚付款、抵押和其他状态。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "namelessSword",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_crossover_namelessSword",
+    "name": "无名剑法",
+    "rarity": "SSR",
+    "quote": "剑虽无名，锋芒自见。",
+    "description": "剑客立于风中，剑锋低垂，衣摆与落叶缓缓移动。出剑的一瞬，数道剑气先后穿过烟尘；待风声重新响起，剑客已经收剑而立。",
+    "cardType": "主动",
+    "number": "156",
+    "effect": "本回合蓄力，无法主动移动；下个本人回合掷骰前可对前后6格内1处对手地产连斩3次，各降1级、护盾逐击挡。释放不占主动次数，次回合正常移动；休息、监禁或放弃则失效。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "kingsPressure",
+    "parameterId": "version-2",
+    "baseParameters": {
+      "version": 2
+    },
+    "actualParameters": {
+      "version": 2
+    },
+    "id": "card_crossover_kingsPressure",
+    "name": "王的压制",
+    "rarity": "SSR",
+    "quote": "不死魔王，仍在王座之上。",
+    "description": "比赛舞台的灯光落在Faker身上，他神情平静，视线始终停在屏幕。另一侧的选手眉头紧锁，手指悬在按键上；大屏中的一次走位，已经让整个赛场屏住呼吸。",
+    "cardType": "主动",
+    "number": "157",
+    "effect": "指定1名对手，接下来3个个人回合禁止发动所有等级的主动攻击；非攻击主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "igniteSea",
+    "parameterId": "version-2",
+    "baseParameters": {
+      "version": 2
+    },
+    "actualParameters": {
+      "version": 2
+    },
+    "id": "card_neta_ignite_sea",
+    "name": "点燃大海",
+    "rarity": "UR",
+    "quote": "我将，点燃大海！",
+    "description": "流萤抬起头，银色长发在青绿色的光中扬起。她伸手触向前方，萤火越过指尖，沉寂的夜色被一点点照亮。那道身影没有停下，像要将眼前的大海一并点燃。",
+    "cardType": "主动",
+    "number": "158",
+    "effect": "选择1处对手有建筑、未封印地产，先移除全部护盾，再降低1＋移除护盾层数级建筑，最多降3级；可被主动防御抵消，保留其他附加效果。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "senbonzakura",
+    "parameterId": "version-2",
+    "baseParameters": {
+      "version": 2
+    },
+    "actualParameters": {
+      "version": 2
+    },
+    "id": "card_neta_senbonzakura",
+    "name": "千本樱",
+    "rarity": "UR",
+    "quote": "散落吧，千本樱。",
+    "description": "白哉松开刀柄，刀身在落下途中散成无数细小的光。樱色碎片缓缓飘过，直到他抬起手，漫天花瓣才同时转向。",
+    "cardType": "持续",
+    "number": "159",
+    "effect": "获得3片攻防共享花瓣，至第3个后续个人回合结束；每回合掷骰前可一次消耗1～3片，各使不同对手地产降1级，不占主动次数；防御时每片挡1次常规建筑破坏，护盾优先，穿盾攻击无视花瓣；重复补至3片但不延长。"
+  },
+  {
+    "pool": "card",
+    "category": "道具卡",
+    "enabled": true,
+    "mechanism": "xiaowuSacrifice",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "card_neta_xiaowu_sacrifice",
+    "name": "小舞献祭",
+    "rarity": "UR",
+    "quote": "复活吧！我的爱人！",
+    "description": "献祭的红光早已散去，唐三却始终记得小舞挡在自己身前的模样。此刻，点点光芒重新汇聚，熟悉的身影在怀中渐渐清晰。他颤抖着握住她的手，将压在心底的思念化作一声呼喊。",
+    "cardType": "主动",
+    "number": "160",
+    "effect": "掷骰前献祭2处不同的自家未抵押、未封印地产，失去土地及全部建筑，无退款且不可修复；获得十万年魂环：含发动回合共8个本人回合内，最多自主免除3笔正租金，见到最终金额后选择。仅免租，不免税费罚款；正面增益不被净化或解控清除，存续期间不可重复发动。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-2000",
+    "baseParameters": {
+      "amount": 2000
+    },
+    "actualParameters": {
+      "amount": 4000
+    },
+    "id": "chance_delta_central_control",
+    "name": "九格大红",
+    "rarity": "SSR",
+    "quote": "九格！这玩意儿居然占九格！",
+    "description": "你还在嘀咕这趟又白来了，搜索框里突然亮起一整块红色。背包腾了又腾，弹药、药包都扔在脚边，队友的语气也从再搜搜变成了护送老板。刚才走过的每个路口，现在都像有人。",
+    "number": "161",
+    "effect": "获得现金 ¥4000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-2000",
+    "baseParameters": {
+      "amount": 2000
+    },
+    "actualParameters": {
+      "amount": 4000
+    },
+    "id": "chance_lottery_jackpot",
+    "name": "重生只中二等奖",
+    "rarity": "SSR",
+    "quote": "怎么回事，穿越前明明记得是这个号码啊？",
+    "description": "你把记了两辈子的号码写得工工整整，开奖时连呼吸都不敢太大声。前面几个数一模一样，最后那个却偏了一位。老板说二等奖也很不错，你盯着彩票，开始怀疑这次重生是不是少带了一页记忆。",
+    "number": "162",
+    "effect": "获得现金 ¥4000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_zelda_chest",
+    "name": "呀哈哈",
+    "rarity": "SR",
+    "quote": "究竟还有多少呀哈哈?!",
+    "description": "你搬开石头，一个小家伙笑着从底下冒出来。它说呀哈哈的时候很开心，你想到还有那么多石头没搬，笑容逐渐有些勉强。",
+    "number": "163",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_stock_limit_up",
+    "name": "一字涨停",
+    "rarity": "SR",
+    "quote": "我就说这票有东西吧！",
+    "description": "开盘没多久，屏幕就红得让人舍不得眨眼。你迅速翻出昨晚的聊天记录，把随便买的改口成了早有判断。",
+    "number": "164",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_minecraft_diamond",
+    "name": "挖到钻石",
+    "rarity": "SR",
+    "quote": "钻石！先别挖脚下！",
+    "description": "矿洞深处终于露出一点蓝光，你举起铁镐，正要连脚下那块一起敲掉。朋友一声大喊，你才看见缝隙里透出的橙色熔岩。刚才还嫌带水桶占格子，现在恨不得给它单独供起来。",
+    "number": "165",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_salary_arrived",
+    "name": "月底发薪",
+    "rarity": "R",
+    "quote": "活了！兄弟们，我又活了！",
+    "description": "工资短信终于响了，你立刻从椅子上坐直，连晚饭都敢多加个蛋。",
+    "number": "166",
+    "effect": "获得现金 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_stardew_harvest",
+    "name": "回村种地",
+    "rarity": "R",
+    "quote": "你们卷吧，我回村种地了。",
+    "description": "清早推门，地里的作物熟得整整齐齐。你刚想享受田园生活，就发现今天的田园生活主要是弯腰搬筐。",
+    "number": "167",
+    "effect": "获得现金 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_caishen_blessing",
+    "name": "迎财神",
+    "rarity": "R",
+    "quote": "财神爷，这边，这边！",
+    "description": "财神路过门前，你端着果盘一路追到了巷口。对方被你的热情打动，留了个红包，你回头就把果盘摆得更端正了。",
+    "number": "168",
+    "effect": "获得现金 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_anime_g27",
+    "name": "万事屋开张",
+    "rarity": "R",
+    "quote": "万事屋银酱，今天也接委托！",
+    "description": "登势的催租声刚从楼下传来，银时便放下《JUMP》，懒洋洋地看向新委托。新八忙着记录，神乐先问管不管饭；万事屋的招牌晃了晃，今天的麻烦也跟着进了门。",
+    "number": "169",
+    "effect": "获得现金 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "chance_demolition_compensation",
+    "name": "拆迁暴富",
+    "rarity": "SR",
+    "quote": "不装了，我家真拆迁了。",
+    "description": "老宅门口贴上了拆迁通知，亲戚的电话忽然多了起来。你还没想好钱怎么花，中介已经把称呼从小伙改成了老师。",
+    "number": "170",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "chance_huang_silang_silver",
+    "name": "我成替身了",
+    "rarity": "SR",
+    "quote": "坏了，我成替身了？",
+    "description": "黄四郎把那身熟悉的衣服往你面前一摆，说只是替他露个面。你照了照镜子，胡子、帽子、神态居然都对上了。门外忽然有人高喊黄老爷，你刚想应一声，后背先凉了。",
+    "number": "171",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_liangshan_share",
+    "name": "劫生辰纲",
+    "rarity": "R",
+    "quote": "大哥，我也算自己人吧？",
+    "description": "生辰纲刚截下来，好汉们就开始围着分银子。你跟着端酒递碗忙了一圈，终于有人拍肩说：这位兄弟，也不能白忙活。",
+    "number": "172",
+    "effect": "获得现金 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 400
+    },
+    "id": "chance_reimbursement_arrived",
+    "name": "报销到账",
+    "rarity": "R",
+    "quote": "终于批了！这单我等多久了！",
+    "description": "报销流程终于走到终点，你盯着到账消息看了好几遍。",
+    "number": "173",
+    "effect": "获得现金 ¥400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-3000",
+    "baseParameters": {
+      "amount": 3000
+    },
+    "actualParameters": {
+      "amount": 6000
+    },
+    "id": "chance_windfall_jackpot",
+    "name": "最终答案",
+    "rarity": "UR",
+    "quote": "好男人就是我，我就是曾小贤！",
+    "description": "答题台上的灯光全部亮起，最后的答案终于揭晓。曾小贤攥着话筒，脸上的表情从强装镇定一路变成不敢相信。公寓里守着电视的几个人同时跳了起来，刚才吵着换台的声音彻底没了。",
+    "number": "174",
+    "effect": "获得现金 ¥6000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 400
+    },
+    "id": "chance_overtime_taxi",
+    "name": "加班打车",
+    "rarity": "R",
+    "quote": "不是，班白加了？",
+    "description": "走出公司时末班车刚好开远，你对着尾灯挥了挥没用的手。打车软件倒很体贴，立刻提醒你现在是深夜加价时段。",
+    "number": "175",
+    "effect": "向银行支付 ¥400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_client_revision",
+    "name": "甲方改需求",
+    "rarity": "R",
+    "quote": "那你倒是早说啊！",
+    "description": "你把第十八版发过去，甲方沉吟半天，说还是第一版有感觉。你打开文件夹看着那排最终版，忽然很想给它们办个展。",
+    "number": "176",
+    "effect": "向银行支付 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_palace_bribe",
+    "name": "打点关系",
+    "rarity": "R",
+    "quote": "公公，您看这事儿……",
+    "description": "公公说这事不好办，手却在桌边停得很稳。你递过去一包银子，他立刻想起了一条今天刚有空的门路。",
+    "number": "177",
+    "effect": "向银行支付 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_genshin_topup",
+    "name": "再充最后一单",
+    "rarity": "R",
+    "quote": "出金！给我出金啊！",
+    "description": "你盯着祈愿界面，告诉自己就补最后一点。金光没来，付款短信倒很守时，派蒙都来不及替你装作没看见。",
+    "number": "178",
+    "effect": "向银行支付 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1000
+    },
+    "id": "chance_anime_g11",
+    "name": "不幸啊！",
+    "rarity": "R",
+    "quote": "不幸啊！",
+    "description": "当麻拎着打折买来的晚餐赶回宿舍，购物袋偏偏在门口裂开。茵蒂克丝已经等着开饭，他蹲下去收拾食材，又摸了摸所剩无几的零钱。今天的不幸，显然还没结束。",
+    "number": "179",
+    "effect": "向银行支付 ¥1000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_double11_haul",
+    "name": "双十一剁手",
+    "rarity": "SR",
+    "quote": "这手不要也罢！",
+    "description": "你本来只想看看优惠，结果算满减算得像在做毕业设计。等付款成功的烟花亮起，终于想起来自己原本什么也不缺。",
+    "number": "180",
+    "effect": "向银行支付 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_leek_cut",
+    "name": "被割韭菜",
+    "rarity": "SR",
+    "quote": "家人们，谁把我根割了？",
+    "description": "你自信地抄进底部，刚买完，价格就像发现楼下还有地下室。卖课的人发来一句保持耐心，你决定先不回复。",
+    "number": "181",
+    "effect": "向银行支付 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_involution_class",
+    "name": "内卷报班",
+    "rarity": "SR",
+    "quote": "谁又背着我偷偷报班了！",
+    "description": "同事说周末随便看看书，你却在培训班门口撞见了他。两个人笑着打完招呼，默契地把刚买的课藏到了身后。",
+    "number": "182",
+    "effect": "向银行支付 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_kogoro_horse",
+    "name": "赌马输光",
+    "rarity": "SR",
+    "quote": "再押最后一把！真最后一把！",
+    "description": "小五郎拍着桌子说这匹肯定能赢，你跟着喊到嗓子发哑。终点线一过，他默默收起赛马券，说今天先研究到这里。",
+    "number": "183",
+    "effect": "向银行支付 ¥1600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "chance_rent_due",
+    "name": "房东收租",
+    "rarity": "SR",
+    "quote": "阿姨，这房子镶金的啊？",
+    "description": "房东踩着整点敲门，手里的账单比闹钟还准时。你热情地请她喝水，她坐下后的第一句话仍然是先把这个转了。",
+    "number": "184",
+    "effect": "向银行支付 ¥2400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "chance_stock_crash",
+    "name": "股市暴跌",
+    "rarity": "SR",
+    "quote": "天台风有点大，我先下来。",
+    "description": "开盘前你还在群里谈长期价值，开盘后连软件图标都不想看见。朋友问最近关注什么，你说主要关注怎么关闭推送。",
+    "number": "185",
+    "effect": "向银行支付 ¥2400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_delivery_fee",
+    "name": "外卖加料",
+    "rarity": "R",
+    "quote": "我凑的满减，怎么还更贵了？",
+    "description": "你为了凑满减多加了小菜、饮料和甜品，最后成功省下配送费。外卖摆满桌时你才发现，省钱计划已经够吃三顿了。",
+    "number": "186",
+    "effect": "向银行支付 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_warcraft_fee",
+    "name": "缴纳过路费",
+    "rarity": "R",
+    "quote": "不是哥们，过个桥也收费？",
+    "description": "地精拦在桥头，笑着掏出一张写满小字的价目表。你问这桥不是昨天才收过，他翻到背面：昨天收的是昨天的。",
+    "number": "187",
+    "effect": "向银行支付 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-3000",
+    "baseParameters": {
+      "amount": 3000
+    },
+    "actualParameters": {
+      "amount": 6000
+    },
+    "id": "chance_catastrophic_bill",
+    "name": "天价账单",
+    "rarity": "UR",
+    "quote": "这张账单怎么这么长！",
+    "description": "快递员递来一个厚信封，你还以为是什么惊喜。抽出账单才发现后面居然有续页，刚泡好的茶瞬间都不香了。",
+    "number": "188",
+    "effect": "向银行支付 ¥6000。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-5",
+    "baseParameters": {
+      "steps": 5
+    },
+    "actualParameters": {
+      "steps": 5
+    },
+    "id": "chance_hiraishin",
+    "name": "飞雷神之术",
+    "rarity": "SR",
+    "quote": "黄色闪光，到了。",
+    "description": "敌人刚捕捉到那柄苦无的轨迹，水门已经出现在术式旁。刀锋、身影和金色的头发只闪了一瞬，交战的两人便错开了位置。等旁边的人反应过来，水门连下一处落点都已经选好。",
+    "number": "189",
+    "effect": "前进 5 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "chance_nether_portal",
+    "name": "下界传送门",
+    "rarity": "SR",
+    "quote": "谁家传送门开这儿啊！",
+    "description": "紫色光幕晃了两下，你鼓起勇气钻了进去。另一头的景色完全变了，只有你举着地图的迷茫表情保持得非常稳定。",
+    "number": "190",
+    "effect": "前进 3 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "chance_ryze_realm_warp",
+    "name": "上车，来不及解释了",
+    "rarity": "SR",
+    "quote": "上车上车，别落下！",
+    "description": "瑞兹把传送阵开在人群脚下，队友一窝蜂挤进蓝色光圈。一个人刚喊目的地不对，倒计时已经归零。另一头五个敌人齐刷刷回头，车上瞬间没人说话了。",
+    "number": "191",
+    "effect": "前进 3 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-3",
+    "baseParameters": {
+      "steps": 3
+    },
+    "actualParameters": {
+      "steps": 3
+    },
+    "id": "chance_engine_burn",
+    "name": "点燃木星",
+    "rarity": "SR",
+    "quote": "点火！",
+    "description": "行星发动机的蓝色光柱直冲天空，指挥频道里的呼喊几乎被轰鸣盖住。刘培强望着越来越近的木星，把手停在操纵杆上。远处地面上的人还在奔跑，整个天空已经先亮了起来。",
+    "number": "192",
+    "effect": "前进 3 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-6",
+    "baseParameters": {
+      "steps": 6
+    },
+    "actualParameters": {
+      "steps": 6
+    },
+    "id": "chance_somersault_cloud",
+    "name": "腾云驾雾",
+    "rarity": "SR",
+    "quote": "俺老孙先走一步！",
+    "description": "你学着大圣翻上云头，一个跟头就把街景甩在身后。落地时围观的人很给面子，就是头朝哪边这件事还没完全想明白。",
+    "number": "193",
+    "effect": "前进 6 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "forward",
+    "parameterId": "steps-2",
+    "baseParameters": {
+      "steps": 2
+    },
+    "actualParameters": {
+      "steps": 2
+    },
+    "id": "chance_kart_boost",
+    "name": "蘑菇加速",
+    "rarity": "SR",
+    "quote": "蘑菇吃了！都闪开！",
+    "description": "你一口吃下蘑菇，赛车立刻蹿了出去。后视镜里的朋友越来越小，你还在努力看清那个一闪而过的转弯路牌。",
+    "number": "194",
+    "effect": "前进 2 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--3",
+    "baseParameters": {
+      "steps": -3
+    },
+    "actualParameters": {
+      "steps": -3
+    },
+    "id": "chance_blackhole_pull",
+    "name": "我大了五个",
+    "rarity": "SR",
+    "quote": "大住了，五个！你们人呢？",
+    "description": "谜团跳进人群，黑洞一开，对面五个人全被拽在原地。你激动得连按几个信号，镜头一拉，队友还在远处打野。技能的光效铺满屏幕，语音里只剩你一个人的声音。",
+    "number": "195",
+    "effect": "后退 3 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--3",
+    "baseParameters": {
+      "steps": -3
+    },
+    "actualParameters": {
+      "steps": -3
+    },
+    "id": "chance_pubg_zone",
+    "name": "毒圈推人",
+    "rarity": "SR",
+    "quote": "圈怎么又刷脸反方向啊！",
+    "description": "你刚把东西搜齐，抬头发现安全区在来路那边。背包装得越满，跑起来越像搬家，队友的催促也越来越像催命。",
+    "number": "196",
+    "effect": "后退 3 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--2",
+    "baseParameters": {
+      "steps": -2
+    },
+    "actualParameters": {
+      "steps": -2
+    },
+    "id": "chance_banana_peel",
+    "name": "踩到香蕉皮",
+    "rarity": "SR",
+    "quote": "谁扔的香蕉皮，出来！",
+    "description": "脚下忽然一滑，你张开双臂，完成了一段谁也没要求的倒滑表演。停下来后第一件事，是确认附近有没有人在录像。",
+    "number": "197",
+    "effect": "后退 2 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--2",
+    "baseParameters": {
+      "steps": -2
+    },
+    "actualParameters": {
+      "steps": -2
+    },
+    "id": "chance_cs_ambush",
+    "name": "被阴了一枪",
+    "rarity": "SR",
+    "quote": "我真服了，这也有人蹲？",
+    "description": "拐角突然响了一枪，你反手就往回跑。刚才说这边绝对安全的人也跟着跑得飞快，还坚持自己只是负责开路。",
+    "number": "198",
+    "effect": "后退 2 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--5",
+    "baseParameters": {
+      "steps": -5
+    },
+    "actualParameters": {
+      "steps": -5
+    },
+    "id": "chance_bagua_formation",
+    "name": "八卦阵",
+    "rarity": "SR",
+    "quote": "刚才是不是来过这儿？",
+    "description": "陆逊追进石阵，眼前忽然飞沙走石，来时的道路转眼不见。将士举着火把跟他绕过一圈，面前又是那堆眼熟的石头。将军站住想了一会儿，决定先不让人继续报方向。",
+    "number": "199",
+    "effect": "后退 5 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--5",
+    "baseParameters": {
+      "steps": -5
+    },
+    "actualParameters": {
+      "steps": -5
+    },
+    "id": "chance_client_reject",
+    "name": "甲方退稿",
+    "rarity": "SR",
+    "quote": "又重做？你是认真的吗？",
+    "description": "你满怀信心地展示方案，甲方只看了一眼就说方向不太对。收起电脑时屏幕还亮着，像你最后一点不肯熄灭的倔强。",
+    "number": "200",
+    "effect": "后退 5 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "back",
+    "parameterId": "steps--6",
+    "baseParameters": {
+      "steps": -6
+    },
+    "actualParameters": {
+      "steps": -6
+    },
+    "id": "chance_stock_pullback",
+    "name": "股票回撤",
+    "rarity": "SR",
+    "quote": "别跌了，我认错还不行吗！",
+    "description": "你说只是技术性回调，手指却已经把走势图往左拖了好几遍。朋友指着不断下探的线问你，这技术还有进修空间吗？",
+    "number": "201",
+    "effect": "后退 6 格并结算落点。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "skip",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_lying_flat",
+    "name": "彻底躺平",
+    "rarity": "SR",
+    "quote": "扶我起来？不用了，谢谢。",
+    "description": "你往沙发上一倒，顺手把抱枕压成最舒服的角度。有人喊你起来努力，你伸手把灯关了，这个建议明天再听也不迟。",
+    "number": "202",
+    "effect": "休息 1 个个人回合，可当场解控。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "skip",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_worker_slacking",
+    "name": "打工人摆烂",
+    "rarity": "SR",
+    "quote": "在线，勿扰，没在干活。",
+    "description": "电脑亮着，文档开着，你的鼠标偶尔还会动一下。路过的人都以为你在思考，只有耳机知道你正认真挑下一首歌。",
+    "number": "203",
+    "effect": "休息 1 个个人回合，可当场解控。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "skip",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_sharingan_illusion",
+    "name": "镜花水月",
+    "rarity": "SR",
+    "quote": "你什么时候产生了我没使用镜花水月的错觉？",
+    "description": "刀锋刺穿面前的身影，所有人都以为终于得手。蓝染的声音却从另一个方向传来，眼前的景象开始一点点错位。刚才还并肩的人猛地转头，谁也不敢先相信自己看到的那张脸。",
+    "number": "204",
+    "effect": "休息 1 个个人回合，可当场解控。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "skip",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_delta_star_stolen",
+    "name": "我架枪，你发财",
+    "rarity": "SR",
+    "quote": "下次再架二员我就是狗！",
+    "description": "你在二员架枪架得眼睛发酸，回头发现中控的宝贝早被人揣走了。路是你守的，箱是别人开的，气得连背包都不想整理。",
+    "number": "205",
+    "effect": "休息 1 个个人回合，可当场解控。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "chance_airdrop_crate",
+    "name": "抢空投",
+    "rarity": "SR",
+    "quote": "空投我的！谁都别碰！",
+    "description": "红烟刚冒出来，你就趴到箱子旁边翻得飞快。队友一边望风一边催，你抱紧补给说知道了，手却完全没有停下来的意思。",
+    "number": "206",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "chance_pokeball_catch",
+    "name": "丢精灵球",
+    "rarity": "SR",
+    "quote": "三下了，给我进球啊！",
+    "description": "精灵球晃了一下，又晃了一下，你连呼吸都不敢大声。咔哒声终于响起时，你跳得比刚收服的小家伙还高。",
+    "number": "207",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "chance_four_dim_pocket",
+    "name": "四次元口袋",
+    "rarity": "SR",
+    "quote": "哆啦A梦！这次多掏一点！",
+    "description": "哆啦A梦低头在口袋里翻找，掏出来的东西越堆越高。你刚想帮忙，他已经把合用的道具递来，顺手把锅铲又塞了回去。",
+    "number": "208",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_delta_loot",
+    "name": "开箱出大红",
+    "rarity": "R",
+    "quote": "红了！别催，我再看一眼！",
+    "description": "箱子里那抹红色刚露出来，你的鼠标就停住了。刚才催你快走的队友听见报点，立刻掉头跑了回来。三个人蹲在同一个箱子前，枪声在外面响了半天，谁也没舍得先关界面。",
+    "number": "209",
+    "effect": "获得 1 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_double11_bag",
+    "name": "拆快递福袋",
+    "rarity": "R",
+    "quote": "拆完这个，我真不买了。",
+    "description": "你拆开福袋，意外翻出了真正用得上的东西。朋友等着听你吐槽，你把包装往旁边一推，改口说这家下次还能买。",
+    "number": "210",
+    "effect": "获得 1 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "cards",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "chance_gacha_ten",
+    "name": "抽卡十连",
+    "rarity": "R",
+    "quote": "金了！截图，快截图！",
+    "description": "金光从屏幕上一闪，你腾地从椅子上站了起来。朋友还没看清是什么，你已经截图、录屏，连庆祝文案都想好了。",
+    "number": "211",
+    "effect": "获得 1 张随机道具。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_red_envelope",
+    "name": "发红包",
+    "rarity": "SSR",
+    "quote": "都别潜水了，发红包了！",
+    "description": "群里突然弹出红包，刚才聊得热闹的人全安静了。几秒钟后大家重新开口，每个人都声称自己只是随手点了一下。",
+    "number": "212",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_goose_city_silver",
+    "name": "撒银子啦",
+    "rarity": "SSR",
+    "quote": "钱都出来了，还等什么呢？",
+    "description": "银子洒到街上，躲在门后的百姓终于都跑了出来。你刚捡起一块，身旁的大爷已经连篮子都准备好了。",
+    "number": "213",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_shenron_wish",
+    "name": "神龙许愿",
+    "rarity": "SSR",
+    "quote": "等一下，我先说！",
+    "description": "七颗龙珠升起金光，神龙垂下头，等候那个足以改变世界的愿望。皮拉夫刚整理好衣领，旁边的人已经抢着开口。神龙听完沉默了片刻，夜空里的雷声都显得有点尴尬。",
+    "number": "214",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_server_compensation",
+    "name": "全服补偿",
+    "rarity": "SSR",
+    "quote": "别急着开服，补偿发了没？",
+    "description": "维护公告发出来时，群里还在热闹地吐槽。补偿邮件一到，大家立刻改口说辛苦了，打字的语气都温柔了不少。",
+    "number": "215",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 400
+    },
+    "id": "chance_tong_boss_wage",
+    "name": "掌柜的发月钱",
+    "rarity": "SSR",
+    "quote": "掌柜的，你再念一遍到底扣了多少？",
+    "description": "佟掌柜拿着账本，先把这个月的月钱念了一遍，再慢慢念迟到、打碎碗和偷吃的扣款。白展堂脸上的笑容一点点收了回去，李大嘴已经掰起手指。账本还没翻完，大家都不太想听了。",
+    "number": "216",
+    "effect": "所有玩家各获得现金 ¥400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_fee",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_everyone_rent",
+    "name": "全员交房租",
+    "rarity": "SSR",
+    "quote": "不是，怎么整栋楼都在催啊？",
+    "description": "房东把账单挨家挨户塞进门缝，整条走廊先后响起叹气声。晚饭时大家坐到一起，终于找到了一个毫无分歧的话题。",
+    "number": "217",
+    "effect": "所有玩家各向银行支付 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_fee",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_galactic_tax",
+    "name": "帝国征税",
+    "rarity": "SSR",
+    "quote": "帝国的账单连边境都能寄到？",
+    "description": "收税船降落在边境港口，风暴兵还没走下舷梯，柜台前的商人已经准备关门。领头的军官拿出一长串货运记录，连藏在角落的旧引擎都点了名。走私客扶着帽檐，决定这次先别谈自由贸易。",
+    "number": "218",
+    "effect": "所有玩家各向银行支付 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_fee",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "chance_double11_all",
+    "name": "全民剁手",
+    "rarity": "SSR",
+    "quote": "你也买了？行，那我不亏。",
+    "description": "你把优惠链接发到群里，没多久大家都说自己刚好需要。快递到齐那天，楼道像临时开了一家仓库，谁也不好意思先笑谁。",
+    "number": "219",
+    "effect": "所有玩家各向银行支付 ¥600。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_fee",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 400
+    },
+    "id": "chance_team_building",
+    "name": "团建AA",
+    "rarity": "SSR",
+    "quote": "团建还要AA？我能不去吗？",
+    "description": "领导宣布团建自愿报名，大家刚想松口气，接着听见费用平摊。群里安静得能听见撤回消息的声音，只有收款码特别醒目。",
+    "number": "220",
+    "effect": "所有玩家各向银行支付 ¥400。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rich_fee",
+    "parameterId": "amount-1000",
+    "baseParameters": {
+      "amount": 1000
+    },
+    "actualParameters": {
+      "amount": 2000
+    },
+    "id": "chance_tithe_palace",
+    "name": "朕的钱呢",
+    "rarity": "SSR",
+    "quote": "户部，朕的钱呢？",
+    "description": "皇上把折子往案上一拍，目光从几位大臣脸上慢慢扫过去。户部尚书刚说国库吃紧，新的用银清单已经递到眼前。他把刚准备好的那套说辞咽了回去，开始认真研究桌角。",
+    "number": "221",
+    "effect": "净资产最高者向银行支付 ¥2000，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rich_fee",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "chance_platform_cut",
+    "name": "争百大",
+    "rarity": "SSR",
+    "quote": "说好的靠实力，怎么还得打榜？",
+    "description": "你以为把内容做好就能上榜，结果群里已经开始统计票数、研究应援和冲刺时段。作品还躺在草稿箱，钱包先被催着表态。别人问你今年有什么进步，你说至少学会了看榜单刷新。",
+    "number": "222",
+    "effect": "净资产最高者向银行支付 ¥1200，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rich_fee",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "chance_protection_money",
+    "name": "交保护费",
+    "rarity": "SSR",
+    "quote": "大哥，首富也没余粮啊！",
+    "description": "好汉们没往穷巷里钻，直奔那座最气派的大宅。主人刚摆出笑脸，对方就热情地表示以后这一片都能照顾。",
+    "number": "223",
+    "effect": "净资产最高者向银行支付 ¥1200，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rich_fee",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "chance_rob_rich",
+    "name": "劫富济贫",
+    "rarity": "SSR",
+    "quote": "谁富找谁，别看我，找他！",
+    "description": "张麻子在街口问谁家最富，围观的人指得出奇一致。那位还没来得及解释自己也很辛苦，大门口已经排起了谈话的队。",
+    "number": "224",
+    "effect": "净资产最高者向银行支付 ¥1600，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rich_fee",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "chance_jia_family_raid",
+    "name": "抄家了",
+    "rarity": "SSR",
+    "quote": "我家底还没炫完呢！",
+    "description": "贾府的大门被叩得山响，管家捧着家产册子，手抖得翻不开页。昨日还在夸院子气派的人，今天连花瓶都想换个低调的位置。",
+    "number": "225",
+    "effect": "净资产最高者向银行支付 ¥2400，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "bottom_income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1500
+    },
+    "id": "chance_alms",
+    "name": "化缘布施",
+    "rarity": "SSR",
+    "quote": "师父，我这碗里是真没钱。",
+    "description": "师父端着化缘的钵绕了一圈，最后在最窘迫的那位面前停下。你刚想说自己实在没钱，他却先把钵里攒的银子递了过来。",
+    "number": "226",
+    "effect": "净资产最低者获得现金 ¥1500，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "bottom_income",
+    "parameterId": "amount-500",
+    "baseParameters": {
+      "amount": 500
+    },
+    "actualParameters": {
+      "amount": 1500
+    },
+    "id": "chance_weasley_gift",
+    "name": "礼物不大",
+    "rarity": "SSR",
+    "quote": "礼物不大，我真有被暖到。",
+    "description": "韦斯莱家的包裹送到了最窘迫的朋友手里，里面的东西都收拾得很妥帖。附信没问你过得有多难，只说天冷了，记得照顾好自己。",
+    "number": "227",
+    "effect": "净资产最低者获得现金 ¥1500，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "bottom_income",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 1500
+    },
+    "id": "chance_pdd_cut",
+    "name": "砍一刀成功",
+    "rarity": "SSR",
+    "quote": "成了？最后一刀真成了？！",
+    "description": "最后一位好友点下助力，那个永远差一点的进度终于动了。手头最紧的朋友盯着成功页面不敢退出，生怕它反悔。",
+    "number": "228",
+    "effect": "净资产最低者获得现金 ¥1500，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "bottom_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 1500
+    },
+    "id": "chance_doraemon_help",
+    "name": "万能口袋",
+    "rarity": "SSR",
+    "quote": "大雄有机器猫，我也要！",
+    "description": "哆啦A梦看了看最瘪的钱包，又看了看强装镇定的你。没有讲大道理，他只是从口袋里翻出一份能帮上忙的东西。",
+    "number": "229",
+    "effect": "净资产最低者获得现金 ¥1500，并列随机。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-1000_probability-30_wager-200",
+    "baseParameters": {
+      "wager": 200,
+      "probability": 30,
+      "prize": 1000
+    },
+    "actualParameters": {
+      "wager": 400,
+      "probability": 30,
+      "prize": 2000
+    },
+    "id": "chance_blind_box",
+    "name": "开盲盒",
+    "rarity": "SR",
+    "quote": "隐藏款！隐藏款！别又重复！",
+    "description": "你隔着包装捏了又捏，老板笑着提醒每盒手感都差不多。朋友已经举好手机，今天不是拍隐藏款，就是拍你拆完的表情。",
+    "number": "230",
+    "effect": "用现有现金下注 ¥400，30%概率获得 ¥2000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-1500_probability-50_wager-300",
+    "baseParameters": {
+      "wager": 300,
+      "probability": 50,
+      "prize": 1500
+    },
+    "actualParameters": {
+      "wager": 600,
+      "probability": 50,
+      "prize": 3000
+    },
+    "id": "chance_pokemon_pack",
+    "name": "开卡包",
+    "rarity": "SR",
+    "quote": "这包有金光，我有预感！",
+    "description": "你举着卡包对着灯照，坚信里面闪过一道金光。朋友说那是包装反光，你捂紧袋子，决定暂时不接受科学解释。",
+    "number": "231",
+    "effect": "用现有现金下注 ¥600，50%概率获得 ¥3000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-1000_probability-50_wager-300",
+    "baseParameters": {
+      "wager": 300,
+      "probability": 50,
+      "prize": 1000
+    },
+    "actualParameters": {
+      "wager": 600,
+      "probability": 50,
+      "prize": 2000
+    },
+    "id": "chance_gear_upgrade",
+    "name": "强化装备",
+    "rarity": "SR",
+    "quote": "垫子碎这么多，这次该成了吧？",
+    "description": "你把准备好的材料堆到铁砧边，先拿几件旧装备试手气。碎了一个，又碎一个，你越看越觉得下一次稳了。铁匠刚问要不要缓缓，你已经把最舍不得的那件推了过去。",
+    "number": "232",
+    "effect": "用现有现金下注 ¥600，50%概率获得 ¥2000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-1500_probability-50_wager-200",
+    "baseParameters": {
+      "wager": 200,
+      "probability": 50,
+      "prize": 1500
+    },
+    "actualParameters": {
+      "wager": 400,
+      "probability": 50,
+      "prize": 3000
+    },
+    "id": "chance_bottom_fishing",
+    "name": "抄底",
+    "rarity": "SR",
+    "quote": "底了吧？这回真到底了吧？",
+    "description": "你盯着不断下探的曲线，手指悬在买入键上。群里又有人喊到底了，这句话熟悉得像每天准时更新的天气预报。",
+    "number": "233",
+    "effect": "用现有现金下注 ¥400，50%概率获得 ¥3000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-2000_probability-30_wager-300",
+    "baseParameters": {
+      "wager": 300,
+      "probability": 30,
+      "prize": 2000
+    },
+    "actualParameters": {
+      "wager": 600,
+      "probability": 30,
+      "prize": 4000
+    },
+    "id": "chance_all_in",
+    "name": "梭哈",
+    "rarity": "SR",
+    "quote": "我不信这把还能输！",
+    "description": "你把筹码往前一推，声音大得全桌都抬了头。旁边的朋友刚想劝两句，看见你发白的指节，决定先把庆祝词和安慰词都备好。",
+    "number": "234",
+    "effect": "用现有现金下注 ¥600，30%概率获得 ¥4000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "gamble",
+    "parameterId": "prize-2000_probability-30_wager-300",
+    "baseParameters": {
+      "wager": 300,
+      "probability": 30,
+      "prize": 2000
+    },
+    "actualParameters": {
+      "wager": 600,
+      "probability": 30,
+      "prize": 4000
+    },
+    "id": "chance_super_lotto",
+    "name": "大乐透",
+    "rarity": "SR",
+    "quote": "我已经想好钱怎么花了。",
+    "description": "你把号码纸铺平，一项项核对得像在批阅试卷。电视里的主持人每念一个数字，客厅里就有人先吸一口凉气。",
+    "number": "235",
+    "effect": "用现有现金下注 ¥600，30%概率获得 ¥4000，本金不返还；取消不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "self_destroy",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_demolition_mistake",
+    "name": "拆迁队误拆",
+    "rarity": "SSR",
+    "quote": "师傅！拆错了！那是我家！",
+    "description": "挖掘机刚收工，师傅才掏出图纸重新看门牌。你站在熟悉的地址前，看着不太熟悉的平地，等他把那句不好意思说完整。",
+    "number": "236",
+    "effect": "选择1处自家地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "self_destroy",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_chibi_fire",
+    "name": "火烧赤壁",
+    "rarity": "SSR",
+    "quote": "万事俱备，只欠东风。",
+    "description": "东风吹起，黄盖的船队向连在一处的曹军战船逼近。船帆下突然腾起火光，喊声顺着江面传开。岸上的曹操终于看清那不是来投降的船，江上却已经亮成了一片。",
+    "number": "237",
+    "effect": "选择1处自家地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "self_destroy",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_titan_trample",
+    "name": "地鸣",
+    "rarity": "SSR",
+    "quote": "墙里的巨人，出来了。",
+    "description": "高墙的碎石接连落下，蒸汽遮住了地平线。第一个巨人的脚步声响起时，远处的人还以为是雷；等声音连成一片，所有窗户都开始颤动。有人扶住门框，终于明白那道墙里究竟藏着什么。",
+    "number": "238",
+    "effect": "选择1处自家地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "self_destroy",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_creeper_boom",
+    "name": "嘶——嘣！",
+    "rarity": "SSR",
+    "quote": "别嘶！别嘶！别嘶！",
+    "description": "你刚给新家装好窗户，身后就传来熟悉的嘶嘶声。回头的时间只够对上一眼，下一刻连装修心得都被炸成了碎片。",
+    "number": "239",
+    "effect": "选择1处自家地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "disaster",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_ny_battle",
+    "name": "纽约大战",
+    "rarity": "SSR",
+    "quote": "英雄们，打架看看脚下啊！",
+    "description": "纽约上空打得热火朝天，街边的人都在仰头看英雄。直到一大块残骸落向楼群，大家才想起自己也在这部大片的取景地里。",
+    "number": "240",
+    "effect": "随机全拆1处地产的建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "disaster",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_dragon_fire",
+    "name": "龙焰",
+    "rarity": "SSR",
+    "quote": "龙焰。",
+    "description": "龙翼掠过君临的城墙，街上的人同时抬头。城里的钟声还在响，巨大的影子已经转过塔楼。龙焰沿街道铺开，金色的屋顶在火光里变得模糊，人群终于开始向不同的方向奔跑。",
+    "number": "241",
+    "effect": "随机全拆1处地产的建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "chance_infra_madness",
+    "name": "基建狂魔",
+    "rarity": "SR",
+    "quote": "这速度，隔壁都看傻了。",
+    "description": "你还在讨论什么时候开工，工地的灯已经亮了一夜。天亮一看，新结构都搭好了，师傅端着豆浆问你要不要上去看看。",
+    "number": "242",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "chance_yugong_house",
+    "name": "愚公移山",
+    "rarity": "SR",
+    "quote": "子子孙孙，无穷匮也。",
+    "description": "智叟笑他年老力衰，愚公放下土筐，把子孙后代一代代数给他听。山前的小路上又传来脚步声，一家人扛着工具继续往前走。智叟还站在原地，忽然不知道该从哪一句反驳。",
+    "number": "243",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "chance_cyber_chrome",
+    "name": "义体升级",
+    "rarity": "SR",
+    "quote": "维，你这身体还能再装点。",
+    "description": "维坐上维克多的手术椅，墙上的老拳赛还在播放。新的义眼接入，视野里瞬间跳出一串陌生标识。维克多往后靠了靠，让他慢慢适应，欠款的事可以下次再说。",
+    "number": "244",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "chance_scv_build",
+    "name": "又是我？",
+    "rarity": "SR",
+    "quote": "SCV，准备好了！",
+    "description": "基地旁的SCV刚停稳，耳机里就传来新的施工指令。驾驶员举起焊枪，火花从金属框架上一路跳过去。指挥官还在看小地图，舱里已经传来那句熟悉的抱怨：又是我？",
+    "number": "245",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "chance_redstone_tech",
+    "name": "红石大师",
+    "rarity": "SR",
+    "quote": "我这套电路，绝对不会出问题。",
+    "description": "你把最后一颗红石粉补上，按钮一按，活塞门果然开得整整齐齐。朋友刚迈进去，头顶的发射器也跟着动了。两个人对着满地箭矢看了一会儿，决定把教程往后再看十秒。",
+    "number": "246",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "trap_immunity",
+    "parameterId": "count-3",
+    "baseParameters": {
+      "count": 3
+    },
+    "actualParameters": {
+      "count": 3
+    },
+    "id": "chance_golden_bell",
+    "name": "金钟罩",
+    "rarity": "SSR",
+    "quote": "来，往我身上招呼。",
+    "description": "你运起金钟罩，身边泛起一圈金光。朋友试探着敲了敲，声音还挺清脆，你赶紧声明这不是谁都能随便敲的。",
+    "number": "247",
+    "effect": "获得陷阱免疫，持续3个后续个人回合。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_zongzi_charm",
+    "name": "无懈可击",
+    "rarity": "SSR",
+    "quote": "无懈可击！",
+    "description": "对面刚把锦囊拍下，你的无懈可击已经跟了上去。旁边又有人甩出第二张，桌上顿时响起一片等等。最先出牌的人抱着胳膊数了半天，已经忘了自己原本想干什么。",
+    "number": "248",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_guardian_angel",
+    "name": "复活甲等队友",
+    "rarity": "SSR",
+    "quote": "我有复活甲，快救我！",
+    "description": "你倒在地上，复活甲的光慢慢亮起，语音里开始连着喊队友。对面几个人没有走远，反而把位置站得更整齐了。复活倒计时还剩一点，你第一次希望这段动画能再长一些。",
+    "number": "249",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "rent_double",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_immobilize",
+    "name": "超级加倍",
+    "rarity": "SSR",
+    "quote": "超级加倍！",
+    "description": "斗地主刚开局，你看着手里的好牌，果断按下超级加倍。地主紧接着甩出一串炸弹，旁边的队友连表情都不发了。你握着那张始终没机会出的单牌，默默把手从加倍按钮上挪开。",
+    "number": "250",
+    "effect": "下次实际需付的租金翻倍，不叠加。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "opponent_destroy",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_demolition_fanatic",
+    "name": "艺术就是爆炸",
+    "rarity": "UR",
+    "quote": "艺术就是爆炸！",
+    "description": "迪达拉摊开手，掌心的黏土小鸟扇动翅膀飞向高处。他仰头看着天空，等那一点白色消失在视野边缘，才抬起手指。远处突然绽开一团火光，旁边的人已经自觉退远了两步。",
+    "number": "251",
+    "effect": "选择对手1处地产全拆建筑，护盾可抵挡；业主有50%概率获拆除前租金的50%补偿，向下取整。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "all_morale",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_tatakae",
+    "name": "塔塔开",
+    "rarity": "SSR",
+    "quote": "塔塔开！塔塔开！",
+    "description": "艾伦站在镜子前，一遍遍低声重复着那个词。门外的人停下脚步，原本准备好的劝说忽然不知从何说起。远处传来集合的号角，有人重新系紧披风，有人握住刀柄，沉默的走廊里终于响起了脚步声。",
+    "number": "252",
+    "effect": "全体玩家下次最终移动距离×2，不叠加；传送、换位不消耗。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "jail",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_meropide_day_trip",
+    "name": "水神的审判",
+    "rarity": "SSR",
+    "quote": "我可是水神芙宁娜！你们竟然要审判我？",
+    "description": "熟悉的聚光灯再次亮起，这一次却没有照向芙宁娜的专座。她被请上被告席，仍试着用夸张的笑声把这一切说成一场演出。那维莱特敲下法槌，观众席的议论渐渐停息，她终于发现：这一次，台上等候判决的人是自己。",
+    "number": "253",
+    "effect": "自己入狱，跳过下次个人行动，服刑期间不收租，可当场解控；不领取沿途奖励。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "concert",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_onepiece_uta_concert",
+    "name": "新时代",
+    "rarity": "SSR",
+    "quote": "下一首，献给全世界！",
+    "description": "乌塔走向舞台中央，第一束灯光照亮了人海。歌声越过街口，远处的人也循声而来，整片街区都被欢呼与荧光棒点亮。",
+    "number": "254",
+    "effect": "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "concert",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_k_on_after_school",
+    "name": "放课后茶会",
+    "rarity": "SSR",
+    "quote": "茶先放一边，这次真的要开演了！",
+    "description": "唯抱着吉他走到麦克风前，嘴角还沾着一点蛋糕屑。澪刚替她擦掉，律的鼓棒已经敲响了开场。台下的应援棒齐刷刷举起来，紬悄悄把最后一杯茶放到一旁——看来今天确实要先演出，再开茶会了。",
+    "number": "255",
+    "effect": "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "concert",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_lovelive_music_start",
+    "name": "μ’s，开场！",
+    "rarity": "SSR",
+    "quote": "下一首，也请和我们一起唱！",
+    "description": "穗乃果向前迈出一步，把麦克风举向台下。刚才还零零散散的应援声，忽然连成了一片。九个人的身影在灯光里排开，台下有人拼命挥着荧光棒，连站在最后一排的观众，也忍不住跟着唱了起来。",
+    "number": "256",
+    "effect": "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "concert",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_anime_g20",
+    "name": "God knows…",
+    "rarity": "SSR",
+    "quote": "把这首歌，好好唱到最后吧！",
+    "description": "文化祭的体育馆里，春日替没能登台的主唱握住麦克风，长门接过吉他。ENOZ的旋律响起，原本只是路过的学生渐渐停下脚步。临时接下的舞台，她们也认真唱到了最后。",
+    "number": "257",
+    "effect": "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "shuffle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_onepiece_room_shuffle",
+    "name": "ROOM",
+    "rarity": "SSR",
+    "quote": "别动，已经换好了。",
+    "description": "半透明的领域扩散开来，罗轻轻抬起手指。上一刻还站在街对面的人，下一刻已与别处的身影错位，连刚才认准的方向都变得陌生。",
+    "number": "258",
+    "effect": "所有玩家随机交换位置，每人接手另一人的原位置；不结算落点或起点奖励，不消耗移动状态。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "shuffle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_qiankun_shift",
+    "name": "乾坤大挪移",
+    "rarity": "SSR",
+    "quote": "站稳了？那可不一定。",
+    "description": "众人从四面围上，张无忌却只顺着来势轻轻转了半步。交错的掌风牵成一圈，几个人脚下同时一滑。等他们重新站定，方才盯着的对手已经到了背后，原本守在门口的人，正一脸茫然地扶着另一边的窗框。",
+    "number": "259",
+    "effect": "所有玩家随机交换位置，每人接手另一人的原位置；不结算落点或起点奖励，不消耗移动状态。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "classTrial",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_anime_u05",
+    "name": "学级裁判",
+    "rarity": "SR",
+    "quote": "噗呼呼……那么，开始学级裁判吧！",
+    "description": "证言与证物在环形裁判席间交错，每一句矛盾都可能成为新的言弹。黑白熊坐在高处，兴致勃勃地催促众人给出答案。争论结束，投票按钮终于亮起。",
+    "number": "260",
+    "effect": "所有玩家秘密投给另一人或弃权，最高票者休息1个个人回合，可解控；并列随机，全弃权则无人休息。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "aquaPurify",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_crossover_aquaPurify",
+    "name": "如果智慧有颜色，那一定是蓝色",
+    "rarity": "SSR",
+    "quote": "都交给本女神吧！",
+    "description": "阿库娅站在魔法阵中央，得意地张开双臂，净化之光与水浪一同涌出。身后的同伴已经开始惊慌，她却还扬着下巴，等着大家称赞水之女神的伟大。",
+    "number": "261",
+    "effect": "随机清除3处未封印地产的全部正负面附加效果，不改变建筑、产权、抵押或债务。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "darkGame",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_crossover_darkGame",
+    "name": "黑暗游戏",
+    "rarity": "SSR",
+    "quote": "黑暗游戏，开始。",
+    "description": "千年积木的光芒划破黑暗，四周的现实逐渐被阴影吞没。两名参与者隔桌相对，摇曳的火光映着彼此的面容；在这场游戏里，失败的代价远比想象沉重。",
+    "number": "262",
+    "effect": "邀请对手自愿各暗押1张非临时手牌，可押UR；各掷1次对决骰，大者获得两张牌，平局退回。对决不移动，拒绝即结束。"
+  },
+  {
+    "pool": "chance",
+    "category": "机会事件",
+    "enabled": true,
+    "mechanism": "nzothWrath",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "chance_crossover_nzothWrath",
+    "name": "恩佐斯之怒",
+    "rarity": "UR",
+    "quote": "闭上双眼，也逃不出低语。",
+    "description": "巨大的眼瞳在黑暗深处睁开，触须从大地与城墙的裂隙中伸出。远处的城市正在幻象中扭曲，有人捂住耳朵跪倒在地，那道声音却已经在他的脑海中响起。",
+    "number": "263",
+    "effect": "随机最多3名有建筑玩家各1处地产受污染；业主仅本人回合可弃1牌净化。每次本人回合结束先蚀1层护盾，无盾再降1级，持续到护盾与等级归零，神威期间暂停。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "fortune_salary_day",
+    "name": "发工资了",
+    "rarity": "R",
+    "quote": "到账了！晚上吃点好的！",
+    "description": "银行卡提示音刚响，你连坐姿都精神了，立刻盘算晚饭吃点好的。翻到购物车看了两眼，又把那份豪华菜单默默改回了加个鸡腿。",
+    "number": "264",
+    "effect": "获得现金 ¥1200。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "fortune_fund_breakeven",
+    "name": "基金终于回本",
+    "rarity": "R",
+    "quote": "回本了！快卖！快卖啊！",
+    "description": "那条红绿交替的曲线终于爬回原位，你对着屏幕长出一口气。朋友问赚了多少，你说先别问，今天主要庆祝胜利会师。",
+    "number": "265",
+    "effect": "获得现金 ¥1200。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "fortune_chest_gold_drop",
+    "name": "开宝箱爆金",
+    "rarity": "R",
+    "quote": "这箱能出金？真的假的？",
+    "description": "你顺手掀开路边的宝箱，金光一下照亮半张脸。派蒙刚喊出发财了，你已经先把四周看了一圈，生怕漏掉第二只。",
+    "number": "266",
+    "effect": "获得现金 ¥1200。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-600",
+    "baseParameters": {
+      "amount": 600
+    },
+    "actualParameters": {
+      "amount": 1200
+    },
+    "id": "fortune_anime_g26",
+    "name": "旅途的报酬",
+    "rarity": "R",
+    "quote": "当然，报酬可不能少哦。",
+    "description": "伊蕾娜完成委托，先认真确认报酬，再把见闻写进旅行日记。魔女徽章在胸前轻轻晃动，她收好旅费，骑上扫帚。下一座城里，或许又有值得驻足的风景和故事。",
+    "number": "267",
+    "effect": "获得现金 ¥1200。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1300",
+    "baseParameters": {
+      "amount": 1300
+    },
+    "actualParameters": {
+      "amount": 2600
+    },
+    "id": "fortune_year_end_bonus",
+    "name": "年终奖到账",
+    "rarity": "SR",
+    "quote": "老板，刚才群里骂你的撤回了。",
+    "description": "你拆开年终奖通知，嘴角比拆封的手还先抬了起来。领导后面又讲了很久，你一个字没听进去，只顾在心里安排回家怎么炫耀。",
+    "number": "268",
+    "effect": "获得现金 ¥2600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-2000",
+    "baseParameters": {
+      "amount": 2000
+    },
+    "actualParameters": {
+      "amount": 4000
+    },
+    "id": "fortune_demolition_payout",
+    "name": "拆迁款下来了",
+    "rarity": "SSR",
+    "quote": "我以后，是不是不用上班了？",
+    "description": "等了许久的拆迁款终于到了，你盯着数字核了又核。家里那张用了二十年的板凳，忽然坐出了会客厅真皮沙发的气势。",
+    "number": "269",
+    "effect": "获得现金 ¥4000。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-2000",
+    "baseParameters": {
+      "amount": 2000
+    },
+    "actualParameters": {
+      "amount": 4000
+    },
+    "id": "fortune_spend_more_earn_more",
+    "name": "越花越有钱",
+    "rarity": "SSR",
+    "quote": "我都这么花了，怎么还没花完？",
+    "description": "你绞尽脑汁安排花钱，没想到看似离谱的主意又赚了回来。王多鱼看着新进账的数字，笑容里第一次带上了认真崩溃的意思。",
+    "number": "270",
+    "effect": "获得现金 ¥4000。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-400",
+    "baseParameters": {
+      "amount": 400
+    },
+    "actualParameters": {
+      "amount": 800
+    },
+    "id": "fortune_double11_refund",
+    "name": "双十一退款",
+    "rarity": "R",
+    "quote": "不买了不买了，退款真香。",
+    "description": "退款消息弹出来时，你险些以为又发了一次工资。回想当初抢购的热情，再看现在退货的利落，自己都觉得这笔消费很忙。",
+    "number": "271",
+    "effect": "获得现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-400",
+    "baseParameters": {
+      "amount": 400
+    },
+    "actualParameters": {
+      "amount": 800
+    },
+    "id": "fortune_korok_reward",
+    "name": "又一个呀哈哈",
+    "rarity": "R",
+    "quote": "又一个呀哈哈，这回能换点什么？",
+    "description": "林克举起那块不起眼的石头，克洛格笑着钻了出来，把小小的种子递进他手里。你翻开地图，刚准备记下这个点，远处的树杈又像藏着一个。救公主的路线，今天恐怕还得绕一绕。",
+    "number": "272",
+    "effect": "获得现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "fortune_takeout_red_packet",
+    "name": "外卖红包膨胀",
+    "rarity": "R",
+    "quote": "这红包，能不能天天这么大？",
+    "description": "你随手点开红包，数字居然一路往上跳。平时只敢看看价格的那家店，今天忽然显得非常亲切。",
+    "number": "273",
+    "effect": "获得现金 ¥600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "fortune_pdd_bargain",
+    "name": "这刀真砍成了",
+    "rarity": "R",
+    "quote": "家人们，这刀居然真成了！",
+    "description": "你盯着助力页面，那个卡了很久的进度终于走完。成功提示一出来，最先想感谢的不是平台，是群里还没把你屏蔽的朋友。",
+    "number": "274",
+    "effect": "获得现金 ¥600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "fortune_anime_g05",
+    "name": "五元神明",
+    "rarity": "R",
+    "quote": "只要五元钱，夜斗神随叫随到！",
+    "description": "没有神社，也没有固定住处，夜斗先把自己的手机号贴满街角。接到委托后，他郑重地收下五元香火钱，转身就要带雪音开工。日和看着忙前忙后的两人，忍不住又跟了上去。",
+    "number": "275",
+    "effect": "获得现金 ¥600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "fortune_client_payment",
+    "name": "甲方结款",
+    "rarity": "SR",
+    "quote": "甲方爸爸，我又相信爱情了！",
+    "description": "甲方终于说款打了，你把收款页面刷到手指发酸。数字跳出来那一刻，你连那句合作愉快都打得比平时真诚。",
+    "number": "276",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1200",
+    "baseParameters": {
+      "amount": 1200
+    },
+    "actualParameters": {
+      "amount": 2400
+    },
+    "id": "fortune_extraction_loot",
+    "name": "撤离带货回城",
+    "rarity": "SR",
+    "quote": "别追了！我都到撤离点了！",
+    "description": "撤离成功的提示亮起，你终于敢把绷着的肩放下来。回城清点背包时，刚才那些惊险瞬间都被自动剪成了自己的高光片段。",
+    "number": "277",
+    "effect": "获得现金 ¥2400。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "fortune_lottery_small_win",
+    "name": "彩票中了小奖",
+    "rarity": "SR",
+    "quote": "谁说我买彩票只会亏的？",
+    "description": "你反复核对号码，确认自己确实中了点什么。虽然还不够辞职，去兑奖路上倒已经敢给自己挑一杯大杯奶茶。",
+    "number": "278",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "fortune_boss_rune",
+    "name": "终于过了",
+    "rarity": "SR",
+    "quote": "过了！我终于过了！",
+    "description": "BOSS终于倒下，卢恩像金色的雨一样飘来。你坐在地上缓了半天才站起身，刚才摔坏的手柄忽然也显得没那么贵了。",
+    "number": "279",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-800",
+    "baseParameters": {
+      "amount": 800
+    },
+    "actualParameters": {
+      "amount": 1600
+    },
+    "id": "fortune_a_rank_mission",
+    "name": "完成A级委托",
+    "rarity": "SR",
+    "quote": "任务做完了，尾款先结一下。",
+    "description": "A级委托终于交差，负责人把报酬放到桌上，还夸了一句办得漂亮。你低头接过来，决定先不提路上摔的那几个跟头。",
+    "number": "280",
+    "effect": "获得现金 ¥1600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-900",
+    "baseParameters": {
+      "amount": 900
+    },
+    "actualParameters": {
+      "amount": 1800
+    },
+    "id": "fortune_stock_limit_up",
+    "name": "股票涨停",
+    "rarity": "SR",
+    "quote": "看见没？我就说我有眼光。",
+    "description": "股票封上涨停，你把手机往桌上一摆，假装只是随便看看。朋友凑过来时，屏幕亮度早已被你调到了最方便围观的程度。",
+    "number": "281",
+    "effect": "获得现金 ¥1800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-1600",
+    "baseParameters": {
+      "amount": 1600
+    },
+    "actualParameters": {
+      "amount": 3200
+    },
+    "id": "fortune_african_star",
+    "name": "下把猛攻",
+    "rarity": "SSR",
+    "quote": "兄弟们，下把猛攻！",
+    "description": "非洲之星终于塞进背包，刚才还说要打到底的人，已经开始研究最快的撤离路线。队友问这一把怎么办，你把下一把的豪言壮语说得震天响，脚下却一步没往枪声那边挪。",
+    "number": "282",
+    "effect": "获得现金 ¥3200。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "income",
+    "parameterId": "amount-3000",
+    "baseParameters": {
+      "amount": 3000
+    },
+    "actualParameters": {
+      "amount": 6000
+    },
+    "id": "fortune_fortune_jackpot",
+    "name": "创业失败继承家业",
+    "rarity": "UR",
+    "quote": "再不成功，就得回家继承家业了。",
+    "description": "你把创业计划书改到第三十版，咖啡店的店员都记住了常点的那杯。合伙人刚说这个项目可能得黄，家里电话就打了进来：折腾够了没有，明天回来开会。你看着空空的公司账户，忽然不知道该先叹气还是先订票。",
+    "number": "283",
+    "effect": "获得现金 ¥6000。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "cards_two",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "fortune_gacha_double_gold",
+    "name": "十连双黄",
+    "rarity": "SR",
+    "quote": "双黄！谁还敢说我是非酋？",
+    "description": "金光亮起一次，你已经举起手机，紧接着居然又亮了一次。群里的朋友还在打恭喜，你的下一张截图已经发了出去。",
+    "number": "284",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "cards_two",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "fortune_felix_felicis",
+    "name": "根本没喝福灵剂",
+    "rarity": "SR",
+    "quote": "你根本没给我喝福灵剂？",
+    "description": "罗恩在球场上扑出一个又一个球，整个人像突然开了窍。比赛结束，他兴冲冲地问哈利那瓶药还有没有。哈利举起从未倒空的小瓶，赫敏在旁边看着罗恩的表情，终于忍不住笑了。",
+    "number": "285",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "cards_two",
+    "parameterId": "count-2",
+    "baseParameters": {
+      "count": 2
+    },
+    "actualParameters": {
+      "count": 2
+    },
+    "id": "fortune_infinity_stones",
+    "name": "集齐无限宝石",
+    "rarity": "SR",
+    "quote": "宝石集齐，响指先打一个。",
+    "description": "宝石终于凑齐，手套在掌心亮起耀眼的光。大家看你的眼神顿时紧张起来，你赶紧摊开手：先拍个照，别急着跑。",
+    "number": "286",
+    "effect": "获得 2 张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "cards_one",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "fortune_treasure_chest_dig",
+    "name": "挖到宝箱",
+    "rarity": "R",
+    "quote": "这地怎么还长宝箱啊！",
+    "description": "锄头在土里碰到硬物，你以为又是石头，撬开才看见一只箱子。隔壁问种了什么，你抱着收获说今年这个品种比较特别。",
+    "number": "287",
+    "effect": "获得 1 张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "cards_one",
+    "parameterId": "count-1",
+    "baseParameters": {
+      "count": 1
+    },
+    "actualParameters": {
+      "count": 1
+    },
+    "id": "fortune_epic_loot_drop",
+    "name": "开出紫装",
+    "rarity": "R",
+    "quote": "紫了！这次不是垃圾吧？",
+    "description": "BOSS倒地，紫色光芒从战利品里亮起，队伍频道瞬间热闹起来。你抱着新装备仔细端详，已经开始想在哪个主城路口站着最显眼。",
+    "number": "288",
+    "effect": "获得 1 张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "directed",
+    "parameterId": "cardType-0",
+    "baseParameters": {
+      "cardType": 0
+    },
+    "actualParameters": {
+      "cardType": 0
+    },
+    "id": "fortune_silk_bag_plan",
+    "name": "锦囊妙计",
+    "rarity": "SSR",
+    "quote": "军师，这锦囊可得靠谱啊。",
+    "description": "军师把锦囊交给你，说紧要关头再打开。你点头答应，走出门却忍不住摸了三遍，心里的底气比袋子本身还鼓。",
+    "number": "289",
+    "effect": "获得1张免租卡。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "directed",
+    "parameterId": "cardType-0",
+    "baseParameters": {
+      "cardType": 0
+    },
+    "actualParameters": {
+      "cardType": 0
+    },
+    "id": "fortune_secret_gadget",
+    "name": "掏出秘密道具",
+    "rarity": "SSR",
+    "quote": "我就知道你口袋里还有！",
+    "description": "哆啦A梦神神秘秘地掏出一件道具，递来前还特意看了看四周。你郑重接过，决定这次先听完说明，再去找大雄炫耀。",
+    "number": "290",
+    "effect": "获得1张免租卡。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "directed",
+    "parameterId": "cardType-2",
+    "baseParameters": {
+      "cardType": 2
+    },
+    "actualParameters": {
+      "cardType": 2
+    },
+    "id": "fortune_agasa_invention",
+    "name": "这个按钮别乱按",
+    "rarity": "SSR",
+    "quote": "博士，这个按钮到底是干什么的？",
+    "description": "阿笠博士捧着新发明，说明从外壳材料一路讲到隐藏功能。柯南已经开始摆弄按钮，博士赶紧伸手去拦。话还没说完，旁边的窗帘先动了，三个人一起回头。",
+    "number": "291",
+    "effect": "获得1张自选骰点道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_nook_expansion",
+    "name": "扩建先欠着",
+    "rarity": "SR",
+    "quote": "房子给你扩好了，账单也给你备好了。",
+    "description": "你刚走出机场，狸克已经拿着新一版扩建方案等在门口。房间会更大，收纳会更多，介绍听得你连连点头。等他笑眯眯地翻到最后一页，你才发现这场谈话还没有进入付款环节。",
+    "number": "292",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_loot_crate_materials",
+    "name": "舔包舔到破防",
+    "rarity": "SR",
+    "quote": "枪呢？这么大的包，枪呢？",
+    "description": "你趴在地上，冒着远处的枪声一点点摸到箱子边。打开一看，里面塞满杂物，偏偏没有刚才听见的那把枪。队友催你报装备，你沉默半天，只好先问有没有人需要这一堆螺丝。",
+    "number": "293",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_baron_buff",
+    "name": "大龙BUFF",
+    "rarity": "SR",
+    "quote": "大龙拿了，回城干什么，推进啊！",
+    "description": "纳什男爵倒下，紫色光芒绕上全队，小兵也跟着昂首挺胸。你正准备回城补装备，队友已经把信号点到对面高地。兵线刚进塔，聊天框里先多了一句：这把能一波。",
+    "number": "294",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_base_new_building",
+    "name": "更多的水晶塔",
+    "rarity": "SR",
+    "quote": "你必须建造更多的水晶塔。",
+    "description": "你把快捷键按得飞快，折跃指令却一条都没出去。提示音又一次响起，镜头拉回基地，水晶塔的光圈刚好少了那么一块。矿还堆着，兵也想好了，手先得回去补电。",
+    "number": "295",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_elven_craftsman",
+    "name": "精灵工匠",
+    "rarity": "SR",
+    "quote": "这把矮人的手艺，得再改改。",
+    "description": "精灵工匠拿起那件武器，先看刃口，再看柄上的纹样，眉头一点点皱了起来。矮人还没来得及吹嘘，他已经把工具摊了一桌。争论从黄昏持续到深夜，武器倒是在两个人手里越修越漂亮。",
+    "number": "296",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "free_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_space_elevator",
+    "name": "太空电梯通车",
+    "rarity": "SR",
+    "quote": "五万多公里，直上去啊？",
+    "description": "吊舱沿着太空电梯迅速攀升，窗外的云层一层层落到脚下。第一次升空的乘员还在四处张望，旁边的人已经把安全带又检查了一遍。地面上的灯越来越小，头顶的星空却第一次近得这么清楚。",
+    "number": "297",
+    "effect": "1处自家地产免费升1级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "fortune_peach_garden_share",
+    "name": "桃园结义",
+    "rarity": "SSR",
+    "quote": "不求同年同月同日生，但求同年同月同日死。",
+    "description": "桃花开得正盛，刘备、关羽和张飞在香案前一齐跪下。酒碗碰在一起，刚才还以姓名相称的三个人，起身时已经换成了大哥、二哥和三弟。旁边的马甩了甩尾巴，像也听懂了这声兄弟。",
+    "number": "298",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-300",
+    "baseParameters": {
+      "amount": 300
+    },
+    "actualParameters": {
+      "amount": 600
+    },
+    "id": "fortune_lucky_money_all",
+    "name": "压岁钱人人有",
+    "rarity": "SSR",
+    "quote": "恭喜发财，红包先拿来！",
+    "description": "长辈从口袋里掏出一叠红包，屋里的人立刻全成了懂礼貌的孩子。嘴上说着不用不用，伸出去的两只手倒是特别整齐。",
+    "number": "299",
+    "effect": "所有玩家各获得现金 ¥600。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_income",
+    "parameterId": "amount-200",
+    "baseParameters": {
+      "amount": 200
+    },
+    "actualParameters": {
+      "amount": 400
+    },
+    "id": "fortune_guild_dividend",
+    "name": "公会分红",
+    "rarity": "SSR",
+    "quote": "会长，这次真发钱啊？",
+    "description": "会长在频道里宣布分红，平时潜水的人瞬间全部上线。名单往下念时大家一片和气，连昨天抢怪的事都突然很好商量。",
+    "number": "300",
+    "effect": "所有玩家各获得现金 ¥400。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_speedy_extraction",
+    "name": "摸金提速",
+    "rarity": "SSR",
+    "quote": "包卸了，走，再进一把！",
+    "description": "你把最值钱的东西往包里一塞，抬头看见撤离方向的信号。腿比嘴先作出决定，队友回过神来，只听见远处一声跟上。",
+    "number": "301",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_anemoculus_stamina",
+    "name": "风神瞳加速",
+    "rarity": "SSR",
+    "quote": "体力满了，我还能跑！",
+    "description": "你伸手触到风神瞳，一阵轻风绕着身边打了个转。刚才爬坡累得不想说话，这会儿又开始觉得前面那座山也不是不能去。",
+    "number": "302",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_mushroom_dash",
+    "name": "吃蘑菇冲刺",
+    "rarity": "SSR",
+    "quote": "蘑菇还管用，再冲一段！",
+    "description": "蘑菇刚下肚，你就像被人从背后推了一把，嗖地往前蹿去。朋友伸手只抓到一阵风，连那句等等我都喊得有些追不上。",
+    "number": "303",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_worker_stim",
+    "name": "农民提速",
+    "rarity": "SSR",
+    "quote": "这农民，怎么比我还能卷？",
+    "description": "工人们接到提速指令，忙碌得像突然听见了下班铃。你还在查昨天的进度，今天的新活已经被他们抢着安排上了。",
+    "number": "304",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_tailwind_sail",
+    "name": "顺风航行",
+    "rarity": "SSR",
+    "quote": "风正好，帆别收啊！",
+    "description": "风帆一下鼓满，船身顺着海浪轻快地向前冲。你刚夸了句天公作美，帽子就被风卷走，顺风也有顺风的小脾气。",
+    "number": "305",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_body_flicker",
+    "name": "瞬身术",
+    "rarity": "SSR",
+    "quote": "等你结印，我都跑两趟了。",
+    "description": "烟雾还没散，你已经从众人眼前消失。有人正准备感叹高手行踪难测，远处就传来你问路的声音。",
+    "number": "306",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_instant_transmission",
+    "name": "瞬间移动",
+    "rarity": "SSR",
+    "quote": "导航还没报完，我就到了。",
+    "description": "你指尖抵住额头，锁定气息后瞬间不见了踪影。朋友还在原地鼓掌，你已经在另一头四处找落脚时甩掉的拖鞋。",
+    "number": "307",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_ender_pearl_teleport",
+    "name": "末影珍珠传送",
+    "rarity": "SSR",
+    "quote": "珍珠还有，再扔一个！",
+    "description": "你把末影珍珠往远处一抛，熟悉的街景眨眼就被甩到身后。落地拍掉裤腿上的灰，第一件事是庆幸这次没扔进水里。",
+    "number": "308",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_coffee_boost",
+    "name": "喝了杯咖啡",
+    "rarity": "SSR",
+    "quote": "咖啡续上，我还能肝！",
+    "description": "热咖啡一入口，刚才还打架的上下眼皮终于达成停战。你合上犯困时翻了半天的书，忽然觉得手头的事还能再往前赶赶。",
+    "number": "309",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_cyberware_speed",
+    "name": "义体加速",
+    "rarity": "SSR",
+    "quote": "风扇别叫了，我还没热呢。",
+    "description": "义体接口亮起一排灯，身边的声音像被拉长了。你迈步冲出去，跑到一半才发现外套拉链还没拉，风灌得很有科技感。",
+    "number": "310",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_ashina_run",
+    "name": "苇名流跑法",
+    "rarity": "SSR",
+    "quote": "苇名人，跑就完事儿了！",
+    "description": "你压低身子沿着屋檐飞奔，转角和落脚都干净利落。看守追得气喘吁吁，只来得及问一句这人难道不用歇口气吗。",
+    "number": "311",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": false,
+    "mechanism": "extra_action",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_fast_break_layup",
+    "name": "快攻上篮",
+    "rarity": "SSR",
+    "quote": "别停，球给我，再打一波！",
+    "description": "球刚传到手里，你已经顺着空当冲向篮下。起跳、出手一气呵成，落地后回头看队友，脸上就差写着刚才拍到了没。",
+    "number": "312",
+    "effect": "首版停用"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_substitution_jutsu",
+    "name": "替身术",
+    "rarity": "SSR",
+    "quote": "打中的只是一截木头。",
+    "description": "刀锋落下，面前的人影忽然炸成一团白烟。等烟雾散开，原地只剩一截绑着护额的木头。你顺着屋檐抬头，真正的对手已经蹲在高处，还抽空冲你招了招手。",
+    "number": "313",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_zhongli_shield",
+    "name": "固若金汤",
+    "rarity": "SSR",
+    "quote": "固若金汤！",
+    "description": "钟离抬手，玉璋护盾稳稳成形。原本还在闪避的旅行者立刻站直，冲着迎面而来的攻击开始输出。胡桃看了看自己的血条，又看了看那层金色的光，默默把钟离留在了队伍里。",
+    "number": "314",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_sling_ring_portal",
+    "name": "千万别出这个圈",
+    "rarity": "SSR",
+    "quote": "师父，千万莫出这个圈。",
+    "description": "孙悟空用金箍棒在地上画了个圈，反复叮嘱唐僧和两个师弟不要出去。八戒蹲在圈边试探着看了看，说这细细一道能管什么用。大圣一走，他的目光已经飘向了圈外的树荫。",
+    "number": "315",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "next_waiver",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_wang_duoyu_pays",
+    "name": "今晚全场我买单",
+    "rarity": "SSR",
+    "quote": "今晚全场，由王公子买单！",
+    "description": "王多鱼往包厢里一坐，先问服务员还有什么贵的没上。大家正客气，他已经把菜单翻到最后，连平时没人点的项目都认真研究起来。财务在旁边记账，算着算着，发现今天离花完钱还差得很远。",
+    "number": "316",
+    "effect": "自动免除下一笔强制费用，不叠加。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-800",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 800
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_underdog_comeback",
+    "name": "吊车尾逆袭",
+    "rarity": "SSR",
+    "quote": "别叫吊车尾，叫未来大佬！",
+    "description": "平日被叫吊车尾的家伙终于完成训练，老师把奖励推到他面前。你也跟着沾了光，看他抱着额外的那份，笑得比谁都认真。",
+    "number": "317",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-800",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 800
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_frieren_encouragement",
+    "name": "给新人的鼓励",
+    "rarity": "SSR",
+    "quote": "前辈，这次别只给魔法书啊。",
+    "description": "芙莉莲把旅途攒下的小礼物分给新人，看见最窘迫的那位，又多放了一份。她没多说什么，你们却忽然觉得接下来的路没那么难走。",
+    "number": "318",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-800",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 800
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_rob_rich_feed_poor",
+    "name": "劫富济贫",
+    "rarity": "SSR",
+    "quote": "好汉，这回终于轮到我了！",
+    "description": "好汉们把银子抬进穷巷，挨家挨户分了起来。你刚接过自己的那份，他们已经走到最破落的门前，特意多卸下了一包。",
+    "number": "319",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-800",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 800
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_anime_g28",
+    "name": "罗德岛救援",
+    "rarity": "SSR",
+    "quote": "博士，不能把他们留在这里。",
+    "description": "阿米娅向受困的感染者伸出手，医疗干员与护卫一同为撤离开路。罗德岛的补给被送到伤者身边，她确认最后一队人已经跟上，才重新走向前方。",
+    "number": "320",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-600",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 600
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_spirit_repayment",
+    "name": "妖怪报恩",
+    "rarity": "SSR",
+    "quote": "诶，报恩居然还带现金？",
+    "description": "受过帮助的小妖怪抱着礼物来敲门，分完还不肯走。它绕到最困难的朋友身边，悄悄把藏在袖里的谢礼又塞过去一些。",
+    "number": "321",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-600",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 600
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_bottom_rebound",
+    "name": "触底反弹",
+    "rarity": "SSR",
+    "quote": "谁敲门？钱啊？快请进！",
+    "description": "低谷里的努力终于有了回音，大家都分到一点好消息。那个最艰难时仍不肯放弃的人，还收到一份格外沉甸甸的认可。",
+    "number": "322",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "bottom_bonus",
+    "parameterId": "amount-400_bonus-600",
+    "baseParameters": {
+      "amount": 400,
+      "bonus": 600
+    },
+    "actualParameters": {
+      "amount": 800,
+      "bonus": 1500
+    },
+    "id": "fortune_timely_help_silver",
+    "name": "雪中送炭",
+    "rarity": "SSR",
+    "quote": "这时候送来的，才叫雪中送炭。",
+    "description": "门外雪下得正紧，有人敲了敲门，放下一筐干炭和一包吃食。你追出去时，巷口只剩逐渐被雪盖住的脚印。炉火重新亮起来，屋里的人终于能松开一直揣在袖里的手。",
+    "number": "323",
+    "effect": "自己获得现金 ¥800，净资产最低者另得 ¥1500，并列随机。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "fee",
+    "parameterId": "amount-3000",
+    "baseParameters": {
+      "amount": 3000
+    },
+    "actualParameters": {
+      "amount": 6000
+    },
+    "id": "fortune_fortune_crash",
+    "name": "投资暴雷",
+    "rarity": "UR",
+    "quote": "说好的财富呢！",
+    "description": "你打开投资群，昨天还在晒收益的人突然全部安静了。项目公告一页比一页长，你翻到最后，才发现最短的那行才是真正的坏消息。",
+    "number": "324",
+    "effect": "向银行支付 ¥6000。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "full_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_construction_frenzy",
+    "name": "基建狂魔",
+    "rarity": "UR",
+    "quote": "你外卖还没到，我这边已经封顶了。",
+    "description": "你在自家地块旁点了份外卖，顺手签收了一车楼房模块。吊车一趟接一趟，门窗连着墙一起落位。骑手赶到时看了看导航，打来电话问：刚才这里不是还没这么高吗？",
+    "number": "325",
+    "effect": "1处自家地产免费直升3级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "full_upgrade",
+    "parameterId": "fallback-400",
+    "baseParameters": {
+      "fallback": 400
+    },
+    "actualParameters": {
+      "fallback": 800
+    },
+    "id": "fortune_three_little_pigs",
+    "name": "三只小猪",
+    "rarity": "UR",
+    "quote": "这回盖砖房，谁来吹都没用！",
+    "description": "两只小猪抱着稻草和木板赶到时，第三只小猪已经砌好了最后一块砖。它推开结实的大门，示意兄弟们先进来。狼站在屋外，深吸一口气，又看了看厚实的砖墙，最后悄悄往后退了一步，准备多吸一点。",
+    "number": "326",
+    "effect": "1处自家地产免费直升3级，计入本回合升级；可放弃，仅无目标时改获现金 ¥800。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "talent",
+    "parameterId": "amount-5000_count-2",
+    "baseParameters": {
+      "amount": 5000,
+      "count": 2
+    },
+    "actualParameters": {
+      "amount": 2000,
+      "count": 2
+    },
+    "id": "fortune_talent_recruitment",
+    "name": "人才引进",
+    "rarity": "UR",
+    "quote": "您好，请问现在改志愿还来得及吗？",
+    "description": "你本来只是陪朋友参加招聘会，路过展台时顺手拿了份宣传册。工作人员看了一眼你的简历，立刻拉开椅子，递上热茶，连刚才还在循环播放的宣传片都替你暂停了。朋友回头找你时，你已经坐在桌前认真研究那句来了就是自己人。",
+    "number": "327",
+    "effect": "随机获得1块无主地产、现金 ¥2000及 2 张随机道具；无主地产不足时仅跳过土地奖励。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "talent",
+    "parameterId": "amount-5000_count-2",
+    "baseParameters": {
+      "amount": 5000,
+      "count": 2
+    },
+    "actualParameters": {
+      "amount": 2000,
+      "count": 2
+    },
+    "id": "fortune_three_visits",
+    "name": "三顾茅庐",
+    "rarity": "UR",
+    "quote": "先生，您要的诚意，我又带来了。",
+    "description": "刘备第三次来到门前，身后的礼物已经比前两次又多了一层。张飞抱着包裹站得手臂发酸，关羽默默把快滑下来的那一份往上托了托。屋里终于传来脚步声，门一打开，刚才还在小声抱怨的三个人，同时站直了身子。",
+    "number": "328",
+    "effect": "随机获得1块无主地产、现金 ¥2000及 2 张随机道具；无主地产不足时仅跳过土地奖励。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "global_demolition",
+    "parameterId": "compensationPercent-50",
+    "baseParameters": {
+      "compensationPercent": 50
+    },
+    "actualParameters": {
+      "compensationPercent": 50
+    },
+    "id": "fortune_parking_tornado",
+    "name": "龙卷风摧毁停车场",
+    "rarity": "UR",
+    "quote": "龙卷风摧毁停车场！",
+    "description": "阿福拦在成龙面前，先报了一串谁也没听过的招式名。成龙刚躲过一记飞踢，身后又响起更响亮的一声龙卷风摧毁停车场。小玉探头看了看空荡荡的巷口，忍不住问：龙叔，他是不是得先找个停车场？",
+    "number": "329",
+    "effect": "随机选1～5处有建筑地产各降1级，包含自家、不重复，护盾可抵挡；逐地补偿业主降级前租金的50%，向下取整。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "global_demolition",
+    "parameterId": "compensationPercent-50",
+    "baseParameters": {
+      "compensationPercent": 50
+    },
+    "actualParameters": {
+      "compensationPercent": 50
+    },
+    "id": "fortune_wukong_heaven_riot",
+    "name": "大闹天宫",
+    "rarity": "UR",
+    "quote": "躲远些，俺老孙可要活动活动了！",
+    "description": "悟空把金箍棒往肩上一搭，几个天兵立刻退到了柱子后面。棒梢还没转过半圈，殿前的灯架已经歪了，屋檐上的琉璃瓦跟着滑下来一串。天将忙着点人数，悟空却抬头看了看，像是才发现这地方比想象中窄。",
+    "number": "330",
+    "effect": "随机选1～5处有建筑地产各降1级，包含自家、不重复，护盾可抵挡；逐地补偿业主降级前租金的50%，向下取整。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "treasure",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_onepiece_treasure",
+    "name": "大秘宝",
+    "rarity": "SSR",
+    "quote": "宝藏就在这里，先到先得！",
+    "description": "罗杰的话随着海风传遍世界，无数船帆驶向未知的远方。娜美将一张泛黄的藏宝图摊在桌上，指尖落在其中一个被反复描画的记号上。",
+    "number": "331",
+    "effect": "随机标记1处地产；首位正常停留者免租，并获得等于无修正租金的现金；无主地产按0级计算。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "treasure",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_gold_miner",
+    "name": "黄金矿工",
+    "rarity": "SSR",
+    "quote": "就差一点，别给我勾到石头啊！",
+    "description": "钩爪在地下慢悠悠地摆动，最大的金块就在眼前。老矿工屏住呼吸按下按钮，钩子却擦着金块滑了过去，勾住了旁边一块灰扑扑的石头。他刚准备捂脸，石头翻了个面，露出了里面亮闪闪的一角。",
+    "number": "332",
+    "effect": "随机标记1处地产；首位正常停留者免租，并获得等于无修正租金的现金；无主地产按0级计算。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "treasure",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_frieren_mimic",
+    "name": "宝箱怪",
+    "rarity": "SSR",
+    "quote": "这次……说不定是真的宝箱。",
+    "description": "芙莉莲围着宝箱看了两圈，认真地点了点头。下一秒，箱盖啪地合上，只剩两条腿在外面晃。费伦熟练地抓住她的脚踝，施塔尔克赶紧过来帮忙。被拉出来时，芙莉莲的头发乱成一团，手里却还攥着一件亮晶晶的小东西。",
+    "number": "333",
+    "effect": "随机标记1处地产；首位正常停留者免租，并获得等于无修正租金的现金；无主地产按0级计算。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "treasure",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_anime_g09",
+    "name": "找到你了",
+    "rarity": "SSR",
+    "quote": "面码，找到你了！",
+    "description": "最后的捉迷藏还没有结束，伙伴们一遍遍喊着面码的名字。那些没能说出口的心意，终于在带泪的呼唤中传达过去。她在晨光里回以笑容，超和平Busters再一次找到了彼此。",
+    "number": "334",
+    "effect": "随机标记1处地产；首位正常停留者免租，并获得等于无修正租金的现金；无主地产按0级计算。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_cards",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_dora_supply_all",
+    "name": "道具大派送",
+    "rarity": "SR",
+    "quote": "别抢，大家都有份！",
+    "description": "哆啦A梦把手伸进口袋，摸出第一件东西，又接连掏出了好几件。大雄刚想全部抱走，静香、胖虎和小夫已经围了上来。",
+    "number": "335",
+    "effect": "所有玩家各获得1张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_cards",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_gifts_for_everyone",
+    "name": "原来大家都有",
+    "rarity": "SR",
+    "quote": "原来……大家都有啊。",
+    "description": "她把系着蝴蝶结的小盒子递过来时，他连说谢谢都慢了半拍。刚把礼物小心收好，身旁的人也举起了一个一模一样的盒子。再往旁边看，连包装纸上的贴画都分毫不差。她提起还没发完的一大袋礼物，笑着招呼最后几个人过来。",
+    "number": "336",
+    "effect": "所有玩家各获得1张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "all_cards",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_anime_g18",
+    "name": "樱花庄欢迎会",
+    "rarity": "SR",
+    "quote": "欢迎来到樱花庄！今晚就热闹起来吧！",
+    "description": "空太刚把桌子拼好，美咲已经宣布欢迎会开始。真白暂时放下画笔，仁笑着接过话头，七海忙着照应满屋的吵闹。这个住着一群怪人的宿舍，又为新伙伴腾出了一个位置。",
+    "number": "337",
+    "effect": "所有玩家各获得1张随机道具。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "allConstruction",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_sakurasou_all_construction",
+    "name": "樱花庄改造计划",
+    "rarity": "SSR",
+    "quote": "自己的房间，自己来帮忙！",
+    "description": "空太刚把改造计划贴好，大家已经各自拿起工具。有人认真测量，有人忙着搬东西，真白则在角落画出了远比计划漂亮的样子。",
+    "number": "338",
+    "effect": "所有玩家各选1处自家地产免费升1级；可放弃，无目标则跳过。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "erdtreeBlessing",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_elden_erdtree_blessing",
+    "name": "黄金树的恩惠",
+    "rarity": "SSR",
+    "quote": "这一次，赐福也照到了我。",
+    "description": "金色微光从树冠间落下，沿着残破的石阶缓缓流动。褪色者停下脚步，看着荒废之处重新亮起光，远方另一处微弱的轮廓也得到了回应。",
+    "number": "339",
+    "effect": "自己与建筑总等级最低者各免费升1级，并列随机；若为同一人，可在同一地产连续升级，最高3级。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "geniusClub",
+    "parameterId": "version-2",
+    "baseParameters": {
+      "version": 2
+    },
+    "actualParameters": {
+      "version": 2
+    },
+    "id": "fortune_neta_genius_club",
+    "name": "天才俱乐部",
+    "rarity": "UR",
+    "quote": "先别急着选，让我看看剩下的。",
+    "description": "黑塔将几份方案依次摊开，阮·梅的目光停在其中一份上，螺丝咕姆抬手补充新的推演。准备好的答案被轻轻推开，桌上又多出了几种可能。",
+    "number": "340",
+    "effect": "公开3张不同完整效果的UR道具；各玩家秘密投入0～2张手牌或放弃，每张计1贡献，触发者额外＋1。最高者胜，并列随机；仅胜者弃置投入牌并自选1张候选，其他人不付代价。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "worldSeed",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_crossover_worldSeed",
+    "name": "世界的种子",
+    "rarity": "SSR",
+    "quote": "一粒种子，无数个世界。",
+    "description": "黑暗中悬浮着一枚微小的发光核心，无数数据从中展开，逐渐构成天空、森林与漂浮的世界。旧日的冒险已经落幕，新的世界仍在种子中等待苏醒。",
+    "number": "341",
+    "effect": "随机选择2处不同的合法自家地产，各免费升1级，计入本回合升级。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "endlessClouds",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_crossover_endlessClouds",
+    "name": "白云无尽",
+    "rarity": "UR",
+    "quote": "白云无尽，清风入怀。",
+    "description": "折扇轻展，清润的气流掠过伤者与草木。远山藏在云雾中，近处衣袂随风而起；方才急促的呼吸渐渐平稳，混乱的战局里多出一片宁静。",
+    "number": "342",
+    "effect": "全体未破产玩家各获得实际现金400；仅踩格者清除本人及自家地产全部临时负面状态，包含敌方神威，不清债务、永久变化或自愿代价。"
+  },
+  {
+    "pool": "fortune",
+    "category": "财富事件",
+    "enabled": true,
+    "mechanism": "pinkMiracle",
+    "parameterId": "default",
+    "baseParameters": {},
+    "actualParameters": {},
+    "id": "fortune_crossover_pinkMiracle",
+    "name": "如果奇迹有颜色，那一定是粉色",
+    "rarity": "UR",
+    "quote": "如果可以，我想拥抱每一次拼尽全力的自己。",
+    "description": "暖暖站在展开的衣橱与镜面之间，裙摆、缎带和首饰在粉色光点中浮起。镜中映出几种不同风格的搭配，每一种都像通往新故事的入口，大喵早已在一旁看得目不转睛。",
+    "number": "343",
+    "effect": "选择最多3张任意手牌重塑，每张从3个同稀有度、不同效果候选中选1；保留临时期限、已用次数与冷却。无手牌时获得实际现金800。"
+  }
+]

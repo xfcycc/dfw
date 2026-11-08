@@ -64,6 +64,12 @@ public final class CrossoverService {
         if(turns(owner,"BLUE_BIND")>0 || state(room).stationaryTurn==room.turnNumber) require(!(card.kind.equals("keqingRush") || card.kind.equals("bankai") && !NetaService.modern(card)) && !REPLACEMENTS.contains(card.kind),"本回合不能主动移动");
     }
 
+    /** 输入玩家，返回是否免疫敌方主动牌、负面事件及强制费用。 */
+    public static boolean fullyProtected(Player owner) { return owner!=null && turns(owner,"DEFENSE_SPECIALIZATION")>0; }
+
+    /** 输入房间及地产，返回当前业主是否处于防御特化保护中。 */
+    public static boolean protectedProperty(Room room,Tile target) { return fullyProtected(player(room,target.ownerId)); }
+
     /** 输入目标及期限，刷新同名状态；仅防御特化从施放当回合开始计数。 */
     private static void add(Room room,Player owner,String type,int count) {
         owner.statuses.removeIf(s -> s.type.equals(type)); PlayerStatus status=new PlayerStatus(); status.type=type; status.remainingTurns=count; status.appliedTurn=room.turnNumber; owner.statuses.add(status);
@@ -101,7 +107,7 @@ public final class CrossoverService {
     public boolean use(Room room,Player owner,Card card,Action action) {
         if(!CARDS.contains(card.kind) || ATTACKS.contains(card.kind)) return false;
         switch(card.kind) {
-            case "defenseSpecialization" -> { ContentService.consume(room,owner,card,true,action); add(room,owner,"DEFENSE_SPECIALIZATION",2); }
+            case "defenseSpecialization" -> { ContentService.consume(room,owner,card,true,action); add(room,owner,"DEFENSE_SPECIALIZATION",3); }
             case "doubleBoost" -> { ContentService.consume(room,owner,card,true,action); state(room).boostTurn=room.turnNumber; state(room).boosts=2; state(room).boostBlocked=false; }
             case "goldenCore" -> {
                 require(!state(room).cultivated.contains(owner.id),"本局已经成功结丹"); ContentService.consume(room,owner,card,true,action); state(room).corePlayerId=owner.id; stationary(room);
@@ -187,7 +193,7 @@ public final class CrossoverService {
     public boolean event(Room room,Player owner,ContentResult source) {
         switch(source.mechanism) {
             case "aquaPurify" -> {
-                List<Tile> targets=new ArrayList<>(room.board.stream().filter(t -> !PropertyEffects.frozen(t) && attached(room,t)).toList());
+                List<Tile> targets=new ArrayList<>(room.board.stream().filter(t -> !PropertyEffects.frozen(t) && !protectedProperty(room,t) && attached(room,t)).toList());
                 for(int i=0;i<3 && !targets.isEmpty();i++) { Tile t=targets.remove(random.nextInt(targets.size())); clear(room,t,false); log(room,"阿库娅净化了 "+t.name+" 的全部附加效果"); }
             }
             case "worldSeed" -> {
@@ -195,7 +201,7 @@ public final class CrossoverService {
                 for(int i=0;i<2 && !targets.isEmpty();i++) ConstructionService.build(room,owner,targets.remove(random.nextInt(targets.size())));
             }
             case "nzothWrath" -> {
-                List<Player> owners=new ArrayList<>(room.players.stream().filter(p -> !p.bankrupt && room.board.stream().anyMatch(t -> Objects.equals(t.ownerId,p.id) && !PropertyEffects.frozen(t) && t.level>0) && room.board.stream().noneMatch(t -> Objects.equals(t.nzothOwnerId,p.id))).toList());
+                List<Player> owners=new ArrayList<>(room.players.stream().filter(p -> !p.bankrupt && !fullyProtected(p) && room.board.stream().anyMatch(t -> Objects.equals(t.ownerId,p.id) && !PropertyEffects.frozen(t) && t.level>0) && room.board.stream().noneMatch(t -> Objects.equals(t.nzothOwnerId,p.id))).toList());
                 for(int i=0;i<3 && !owners.isEmpty();i++) { Player p=owners.remove(random.nextInt(owners.size())); List<Tile> targets=room.board.stream().filter(t -> Objects.equals(t.ownerId,p.id) && t.level>0 && !PropertyEffects.frozen(t)).toList(); Tile t=targets.get(random.nextInt(targets.size())); t.nzothOwnerId=p.id; log(room,t.name+" 受到恩佐斯污染，业主可在本人回合弃牌净化"); }
             }
             case "endlessClouds" -> { for(Player p:room.players) if(!p.bankrupt) p.cash=Math.addExact(p.cash,400); cleanse(room,owner); log(room,"白云无尽：全员获得 ¥400，"+owner.name+" 及其地产完成净化"); }
@@ -282,12 +288,12 @@ public final class CrossoverService {
         CrossoverState s=state(room);
         if(s.endPreparedTurn!=room.turnNumber) {
             s.endPreparedTurn=room.turnNumber;
-            List<Integer> polluted=room.board.stream().filter(t -> Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id)).map(t -> t.id).toList();
+            List<Integer> polluted=room.board.stream().filter(t -> !fullyProtected(owner) && Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id)).map(t -> t.id).toList();
             if(!polluted.isEmpty() && !owner.hand.isEmpty()) { ContentChoice c=content.open(room,owner,"cross_purify"); c.tileIds.addAll(polluted); c.cards.addAll(owner.hand); c.prompt="回合即将结束，可弃一张手牌净化一处污染，否则本回合腐蚀一次。"; return true; }
         }
         if(s.endAppliedTurn!=room.turnNumber) {
             s.endAppliedTurn=room.turnNumber; s.damageBatch="nzoth:"+room.turnNumber; s.damageActorId=null;
-            for(Tile t:room.board) if(Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id) && !PropertyEffects.frozen(t)) {
+            for(Tile t:room.board) if(!fullyProtected(owner) && Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id) && !PropertyEffects.frozen(t)) {
                 int shield=PropertyEffects.shieldCharges(t);
                 if(shield>0) { t.demolitionShieldCharges=shield-1; t.demolitionShield=shield>1; log(room,t.name+" 的污染腐蚀一层护盾"); }
                 else if(t.level>0) { AnimeService.recordDamage(room,t); t.level--; log(room,t.name+" 的污染使建筑降低一级"); }

@@ -39,6 +39,7 @@ public final class EventService {
             Tile target=candidates.remove(random.nextInt(candidates.size()));
             Player owner=owners.get(target.ownerId);
             segment.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
+            if (CrossoverService.fullyProtected(owner)) { log(room,owner.name+" 的防御特化保护 "+target.name+" 免受事件降级"); segment.boardEffect.afterTiles.add(BoardEffect.appearance(target)); continue; }
             if (PropertyEffects.preventDemolition(room,target)) { segment.boardEffect.afterTiles.add(BoardEffect.appearance(target)); continue; }
             int previousLevel=target.level; long rent=Rules.rent(room,target);
             long compensation=Math.multiplyExact(rent,effect.compensationPercent)/100;
@@ -89,6 +90,7 @@ public final class EventService {
         }
         require(target != null && target.type.equals("property"), "请选择有效地产");
         Player owner = player(room, target.ownerId);
+        if (CrossoverService.fullyProtected(owner)) { log(room,owner.name+" 的防御特化保护 "+target.name+" 免受建筑摧毁"); return; }
         if (target.level == 0 || owner == null || owner.bankrupt) { log(room, target.name + " 没有实际建筑损失，不触发补偿"); return; }
         boolean piercing=effect.content!=null && "card".equals(effect.content.pool) && "fullDemolish".equals(effect.content.mechanism);
         if (PropertyEffects.frozen(target) || !piercing && PropertyEffects.preventDemolition(room,target)) return;

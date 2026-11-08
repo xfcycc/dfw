@@ -16,7 +16,7 @@ public final class NetaService {
         this.content=content; this.effects=effects; this.random=random; this.catalog=catalog;
         effects.beforeEffect(this::offerPetalDefense);
         effects.register("NETA_DAMAGE",(room,effect) -> {
-            Tile target=tile(room,effect.tileId); if(target==null || PropertyEffects.frozen(target)) return;
+            Tile target=tile(room,effect.tileId); if(target==null || PropertyEffects.frozen(target) || CrossoverService.protectedProperty(room,target)) return;
             boolean recorded=false;
             for(int i=0;i<effect.amount && target.level>0;i++) if(!PropertyEffects.preventDemolition(room,target)) {
                 if(!recorded) { AnimeService.recordDamage(room,target); recorded=true; } target.level--;
@@ -131,7 +131,7 @@ public final class NetaService {
                 state(room).research=research; resume(room);
             }
             case "senbonzakura" -> {
-                clean(room); List<Tile> candidates=new ArrayList<>(room.board.stream().filter(t -> t.type.equals("property") && t.level>0 && t.ownerId!=null && !t.mortgaged && !PropertyEffects.frozen(t) && t.petalCasterId==null && !player(room,t.ownerId).bankrupt).toList());
+                clean(room); List<Tile> candidates=new ArrayList<>(room.board.stream().filter(t -> t.type.equals("property") && t.level>0 && t.ownerId!=null && !t.mortgaged && !PropertyEffects.frozen(t) && !CrossoverService.protectedProperty(room,t) && t.petalCasterId==null && !player(room,t.ownerId).bankrupt).toList());
                 int count=Math.min(3,candidates.size());
                 for(int i=0;i<count;i++) { Tile t=candidates.remove(random.nextInt(candidates.size())); t.petalCasterId=owner.id; t.petalOwnerId=t.ownerId; t.petalUntilTurn=owner.personalTurns+1; log(room,t.name+" 获得千本樱标记，下次正租金按低一级计算"); }
                 if(count==0) log(room,"千本樱：没有合法地产，本次结束");
@@ -289,7 +289,7 @@ public final class NetaService {
         Map<String,Integer> decisions=state(room).defenses.computeIfAbsent(effect.id,k -> new LinkedHashMap<>());
         for(Player p:room.players) {
             NetaState.Petals petals=state(room).petals.get(p.id);
-            if(p.bankrupt || petals==null || petals.charges<=0 || decisions.containsKey(p.id)) continue;
+            if(p.bankrupt || CrossoverService.fullyProtected(p) || petals==null || petals.charges<=0 || decisions.containsKey(p.id)) continue;
             boolean atRisk=room.board.stream().anyMatch(t -> p.id.equals(t.ownerId) && t.level>0 && !PropertyEffects.frozen(t) && (all || Objects.equals(t.id,effect.tileId)));
             if(!atRisk) continue;
             ContentChoice c=content.open(room,p,"neta_petal_defense"); c.cardId=effect.id; c.content=effect.content; c.numbers=List.of(petals.charges);

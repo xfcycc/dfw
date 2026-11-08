@@ -81,6 +81,7 @@ public final class ContentService {
     /** 输入房间和已保存事件效果，展开原子效果并保存移动来源；入狱事件直接作用于抽到者，无返回值。 */
     private void resolveEvent(Room room, GameEffect source) {
         ContentResult r=source.content; Player owner=player(room,source.playerId); var p=r.parameters;
+        if(CrossoverService.fullyProtected(owner) && Set.of("back","skip","jail","self_destroy","rent_double").contains(r.mechanism)) { log(room,owner.name+" 的防御特化免疫「"+r.name+"」的负面事件效果"); return; }
         if(crossover.event(room,owner,r)) return;
         switch (r.mechanism) {
             case "allConstruction", "erdtreeBlessing" -> ConstructionService.event(this,room,owner,r,random);
@@ -139,7 +140,7 @@ public final class ContentService {
     private static List<Integer> destroyTargets(Room room, Player owner, boolean opponent) {
         Set<String> owners = new HashSet<>();
         for (Player candidate : room.players) if (!candidate.bankrupt && (opponent ? !candidate.id.equals(owner.id) : candidate.id.equals(owner.id))) owners.add(candidate.id);
-        return room.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && t.level>0 && owners.contains(t.ownerId)).map(t -> t.id).toList();
+        return room.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && !CrossoverService.protectedProperty(room,t) && t.level>0 && owners.contains(t.ownerId)).map(t -> t.id).toList();
     }
     /** 输入房间及已保存选择，返回仍满足产权、建筑和本回合升级限制的原候选交集。 */
     public static List<Integer> choiceTargets(Room room, ContentChoice choice) {
@@ -187,7 +188,7 @@ public final class ContentService {
         }
         for(String id:targets) {
             Player owner=player(room,id);
-            if(owner==null || owner.bankrupt || effect.movementReleasePlayers.contains(id)) continue;
+            if(owner==null || owner.bankrupt || CrossoverService.fullyProtected(owner) || effect.movementReleasePlayers.contains(id)) continue;
             List<Card> cards=owner.hand.stream().filter(c -> c.kind.equals("release") && CrossoverService.handAllowed(room,owner,c,false)).toList();
             if(cards.isEmpty()) continue;
             ContentChoice choice=open(room,owner,"movement_release"); choice.cards.addAll(cards); choice.content=effect.content; choice.jailed=effect.type.equals("SEND_TO_JAIL");
@@ -224,6 +225,7 @@ public final class ContentService {
     }
     /** 输入限制参数及是否为外部控制；保护阻挡外部休息和监禁，自愿休息代价仍须承担。 */
     public void restrict(Room room,Player owner,int count,boolean jailed,boolean controlled) {
+        if(controlled && CrossoverService.fullyProtected(owner)) { log(room,owner.name+" 的防御特化免疫本次"+(jailed?"监禁":"休息")); return; }
         if(controlled && StatusService.controlProtectionTurns(owner)>0) { log(room,owner.name+" 的连续控制保护抵挡了本次"+(jailed?"监禁":"休息")); return; }
         if (owner.hand.stream().anyMatch(c -> c.kind.equals("release") && CrossoverService.handAllowed(room,owner,c,false))) { ContentChoice choice=open(room,owner,"release"); choice.skipTurns=count; choice.jailed=jailed; choice.voluntaryRestriction=!controlled; BoardEffect.cue(room,jailed?"jail":"rest",owner); return; }
         applyRestriction(room,owner,count,jailed,controlled);

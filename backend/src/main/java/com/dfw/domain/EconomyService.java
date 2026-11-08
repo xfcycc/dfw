@@ -42,10 +42,11 @@ public class EconomyService {
         if (room.pending != null && Objects.equals(room.pending.creditorId, player.id)) { room.pending.creditorId = null; room.trade = null; }
         log(room, player.name + " 已清算并退出竞争");
     }
-    /** 输入强制费用及付款人，保存支付选择；零费用或房东服刑期间的租金直接完成，不消耗防御状态。 */
+    /** 输入强制费用及付款人，防御特化免除费用，否则保存支付选择；零费用不消耗防御状态。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
+        if (CrossoverService.fullyProtected(player)) { log(room,player.name+" 的防御特化免除本笔强制费用 ¥"+amount); return; }
         Player landlord = player(room, creditorId);
         if (tileId != null && landlord != null && landlord.jailed && landlord.skipTurns > 0) {
             log(room, "log", player.id, landlord.name + " 正在服刑，" + player.name + " 本次免付 " + tile(room, tileId).name + " 的租金"); return;

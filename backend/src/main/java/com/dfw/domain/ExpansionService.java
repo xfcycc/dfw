@@ -48,7 +48,7 @@ public final class ExpansionService {
                 }
             }
             case "shuffle" -> {
-                List<Player> alive=room.players.stream().filter(p -> !p.bankrupt).toList();
+                List<Player> alive=room.players.stream().filter(p -> !p.bankrupt && !CrossoverService.fullyProtected(p)).toList();
                 if(alive.size()<2) return;
                 List<Integer> indices=new ArrayList<>(); for(int i=0;i<alive.size();i++) indices.add(i);
                 List<Integer> order;
@@ -57,7 +57,7 @@ public final class ExpansionService {
                 for(int i=0;i<alive.size();i++) {
                     GameEffect move=effects.effect("EVENT_RELOCATE",alive.get(i)); move.destination=positions.get(order.get(i)); move.content=result; effects.submit(room,move);
                 }
-                log(room,"ROOM·错位空间：已固定所有未破产玩家的换位目标，可分别解控，不结算落点或起点");
+                log(room,"ROOM·错位空间：已固定未受防御特化保护玩家的换位目标，可分别解控，不结算落点或起点");
             }
             case "all_cards" -> {
                 for(Player target:room.players) if(!target.bankrupt) content.giveCards(room,target,1,null);

@@ -192,6 +192,7 @@ public class TurnService {
     private void sendToJail(Room room, GameEffect effect) {
         Player target=player(room,effect.playerId);
         GameError.require(target!=null && !target.bankrupt,"请选择一名未破产玩家，可选择自己");
+        if(!effect.voluntaryRestriction && CrossoverService.fullyProtected(target)) { log(room,target.name+" 的防御特化免疫本次入狱及传送"); return; }
         if(!effect.voluntaryRestriction && StatusService.controlProtectionTurns(target)>0) { log(room,target.name+" 的连续控制保护抵挡了本次入狱及传送"); return; }
         Tile jail=room.board.stream().filter(t -> t.type.equals("jail")).findFirst().orElseThrow();
         Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
