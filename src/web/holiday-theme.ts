@@ -42,6 +42,7 @@ export const holidayTheme = computed(() => {
   return id ? { id, ...holidayThemes[id], background: imageUrl(`/images/holidays/${id}-town.webp`), title: imageUrl(`/images/holidays/${id}-title.webp`) } : null;
 });
 export const holidayPreview = computed(() => preview.value);
+export const winterHome = computed(() => preview.value === 'auto' && !activeHoliday.value);
 
 /** 输入预览选项，仅在当前页面临时切换皮肤；不更改服务器或持久化偏好。 */
 export function setHolidayPreview(value: HolidayPreview): void {

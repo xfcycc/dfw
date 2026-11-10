@@ -7,8 +7,11 @@ import { selectArchiveCode } from '../archive';
 import Modal from '../components/Modal.vue';
 import AudioSettings from '../components/AudioSettings.vue';
 import Archives from './Archives.vue';
-import { holidayTheme } from '../holiday-theme';
+import { holidayTheme, winterHome } from '../holiday-theme';
 import HolidayDecorations from '../components/HolidayDecorations.vue';
+import winterTown from '../assets/winter-town.webp';
+import winterTitle from '../assets/winter-title.webp';
+import './home-winter.css';
 const game = useGameStore();
 const router = useRouter();
 const route = useRoute();
@@ -50,8 +53,8 @@ async function submit(): Promise<void> {
 }
 </script>
 <template>
-  <div class="home-page">
-    <img class="home-background" :src="holidayTheme?.background || imageUrl('/images/home-town.png')" alt="" fetchpriority="high" />
+  <div class="home-page" :class="{ 'home-winter': winterHome }">
+    <img class="home-background" :src="holidayTheme?.background || (winterHome ? winterTown : imageUrl('/images/home-town.png'))" alt="" fetchpriority="high" />
     <HolidayDecorations />
     <header class="home-toolbar">
       <AudioSettings class="home-tool-button" />
@@ -61,7 +64,11 @@ async function submit(): Promise<void> {
       </button>
     </header>
     <main class="home-menu">
-      <h1 class="home-title"><img :src="holidayTheme?.title || imageUrl('/images/home-title.png')" :alt="holidayTheme ? `大富翁-奇迹大陆 · ${holidayTheme.caption}` : '大富翁-奇迹大陆'" :width="holidayTheme ? 1536 : 1774" :height="holidayTheme ? 1024 : 887" fetchpriority="high" /></h1>
+      <h1 class="home-title">
+        <img v-if="winterHome" :src="winterTitle" alt="大富翁-奇迹大陆" width="1000" height="500" fetchpriority="high" />
+        <img v-else :src="holidayTheme?.title || imageUrl('/images/home-title.png')" :alt="holidayTheme ? `大富翁-奇迹大陆 · ${holidayTheme.caption}` : '大富翁-奇迹大陆'" :width="holidayTheme ? 1536 : 1774" :height="holidayTheme ? 1024 : 887" fetchpriority="high" />
+      </h1>
+      <p v-if="winterHome" class="home-winter-caption"><span aria-hidden="true">❄</span> 雪境小镇 <span aria-hidden="true">❄</span></p>
       <nav class="home-actions" aria-label="游戏入口">
         <button class="home-action home-create" @click="openEntry('create')">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><g fill="currentColor" stroke="none"><circle cx="8" cy="8" r="1.4"/><circle cx="16" cy="8" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="8" cy="16" r="1.4"/><circle cx="16" cy="16" r="1.4"/></g></svg>

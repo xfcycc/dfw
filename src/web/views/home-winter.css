@@ -1,0 +1,88 @@
+div.home-page.home-winter {
+  background: #dcebf6;
+  color: #224c70;
+}
+.home-page.home-winter::before {
+  background: radial-gradient(ellipse at 50% 43%, #e3f5ff38, transparent 62%);
+}
+.home-page.home-winter .home-title {
+  width: min(76vw, 400px);
+  margin-bottom: 12px;
+  filter: drop-shadow(0 8px 14px #153f6650);
+}
+.home-winter-caption {
+  margin: 0 0 25px;
+  padding: 5px 14px;
+  border: 1px solid #e3f8ff;
+  border-radius: 999px;
+  background: #224c70;
+  color: #f6fcff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .24em;
+}
+.home-winter-caption span { color: #bbecff; }
+.home-page.home-winter .home-toolbar .home-tool-button,
+.home-page.home-winter .home-recent-room {
+  background: #f1faffeb;
+  border-color: #fff;
+  color: #224c70;
+  box-shadow: 0 3px 14px #244c702b;
+}
+.home-page.home-winter .home-toolbar .home-tool-button:hover,
+.home-page.home-winter .home-recent :is(a, button):hover { background: #d9efff; }
+.home-page.home-winter .home-recent :is(a, button) { color: #224c70; }
+.home-page.home-winter .home-action {
+  --winter-top: #fcfeff;
+  --winter-bottom: #d8edff;
+  --winter-edge: #7b9dbd;
+  background: linear-gradient(var(--winter-top), var(--winter-bottom));
+  border-color: #f7fdff;
+  color: #22496c;
+  box-shadow: inset 0 2px 0 #fff, 0 4px 0 var(--winter-edge), 0 8px 18px #244c7038;
+}
+.home-page.home-winter .home-create,
+body:has(.home-winter) .home-entry-form .home-create {
+  background: linear-gradient(#ebfbff, #9cd7f7);
+  border-color: #f6fdff;
+  color: #123c60;
+  box-shadow: inset 0 2px 0 #fff, 0 5px 0 #528cb6, 0 9px 0 #e4f6ff99, 0 12px 25px #244c7040;
+}
+.home-page.home-winter .home-watch { --winter-bottom: #dbdffa; --winter-edge: #8f9ac5; }
+
+/* 首页弹窗传送到 body，随首页皮肤切换配色。 */
+body:has(.home-winter) .modal-backdrop { background: #16365380; }
+body:has(.home-winter) .modal.chibi-modal {
+  background: #edf7ff;
+  border-color: #9abbd8;
+  color: #224c70;
+  box-shadow: inset 0 0 0 5px #f7fcff, 0 7px 0 #527c9e38, 0 24px 70px #13345048;
+}
+body:has(.home-winter) .chibi-modal > .modal-heading { background: transparent; border-color: #bdd7ec; }
+body:has(.home-winter) .chibi-modal :is(h2, .field, .muted, .optional) { color: #345879; }
+body:has(.home-winter) .chibi-modal :is(.icon-button, .button:not(:disabled, .danger)) {
+  background: linear-gradient(#fff, #d9edff);
+  border-color: #a9c7e0;
+  color: #224c70;
+  box-shadow: inset 0 2px 0 #fff, 0 3px 0 #8eb0cb65;
+}
+body:has(.home-winter) .chibi-modal .button.primary:not(:disabled) { background: linear-gradient(#edfaff, #a6dafa); }
+body:has(.home-winter) .chibi-modal :is(.panel, .audio-setting, .field input) {
+  background: #f7fcff;
+  border-color: #bdd7ec;
+  color: #224c70;
+  box-shadow: none;
+}
+body:has(.home-winter) .chibi-modal .field input:focus { border-color: #528cb6; }
+body:has(.home-winter) .chibi-modal input[type='range'] { accent-color: #528cb6; }
+body:has(.home-winter) .chibi-modal .notice:not(.warning) { background: #e3f1fd; border-color: #bdd7ec; color: #345879; }
+
+@media (max-width: 600px) and (orientation: portrait) {
+  .home-page.home-winter .home-background { height: 72svh; mask-image: linear-gradient(#000 65%, transparent); }
+  .home-page.home-winter .home-menu { padding-top: max(108px, 23svh); }
+  .home-page.home-winter .home-title { width: min(82vw, 330px); }
+}
+@media (max-height: 600px) and (orientation: landscape) {
+  .home-page.home-winter .home-title { width: 230px; margin-bottom: 6px; }
+  .home-winter-caption { margin-bottom: 13px; }
+}
