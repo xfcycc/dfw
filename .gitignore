@@ -33,6 +33,5 @@ backend/target/
 # 聊天表情随代码分发，保证历史消息显示及进入房间时预加载。
 !/src/web/public/images/chat/xiaohongshu/*.webp
 
-# 冬季首页插画随前端分发。
-!/src/web/assets/winter-town.webp
-!/src/web/assets/winter-title.webp
+# 默认首页背景随前端分发。
+!/src/web/assets/home-riverside-market.webp
