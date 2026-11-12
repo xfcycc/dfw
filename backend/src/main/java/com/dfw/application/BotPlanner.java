@@ -12,6 +12,8 @@ public final class BotPlanner {
     private final PublicPlayerVo me;
     private final Room economics = new Room();
     private final int horizon;
+    private final boolean nightmare;
+    private final Map<String, Long> liquidAssets = new HashMap<>();
     private final Map<String, double[]> visits = new HashMap<>();
     private final double reserve;
     private final Map<String, Double> reserves = new HashMap<>();
@@ -23,9 +25,13 @@ public final class BotPlanner {
     public BotPlanner(PublicRoomVo state, PrivatePlayerVo own, Map<String, Integer> previousQuotes, boolean conservative) {
         this.state = state; this.own = own; me = person(own.playerId);
         this.previousQuotes = Map.copyOf(previousQuotes); this.conservative = conservative;
-        horizon = switch (me.botDifficulty) { case "easy" -> 1; case "hard" -> 6; default -> 3; };
+        nightmare = "nightmare".equals(me.botDifficulty);
+        horizon = switch (me.botDifficulty) { case "easy" -> 1; case "hard", "nightmare" -> 6; default -> 3; };
         economics.economy = state.economy;
         if (conservative) { reserve = 0; return; }
+        if (nightmare) for (Tile t : state.board) if (t.ownerId != null && !PropertyEffects.frozen(t)) {
+            liquidAssets.merge(t.ownerId, Rules.propertyLiquidationValue(economics, t), Long::sum);
+        }
         for (PublicPlayerVo p : state.players) if (!p.bankrupt) visits.put(p.id, forecast(p));
         for (PublicPlayerVo p : state.players) if (!p.bankrupt) reserves.put(p.id, cashReserve(p));
         reserve = reserves.get(me.id);
@@ -69,7 +75,10 @@ public final class BotPlanner {
     private Tile remoteBuildTarget(List<Tile> candidates) {
         return candidates.stream().filter(t -> t.type.equals("property") && me.id.equals(t.ownerId) && !t.mortgaged && !PropertyEffects.frozen(t)
                 && !AnimeService.iced(t) && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id))
-                .filter(t -> me.cash-ConstructionService.remoteCost(economics,t)>=reserve && upgradeValue(t,t.level+1)>ConstructionService.remoteCost(economics,t))
+                .filter(t -> {
+                    long cost = ConstructionService.remoteCost(economics,t);
+                    return me.cash-cost>=reserve && upgradeValue(t,t.level+1)>cost+investmentRisk(cost);
+                })
                 .max(Comparator.comparingDouble(t -> upgradeValue(t,t.level+1))).orElse(null);
     }
 
@@ -90,7 +99,7 @@ public final class BotPlanner {
             Tile tile = state.board.get(state.pending.tileId);
             long cost = state.phase.equals("buy") ? tile.price : Rules.buildCost(economics, tile);
             double gain = state.phase.equals("buy") ? value(tile, me.id) : upgradeValue(tile, tile.level + 1);
-            return action(!conservative && me.cash >= cost && me.cash - cost >= reserve && gain >= cost * (horizon == 1 ? .8 : .95) ? state.phase : "pass");
+            return action(me.cash >= cost && me.cash - cost >= reserve && gain >= cost * (horizon == 1 ? .8 : .95) + investmentRisk(cost) ? state.phase : "pass");
         }
         if (!conservative) {
             if(own.petalsAvailable && state.phase.equals("pre_roll") && state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0 && !PropertyEffects.frozen(t) && PropertyEffects.shieldCharges(t)==0)) return action("senbonzakuraStrike");
@@ -167,10 +176,17 @@ public final class BotPlanner {
             }
             case "anime_projection" -> a.cardId=c.cards.stream().max(Comparator.comparingDouble(this::keepValue)).orElseThrow().id;
             case "anime_defense" -> a.cardId=c.cards.stream().findFirst().orElseThrow().id;
-            case "anime_rewind" -> { a.accept=!conservative && state.dice!=null && state.dice<=2; if(a.accept) a.cardId=c.cards.getFirst().id; }
+            case "anime_rewind" -> {
+                a.accept = !conservative && state.dice != null && (nightmare ? shouldRewind(state.dice, c.rollBonus) : state.dice <= 2);
+                if (a.accept) a.cardId = c.cards.getFirst().id;
+            }
             case "anime_vote" -> { a.playerId=c.playerIds.stream().max(Comparator.comparingLong(id -> person(id).netWorth)).orElse(null); a.accept=a.playerId!=null; }
             case "gamble" -> a.accept = !conservative && gamble(c.content);
-            case "release", "movement_release" -> { a.cardId = (c.type.equals("movement_release")?c.cards:own.hand).stream().filter(card -> card.kind.equals("release") && !own.disabledCardIds.contains(card.id)).map(card -> card.id).findFirst().orElse(null); a.accept = a.cardId != null; }
+            case "release", "movement_release" -> {
+                a.cardId = (c.type.equals("movement_release")?c.cards:own.hand).stream().filter(card -> card.kind.equals("release") && !own.disabledCardIds.contains(card.id)).map(card -> card.id).findFirst().orElse(null);
+                a.accept = a.cardId != null && (!nightmare || conservative || c.portalMove == null || shouldCancelPortal(c.portalMove));
+                if (!a.accept) a.cardId = null;
+            }
             default -> throw new GameError("机器人尚未支持的私人选择：" + c.type);
         }
         return a;
@@ -279,8 +295,49 @@ public final class BotPlanner {
         return a;
     }
 
-    /** 输入本人收到的报价，使用与主动报价相同的现金、排名及交易后连片评分决定是否接受。 */
-    private boolean acceptTrade(Trade t) { return tradeScore(t, me) >= tradeMargin(t, me); }
+    /** 输入本人收到的报价，先判断是否应守住地产，再使用与主动报价相同的评分决定是否接受。 */
+    private boolean acceptTrade(Trade t) { return canGiveLand(t) && tradeScore(t, me) >= tradeMargin(t, me); }
+
+    /** 输入完整报价，判断噩梦档能否让出地产；资金健康时守地，交易能免于当前清算时允许破例。 */
+    private boolean canGiveLand(Trade t) {
+        if (!nightmare) return true;
+        boolean from = me.id.equals(t.fromId);
+        List<Integer> give = from ? t.giveTiles : t.wantTiles, want = from ? t.wantTiles : t.giveTiles;
+        if (give.isEmpty()) return true;
+        if (salePreventsLiquidation(t, give, want)) return true;
+
+        String buyer = from ? t.toId : t.fromId;
+        int size = state.board.size();
+        for (int id : give) for (int offset = -2; offset <= 0; offset++) {
+            Tile first = state.board.get(Math.floorMod(id + offset, size));
+            Tile middle = state.board.get((first.id + 1) % size);
+            Tile last = state.board.get((first.id + 2) % size);
+            if (ownedAfter(first, buyer, t) && ownedAfter(middle, buyer, t) && ownedAfter(last, buyer, t)) return false;
+        }
+
+        long lost = give.stream().filter(id -> !state.board.get(id).mortgaged).count()
+                - want.stream().filter(id -> !state.board.get(id).mortgaged).count();
+        if (lost > 0) {
+            double need = paymentNeed(me);
+            long cashAfter = me.cash + cashChange(t, me) + (from ? t.debtCredit : 0);
+            if (me.cash >= need || cashAfter < need) return false;
+            long held = state.board.stream().filter(tile -> me.id.equals(tile.ownerId) && !tile.mortgaged).count();
+            if (held - lost < 2) return false;
+        }
+        return rentalIncome(me, t) >= rentalIncome(me, null) * .7;
+    }
+
+    /** 输入报价和本次交换的地产，判断银行变现原本不够偿债、成交后却能够偿债的情形。 */
+    private boolean salePreventsLiquidation(Trade t, List<Integer> give, List<Integer> want) {
+        PendingDecision debt = state.pending;
+        if (debt == null || t.debtId == null || !t.debtId.equals(debt.id) || !me.id.equals(debt.playerId)) return false;
+        long funds = me.cash + liquidAssets.getOrDefault(me.id, 0L);
+        if (funds >= debt.amount) return false;
+        funds += cashChange(t, me) + t.debtCredit;
+        for (int id : give) funds -= Rules.propertyLiquidationValue(economics, state.board.get(id));
+        for (int id : want) funds += Rules.propertyLiquidationValue(economics, state.board.get(id));
+        return funds >= debt.amount;
+    }
 
     /** 无入参，枚举买卖、互换和抵债，仅挑选有明确动机、收益足够且对方可能接受的一份报价。 */
     private Action offer() {
@@ -337,7 +394,9 @@ public final class BotPlanner {
             else if (pay) candidate.giveCash = price;
             else candidate.wantCash = price;
             if (repeated(candidate)) continue;
-            Trade t = quote(candidate); double gain = tradeScore(t, me);
+            Trade t = quote(candidate);
+            if (!canGiveLand(t)) continue;
+            double gain = tradeScore(t, me);
             if (gain >= offerMargin(t) && gain > bestGain && tradeMotive(t, gain) && tradeScore(t, other) >= tradeMargin(t, other)) { best = candidate; bestGain = gain; }
         }
         return best;
@@ -450,8 +509,8 @@ public final class BotPlanner {
         double paid = (from ? t.giveCash : t.wantCash + t.debtCredit) + tileValues(from ? t.giveTiles : t.wantTiles, actor.id);
         return Math.max(1, paid) * tradeWeight(actor, -.1, .02, .04);
     }
-    /** 输入公开玩家与三档权重，返回该难度的权重；真人的交易意愿以普通策略估计，不读取私人意图。 */
-    private double tradeWeight(PublicPlayerVo actor, double easy, double normal, double hard) { return "easy".equals(actor.botDifficulty) ? easy : "hard".equals(actor.botDifficulty) ? hard : normal; }
+    /** 输入公开玩家与三档权重，噩梦沿用困难的议价权重，真人以普通估计。 */
+    private double tradeWeight(PublicPlayerVo actor, double easy, double normal, double hard) { return "easy".equals(actor.botDifficulty) ? easy : "hard".equals(actor.botDifficulty) || "nightmare".equals(actor.botDifficulty) ? hard : normal; }
     /** 输入公开玩家，返回风险储备加本人当前待付费用，不将他人的债务算给该玩家。 */
     private double paymentNeed(PublicPlayerVo actor) {
         return reserves.get(actor.id) + (state.pending != null && Set.of("rent", "debt").contains(state.pending.type) && actor.id.equals(state.pending.playerId) ? state.pending.amount : 0);
@@ -496,8 +555,9 @@ public final class BotPlanner {
                     }
                 }
                 case "remote" -> {
+                    double normal = rollValue(me, me.position, 0);
                     for (int point = 1; point <= 6; point++) {
-                        double gain = movementValue(me, me.position, point) - rollValue(me, me.position, 0);
+                        double gain = movementValue(me, me.position, point) - normal;
                         if (gain > score) { score = gain; candidate.point = point; }
                     }
                 }
@@ -531,8 +591,8 @@ public final class BotPlanner {
                     for (PublicPlayerVo p : state.players) if (!p.bankrupt) {
                         boolean self = p.id.equals(me.id); double gain;
                         if (c.kind.equals("swap")) {
-                            if (self || p.jailed) continue;
-                            gain = rollValue(me, p.position, 0) - rollValue(me, me.position, 0) - threat(p) * (rollValue(p, me.position, 0) - rollValue(p, p.position, 0));
+                            if (self || p.jailed || nightmare && p.defenseSpecializationTurns > 0) continue;
+                            gain = relocationGain(me, p.position) + relocationGain(p, me.position);
                         } else if (c.kind.equals("blast")) {
                             double average = 0; for (int i = 0; i < state.board.size(); i++) average += (rollValue(p, i, 0) + landingValue(p,i)) / state.board.size();
                             gain = (average - rollValue(p, p.position, 0)) * (self ? 1 : -threat(p));
@@ -549,7 +609,11 @@ public final class BotPlanner {
                 }
                 default -> score = expansionCard(c,candidate);
             }
-            double threshold = c.kind.equals("cash") ? 0 : keepValue(c) * (own.hand.size() >= (me.handLimit == null ? 6 : me.handLimit) ? .1 : .35);
+            boolean full = own.hand.size() >= (me.handLimit == null ? 6 : me.handLimit);
+            double threshold = c.kind.equals("cash") ? 0 : keepValue(c) * (full ? .1 : .35);
+            if (nightmare && movementKeepValue(c) > 0 && !(c.projected && c.expiresAtTurn == state.turnNumber)) {
+                threshold = Math.max(threshold, movementKeepValue(c) * (full ? .4 : .6));
+            }
             double adjusted = score - threshold;
             if (horizon == 1 && adjusted > 0) adjusted *= ThreadLocalRandom.current().nextDouble(.65, 1.35);
             if (adjusted > bestScore) { bestScore = adjusted; best = candidate; }
@@ -625,6 +689,7 @@ public final class BotPlanner {
                 }
             }
             case "voidTears" -> {
+                if (nightmare) return portalScore(action);
                 Tile from=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)).min(Comparator.comparingInt(t -> GameSupport.nearbyDistance(me.position,t.id,state.board.size()))).orElse(null);
                 Tile to=state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t) && t!=from).max(Comparator.comparingDouble(t -> landingValue(me,t.id))).orElse(null);
                 if(from!=null && to!=null) { action.tileId=from.id; action.secondTileId=to.id; return Math.max(0,landingValue(me,to.id)-landingValue(me,from.id)); }
@@ -639,8 +704,8 @@ public final class BotPlanner {
             }
             case "swapAny" -> {
                 for(PublicPlayerVo p:state.players) if(!p.bankrupt) for(PublicPlayerVo q:state.players) if(!q.bankrupt && !p.id.equals(q.id) && p.position!=q.position) {
-                    double gain=(p.id.equals(me.id)?1:-threat(p))*(rollValue(p,q.position,0)-rollValue(p,p.position,0))
-                            +(q.id.equals(me.id)?1:-threat(q))*(rollValue(q,p.position,0)-rollValue(q,q.position,0));
+                    if (nightmare && (p.defenseSpecializationTurns > 0 || q.defenseSpecializationTurns > 0)) continue;
+                    double gain=relocationGain(p,q.position)+relocationGain(q,p.position);
                     if(gain>best) { best=gain; action.playerId=p.id; action.secondPlayerId=q.id; }
                 }
             }
@@ -654,7 +719,7 @@ public final class BotPlanner {
                             gain=0; for(int point=1;point<=6;point++) gain+=threat(p)*(movementValue(p,p.position,point)-movementValue(p,p.position,Math.floorDiv(point,2)))/6;
                         }
                         case "reaper" -> { if((me.handLimit==null?6:me.handLimit)<=1 || (p.handLimit==null?6:p.handLimit)<=1) continue; gain=base*(threat(p)+.5); }
-                        case "shadowstep" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6) continue; gain=landingValue(me,p.position)+(p.position==0?startIncome():0)-rollValue(me,me.position,0); }
+                        case "shadowstep" -> { if(GameSupport.nearbyDistance(me.position,p.position,state.board.size())>6) continue; gain=landingValue(me,p.position)+(p.position==0?(nightmare?startRewardValue():startIncome()):0)-rollValue(me,me.position,0); if(nightmare) gain+=.85*future(me)[p.position]; }
                         default -> throw new IllegalStateException("未处理的新增玩家道具");
                     }
                     if(gain>best) { best=gain; action.playerId=p.id; }
@@ -674,6 +739,7 @@ public final class BotPlanner {
                         }
                         case "homeTeleport" -> {
                             if(!self) continue; gain=-rollValue(me,me.position,0);
+                            if(nightmare) gain+=.85*future(me)[t.id];
                             if(!t.mortgaged && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id) && me.cash>=Rules.buildCost(economics,t)) gain+=Math.max(0,upgradeValue(t,t.level+1)-Rules.buildCost(economics,t));
                             if(t.treasure) gain+=PropertyEffects.baseRent(economics,t);
                         }
@@ -686,6 +752,127 @@ public final class BotPlanner {
         }
         return best;
     }
+
+    /** 输入换位者及交换后位置，比较其下一次步行的净收益；休息会推迟收益，换位本身不领奖。 */
+    private double relocationGain(PublicPlayerVo p, int to) {
+        double weight = p.id.equals(me.id) ? 1 : -threat(p);
+        return weight * (nightmare ? Math.pow(.65, p.skipTurns) : 1) * (rollValue(p, to, 0) - rollValue(p, p.position, 0));
+    }
+
+    /** 输入裂隙命令，枚举合法端点和各玩家下一次公平掷骰，返回双方相对不出牌的期望差。 */
+    private double portalScore(Action action) {
+        List<Tile> ends = state.board.stream().filter(t -> t.type.equals("property") && !PropertyEffects.frozen(t)
+                && (t.ownerId == null || person(t.ownerId).defenseSpecializationTurns == 0)).toList();
+        List<PublicPlayerVo> walkers = new ArrayList<>();
+        Map<String, Walk[]> baseline = new HashMap<>();
+        for (int offset = 0; offset < state.turnOrder.size(); offset++) {
+            PublicPlayerVo p = person(state.turnOrder.get((state.turnIndex + offset) % state.turnOrder.size()));
+            if (p.bankrupt || p.skipTurns > 0) continue;
+            walkers.add(p);
+            Walk[] paths = new Walk[6];
+            for (int point = 1; point <= 6; point++) {
+                paths[point - 1] = walk(p, p.position, rollSteps(p, point, 0), -1, -1, 0);
+            }
+            baseline.put(p.id, paths);
+        }
+        double best = Double.NEGATIVE_INFINITY;
+        for (int i = 0; i < ends.size(); i++) for (int j = i + 1; j < ends.size(); j++) {
+            int a = ends.get(i).id, b = ends.get(j).id;
+            double score = 0, available = 1;
+            for (PublicPlayerVo p : walkers) {
+                double delta = 0;
+                int triggered = 0;
+                Walk[] paths = baseline.get(p.id);
+                for (int point = 1; point <= 6; point++) {
+                    Walk path = walk(p, p.position, rollSteps(p, point, 0), a, b, 0);
+                    Walk normal = paths[point - 1];
+                    if (path.triggered) triggered++;
+                    if (path.position != normal.position || path.rewards != normal.rewards) {
+                        delta += walkValue(p, path) - walkValue(p, normal);
+                    }
+                }
+                score += available * (p.id.equals(me.id) ? 1 : -threat(p)) * delta / 6;
+                // 新裂隙只在尚未被前一名玩家踩掉的分支里，继续影响后面的玩家。
+                available *= (6 - triggered) / 6.0;
+                if (available == 0) break;
+            }
+            if (score > best) { best = score; action.tileId = a; action.secondTileId = b; }
+        }
+        return best;
+    }
+
+    private record Walk(int position, int rewards, boolean triggered) {}
+
+    /** 输入本人已触发的裂隙响应，对比传送和原地续走，只有明显有害时才花掉解控卡。 */
+    private boolean shouldCancelPortal(ContentChoiceVo.PortalMove portal) {
+        int entry = me.position, exit = portal.exit();
+        Walk accept = continuePortal(exit, portal, (1L << entry) | (1L << exit));
+        Walk cancel = continuePortal(entry, portal, 0);
+        return walkValue(me, cancel) - walkValue(me, accept) > startIncome() * .25;
+    }
+
+    /** 输入响应后的起点、已确定剩余移动及已消耗端点，返回处理脚下陷阱后的续走结果。 */
+    private Walk continuePortal(int from, ContentChoiceVo.PortalMove portal, long used) {
+        if (portal.steps() == 0 || walkBlocked(me, state.board.get(from), portal.ignoreMeteors())) return new Walk(from, 0, false);
+        return walk(me, from, portal.steps(), -1, -1, used, portal.ignoreMeteors());
+    }
+
+    /** 输入基础步数和加码，返回先减半、再加码、最后翻倍的实际步数。 */
+    private int rollSteps(PublicPlayerVo p, int point, int bonus) {
+        int base = p.defenseSpecializationTurns > 0 ? 1 : point;
+        int steps = (p.nextRollHalf ? Math.floorDiv(base, 2) : base) + bonus;
+        return p.nextMoveDouble ? steps * 2 : steps;
+    }
+
+    /** 输入普通步行及其裂隙参数，返回落点、起点奖励次数及新裂隙是否消耗。 */
+    private Walk walk(PublicPlayerVo p, int from, int steps, int a, int b, long used) {
+        return walk(p, from, steps, a, b, used, false);
+    }
+
+    /** 输入玩家、起点、实际步数、新裂隙端点和已消耗端点；喷射续走可忽略陨星。 */
+    private Walk walk(PublicPlayerVo p, int from, int steps, int a, int b, long used, boolean ignoreMeteors) {
+        int position = from, rewards = steps == 0 && from == 0 ? 1 : 0;
+        boolean triggered = false;
+        for (int i = 0; i < Math.abs(steps); i++) {
+            position = Math.floorMod(position + Integer.signum(steps), state.board.size());
+            if (position == 0 && steps > 0) rewards++;
+            Tile t = state.board.get(position);
+            if (PropertyEffects.frozen(t)) continue;
+            if ((used & (1L << position)) == 0) {
+                int exit = -1;
+                if (position == a || position == b) {
+                    exit = position == a ? b : a;
+                    triggered = true;
+                } else if (t.portalTileId != null && t.portalTileId != a && t.portalTileId != b) {
+                    Tile paired = state.board.get(t.portalTileId);
+                    if (!PropertyEffects.frozen(paired) && Objects.equals(paired.portalTileId, position)) exit = paired.id;
+                }
+                if (exit >= 0) {
+                    used |= (1L << position) | (1L << exit);
+                    position = exit;
+                    t = state.board.get(position);
+                }
+            }
+            if (walkBlocked(p, t, ignoreMeteors)) break;
+        }
+        if (steps < 0 && position == 0) rewards++;
+        return new Walk(position, rewards, triggered);
+    }
+
+    /** 输入玩家、脚下地块及陨星忽略标记，判断是否被公开的陷阱截停。 */
+    private boolean walkBlocked(PublicPlayerVo p, Tile t, boolean ignoreMeteors) {
+        return p.trapImmunityTurns == 0 && !PropertyEffects.frozen(t) && (t.barrier || !ignoreMeteors && t.meteorCharges > 0);
+    }
+
+    /** 输入预测路径，返回实际起点收益、用更新现金估计的落点价值，以及后续位置价值。 */
+    private double walkValue(PublicPlayerVo p, Walk path) {
+        return path.rewards * startRewardValue()
+                + landingValue(p, path.position, p.cash + path.rewards * startIncome())
+                + .85 * future(p)[path.position];
+    }
+
+    /** 无入参，返回本局起点现金与随机补给的策略估值。 */
+    private double startRewardValue() { return startIncome() * (1 + .2 * Rules.startCards(state.players.size())); }
 
     /** 输入保守标记，返回公开阶段允许的活动操作；含真人的结果等待手动关闭，全机器人活动自行结束。 */
     private Action activity(boolean conservative) {
@@ -762,6 +949,7 @@ public final class BotPlanner {
 
     /** 输入移动者和基础步数，返回落点价值与沿途起点收入；只估计尚未发生的随机事件。 */
     private double movementValue(PublicPlayerVo p, int from, int steps) {
+        if (nightmare) return walkValue(p, walk(p, from, rollSteps(p, steps, 0), -1, -1, 0));
         int to = destination(p, from, steps, null, true);
         return landingValue(p, to) + movementIncome(p, from, steps, true) + (horizon == 1 ? 0 : .85 * future(p)[to]);
     }
@@ -796,21 +984,76 @@ public final class BotPlanner {
     }
     /** 输入玩家、起点及掷骰加码，返回六种公平骰子落点的平均价值。 */
     private double rollValue(PublicPlayerVo p, int from, int bonus) {
-        double result = 0; for (int point = 1; point <= 6; point++) result += movementValue(p, from, point + bonus) / 6; return result;
+        double result = 0;
+        for (int point = 1; point <= 6; point++) {
+            result += (nightmare ? walkRollValue(p, from, point, bonus) : movementValue(p, from, point + bonus)) / 6;
+        }
+        return result;
+    }
+
+    /** 输入玩家、起点、骰点和已生效加码，返回实际路径的策略估值。 */
+    private double walkRollValue(PublicPlayerVo p, int from, int point, int bonus) {
+        return walkValue(p, walk(p, from, rollSteps(p, point, bonus), -1, -1, 0));
+    }
+
+    /** 输入已揭晓骰点和本次加码，只有重掷的平均收益足以覆盖留牌价值时才重掷。 */
+    private boolean shouldRewind(int point, int bonus) {
+        double current = walkRollValue(me, me.position, point, bonus);
+        return rollValue(me, me.position, bonus) - current > startIncome() * .25;
     }
 
     /** 输入玩家和落点，评估可见租金、投资机会及入狱的收入损失，不推测隐藏卡面。 */
-    private double landingValue(PublicPlayerVo p, int id) {
+    private double landingValue(PublicPlayerVo p, int id) { return landingValue(p, id, p.cash); }
+
+    /** 输入玩家、落点和沿途收入结算后的现金，估计该次落点的买地机会或付款风险。 */
+    private double landingValue(PublicPlayerVo p, int id, long cash) {
         Tile t = state.board.get(id);
         if (t.type.equals("jail")) return -startIncome() * .5;
         if (!t.type.equals("property")) return 0;
         if (PropertyEffects.frozen(t)) return 0;
         if (t.treasure) return PropertyEffects.baseRent(economics,t);
-        if (t.ownerId == null) return p.cash - t.price >= reserve ? Math.max(0, value(t, p.id) - t.price) : 0;
+        if (t.ownerId == null) return cash - t.price >= (nightmare && !conservative ? reserves.get(p.id) : reserve) ? Math.max(0, value(t, p.id) - t.price) : 0;
         if (t.ownerId.equals(p.id) || person(t.ownerId).jailed) return 0;
         double amount = rent(t, t.level) * (p.nextRentDouble ? 2 : 1);
         if (p.nextPaymentWaiver) amount = 0;
-        return -amount - Math.max(0, amount - p.cash) * (horizon == 6 ? 2 : 1);
+        return -amount - (nightmare && !conservative ? rentRisk(p, amount, cash) : Math.max(0, amount - cash) * (horizon == 6 ? 2 : 1));
+    }
+
+    /** 输入付款人、预测租金和可用现金，返回因被迫变现或付不清而增加的损失。 */
+    private double rentRisk(PublicPlayerVo p, double amount, double cash) {
+        double shortfall = Math.max(0, amount - cash);
+        return 2 * shortfall + 4 * Math.max(0, shortfall - liquidAssets.getOrDefault(p.id, 0L));
+    }
+
+    /** 输入计划支出，返回下一次公平掷骰的额外现金风险；不把刚投入的钱视为可用现金。 */
+    private double investmentRisk(long cost) {
+        if (!nightmare || cost > me.cash || me.nextPaymentWaiver) return 0;
+        double risk = 0;
+        for (int point = 1; point <= 6; point++) {
+            Tile t = state.board.get(destination(me, me.position, point, null, true));
+            if (!t.type.equals("property") || t.treasure || t.ownerId == null || me.id.equals(t.ownerId) || person(t.ownerId).jailed) continue;
+            double amount = rent(t, t.level) * (me.nextRentDouble ? 2 : 1);
+            double cash = me.cash + movementIncome(me, me.position, point, true);
+            risk += (rentRisk(me, amount, cash - cost) - rentRisk(me, amount, cash)) / 6;
+        }
+        return risk;
+    }
+
+    /** 输入己方地产和拟升级等级，按对手下一次掷骰可能撞上该格的概率估计资金压力。 */
+    private double upgradePressure(Tile t, int level) {
+        if (!nightmare || conservative || me.jailed || t.mortgaged || PropertyEffects.frozen(t) || t.treasure) return 0;
+        double pressure = 0;
+        for (PublicPlayerVo p : state.players) {
+            if (p.bankrupt || p.id.equals(me.id) || p.skipTurns > 0 || p.nextPaymentWaiver) continue;
+            double before = rent(t, t.level) * (p.nextRentDouble ? 2 : 1);
+            double after = rent(t, level) * (p.nextRentDouble ? 2 : 1);
+            for (int point = 1; point <= 6; point++) {
+                if (destination(p, p.position, point, null, true) != t.id) continue;
+                double cash = p.cash + movementIncome(p, p.position, point, true);
+                pressure += Math.min(startIncome(), rentRisk(p, after, cash) - rentRisk(p, before, cash)) * threat(p) / 6;
+            }
+        }
+        return pressure;
     }
 
     /** 输入地产与持有人，返回结合公开位置、未来收入和赎回负担的持有价值。 */
@@ -822,8 +1065,8 @@ public final class BotPlanner {
         double result = capital * (horizon == 1 ? .95 : 1) + income * (horizon == 1 ? .8 : 1.4);
         return t.mortgaged ? Math.max(0, result - Rules.redeemCost(t)) : result;
     }
-    /** 输入地产与升级后的等级，返回新增资产和预计租金的收益。 */
-    private double upgradeValue(Tile t, int level) { return valueAtLevel(t, me.id, level) - value(t, me.id); }
+    /** 输入己方地产与升级后的等级，返回资产和租金收益，噩梦档计入短期资金压力。 */
+    private double upgradeValue(Tile t, int level) { return valueAtLevel(t, me.id, level) - value(t, me.id) + upgradePressure(t, level); }
     /** 输入地产与持有人，累计对手前瞻落点与长期平均客流，服刑期间折减近期收入。 */
     private double traffic(Tile t, String owner) {
         double sum = 0;
@@ -841,6 +1084,7 @@ public final class BotPlanner {
     /** 输入本人卡牌，根据用途、金额及稀缺性返回保留价值；防御卡同时考虑公开地产的下一级租金风险。 */
     private double keepValue(Card c) {
         double base = startIncome() * .25;
+        if (nightmare && movementKeepValue(c) > 0) return movementKeepValue(c);
         return switch (c.kind) {
             case "cash" -> parameter(c, "amount", 0);
             case "immunity", "halfPayment" -> defenseKeepValue(c);
@@ -848,6 +1092,16 @@ public final class BotPlanner {
             case "freeUpgrade", "fullUpgrade" -> Math.max(base, state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && !t.mortgaged && t.level < Rules.MAX_LEVEL).mapToDouble(t -> upgradeValue(t, c.kind.equals("fullUpgrade") ? Rules.MAX_LEVEL : t.level + 1)).max().orElse(0));
             case "fullDemolish" -> Math.max(base, state.board.stream().filter(t -> t.ownerId != null && !me.id.equals(t.ownerId) && t.level > 0).mapToDouble(t -> value(t, t.ownerId) - valueAtLevel(t, t.ownerId, 0)).max().orElse(0));
             default -> base;
+        };
+    }
+
+    /** 输入卡牌，返回噩梦档对下次抢起点、绕租或封锁对手所保留的机会价值，其他卡返回零。 */
+    private double movementKeepValue(Card c) {
+        return startIncome() * switch (c.kind) {
+            case "voidTears", "swapAny" -> 1;
+            case "swap", "remote", "shadowstep" -> .8;
+            case "fixed", "move", "stay", "bonus", "homeTeleport" -> .55;
+            default -> 0;
         };
     }
     /** 输入本人防御卡，返回经济规模及当前、可升级地产租金形成的保留价值；减半卡保留通用费用用途。 */

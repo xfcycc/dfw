@@ -10,7 +10,7 @@ import lombok.Setter;
 public class Player {
     /** 随对局保存的统计及冻结结算；旧存档可为空。 */
     public MatchStats matchStats;
-    /** 机器人难度；空值表示真人，easy、normal、hard。 */
+    /** 机器人难度；空值表示真人，easy、normal、hard、nightmare。 */
     public String botDifficulty;
     /** 最近主动报价的全局回合编号，用于限制跨回合报价频率。 */
     public int botTradeTurn = -1;

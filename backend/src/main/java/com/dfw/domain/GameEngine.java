@@ -102,7 +102,7 @@ public class GameEngine {
             }
             case "addBot", "setBotDifficulty" -> {
                 require(room.hostId.equals(player.id) && room.status.equals("lobby"), "只有房主可在大厅管理机器人");
-                require(action.botDifficulty != null && Set.of("easy", "normal", "hard").contains(action.botDifficulty), "请选择简单、普通或困难");
+                require(action.botDifficulty != null && Rules.BOT_DIFFICULTIES.contains(action.botDifficulty), "请选择简单、普通、困难或噩梦");
                 if (action.type.equals("addBot")) {
                     require(room.players.size() < Rules.MAX_PLAYERS, "房间已满，最多六名玩家");
                     Set<String> colors = new HashSet<>(); room.players.forEach(p -> colors.add(p.color)); int index = 0;

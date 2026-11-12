@@ -7,7 +7,7 @@ import { computed, nextTick, onBeforeUnmount, provide, ref, shallowRef, watch } 
 import { mapTargetKey, type MapTargetRequest } from '../composables/useMapTarget';
 import { useRoute } from 'vue-router';
 import { isKamui, hasPropertyEffects, baseRentFor, ITEMS, mapLength, MAP_SIZES, mortgageValue, propertyLiquidationValue, redeemCost, rentFor, ruleMoney, startCards } from '../../shared/rules';
-import type { BotDifficulty, Card, ChatReference, MapSize, Tile } from '../../shared/types';
+import { BOT_DIFFICULTY_LABELS, type BotDifficulty, type Card, type ChatReference, type MapSize, type Tile } from '../../shared/types';
 import { readSession, useGameStore } from '../stores/game';
 import { useTurnSound } from '../composables/useTurnSound';
 import { playSound } from '../audio';
@@ -72,7 +72,7 @@ async function surrender(): Promise<void> {
 }
 const nickname = ref('');
 const botDifficulty = ref<BotDifficulty>('normal');
-const botLevels = [{ value: 'easy', label: '简单' }, { value: 'normal', label: '普通' }, { value: 'hard', label: '困难' }] as const;
+const botLevels = (Object.keys(BOT_DIFFICULTY_LABELS) as BotDifficulty[]).map(value => ({ value, label: BOT_DIFFICULTY_LABELS[value] }));
 const canRename = computed(() => !props.spectator && !!game.me && game.connection === 'online' && !game.busy && !game.settling && !game.room?.recoveryPending);
 /** 无入参，使用本人当前昵称打开改名弹窗，无返回值。 */
 function openRename(): void {

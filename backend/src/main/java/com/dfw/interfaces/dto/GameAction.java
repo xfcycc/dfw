@@ -32,7 +32,7 @@ public class GameAction {
     public Integer activityRound;
     /** 玩法选择或手势编码。 */
     public Integer selection;
-    /** 房主选择的机器人难度，easy、normal、hard。 */
+    /** 房主选择的机器人难度，easy、normal、hard、nightmare。 */
     public String botDifficulty;
     /** 操作类型。 */
     public String type;

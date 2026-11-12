@@ -39,4 +39,11 @@ public class ContentChoiceVo {
     public int handLimit;
     /** 已固定的双骰候选，仅实际选择者可见。 */
     public List<Integer> numbers;
+    /** 时间溯行选择中本人这次已生效的掷骰加码。 */
+    public int rollBonus;
+    /** 位移抵消窗口中已确定的裂隙续走信息，仅向实际移动者发送。 */
+    public PortalMove portalMove;
+
+    /** 本次裂隙的出口、实际剩余步数与是否忽略陨星。 */
+    public record PortalMove(int exit, int steps, boolean ignoreMeteors) {}
 }

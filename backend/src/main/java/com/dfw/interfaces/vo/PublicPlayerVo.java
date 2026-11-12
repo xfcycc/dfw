@@ -9,7 +9,7 @@ import lombok.Setter;
 public class PublicPlayerVo {
     /** 已冻结的个人战报；进行中或旧存档未记录时为空。 */
     public PlayerSettlementVo settlement;
-    /** 机器人难度；空值表示真人，easy、normal、hard。 */
+    /** 机器人难度；空值表示真人，easy、normal、hard、nightmare。 */
     public String botDifficulty;
     /** 已持有的一次性强制费用免单状态。 */
     public boolean nextPaymentWaiver;

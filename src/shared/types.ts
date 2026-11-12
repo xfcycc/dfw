@@ -6,7 +6,9 @@ export interface EconomySettings {
   fixedAmounts: Record<string, number>;
 }
 /** 机器人难度；未设置的席位为真人。 */
-export type BotDifficulty = 'easy' | 'normal' | 'hard';
+export type BotDifficulty = 'easy' | 'normal' | 'hard' | 'nightmare';
+/** 大厅选项和对局席位共用的难度名称。 */
+export const BOT_DIFFICULTY_LABELS: Record<BotDifficulty, string> = { easy: '简单', normal: '普通', hard: '困难', nightmare: '噩梦' };
 /** 大厅中由房主选择的地图大小。 */
 export type MapSize = 'small' | 'medium' | 'large';
 /** 道具种类；仅持有人收到具体手牌。 */

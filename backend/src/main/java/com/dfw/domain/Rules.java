@@ -1,9 +1,12 @@
 package com.dfw.domain;
 
 import java.util.Objects;
+import java.util.Set;
 
 /** 首版经济和人数规则的唯一后端定义。 */
 public final class Rules {
+    /** 房主在普通房间大厅可以选择的机器人难度。 */
+    public static final Set<String> BOT_DIFFICULTIES = Set.of("easy", "normal", "hard", "nightmare");
     public static final int MIN_PLAYERS = 2, MAX_PLAYERS = 6, INITIAL_CARDS = 2, MAX_LEVEL = 3, MAX_TILES = 64;
     public static final long INITIAL_CASH = 6000, START_INCOME = 1000;
     public static final int[] PRICES = {400, 600, 800, 1200, 1600}, RENT_MULTIPLIERS = {1, 3, 6, 10};

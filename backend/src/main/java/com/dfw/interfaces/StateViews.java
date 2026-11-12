@@ -61,6 +61,13 @@ public final class StateViews {
             if(choice!=null && choice.playerId.equals(id)) {
                 ContentChoiceVo v=new ContentChoiceVo(); v.id=choice.id; v.type=choice.type; v.tileIds=ContentService.choiceTargets(room,choice); v.cards=choice.cards; v.cardId=choice.cardId;
                 v.numbers=choice.numbers; v.cardOptions=choice.cardOptions; v.materialIds=choice.materialIds; v.playerIds=choice.playerIds; v.prompt=choice.prompt; v.content=choice.content; v.skipTurns=choice.skipTurns; v.jailed=choice.jailed; v.discardCash=choice.discardCash; v.handLimit=PropertyEffects.handLimit(owner); value.choice=v;
+                if (choice.type.equals("anime_rewind")) v.rollBonus = room.runtime.rollBonus;
+                if (choice.type.equals("movement_release")) for (GameEffect effect : room.runtime.effects) {
+                    if ("PORTAL_TRANSFER".equals(effect.type) && choice.effectIds.contains(effect.id)) {
+                        v.portalMove = new ContentChoiceVo.PortalMove(effect.destination, (int) effect.amount, "BOOST".equals(effect.selector));
+                        break;
+                    }
+                }
             }
         }
         value.soulRingRemaining=NetaService.soulRingRemaining(room,owner); value.soulRingTurns=NetaService.soulRingTurns(room,owner);
