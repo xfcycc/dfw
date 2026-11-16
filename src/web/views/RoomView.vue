@@ -123,9 +123,15 @@ const selectedCardActive = ref(false);
 const selectedCardTurn = ref('');
 const mapView = ref<HTMLElement>();
 const dashboardView = ref<HTMLElement>();
-const classicLayout = ref(localStorage.getItem('dfw:room-layout') === 'classic');
+const savedLayout = ref(localStorage.getItem('dfw:room-layout'));
+const classicLayout = computed(() => savedLayout.value === null
+  ? !props.spectator && window.matchMedia('(pointer: coarse)').matches
+  : savedLayout.value === 'classic');
 /** 无入参，切换布局并记住本机偏好，不改变对局或当前行动，无返回值。 */
-function toggleLayout(): void { classicLayout.value = !classicLayout.value; localStorage.setItem('dfw:room-layout', classicLayout.value ? 'classic' : 'single'); }
+function toggleLayout(): void {
+  savedLayout.value = classicLayout.value ? 'single' : 'classic';
+  localStorage.setItem('dfw:room-layout', savedLayout.value);
+}
 const mobileQuery = window.matchMedia('(max-width: 1100px), (max-height: 579px), (pointer: coarse)');
 const singleMobileViewport = ref(mobileQuery.matches);
 const mobileViewport = computed(() => singleMobileViewport.value);
