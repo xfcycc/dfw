@@ -237,7 +237,7 @@ function resizeBoard(): void {
   else if (props.spectator && props.compact && !following.value) size.value = Math.max(1, width - 6);
   else if (props.stretch) size.value = Math.max(dimensions.value.columns * 112 + 16, width - 6);
   else size.value = props.compact ? Math.max(760, dimensions.value.columns * 64, Math.min(1280, width)) : Math.max(560, Math.min(900, width, window.innerHeight - 280));
-  if (desktopSingleScreen.value) { zoom.value = 1; fullMap.value = true; return; }
+  if (desktopSingleScreen.value) { spellView = undefined; zoom.value = 1; fullMap.value = true; return; }
   if (localEffectCamera.value) { focusEffect(); return; }
   if (boardEffect.value && (cardSpellFor(boardEffect.value) || fullCardSpellFor(boardEffect.value))) { fitBoard(); return; }
   if (props.targeting) return;
@@ -336,8 +336,9 @@ function focusEffect(): void {
     effectCamera.value = { left: viewport.value.scrollLeft, top: viewport.value.scrollTop };
   });
 }
-// 输入当前目标演出，移动端局部定位并逐个播放，结束后恢复原模式和视野。
+// 输入当前目标演出，桌面单屏保持铺满；其他布局临时调整视野并在需要时恢复，无返回值。
 watch(boardEffect, effect => {
+  if (desktopSingleScreen.value) return;
   if (effect && (localEffects() || cardSpellFor(effect) || fullCardSpellFor(effect))) {
     if (!spellView && (localEffects() || !fullMap.value)) spellView = { zoom: zoom.value, size: size.value, fullMap: fullMap.value, left: viewport.value?.scrollLeft ?? 0, top: viewport.value?.scrollTop ?? 0 };
     if (localEffects()) focusEffect(); else fitBoard();
