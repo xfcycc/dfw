@@ -1721,13 +1721,13 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SSR",
+                "rarity": "UR",
                 "values": {},
                 "skins": [
                   {
                     "id": "chance_your_name",
                     "name": "你的名字。",
-                    "rarity": "SSR",
+                    "rarity": "UR",
                     "quote": "君の、名前は……？",
                     "description": "东京的石阶上，泷和三叶擦肩而过。走出几步，泷终于回过头叫住她。明明想不起对方的名字，两个人却都落下了眼泪。"
                   }

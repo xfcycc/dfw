@@ -16,7 +16,7 @@
 
 2026-10-15：接入 342 张逐条目插画，包括道具 111 张、机会 121 张、财富 110 张（包含目前停用的 12 条再次行动素材）。采用苏暖暖人物与童话小镇主题，按条目效果和题材区分动作、道具及场景。运行图片已压缩为等尺寸 WebP，经本机 PicGo 上传至阿里云 OSS，`src/web/card-illustrations.json` 以真实皮肤 ID 映射 `https://pic.caiguoyu.cn/typora/` 下的 HTTPS 地址。512×512 PNG 原图、原始图集、提示词、条目映射与离线浏览页保存在 `generated-assets/su-nuannuan-2026-10-15/`。
 
-2026-11-17：「你的名字。」使用[石阶重逢插画](https://pic.caiguoyu.cn/typora/dfw-chance/chance_your_name-d8b1d8272a8d.webp)，1254×1254 WebP，独立插画不带框和文字。皮肤 ID 为 `chance_your_name`，运行时叠加共用 SSR 卡框和文案。OSS 回读确认 HTTP 200、`image/webp`、452058 字节及 SHA-256 与本地一致。
+2026-11-17：「你的名字。」使用[石阶重逢插画](https://pic.caiguoyu.cn/typora/dfw-chance/chance_your_name-d8b1d8272a8d.webp)，1254×1254 WebP，独立插画不带框和文字。皮肤 ID 为 `chance_your_name`，运行时叠加共用 UR 卡框和文案。OSS 回读确认 HTTP 200、`image/webp`、452058 字节及 SHA-256 与本地一致。
 
 2026-11-17：「霍格沃茨防线」使用[双层护罩插画](https://pic.caiguoyu.cn/typora/20261117190739091.webp)，由皮肤 `fortune_neta_stone_guard` 加载。保留 1536×1024 横版构图，外框和文案由共用 UR 卡片组件渲染。OSS 回读确认 HTTP 200、`image/webp`、249254 字节，文件与上传版本一致。
 

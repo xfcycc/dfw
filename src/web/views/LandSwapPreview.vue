@@ -9,7 +9,7 @@ import Modal from '../components/Modal.vue';
 
 const actorId = 'you';
 const card: ContentResult = {
-  id: 'preview-your-name', skinId: 'chance_your_name', pool: 'chance', rarity: 'SSR', name: '你的名字。',
+  id: 'preview-your-name', skinId: 'chance_your_name', pool: 'chance', rarity: 'UR', name: '你的名字。',
   quote: '君の、名前は……？',
   description: '东京的石阶上，泷和三叶擦肩而过。走出几步，泷终于回过头叫住她。明明想不起对方的名字，两个人却都落下了眼泪。',
   effect: '自选自己与对手各1处地产，强制互换产权。差价不超过低价地产估值的10%，由拿到较贵地产的一方补足。',
@@ -96,7 +96,7 @@ async function submit(action: Extract<GameAction, { type: 'contentDecision' }>):
 <template>
   <main class="swap-demo">
     <header class="demo-heading">
-      <div><span class="eyebrow">SSR · 机会事件模拟</span><h1>你的名字。</h1><p>用样例地产体验强制换地。所有变更只在这个页面里生效。</p></div>
+      <div><span class="eyebrow">UR · 机会事件模拟</span><h1>你的名字。</h1><p>用样例地产体验强制换地。所有变更只在这个页面里生效。</p></div>
       <button type="button" class="button primary" @click="replay">{{ result || step ? '重置并再试一次' : '模拟抽到事件' }}</button>
     </header>
     <div class="demo-layout">

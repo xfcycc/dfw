@@ -65,7 +65,8 @@ def classify(pool, effect):
 
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
-    if kind in {'districtRent', 'land_swap'}: return 'SSR'
+    if kind == 'districtRent': return 'SSR'
+    if kind == 'land_swap': return 'UR'
     if kind == 'shield' and values.get('charges') == 3: return 'UR'
     if kind in NETA_RARITIES: return NETA_RARITIES[kind]
     if kind in CROSSOVER_RARITIES: return CROSSOVER_RARITIES[kind]

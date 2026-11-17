@@ -70,6 +70,8 @@ public class ArchiveRules {
     /** 换地事件单独加入及与地产护盾事件一并加入时的默认摘要。 */
     private static final String LAND_SWAP_RULES = "2c4ed8e968bb96e08c22af5d1d1977c97de112b136b2c4f3534e227da27a760a";
     private static final String LAND_SWAP_AND_STONE_GUARD_RULES = "9e54eb732c14f85394bf8f648aa269fe136feb22366c3564c11fd7a80751dc59";
+    /** 「你的名字。」升为 UR 后的默认摘要，继续接受 SSR 版本保存的对局。 */
+    private static final String UR_LAND_SWAP_RULES = "8cdd0666941b6a0f970ff28d08784630467865274d2ebefd9fb440718dde2e20";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -88,7 +90,8 @@ public class ArchiveRules {
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
         boolean stoneGuardContent = STONE_GUARD_RULES.equals(digest);
-        boolean combinedContent = LAND_SWAP_AND_STONE_GUARD_RULES.equals(digest);
+        boolean urLandSwapContent = UR_LAND_SWAP_RULES.equals(digest);
+        boolean combinedContent = LAND_SWAP_AND_STONE_GUARD_RULES.equals(digest) || urLandSwapContent;
         boolean landSwapContent = LAND_SWAP_RULES.equals(digest) || combinedContent;
         boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest) || stoneGuardContent || landSwapContent;
         boolean cardBuffContent = CARD_BUFF_RULES.equals(digest) || rentOddsContent;
@@ -98,6 +101,7 @@ public class ArchiveRules {
                 || stoneGuardContent && DISTRICT_RENT_ODDS_RULES.equals(savedDigest)
                 || landSwapContent && DISTRICT_RENT_ODDS_RULES.equals(savedDigest)
                 || combinedContent && (STONE_GUARD_RULES.equals(savedDigest) || LAND_SWAP_RULES.equals(savedDigest))
+                || urLandSwapContent && LAND_SWAP_AND_STONE_GUARD_RULES.equals(savedDigest)
                 || rentOddsContent && CARD_BUFF_RULES.equals(savedDigest)
                 || cardBuffContent && TORNADO_RULES.equals(savedDigest)
                 || districtContent && (DISTRICT_RENT_RULES.equals(savedDigest) || REMOTE_CONSTRUCTION_RULES.equals(savedDigest))
