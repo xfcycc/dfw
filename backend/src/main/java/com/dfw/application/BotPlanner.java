@@ -488,9 +488,10 @@ public final class BotPlanner {
         return cashChange(t, actor) + property + debt + liquidity + clusterValue(actor, t) - clusterValue(actor, null) - retentionCost(t, actor);
     }
 
-    /** 输入玩家及可选报价，返回公开地产的预计租金总收入，抵押和冻结地产不计入。 */
+    /** 输入玩家及可选报价，按交易后产权和连片计算预计租金，停租地产不计入。 */
     private double rentalIncome(PublicPlayerVo actor, Trade t) {
-        return state.board.stream().filter(tile -> ownedAfter(tile, actor.id, t)).mapToDouble(tile -> rent(tile, tile.level) * traffic(tile, actor.id)).sum();
+        return state.board.stream().filter(tile -> ownedAfter(tile, actor.id, t))
+                .mapToDouble(tile -> rent(tile, tile.level, 1, PropertyEffects.connectedRentPercent(state.board, tile, neighbor -> ownedAfter(neighbor, actor.id, t))) * traffic(tile, actor.id)).sum();
     }
 
     /** 输入报价与持有人，按失去的收入占比和高租金计算惜售补偿；换回收入资产、资金紧张时降低代价。 */
@@ -507,15 +508,15 @@ public final class BotPlanner {
                 + lostIncome * tradeWeight(actor, .3, .8, 1.2)) * (1 - cashPressure(actor) * .85);
     }
 
-    /** 输入玩家与可选报价，按交易前后真实相邻地产计算策略价值；特殊格中断，抵押地产折减，不增加实际租金。 */
+    /** 输入玩家与可选报价，估算同街区相邻地产的长期经营价值；保留抵押地产赎回后的潜力。 */
     private double clusterValue(PublicPlayerVo actor, Trade t) {
         double result = 0; int size = state.board.size();
         for (int i = 0; i < size; i++) {
             Tile current = state.board.get(i), next = state.board.get((i + 1) % size), previous = state.board.get((i + size - 1) % size);
-            if (!ownedAfter(current, actor.id, t) || !ownedAfter(next, actor.id, t)) continue;
+            if (next.district != current.district || !ownedAfter(current, actor.id, t) || !ownedAfter(next, actor.id, t)) continue;
             double active = current.mortgaged || next.mortgaged ? .35 : 1;
             result += Math.min(current.price, next.price) * active;
-            if (ownedAfter(previous, actor.id, t)) result += Math.min(previous.price, Math.min(current.price, next.price)) * active * (previous.mortgaged ? .175 : .5);
+            if (previous.district == current.district && ownedAfter(previous, actor.id, t)) result += Math.min(previous.price, Math.min(current.price, next.price)) * active * (previous.mortgaged ? .175 : .5);
         }
         return result * tradeWeight(actor, .06, .18, .3);
     }
@@ -1078,7 +1079,7 @@ public final class BotPlanner {
         if (t.ownerId.equals(p.id) || person(t.ownerId).jailed) return 0;
         if (halfRent && AnimeService.iced(t)) return 0;
         if (halfRent && t.petalCasterId!=null && Objects.equals(t.petalOwnerId,t.ownerId)) level=Math.max(0,level-1);
-        long amount = rent(t, level) * (p.nextRentDouble ? 2 : 1);
+        long amount = rent(t, level, p.nextRentDouble ? 2 : 1);
         if (halfRent) amount /= 2;
         if (p.nextPaymentWaiver) amount = 0;
         return -amount - (nightmare && !conservative ? rentRisk(p, amount, cash) : Math.max(0, amount - cash) * (horizon == 6 ? 2 : 1));
@@ -1097,7 +1098,7 @@ public final class BotPlanner {
         for (int point = 1; point <= 6; point++) {
             Tile t = state.board.get(destination(me, me.position, point, null, true));
             if (!t.type.equals("property") || t.treasure || t.ownerId == null || me.id.equals(t.ownerId) || person(t.ownerId).jailed) continue;
-            double amount = rent(t, t.level) * (me.nextRentDouble ? 2 : 1);
+            double amount = rent(t, t.level, me.nextRentDouble ? 2 : 1);
             double cash = me.cash + movementIncome(me, me.position, point, true);
             risk += (rentRisk(me, amount, cash - cost) - rentRisk(me, amount, cash)) / 6;
         }
@@ -1110,8 +1111,8 @@ public final class BotPlanner {
         double pressure = 0;
         for (PublicPlayerVo p : state.players) {
             if (p.bankrupt || p.id.equals(me.id) || p.skipTurns > 0 || p.nextPaymentWaiver) continue;
-            double before = rent(t, t.level) * (p.nextRentDouble ? 2 : 1);
-            double after = rent(t, level) * (p.nextRentDouble ? 2 : 1);
+            double before = rent(t, t.level, p.nextRentDouble ? 2 : 1);
+            double after = rent(t, level, p.nextRentDouble ? 2 : 1);
             for (int point = 1; point <= 6; point++) {
                 if (destination(p, p.position, point, null, true) != t.id) continue;
                 double cash = p.cash + movementIncome(p, p.position, point, true);
@@ -1140,10 +1141,17 @@ public final class BotPlanner {
     }
     /** 输入地产与假设等级，返回无临时或永久修正的基础租金。 */
     private long baseRent(Tile t, int level) { return state.economy.derived("rent." + t.price + "." + level, t.price * state.economy.rentBasePercent / 100 * Rules.RENT_MULTIPLIERS[level]); }
-    /** 输入地产与假设等级，返回含永久加成的未抵押长期租金。 */
-    private long rentWhenActive(Tile t, int level) { return PropertyEffects.permanentRent(baseRent(t,level),t); }
-    /** 输入地产与等级，返回实际抵押状态下含演唱会和永久加成的租金。 */
-    private long rent(Tile t, int level) { return t.mortgaged || PropertyEffects.frozen(t) ? 0 : PropertyEffects.permanentRent(PropertyEffects.concertRent(baseRent(t, level),t.concertStacks),t); }
+    /** 输入地产与假设等级，返回含永久和当前连片加成的长期租金。 */
+    private long rentWhenActive(Tile t, int level) { return PropertyEffects.boostedRent(baseRent(t,level), t, PropertyEffects.connectedRentPercent(state.board, t)); }
+    /** 输入地产与等级，返回未计付款人翻倍的租金预估。 */
+    private long rent(Tile t, int level) { return rent(t, level, 1); }
+    /** 输入地产、等级和倍率，按当前产权计算租金预估。 */
+    private long rent(Tile t, int level, int multiplier) { return rent(t, level, multiplier, PropertyEffects.connectedRentPercent(state.board, t)); }
+    /** 输入地产、等级、付款人倍率和连片加成，在停租时返回零。 */
+    private long rent(Tile t, int level, int multiplier, int connectedPercent) {
+        return t.mortgaged || PropertyEffects.frozen(t) || AnimeService.iced(t) ? 0
+                : PropertyEffects.boostedRent(Math.multiplyExact(PropertyEffects.concertRent(baseRent(t, level), t.concertStacks), multiplier), t, connectedPercent);
+    }
     /** 输入地产列表与持有人，返回合计主观价值。 */
     private double tileValues(List<Integer> ids, String owner) { return ids.stream().mapToDouble(id -> value(state.board.get(id), owner)).sum(); }
     /** 输入玩家，返回其公开实力对策略的影响权重。 */

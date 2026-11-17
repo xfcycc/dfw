@@ -1,7 +1,9 @@
 package com.dfw.domain;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 import static com.dfw.domain.GameSupport.*;
 
 /** 地产附加效果、无修正租金与神威生命周期，沿房间快照原子保存。 */
@@ -26,9 +28,26 @@ public final class PropertyEffects {
     public static long concertRent(long base, int stacks) {
         return BigInteger.valueOf(base).multiply(BigInteger.valueOf(6).pow(stacks)).divide(BigInteger.valueOf(5).pow(stacks)).longValueExact();
     }
-    /** 输入已完成临时修正的租金与地产，返回永久加成后的租金，向下取整。 */
-    public static long permanentRent(long amount, Tile tile) {
-        return Math.multiplyExact(amount, 100L + tile.permanentRentPercent) / 100;
+    /** 输入棋盘和地产，按当前产权返回连片租金加成百分点。 */
+    public static int connectedRentPercent(List<Tile> board, Tile tile) {
+        return tile.ownerId == null ? 0 : connectedRentPercent(board, tile, candidate -> tile.ownerId.equals(candidate.ownerId));
+    }
+    /** 输入棋盘、地产和同业主判定，返回两连20、三连及以上35个百分点；可用于交易预估。 */
+    public static int connectedRentPercent(List<Tile> board, Tile tile, Predicate<Tile> sameOwner) {
+        if (!tile.type.equals("property") || tile.mortgaged) return 0;
+        int count = 1;
+        for (int direction : new int[]{-1, 1}) {
+            for (int i = tile.id + direction; i >= 0 && i < board.size() && count < 3; i += direction) {
+                Tile neighbor = board.get(i);
+                if (neighbor.district != tile.district || !neighbor.type.equals("property") || neighbor.mortgaged || !sameOwner.test(neighbor)) break;
+                count++;
+            }
+        }
+        return count == 3 ? 35 : count == 2 ? 20 : 0;
+    }
+    /** 输入临时修正后的租金、地产和连片加成百分点，合计加成后向下取整。 */
+    public static long boostedRent(long amount, Tile tile, int connectedPercent) {
+        return Math.multiplyExact(amount, 100L + tile.permanentRentPercent + connectedPercent) / 100;
     }
     /** 输入地产，返回剩余护盾层数，兼容旧快照的一次护盾标记。 */
     public static int shieldCharges(Tile tile) { return Math.max(tile.demolitionShieldCharges, tile.demolitionShield ? 1 : 0); }

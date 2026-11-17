@@ -188,10 +188,23 @@ export function ruleMoney(economy: EconomySettings | null | undefined, key: stri
 }
 /** 输入经济快照和已按实际地价计算的金额，返回固定覆盖，不重复乘倍率。 */
 function derivedMoney(economy: EconomySettings | null | undefined, key: string, actual: number): number { return economy?.fixedAmounts[key] ?? actual; }
-/** 输入地产及经济参数，返回含演唱会和永久加成的租金预估；停租时为零。 */
-export function rentFor(tile: Tile, economy?: EconomySettings | null): number {
+/** 输入棋盘与地产，返回同街区连续未抵押同业主地产的租金加成百分点。 */
+export function connectedRentPercent(board: readonly Tile[], tile: Tile): number {
+  if (tile.type !== 'property' || !tile.ownerId || tile.mortgaged) return 0;
+  let count = 1;
+  for (const direction of [-1, 1]) {
+    for (let i = tile.id + direction; i >= 0 && i < board.length && count < 3; i += direction) {
+      const neighbor = board[i];
+      if (neighbor.district !== tile.district || neighbor.type !== 'property' || neighbor.mortgaged || neighbor.ownerId !== tile.ownerId) break;
+      count++;
+    }
+  }
+  return count === 3 ? 35 : count === 2 ? 20 : 0;
+}
+/** 输入地产、经济参数、棋盘及本次租金倍率，返回含永久和连片加成的租金预估；停租时为零。 */
+export function rentFor(tile: Tile, economy?: EconomySettings | null, board: readonly Tile[] = [], multiplier = 1): number {
   const amount = tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile.petalCasterId && tile.petalOwnerId === tile.ownerId ? { ...tile, level: Math.max(0, tile.level - 1) } : tile,economy), tile.concertStacks ?? 0);
-  return Number(BigInt(amount) * BigInt(100 + (tile.permanentRentPercent ?? 0)) / 100n);
+  return Number(BigInt(amount) * BigInt(multiplier) * BigInt(100 + (tile.permanentRentPercent ?? 0) + connectedRentPercent(board, tile)) / 100n);
 }
 /** 输入地产，返回是否处于神威冻结中。 */
 export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }

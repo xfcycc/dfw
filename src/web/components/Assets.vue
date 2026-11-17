@@ -17,7 +17,7 @@ const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?
   <div class="asset-portfolio">
     <article v-for="tile in owned" :key="tile.id" class="portfolio-card">
       <div class="portfolio-heading"><PropertyArt :level="tile.level" :mortgaged="tile.mortgaged" /><div><strong>{{ tile.name }}{{ hasPropertyEffects(tile) ? ' ✦' : '' }}</strong><PropertyGrade :level="tile.level" /><small>{{ tile.id }} 号地块</small></div><span class="portfolio-status" :class="{ mortgaged: tile.mortgaged }">{{ tile.mortgaged ? '已抵押' : '持有中' }}</span></div>
-      <dl class="portfolio-metrics"><div><dt>地价</dt><dd>¥{{ tile.price.toLocaleString() }}</dd></div><div><dt>{{ tile.mortgaged ? '赎回费用' : '当前租金' }}</dt><dd>¥{{ (tile.mortgaged ? redeemCost(tile) : game.me?.jailed && game.me.skipTurns > 0 ? 0 : rentFor(tile, game.room?.economy)).toLocaleString() }}</dd></div></dl>
+      <dl class="portfolio-metrics"><div><dt>地价</dt><dd>¥{{ tile.price.toLocaleString() }}</dd></div><div><dt>{{ tile.mortgaged ? '赎回费用' : '当前租金' }}</dt><dd>¥{{ (tile.mortgaged ? redeemCost(tile) : game.me?.jailed && game.me.skipTurns > 0 ? 0 : rentFor(tile, game.room?.economy, game.room?.board)).toLocaleString() }}</dd></div></dl>
       <PropertyEffects :tile="tile" :economy="game.room?.economy" />
       <div class="portfolio-actions">
         <button v-if="tile.level > 0" class="button small secondary" :disabled="!allowed || isKamui(tile) || tile.mortgaged" @click="game.act({ type: 'sellBuilding', tileId: tile.id })">卖一级房 +{{ sellBuildingValue(tile, game.room?.economy) }}</button>
