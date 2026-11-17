@@ -53,8 +53,9 @@ public class TurnService {
         log(room, alive.isEmpty() ? "本局结束" : alive.getFirst().name + " 成为最后的赢家！");
         HistoryTrace.event(room, "game_finished", room.winnerId, "本局结束", null); return true;
     }
-    /** 输入房间，切换下一行动者并重置回合标志。 */
+    /** 输入房间，先处理本回合末的购地保底，再切换行动者，无返回值。 */
     public void advance(Room room) {
+        if (content.offerOpeningLand(room, current(room))) return;
         HistoryTrace.event(room, "turn_end", current(room) == null ? null : current(room).id, "行动结束", null);
         ConstructionService.endTurn(room,current(room));
         CrossoverService.endTurn(room,current(room));
@@ -194,7 +195,7 @@ public class TurnService {
         Player target=player(room,effect.playerId);
         GameError.require(target!=null && !target.bankrupt,"请选择一名未破产玩家，可选择自己");
         if(!effect.voluntaryRestriction && CrossoverService.fullyProtected(target)) { log(room,target.name+" 的防御特化免疫本次入狱及传送"); return; }
-        if(!effect.voluntaryRestriction && StatusService.controlProtectionTurns(target)>0) { log(room,target.name+" 的连续控制保护抵挡了本次入狱及传送"); return; }
+        if(!effect.voluntaryRestriction && StatusService.controlProtectionTurns(target)>0) { log(room,target.name+" 的控制保护抵挡了本次入狱及传送"); return; }
         Tile jail=room.board.stream().filter(t -> t.type.equals("jail")).findFirst().orElseThrow();
         Motion motion=new Motion(); motion.id=random.id(); motion.playerId=target.id; motion.from=target.position; motion.teleport=true;
         target.position=jail.id; motion.path.add(jail.id);
@@ -215,7 +216,7 @@ public class TurnService {
         Tile tile = room.board.get(player.position); room.phase = "manage"; room.pending = null;
         switch (tile.type) {
             case "activity" -> activities.open(room, player, tile);
-            case "jail" -> { content.restrict(room, player, 1, true); }
+            case "jail" -> content.restrictLandingJail(room, player);
             case "chance", "fortune" -> {
                 if(room.eventDrawn) { log(room,"本个人回合已抽取事件，本次不再抽取"); break; }
                 room.eventDrawn = true;

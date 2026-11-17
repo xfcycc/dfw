@@ -183,7 +183,7 @@ public class RoomService {
             catch (RuntimeException error) { LOG.error("活动展示推进失败，房间 {}", value.code, error); }
         }
     }
-    /** 每八百毫秒按房间选择一个机器人意图，复用流程事务与规则；等待真人时保持原等待规则。 */
+    /** 无入参，每八百毫秒推进一个机器人动作或旧自选窗口，不代替真人选择。 */
     @Scheduled(fixedDelay = 800)
     public void advanceBots() {
         if (closing) return;
@@ -197,6 +197,11 @@ public class RoomService {
                 String required = latest.trade != null ? latest.trade.toId : latest.pending != null ? latest.pending.playerId : latest.activity == null ? GameSupport.current(latest).id : null;
                 PublicRoomVo visible = StateViews.publicRoom(latest);
                 for (Player bot : latest.players) if (bot.botDifficulty != null && !bot.bankrupt && (required == null || required.equals(bot.id))) {
+                    // 旧存档的自选窗口由规则阶段自动关闭，先提交推进再读取机器人的新待办。
+                    if (latest.runtime.choice != null && "opening_roll".equals(latest.runtime.choice.type)) {
+                        commit(json.copy(latest, Room.class), null);
+                        break;
+                    }
                     String decision = latest.gameId + ":" + latest.runtime.decisionKey;
                     boolean conservative = Objects.equals(botFallbackDecisions.get(bot.id), decision);
                     Action action;

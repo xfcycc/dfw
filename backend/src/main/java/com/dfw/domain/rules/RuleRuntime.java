@@ -70,13 +70,23 @@ public final class RuleRuntime {
     public boolean needsAdvance(Room room) {
         if (!room.status.equals("playing") || room.pausedReason != null || room.trade != null) return false;
         if (room.activity != null) return activities.due(room);
+        if (legacyOpeningRoll(room)) return true;
         if (content.needsOverflow(room) || AnimeService.needsResume(room) || room.runtime.neta!=null && room.runtime.neta.research!=null && room.pending==null) return true;
         if (room.pending != null) return false;
         return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null
                 || ConstructionService.remoteAvailable(room,current(room));
     }
-    /** 输入候选房间，逐阶段推进至等待或终局；普通骰点先开放开局自选，再处理重掷及移动修正。 */
+    /** 输入房间，返回是否仍停在已移除的开局自选窗口。 */
+    private boolean legacyOpeningRoll(Room room) {
+        return room.runtime.choice != null && "opening_roll".equals(room.runtime.choice.type);
+    }
+    /** 输入候选房间，逐阶段推进至等待或终局，兼容恢复时已确定但尚未移动的旧开局骰点。 */
     public void advanceUntilWait(Room room) {
+        if (legacyOpeningRoll(room)) {
+            room.pending = room.runtime.choice.returnPending;
+            room.phase = room.runtime.choice.returnPhase;
+            room.runtime.choice = null;
+        }
         for (int work = 0; work < 256; work++) {
             if (room.status.equals("playing")) alignTurn(room);
             if (room.activity == null) { CrossoverService.resume(room); content.anime.resume(room); content.neta.resume(room); if(room.pending==null) content.overflow(room); }
@@ -114,9 +124,7 @@ public final class RuleRuntime {
                     AnimeState anime=AnimeService.state(room);
                     if (room.runtime.rollMode.equals("RANDOM")) {
                         if(!anime.rollPrepared) { room.dice=random.nextInt(6)+1; room.runtime.movementSteps=room.dice; anime.rollPrepared=true; log(room,current(room).name+" 掷出 "+room.dice+" 点"); }
-                        if(content.offerOpeningRoll(room)) return;
-                        // 开局自选只改基础骰点，保留普通移动及双喷；确认后本次不再重掷。
-                        if(current(room).openingRollUsedTurn!=room.turnNumber && content.anime.offerRewind(room)) return;
+                        if(content.anime.offerRewind(room)) return;
                     }
                     anime.rollPrepared=false;
                     if("FLASH".equals(room.runtime.rollMode)) { room.runtime.stageIndex++; continue; }

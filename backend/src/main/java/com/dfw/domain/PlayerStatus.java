@@ -13,6 +13,8 @@ public class PlayerStatus {
     public String sourceCardId;
     /** 固定状态定义：陷阱免疫、连续控制保护及一次性费用、租金和移动状态。 */
     public String type;
+    /** 开局给予的控制保护，单纯走到监狱时不适用。 */
+    public boolean openingControl;
     /** 连控保护是否仍在等待本次受控行动跳过；等待期间不递减保护期限。 */
     public boolean awaitingControlledSkip;
     /** 产生状态的效果标识。 */

@@ -116,22 +116,14 @@ public final class BotPlanner {
         return action(state.phase.equals("pre_roll") ? "roll" : "endTurn");
     }
 
-    /** 输入保守标记，完成本人内容选择；开局自选复用落点估值，未知类型作为规划错误报告。 */
+    /** 输入保守标记，返回本人内容选择，包括可负担的开局保底地产。 */
     private Action choice(boolean conservative) {
         if(own.choice.type.startsWith("construction_")) return constructionChoice(conservative);
         if(own.choice.type.startsWith("cross_")) return crossoverChoice(conservative);
         ContentChoiceVo c = own.choice; Action a = action("contentDecision"); a.decisionId = c.id; a.accept = true;
         switch (c.type) {
-            case "opening_roll" -> {
-                a.accept=false;
-                if(!conservative) {
-                    double best=movementValue(me,me.position,state.dice);
-                    for(int point:c.numbers) {
-                        double gain=movementValue(me,me.position,point);
-                        if(gain>best) { best=gain; a.accept=true; a.point=point; }
-                    }
-                }
-            }
+            case "opening_land" -> a.accept = !conservative && c.tileIds.stream().map(state.board::get)
+                    .anyMatch(t -> t.ownerId == null && !PropertyEffects.frozen(t) && me.cash >= t.price);
             case "hand_limit" -> a.keepCardIds = (conservative ? c.cards.stream() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue).reversed())).limit(c.handLimit > 0 ? c.handLimit : 6).map(card -> card.id).toList();
             case "free_upgrade", "full_upgrade" -> {
                 a.tileId = conservative ? null : c.tileIds.stream().max(Comparator.comparingDouble(id -> upgradeValue(state.board.get(id), c.type.equals("full_upgrade") ? Rules.MAX_LEVEL : state.board.get(id).level + 1))).orElse(null);

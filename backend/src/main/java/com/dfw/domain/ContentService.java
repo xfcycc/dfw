@@ -225,23 +225,35 @@ public final class ContentService {
     }
     /** 输入限制参数及是否为外部控制；保护阻挡外部休息和监禁，自愿休息代价仍须承担。 */
     public void restrict(Room room,Player owner,int count,boolean jailed,boolean controlled) {
+        restrict(room, owner, count, jailed, controlled, true);
+    }
+    /** 输入走到监狱的玩家，结算监禁及解控，开局保护不抵消落点规则。 */
+    void restrictLandingJail(Room room, Player owner) {
+        restrict(room, owner, 1, true, true, false);
+    }
+    /** 输入限制参数及是否适用开局保护，免疫时不施加限制，否则沿用解控流程。 */
+    private void restrict(Room room, Player owner, int count, boolean jailed, boolean controlled, boolean includeOpening) {
         if(controlled && CrossoverService.fullyProtected(owner)) { log(room,owner.name+" 的防御特化免疫本次"+(jailed?"监禁":"休息")); return; }
-        if(controlled && StatusService.controlProtectionTurns(owner)>0) { log(room,owner.name+" 的连续控制保护抵挡了本次"+(jailed?"监禁":"休息")); return; }
+        if(controlled && StatusService.controlProtectionTurns(owner, includeOpening)>0) { log(room,owner.name+" 的控制保护抵挡了本次"+(jailed?"监禁":"休息")); return; }
         if (owner.hand.stream().anyMatch(c -> c.kind.equals("release") && CrossoverService.handAllowed(room,owner,c,false))) { ContentChoice choice=open(room,owner,"release"); choice.skipTurns=count; choice.jailed=jailed; choice.voluntaryRestriction=!controlled; BoardEffect.cue(room,jailed?"jail":"rest",owner); return; }
         applyRestriction(room,owner,count,jailed,controlled);
     }
     /** 输入确定限制及外部控制标记，保存跳过次数并登记保护；监禁立即停租，普通休息仍可收租，无返回值。 */
     private static void applyRestriction(Room room,Player owner,int count,boolean jailed,boolean controlled) { SettlementService.observe(room); if (jailed && count > 0) owner.matchStats.jailCount++; owner.skipTurns=Math.max(owner.skipTurns,count); if(!controlled) owner.voluntarySkipTurns=Math.max(owner.voluntarySkipTurns,count); owner.jailed=jailed || owner.jailed; if(controlled && count>0) StatusService.protectControl(room,owner); log(room,owner.name+(jailed?" 进入监狱":" 需要休息")+"，跳过后续 "+count+" 次行动"+(jailed?"；服刑期间暂停收租，其他小游戏正常参与":"")); BoardEffect.cue(room,jailed?"jail":"rest",owner); }
-    /** 输入普通掷骰后的房间，登记原地投骰演出并在前三个个人回合内开放自选窗口，返回是否等待答复。 */
-    public boolean offerOpeningRoll(Room room) {
-        Player owner=current(room);
-        if(owner.openingRollUsedTurn>=0 || owner.personalTurns<1 || owner.personalTurns>3 || room.runtime.openingRollOfferedTurn==room.turnNumber || CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")>0) return false;
-        ContentChoice choice=open(room,owner,"opening_roll");
-        room.runtime.openingRollOfferedTurn=room.turnNumber;
-        presentRoll(room,owner);
-        choice.numbers=List.of(1,2,3,4,5,6);
-        choice.prompt="第 "+owner.personalTurns+"／3 个个人回合，本次掷出 "+room.dice+" 点。可消耗本局唯一机会自选 1～6 点，不消耗手牌或主动次数；保留原骰点则不消耗机会。迟缓、加码和移动翻倍仍照常生效。";
+    /** 输入房间和即将结束回合的玩家，随机锁定一块可原价购买的低价地，打开选择时返回真。 */
+    public boolean offerOpeningLand(Room room, Player owner) {
+        if (owner == null || owner.bankrupt || !owner.openingLandAvailable || owner.personalTurns != 3) return false;
+        owner.openingLandAvailable = false;
+        if (room.board.stream().anyMatch(t -> owner.id.equals(t.ownerId))) return false;
+        List<Tile> candidates = room.board.stream().filter(ContentService::openingLandCandidate).toList();
+        if (candidates.isEmpty()) return false;
+        ContentChoice choice = open(room, owner, "opening_land");
+        choice.tileIds.add(candidates.get(random.nextInt(candidates.size())).id);
         return true;
+    }
+    /** 输入地产，返回其是否为可购买的 ¥1,600 及以下无主地。 */
+    private static boolean openingLandCandidate(Tile tile) {
+        return tile != null && tile.type.equals("property") && tile.ownerId == null && tile.price <= 1600 && !PropertyEffects.frozen(tile);
     }
     /** 输入房间与掷骰玩家，登记选择窗口前的原地投骰演出；同回合已展示时不重复登记，无返回值。 */
     void presentRoll(Room room,Player owner) {
@@ -270,14 +282,14 @@ public final class ContentService {
         if(anime.decide(room,owner,choice,action)) return;
         if(Set.of("free_upgrade","full_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
         switch(choice.type) {
-            case "opening_roll" -> {
-                require(action.accept!=null,"请选择自选点数或保留原骰点");
-                require(owner.openingRollUsedTurn<0 && owner.personalTurns>=1 && owner.personalTurns<=3 && "RANDOM".equals(room.runtime.rollMode) && CrossoverService.turns(owner,"DEFENSE_SPECIALIZATION")==0,"开局自选机会已失效");
-                if(action.accept) {
-                    require(action.point!=null && action.point>=1 && action.point<=6,"请选择 1～6 点");
-                    owner.openingRollUsedTurn=room.turnNumber;
-                    int original=room.dice; room.dice=action.point; room.runtime.movementSteps=action.point;
-                    log(room,owner.name+" 使用开局自选机会，将骰点从 "+original+" 点改为 "+action.point+" 点，本局机会已用完");
+            case "opening_land" -> {
+                require(action.accept != null, "请选择购买或放弃");
+                if (action.accept) {
+                    Tile target = tile(room, choice.tileIds.getFirst());
+                    require(openingLandCandidate(target), "这块地产当前不可购买");
+                    require(owner.cash >= target.price, "现金不足，可放弃本次购买");
+                    owner.cash -= target.price; target.ownerId = owner.id;
+                    log(room, "log", owner.id, owner.name + " 使用开局购地保底买下 " + target.name + "（" + target.id + "号），支付银行 ¥" + String.format("%,d", target.price) + "，现金余额 ¥" + String.format("%,d", owner.cash));
                 }
             }
             case "recycle", "discover" -> expansion.decide(room, owner, choice, action);

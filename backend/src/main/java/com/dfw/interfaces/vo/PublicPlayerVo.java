@@ -67,7 +67,7 @@ public class PublicPlayerVo {
     public boolean jailed;
     /** 陷阱免疫尚未结束的后续个人回合数，零表示没有免疫。 */
     public int trapImmunityTurns;
-    /** 连续控制保护剩余个人回合数，等待本次受控行动跳过时仍显示两回合。 */
+    /** 开局或受控后的剩余保护回合数，等待受控行动跳过时仍显示两回合。 */
     public int controlProtectionTurns;
     /** 淘汰顺序，未淘汰为空。 */
     public Integer eliminationOrder;

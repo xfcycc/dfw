@@ -21,9 +21,18 @@ public final class StatusService {
     public static boolean immune(Player player, String tag) {
         return "TRAP".equals(tag) && player.statuses.stream().anyMatch(value -> "TRAP_IMMUNITY".equals(value.type) && value.remainingTurns > 0);
     }
-    /** 输入玩家，返回命中控制后尚在等待跳过或处于两回合保护中的剩余个人回合数。 */
+    /** 输入玩家，返回开局或受控后保护的剩余个人回合数。 */
     public static int controlProtectionTurns(Player player) {
-        return player.statuses.stream().filter(s -> s.type.equals("CONTROL_PROTECTION")).mapToInt(s -> s.remainingTurns).max().orElse(0);
+        return controlProtectionTurns(player, true);
+    }
+    /** 输入玩家及是否包含开局保护，返回适用保护的剩余回合数。 */
+    static int controlProtectionTurns(Player player, boolean includeOpening) {
+        return player.statuses.stream().filter(s -> s.type.equals("CONTROL_PROTECTION") && (includeOpening || !s.openingControl)).mapToInt(s -> s.remainingTurns).max().orElse(0);
+    }
+    /** 输入开局房间和玩家，赋予覆盖前三个个人回合的控制保护，无返回值。 */
+    public static void protectOpening(Room room, Player owner) {
+        PlayerStatus status = new PlayerStatus(); status.type = "CONTROL_PROTECTION"; status.remainingTurns = 3;
+        status.appliedTurn = room.turnNumber - 1; status.openingControl = true; owner.statuses.add(status);
     }
     /** 输入房间和实际受控玩家，登记两回合保护，等待本次行动跳过后才开始计时。 */
     public static void protectControl(Room room,Player owner) {

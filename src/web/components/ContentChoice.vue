@@ -22,14 +22,14 @@ const petalBudget = ref(1);
 const limit = computed(() => props.choice.handLimit ?? game.me?.handLimit ?? 6);
 const releaseCards = computed(() => (props.choice.type === 'movement_release' ? props.choice.cards : game.privateData?.hand ?? []).filter(c => c.kind === 'release' && !game.privateData?.disabledCardIds?.includes(c.id)));
 const enabled = computed(() => game.canAct && game.canDecide && !game.room?.tradePending);
+const openingLand = computed(() => props.choice.type === 'opening_land' ? game.room?.board[props.choice.tileIds[0]] : undefined);
 const wager = computed(() => props.choice.content?.parameters?.wager ?? 0);
 const upgrading = computed(() => ['free_upgrade', 'full_upgrade'].includes(props.choice.type));
 const choosingCards = computed(() => ['neta_bid', 'neta_reward', 'neta_ignite', 'neta_research', 'hand_limit', 'recycle', 'discover', 'anime_projection', 'anime_rewind', 'anime_defense'].includes(props.choice.type));
-watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; route.value = ''; point.value = props.choice.type === 'opening_roll' ? game.room?.dice ?? 3 : 3; petalTiles.value = []; petalBudget.value = 1; }, { immediate: true });
-/** 输入是否确认，提交已保存选择的身份及点数、地产或解控卡，失败保留输入。 */
+watch(() => props.choice.id, () => { keep.value = []; releaseCard.value = ''; discovered.value = ''; vote.value = ''; route.value = ''; point.value = 3; petalTiles.value = []; petalBudget.value = 1; }, { immediate: true });
+/** 输入是否确认，提交对应选择及所需参数，失败保留输入。 */
 async function decide(accept: boolean): Promise<void> {
   const action: Extract<GameAction, { type: 'contentDecision' }> = { type: 'contentDecision', decisionId: props.choice.id, accept };
-  if (props.choice.type === 'opening_roll' && accept) action.point = point.value;
   if (props.choice.type === 'neta_bid' && accept && keep.value.length) action.discardCardIds = keep.value;
   if (props.choice.type === 'neta_reward' && accept) action.cardId = discovered.value;
   if (props.choice.type === 'neta_petals' && accept) action.tileIds = petalTiles.value;
@@ -55,9 +55,10 @@ async function decide(accept: boolean): Promise<void> {
   <div v-else class="content-choice" :class="{ 'card-selection': choosingCards }">
     <ContentCard v-if="choice.content && !compact && !choosingCards" :content="choice.content" />
     <p v-if="choice.prompt" class="notice">{{ choice.prompt }}</p>
-    <template v-if="choice.type === 'opening_roll'">
-      <label class="field">自选骰点<ThemedSelect v-model="point" label="选择开局骰点" :options="(choice.numbers ?? []).map(n => ({ value: n, label: `${n} 点` }))" /></label>
-      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">保留原骰点，暂不使用</button><button class="button primary" :disabled="!enabled" @click="decide(true)">使用唯一机会，选择 {{ point }} 点</button></div>
+    <template v-if="choice.type === 'opening_land' && openingLand">
+      <p class="notice">前三个个人回合还没有买地，你可以按原价购买 <strong>{{ openingLand.name }}（{{ openingLand.id }} 号）</strong>。购买不会移动角色或触发落点。</p>
+      <p v-if="(game.me?.cash ?? 0) < openingLand.price" class="muted">现金不足，请放弃本次购买。</p>
+      <div class="button-row choice-actions"><button class="button secondary" :disabled="!enabled" @click="decide(false)">放弃并结束行动</button><button class="button primary" :disabled="!enabled || (game.me?.cash ?? 0) < openingLand.price" @click="decide(true)">支付 ¥{{ openingLand.price.toLocaleString() }} 购买</button></div>
     </template>
     <template v-else-if="choice.type === 'neta_bid'">
       <p class="notice">已投入 {{ keep.length }}／2 张；可以零张参加。仅胜者弃牌，弃牌不折现。</p>

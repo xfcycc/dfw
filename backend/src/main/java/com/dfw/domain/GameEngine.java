@@ -55,7 +55,7 @@ public class GameEngine {
     }
     /** 输入房间号和首位玩家，返回大厅房间。 */
     public Room createRoom(String code, Player player) { Room room = new Room(); room.code = code; room.hostId = player.id; room.players.add(player); room.economy = economyRules.snapshot(); return room; }
-    /** 输入房间，按开局人数初始化现金及私人手牌，并生成地图和行动顺序。 */
+    /** 输入房间，生成地图及顺序，初始化现金、手牌和开局保护，无返回值。 */
     private void start(Room room) {
         require(room.players.size() >= Rules.MIN_PLAYERS && room.players.size() <= Rules.MAX_PLAYERS, "需要 2～6 名玩家");
         require(room.players.stream().allMatch(p -> p.ready && p.online), "请等待所有玩家连接并准备");
@@ -64,10 +64,11 @@ public class GameEngine {
         for (int i = room.turnOrder.size() - 1; i > 0; i--) Collections.swap(room.turnOrder, i, random.nextInt(i + 1));
         room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
-        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); }
+        for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); StatusService.protectOpening(room, player); }
         // 首位亮相在 3900 毫秒完成，保留两秒后解除开场等待，机器人同样受此期限约束。
         room.openingEndsAt = System.currentTimeMillis() + 5900;
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
+        log(room, "所有玩家获得开局控制保护，持续前三个个人回合");
         HistoryTrace.event(room, "game_started", room.hostId, "新对局开始", null);
         HistoryTrace.event(room, "turn_start", room.turnOrder.getFirst(), "首次行动开始", null);
     }
@@ -89,7 +90,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.openingRollUsedTurn=-1; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.handLimitReduction=0; player.personalTurns=0; player.openingLandAvailable=true; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
     /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");
@@ -183,7 +184,7 @@ public class GameEngine {
                 Tile tile = room.board.get(room.pending.tileId); require(!PropertyEffects.frozen(tile), "神威空间中的地产无法操作"); long cost = action.type.equals("buy") ? tile.price : Rules.buildCost(room, tile);
                 require(player.cash >= cost, "现金不足，可先管理资产或放弃");
                 String result;
-                if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
+                if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; player.openingLandAvailable = false; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
                 else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; player.matchStats.builtLevels++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
                 player.cash -= cost;
                 if(action.type.equals("upgrade")) ConstructionService.paid(room,player,tile);

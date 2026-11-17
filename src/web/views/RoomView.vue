@@ -184,7 +184,7 @@ const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2
 const canPlay = computed(() => !props.spectator && !boardAnimating.value && (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending);
 const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
 const remoteConstructionChoice = computed(() => choice.value?.type === 'construction_remote');
-const choiceTitle = computed(() => remoteConstructionChoice.value ? '基建轮班 · 远程升级' : choice.value?.type === 'opening_roll' ? '开局自选骰点' : choice.value?.content?.name ?? '处理当前选择');
+const choiceTitle = computed(() => remoteConstructionChoice.value ? '基建轮班 · 远程升级' : choice.value?.type === 'opening_land' ? '开局购地保底' : choice.value?.content?.name ?? '处理当前选择');
 watch([modal, () => choice.value?.id, () => selectedCard.value?.id], () => { fieldMapRequest.value = null; });
 const defenseCards = computed(() => game.privateData?.hand.filter(card => !game.privateData?.disabledCardIds?.includes(card.id) && (card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent')) ?? []);
 const defenseOptions = computed(() => [{ value: '', label: '不使用道具' }, ...defenseCards.value.map(card => ({ value: card.id, label: card.name ?? ITEMS[card.kind].name }))]);
