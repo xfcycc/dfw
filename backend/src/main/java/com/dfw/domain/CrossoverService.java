@@ -116,7 +116,8 @@ public final class CrossoverService {
             case "defenseSpecialization" -> { ContentService.consume(room,owner,card,true,action); add(room,owner,"DEFENSE_SPECIALIZATION",3); }
             case "doubleBoost" -> { ContentService.consume(room,owner,card,true,action); state(room).boostTurn=room.turnNumber; state(room).boosts=2; state(room).boostBlocked=false; }
             case "goldenCore" -> {
-                require(!state(room).cultivated.contains(owner.id),"本局已经成功结丹"); ContentService.consume(room,owner,card,true,action); state(room).corePlayerId=owner.id; stationary(room);
+                require(!state(room).cultivated.contains(owner.id),"本局已经成功结丹"); card.effect=ContentCatalog.describe(card);
+                ContentService.consume(room,owner,card,true,action); state(room).corePlayerId=owner.id; stationary(room);
             }
             case "namelessSword" -> {
                 require(!state(room).chargeTurns.containsKey(owner.id),"已有无名剑法蓄力"); ContentService.consume(room,owner,card,true,action);
@@ -324,7 +325,7 @@ public final class CrossoverService {
             }
             if(Objects.equals(s.corePlayerId,owner.id) && !owner.bankrupt) {
                 s.corePlayerId=null; s.cultivated.add(owner.id); owner.handLimitReduction=5-PropertyEffects.handLimit(owner);
-                Card reward=ContentService.card(catalog.drawTier(room,"SSR",null,Set.of(),random)); owner.hand.add(reward); owner.contentNotice=reward; owner.contentNoticeText="结丹成功，手牌上限增加一，获得SSR道具"; log(room,owner.name+" 结丹成功，手牌上限增加一");
+                Card reward=ContentService.card(catalog.drawTier(room,"UR",null,Set.of(),random)); owner.hand.add(reward); owner.contentNotice=reward; owner.contentNoticeText="结丹成功，手牌上限增加一，获得1张随机UR卡"; log(room,owner.name+" 结丹成功，手牌上限增加一");
             }
             if(content.overflow(room)) return true;
         }

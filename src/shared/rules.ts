@@ -36,7 +36,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   shadowBlade: { name: "双龙魔影剑", icon: '✦', description: "选择1～2处有建筑的敌方地产，各斩1击，命中降1级。选两处时沿棋盘最多相距2格，护盾分别抵挡。" },
   doubleBoost: { name: "双喷", icon: '✦', description: "普通掷骰前使用。骰子移动结束或被截停后，可追加最多两次喷射，每次前进1格。喷射不消耗陨星，遇路障即停，不受加码或翻倍影响。只结算最终落点。" },
   blueSilverBind: { name: "蓝银缠绕", icon: '✦', description: "选前后6格内1名对手，使其下个个人回合无法掷骰或替代移动，原地不结算。其他行动照常；可解控，受连续控制保护。" },
-  goldenCore: { name: "结丹", icon: '✦', description: "掷骰前闭关，本回合不主动移动，其他行动照常。回合结束时手牌上限永久+1，并获得1张随机SSR。每人每局限结丹1次。" },
+  goldenCore: { name: "结丹", icon: '✦', description: "掷骰前闭关，本回合不主动移动，其他行动照常。回合结束时手牌上限永久+1，并获得1张随机UR卡。每人每局限结丹1次。" },
   nuwaMend: { name: "女娲补天", icon: '✦', description: "下个本人回合结束前，修复最近同一次敌方攻击或灾害损坏的最多3处自家地产，恢复损坏前等级；产权须未变，不恢复主动卖房，不回滚付款、抵押和其他状态。" },
   namelessSword: { name: "无名剑法", icon: '✦', description: "本回合蓄力，无法主动移动；下个本人回合掷骰前可对前后6格内1处对手地产连斩3次，各降1级、护盾逐击挡。释放不占主动次数，次回合正常移动；休息、监禁或放弃则失效。" },
   kingsPressure: { name: "王的压制", icon: '✦', description: "指定1名对手，接下来3个个人回合禁止发动所有等级的主动攻击；非攻击主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。" },
