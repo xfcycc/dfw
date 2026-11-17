@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import ThemedSelect from './ThemedSelect.vue';
 import MapTargetButton from './MapTargetButton.vue';
-const props = defineProps<{ modelValue: T; options: readonly { value: T; label: string; disabled?: boolean }[]; label: string; disabled?: boolean; tileIds?: (value: T) => number[] }>();
+const props = defineProps<{ modelValue: T; options: readonly { value: T; label: string; disabled?: boolean }[]; label: string; disabled?: boolean; tileIds?: (value: T) => number[]; highlightedTileIds?: number[] }>();
 const emit = defineEmits<{ 'update:modelValue': [value: T] }>();
 /** 输入原选项值，返回代表它的地图格号；区域选项可覆盖一整条边。 */
 function ids(value: T): number[] { return value === '' ? [] : props.tileIds?.(value) ?? [Number(value)]; }
@@ -17,7 +17,7 @@ function select(id: number): void {
 <template>
   <span class="map-tile-select">
     <ThemedSelect :model-value="modelValue" :label="label" :options="options" :disabled="disabled" @update:model-value="emit('update:modelValue', $event)" />
-    <MapTargetButton :label="label" :options="mapOptions" :selected="ids(modelValue)" :disabled="disabled" @select="select" />
+    <MapTargetButton :label="label" :options="mapOptions" :selected="highlightedTileIds ?? ids(modelValue)" :disabled="disabled" @select="select" />
   </span>
 </template>
 

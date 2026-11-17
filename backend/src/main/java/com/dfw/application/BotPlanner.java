@@ -44,6 +44,10 @@ public final class BotPlanner {
         if(kind.equals("remoteConstruction")) { a.accept=!conservative; return a; }
         List<Tile> candidates=c.tileIds.stream().map(id -> state.board.get(id)).toList();
         if(candidates.isEmpty()) return a;
+        if(kind.equals("geoResonance")) {
+            Tile center=conservative ? candidates.getFirst() : candidates.stream().max(Comparator.comparingDouble(this::resonanceValue)).orElseThrow();
+            a.tileId=center.id; a.accept=true; return a;
+        }
         if(kind.equals("remote")) {
             Tile target=conservative ? candidates.stream().filter(t -> me.cash>=ConstructionService.remoteCost(economics,t)).findFirst().orElse(null) : remoteBuildTarget(candidates);
             if(target!=null) { a.tileId=target.id; a.tileIds=List.of(target.id); a.accept=true; }
@@ -242,13 +246,33 @@ public final class BotPlanner {
     private double crossoverCard(Card card,Action candidate) {
         double base=startIncome();
         switch(card.kind) {
-            case "asunaFlash" -> { double best=Double.NEGATIVE_INFINITY; for(int i=1;i<=3;i++) { int dest=(me.position+i)%state.board.size(); double value=landingValue(me,dest)-rollValue(me,me.position,0); if(value>best) { best=value; candidate.point=i; } } return best; }
+            case "asunaFlash" -> {
+                double normal=rollValue(me,me.position,0), best=Double.NEGATIVE_INFINITY, damage=0;
+                for(int i=1;i<=6;i++) {
+                    int dest=(me.position+i)%state.board.size(); Tile tile=state.board.get(dest);
+                    damage+=strikeValue(tile,true);
+                    double start=dest<me.position ? (nightmare?startRewardValue():startIncome()) : 0;
+                    double value=landingValue(me,dest)+damage+start-normal;
+                    if(value>best) { best=value; candidate.point=i; }
+                }
+                return best;
+            }
             case "revealingSwords", "kingsPressure", "blueSilverBind" -> {
                 PublicPlayerVo target=state.players.stream().filter(p -> !p.bankrupt && !p.id.equals(me.id) && (card.kind.equals("blueSilverBind")?GameSupport.nearbyDistance(me.position,p.position,state.board.size())<=6 && p.controlProtectionTurns==0:card.kind.equals("revealingSwords")?p.handSealTurns==0:card.parameters.getOrDefault("version",0L)>=2?p.attackSealTurns==0:p.urSealTurns==0)).max(Comparator.comparingLong(p -> p.netWorth)).orElse(null);
                 if(target==null) return Double.NEGATIVE_INFINITY; candidate.playerId=target.id; return base*.65;
             }
             case "shadowBlade" -> {
-                for(Tile t:state.board) { Tile next=state.board.get((t.id+1)%state.board.size()); if(t.level>0 && next.level>0 && t.ownerId!=null && next.ownerId!=null && !t.ownerId.equals(me.id) && !next.ownerId.equals(me.id) && !PropertyEffects.frozen(t) && !PropertyEffects.frozen(next) && !person(t.ownerId).bankrupt && !person(next.ownerId).bankrupt) { candidate.tileIds=List.of(t.id,next.id); return base; } } return Double.NEGATIVE_INFINITY;
+                List<Tile> targets=state.board.stream().filter(this::enemyBuilding).toList();
+                double best=Double.NEGATIVE_INFINITY;
+                for(Tile first:targets) {
+                    double single=strikeValue(first,false);
+                    if(single>best) { best=single; candidate.tileIds=List.of(first.id); }
+                    for(Tile second:targets) if(second.id>first.id && GameSupport.nearbyDistance(first.id,second.id,state.board.size())<=2) {
+                        double pair=single+strikeValue(second,false);
+                        if(pair>best) { best=pair; candidate.tileIds=List.of(first.id,second.id); }
+                    }
+                }
+                return best;
             }
             case "fusion" -> { double cost=own.hand.stream().filter(c -> !c.id.equals(card.id)).sorted(Comparator.comparingDouble(this::keepValue)).limit(2).mapToDouble(this::keepValue).sum(); return own.hand.size()>=3?base*2-cost:Double.NEGATIVE_INFINITY; }
             case "nuwaMend" -> { return state.board.stream().anyMatch(t -> me.id.equals(t.ownerId) && me.id.equals(t.damageOwnerId) && t.damageLevel>t.level && !PropertyEffects.frozen(t) && me.personalTurns<=t.damageUntilTurn)?base:Double.NEGATIVE_INFINITY; }
@@ -258,6 +282,31 @@ public final class BotPlanner {
             case "doubleBoost" -> { return base*.3; }
             default -> { return Double.NEGATIVE_INFINITY; }
         }
+    }
+
+    /** 输入公开地产，检查是否为有建筑且未封印的存活对手地产。 */
+    private boolean enemyBuilding(Tile tile) {
+        return tile.type.equals("property") && tile.ownerId!=null && !me.id.equals(tile.ownerId) && tile.level>0
+                && !PropertyEffects.frozen(tile) && !person(tile.ownerId).bankrupt;
+    }
+
+    /** 输入地产以及斩击前是否清空护盾，返回这一击的公开估值。 */
+    private double strikeValue(Tile tile,boolean clearsShields) {
+        if(!enemyBuilding(tile) || person(tile.ownerId).defenseSpecializationTurns>0) return 0;
+        long cost=Rules.buildCost(economics,tile);
+        return cost*threat(person(tile.ownerId))*(!clearsShields && PropertyEffects.shieldCharges(tile)>0 ? .15 : 1);
+    }
+
+    /** 输入共鸣中心，合计三格内所有实际可升级的自家地产收益。 */
+    private double resonanceValue(Tile center) {
+        return ConstructionService.resonanceArea(state.board,center.id).stream().filter(this::buildable)
+                .mapToDouble(t -> upgradeValue(t,t.level+1)).sum();
+    }
+
+    /** 输入公开地块，返回是否符合当前回合的自家升级条件。 */
+    private boolean buildable(Tile tile) {
+        return me.id.equals(tile.ownerId) && !PropertyEffects.frozen(tile) && !AnimeService.iced(tile) && !tile.mortgaged
+                && tile.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(tile.id);
     }
 
     /** 输入当前费用，比较魂环与手牌减免、现金安全及保留成本，返回互斥的付款防御选择。 */
@@ -546,10 +595,10 @@ public final class BotPlanner {
             switch (c.kind) {
                 case "asunaFlash", "defenseSpecialization", "revealingSwords", "fusion", "shadowBlade", "doubleBoost", "blueSilverBind", "goldenCore", "nuwaMend", "namelessSword", "kingsPressure" -> score=crossoverCard(c,candidate);
                 case "geoResonance", "growthLink", "sereniteaPot", "createBuild", "remoteConstruction", "shrineGrowth" -> {
-                    List<Tile> targets=state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && !AnimeService.iced(t) && !t.mortgaged && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id)).toList();
+                    List<Tile> targets=state.board.stream().filter(this::buildable).toList();
                     if(!targets.isEmpty() && (!Set.of("growthLink","sereniteaPot").contains(c.kind) || targets.size()>=2) && (!c.kind.equals("createBuild") || own.hand.size()>1)) {
                         score=targets.stream().mapToDouble(t -> upgradeValue(t,t.level+1)).max().orElse(0);
-                        if(c.kind.equals("geoResonance")) for(Tile t:targets) { double gain=0; for(Tile n:targets) if(n.id==t.id || n.id==Math.floorMod(t.id-1,state.board.size()) || n.id==(t.id+1)%state.board.size()) gain+=upgradeValue(n,n.level+1); score=Math.max(score,gain); }
+                        if(c.kind.equals("geoResonance")) score=state.board.stream().mapToDouble(this::resonanceValue).max().orElse(0);
                         if(c.kind.equals("remoteConstruction")) score*=.6;
                     }
                 }

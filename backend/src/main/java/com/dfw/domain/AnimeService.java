@@ -123,7 +123,7 @@ public final class AnimeService {
         if(card.kind.equals("swordRain")) {
             require(card.lastUsedTurn!=room.turnNumber,"剑雨本回合仍在冷却"); card.remainingUses=(card.remainingUses==0?2:card.remainingUses)-1; card.usesSpent++; card.lastUsedTurn=room.turnNumber;
         }
-        if(card.kind.equals("keqingRush")) card.effect=ContentCatalog.describe(card);
+        if(Set.of("keqingRush","asunaFlash","shadowBlade").contains(card.kind)) card.effect=ContentCatalog.describe(card);
         if(consume) ContentService.consume(room,actor,card,true,action); if(card.kind.equals("swordRain") && card.remainingUses>0) actor.hand.add(card);
         frame.card=copy(card);
         Set<String> targets=new LinkedHashSet<>();

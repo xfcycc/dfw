@@ -39,14 +39,23 @@ public final class ConstructionService {
 
     /** 输入内容服务和主动操作；目标和资源仅确认时校验、消费，取消保留卡。 */
     public static void use(ContentService content,Room room,Player owner,Card card) {
-        List<Integer> targets=room.board.stream().filter(t -> card.kind.equals("sereniteaPot") ? movable(room,owner,t) : eligible(room,owner,t)).map(t -> t.id).toList();
+        List<Integer> targets=room.board.stream().filter(t -> switch(card.kind) {
+            case "geoResonance" -> resonanceArea(room.board,t.id).stream().anyMatch(target -> eligible(room,owner,target));
+            case "sereniteaPot" -> movable(room,owner,t);
+            default -> eligible(room,owner,t);
+        }).map(t -> t.id).toList();
         if(!card.kind.equals("remoteConstruction")) require(!targets.isEmpty(),"当前没有可建设的合法自家地产，此卡保留");
         if(Set.of("growthLink","sereniteaPot").contains(card.kind)) require(targets.size()>=2,"此卡需要两处合法自家地产");
         if(card.kind.equals("sereniteaPot")) require(targets.stream().anyMatch(id -> tile(room,id).level<Rules.MAX_LEVEL),"两处地产均满级时不能新增建筑");
         if(card.kind.equals("createBuild")) require(owner.hand.size()>1,"需要至少一张其他手牌作为创造材料");
         ContentChoice choice=content.open(room,owner,"construction_"+card.kind); choice.cardId=card.id; choice.content=card; choice.tileIds.addAll(targets);
-        choice.prompt=card.kind.equals("remoteConstruction") ? ContentCatalog.describe(card) : card.effect;
+        choice.prompt=Set.of("geoResonance","remoteConstruction").contains(card.kind) ? ContentCatalog.describe(card) : card.effect;
         if(card.kind.equals("createBuild")) choice.cards.addAll(owner.hand.stream().filter(c -> !c.id.equals(card.id)).toList());
+    }
+
+    /** 输入棋盘与中心格号，返回沿环形棋盘的左一格、中心、右一格。 */
+    public static List<Tile> resonanceArea(List<Tile> board,int center) {
+        return List.of(board.get(Math.floorMod(center-1,board.size())),board.get(center),board.get((center+1)%board.size()));
     }
 
     /** 输入事件、触发者与随机源；锁定奖励接收者，再逐人开放选择。 */
@@ -111,6 +120,15 @@ public final class ConstructionService {
     private static void execute(Room room,Player owner,Card card,ContentChoice choice,Action action) {
         List<Integer> ids=action.tileIds==null ? action.tileId==null ? List.of() : List.of(action.tileId) : action.tileIds;
         require((card.kind.equals("remoteConstruction") || !ids.isEmpty()) && ids.size()<=2 && new HashSet<>(ids).size()==ids.size() && choice.tileIds.containsAll(ids),"请选择本次候选中的不同地产");
+        if(card.kind.equals("geoResonance")) {
+            require(ids.size()==1,"请选择一个共鸣中心格");
+            List<Tile> targets=resonanceArea(room.board,ids.getFirst()).stream().filter(t -> eligible(room,owner,t)).toList();
+            require(!targets.isEmpty(),"共鸣范围内没有可升级的自家地产");
+            card.effect=ContentCatalog.describe(card);
+            ContentService.consume(room,owner,card,true,action);
+            targets.forEach(t -> build(room,owner,t));
+            return;
+        }
         List<Tile> targets=ids.stream().map(id -> tile(room,id)).toList();
         require(targets.stream().allMatch(t -> card.kind.equals("sereniteaPot") ? movable(room,owner,t) : eligible(room,owner,t)),"地产状态已变化，请重新选择");
         List<Card> materials=List.of(); int firstLevel=0,secondLevel=0;
@@ -128,10 +146,6 @@ public final class ConstructionService {
         }
         ContentService.consume(room,owner,card,true,action);
         switch(card.kind) {
-            case "geoResonance" -> {
-                Tile center=targets.getFirst(); List<Tile> line=List.of(tile(room,Math.floorMod(center.id-1,room.board.size())),center,tile(room,(center.id+1)%room.board.size()));
-                for(Tile target:line) if(eligible(room,owner,target)) build(room,owner,target);
-            }
             case "growthLink" -> {
                 ConstructionState s=state(room); s.links.removeIf(link -> link.ownerId.equals(owner.id) && Set.of(link.first,link.second).equals(new HashSet<>(ids)));
                 ConstructionState.Link link=new ConstructionState.Link(); link.ownerId=owner.id; link.first=ids.getFirst(); link.second=ids.getLast(); s.links.add(link);

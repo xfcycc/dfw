@@ -29,11 +29,11 @@ export function mapLength(count: number, size: MapSize = 'large'): number { retu
 /** 输入闭环地图格数，返回整数行列；34／46 格使用相邻长度的矩形边。 */
 export function boardDimensions(length: number): { rows: number; columns: number } { return { rows: Math.floor(length / 4) + 1, columns: Math.ceil(length / 4) + 1 }; }
 export const ITEMS: Record<ItemKind, { name: string; icon: string; description: string }> = {
-  asunaFlash: { name: "闪光的亚丝娜", icon: '✦', description: "自选向前突进1～3格，替代掷骰；忽略路径效果并清除沿途附加效果，每处护盾只削1层，神威除外；不降建筑，正常结算终点，可被通常主动防御响应。" },
+  asunaFlash: { name: "闪光的亚丝娜", icon: '✦', description: "自选向前突进1～6格，替代掷骰，无视路径阻挡。先清除沿途（含终点）的可解除效果和全部敌方护盾，再对路径上有建筑的敌方地产各斩1击，命中降1级。保留宝藏及自家护盾、演唱会和建设效果。神威和永久效果不受影响，主动防御和落点结算照常。" },
   defenseSpecialization: { name: "怕痛就全点防御了", icon: '✦', description: "本回合及下个本人回合，抵消敌方主动牌对自己及自家地产的全部效果，含UR、不限次数；基础移动固定1，不能替代移动或主动攻击。不免租、不免债、不挡公共事件、不清已有负面状态。" },
   revealingSwords: { name: "光的护封剑", icon: '✦', description: "指定1名对手，接下来3个个人回合禁止使用所有手牌，包含防御、解控和救援响应；掷骰、经营、收租、交易及弃牌照常，重复刷新不叠加。" },
   fusion: { name: "融合", icon: '✦', description: "消耗本牌及额外任意2张手牌，融合为1张普通UR；优先在第一张材料的玩法类别内均分抽取，无同类UR才抽全部UR，不额外赠送使用次数。" },
-  shadowBlade: { name: "双龙魔影剑", icon: '✦', description: "选择2处紧邻、不同的对手有建筑地产，各降1级；可属于不同对手，护盾逐地抵挡，不退款，不能集火。" },
+  shadowBlade: { name: "双龙魔影剑", icon: '✦', description: "选择1～2处有建筑的敌方地产，各斩1击，命中降1级。选两处时沿棋盘最多相距2格，护盾分别抵挡。" },
   doubleBoost: { name: "双喷", icon: '✦', description: "普通掷骰前使用；骰子移动结束或被截停后，可依次追加两次前进1格。喷射忽略且不消耗陨星，路障仍截停并终止喷射；只结算最终落点，喷射不受翻倍与加码放大。" },
   blueSilverBind: { name: "蓝银缠绕", icon: '✦', description: "前后6格内1名对手下个个人回合不能掷骰或替代移动；可使用其他牌、经营、交易、收租与防御，不重新结算原地，可解控，沿用连续控制保护。" },
   goldenCore: { name: "结丹", icon: '✦', description: "掷骰前闭关，放弃本回合主动移动；回合结束结丹，手牌上限永久加1，并获得1张随机SSR道具。经营、交易及防御照常，每人每局限成功1次。" },
@@ -49,7 +49,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   xiaowuSacrifice: { name: '小舞献祭', icon: '✦', description: '掷骰前献祭2处不同的自家未抵押、未封印地产，失去土地及全部建筑，无退款且不可修复；获得十万年魂环：含发动回合共8个本人回合内，最多自主免除3笔正租金，见到最终金额后选择。仅免租，不免税费罚款；正面增益不被净化或解控清除，存续期间不可重复发动。' },
   senbonzakura: { name: '千本樱', icon: '✦', description: "获得3片攻防共享花瓣，至第3个后续个人回合结束；每回合掷骰前可一次消耗1～3片，各使不同对手地产降1级，不占主动次数；防御时每片挡1次常规建筑破坏，护盾优先，穿盾攻击无视花瓣；重复补至3片但不延长。" },
   bankai: { name: '天锁斩月', icon: '✦', description: "发动后，本回合最多再使用2张其他主动道具，含UR；期间不能再用天锁斩月或投影魔术，额外出牌统一计数；替代移动后结束出牌窗口，费用和限制照常。" },
-  geoResonance: { name: "岩脊共鸣", icon: '✦', description: "选择1处自家地产，与左右紧邻的自家地产各免费升1级，最多3处。" },
+  geoResonance: { name: "岩脊共鸣", icon: '✦', description: "选择任意一格为共鸣中心。中心及左右相邻格内，可升级的自家地产各免费升1级；至少有1处可升级才能发动。" },
   growthLink: { name: "所闻遍计", icon: '✦', description: "连接2处自家地产，无回合期限；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。" },
   sereniteaPot: { name: "尘歌壶", icon: '✦', description: "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。" },
   createBuild: { name: "创", icon: '✦', description: "弃置1～2张其他手牌，每张换1处不同自家地产免费升1级；弃牌不折现，确认后才消耗。" },

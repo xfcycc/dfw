@@ -2,7 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
-import { buildCost } from '../../shared/rules';
+import { buildCost, isKamui, RULES } from '../../shared/rules';
 import ThemedSelect from './ThemedSelect.vue';
 import MapTileSelect from './MapTileSelect.vue';
 import ContentCard from './ContentCard.vue';
@@ -17,9 +17,17 @@ const firstLevel = ref(0);
 const bonus = ref<number | ''>('');
 const kind = computed(() => props.choice.type.slice('construction_'.length));
 const remote = computed(() => kind.value === 'remote');
+const resonance = computed(() => kind.value === 'geoResonance');
 const two = computed(() => ['growthLink', 'sereniteaPot', 'createBuild'].includes(kind.value));
 const secondNeeded = computed(() => ['growthLink', 'sereniteaPot'].includes(kind.value) || kind.value === 'createBuild' && materials.value.length === 2);
 const tiles = computed(() => props.choice.tileIds.map(id => game.room?.board.find(t => t.id === id)).filter(t => !!t));
+/** 输入共鸣中心格号，按服务端同样的三格范围预览可升级地产。 */
+function resonanceTargets(center: number) {
+  const board = game.room?.board ?? [];
+  return [-1, 0, 1].map(offset => board[(center + offset + board.length) % board.length])
+    .filter(t => !!t && t.type === 'property' && t.ownerId === game.me?.id && !t.mortgaged && !isKamui(t) && !(t.zeroCasterId && (t.zeroUntilTurn ?? 0) > 0) && t.level < RULES.maxLevel && !game.room?.upgradedTiles?.includes(t.id));
+}
+const resonancePreview = computed(() => resonance.value && first.value !== '' ? resonanceTargets(first.value) : []);
 const total = computed(() => (game.room?.board.find(t => t.id === first.value)?.level ?? 0) + (game.room?.board.find(t => t.id === second.value)?.level ?? 0) + 1);
 const secondLevel = computed(() => total.value - firstLevel.value);
 const levels = computed(() => Array.from({ length: 4 }, (_, value) => ({ value, label: `${value} 级`, disabled: total.value - value < 0 || total.value - value > 3 })));
@@ -30,8 +38,8 @@ const valid = computed(() => kind.value === 'remoteConstruction' || first.value 
 
 /** 输入当前合法地产，生成沿用已有选择组件的名称与本次实际建造费。 */
 function options(excluded: number | ''): Array<{ value: number | ''; label: string; disabled?: boolean }> {
-  return [{ value: '', label: '请选择地产', disabled: true }, ...tiles.value.map(tile => ({ value: tile.id, disabled: tile.id === excluded,
-    label: `${tile.id}号 ${tile.name} · ${tile.level}级${remote.value ? ` → ${tile.level + 1}级 · ¥${Math.floor(buildCost(tile, game.room?.economy) * 75 / 100).toLocaleString()}` : ''}` }))];
+  return [{ value: '', label: resonance.value ? '请选择共鸣中心' : '请选择地产', disabled: true }, ...tiles.value.map(tile => ({ value: tile.id, disabled: tile.id === excluded,
+    label: resonance.value ? `${tile.id}号 ${tile.name} · 可升级 ${resonanceTargets(tile.id).length} 处` : `${tile.id}号 ${tile.name} · ${tile.level}级${remote.value ? ` → ${tile.level + 1}级 · ¥${Math.floor(buildCost(tile, game.room?.economy) * 75 / 100).toLocaleString()}` : ''}` }))];
 }
 watch(() => props.choice.id, () => { first.value = ''; second.value = ''; materials.value = []; bonus.value = ''; }, { immediate: true });
 watch([first, second], () => { firstLevel.value = Math.min(3, total.value); bonus.value = first.value; });
@@ -55,7 +63,9 @@ async function submit(accept: boolean): Promise<void> {
     <ContentCard v-if="choice.content" :content="choice.content" />
     <p class="notice">{{ choice.prompt ?? choice.content?.effect }}</p>
     <template v-if="kind !== 'remoteConstruction' && (!remote || tiles.length)">
-      <label class="field">{{ remote ? '选择要升级的地产' : two ? '第一处地产' : '建设地产' }}<MapTileSelect v-model="first" :label="remote ? '选择要升级的地产' : '第一处建设地产'" :options="options(secondNeeded ? second : '')" /></label>
+      <label v-if="resonance" class="field">共鸣中心<MapTileSelect v-model="first" label="共鸣中心" :options="options('')" :highlighted-tile-ids="resonancePreview.map(t => t.id)" /></label>
+      <label v-else class="field">{{ remote ? '选择要升级的地产' : two ? '第一处地产' : '建设地产' }}<MapTileSelect v-model="first" :label="remote ? '选择要升级的地产' : '第一处建设地产'" :options="options(secondNeeded ? second : '')" /></label>
+      <p v-if="resonancePreview.length" class="notice">将免费升级：{{ resonancePreview.map(t => `${t.id}号 ${t.name}（${t.level} → ${t.level + 1}级）`).join('、') }}</p>
       <template v-if="kind === 'createBuild'">
         <p>选择一至两张其他手牌作为材料，每张建设一处不同地产，材料不折现。</p>
         <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: materials.includes(card.id) }"><input v-model="materials" type="checkbox" :value="card.id" :disabled="!materials.includes(card.id) && materials.length >= 2" /><ContentCard :content="card" compact thumbnail /></label></div>

@@ -27,11 +27,11 @@ export function cardSummary(card: ContentResult): string {
   if (card.kind === 'kingsPressure' && (p.version ?? 0) < 2) return card.effect ?? '禁止对手使用UR主动牌，持续3个个人回合';
   const steps = p.steps;
   const summaries: Record<ItemKind, string> = {
-    asunaFlash: "自选向前突进1～3格，替代掷骰；忽略路径效果并清除沿途附加效果，每处护盾只削1层，神威除外；不降建筑，正常结算终点，可被通常主动防御响应。",
+    asunaFlash: "突进1～6格，先清路径效果和敌方护盾，再斩击敌楼",
     defenseSpecialization: "本回合及后续两个本人回合，自己及自家地产免疫敌方主动牌和负面事件，并免除租金、债务等一切强制费用；奖励照常，基础移动固定1，不能替代移动或主动攻击。",
     revealingSwords: "指定1名对手，接下来3个个人回合禁止使用所有手牌，包含防御、解控和救援响应；掷骰、经营、收租、交易及弃牌照常，重复刷新不叠加。",
     fusion: "消耗本牌及额外任意2张手牌，融合为1张普通UR；优先在第一张材料的玩法类别内均分抽取，无同类UR才抽全部UR，不额外赠送使用次数。",
-    shadowBlade: "选择2处紧邻、不同的对手有建筑地产，各降1级；可属于不同对手，护盾逐地抵挡，不退款，不能集火。",
+    shadowBlade: "选1～2处敌方建筑地各斩1击，两处最多相距2格",
     doubleBoost: "普通掷骰前使用；骰子移动结束或被截停后，可依次追加两次前进1格。喷射忽略且不消耗陨星，路障仍截停并终止喷射；只结算最终落点，喷射不受翻倍与加码放大。",
     blueSilverBind: "前后6格内1名对手下个个人回合不能掷骰或替代移动；可使用其他牌、经营、交易、收租与防御，不重新结算原地，可解控，沿用连续控制保护。",
     goldenCore: "掷骰前闭关，放弃本回合主动移动；回合结束结丹，手牌上限永久加1，并获得1张随机SSR道具。经营、交易及防御照常，每人每局限成功1次。",
@@ -47,7 +47,7 @@ export function cardSummary(card: ContentResult): string {
     igniteSea: '移除对手地产全部护盾，再降1＋盾数级，最多3级',
     xiaowuSacrifice: '献祭2处自家地产，获得十万年魂环：含本回合8个本人回合内，自选免3笔租金',
     senbonzakura: '3片共享花瓣，可攻击不同地产或防御建筑破坏，持续3个后续回合',
-    geoResonance: "中心与左右自家地产各免费升1级，最多3处",
+    geoResonance: "任意格作中心，中心及左右可升的自家地产各免费升1级",
     growthLink: "连接2处自家地产，无回合期限，付费建造联动免费升级，最多2次",
     sereniteaPot: "重分2处自家建筑等级，再免费升1级，不占升级次数",
     createBuild: "弃1～2张其他牌，换不同自家地产各免费升1级",

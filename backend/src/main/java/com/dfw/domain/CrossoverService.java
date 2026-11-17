@@ -96,11 +96,17 @@ public final class CrossoverService {
 
     /** 输入地产及是否仅削一层护盾，完整解除关联效果，神威地产保持原状态。 */
     public static void clear(Room room,Tile t,boolean oneShield) {
+        clear(room,t,oneShield,false,false);
+    }
+    /** 输入清除方式及保留项，亚丝娜保留己方经营效果和路径上的宝藏。 */
+    private static void clear(Room room,Tile t,boolean oneShield,boolean keepOwnBenefits,boolean keepTreasure) {
         if(PropertyEffects.frozen(t)) return;
-        int shields=oneShield?Math.max(0,PropertyEffects.shieldCharges(t)-1):0;
-        ConstructionService.clear(room,t); NetaService.clear(room,t);
+        int shields=keepOwnBenefits?PropertyEffects.shieldCharges(t):oneShield?Math.max(0,PropertyEffects.shieldCharges(t)-1):0;
+        if(!keepOwnBenefits) { ConstructionService.clear(room,t); t.concertStacks=0; }
+        NetaService.clear(room,t);
+        if(!keepTreasure) t.treasure=false;
         if(t.portalTileId!=null) { Tile paired=tile(room,t.portalTileId); if(paired!=null && !PropertyEffects.frozen(paired) && Objects.equals(paired.portalTileId,t.id)) paired.portalTileId=null; }
-        t.barrier=false; t.meteorCharges=0; t.demolitionShieldCharges=shields; t.demolitionShield=shields>0; t.treasure=false; t.concertStacks=0; t.corruptionTurns=0; t.nzothOwnerId=null; t.portalTileId=null; t.zeroCasterId=null; t.zeroUntilTurn=0;
+        t.barrier=false; t.meteorCharges=0; t.demolitionShieldCharges=shields; t.demolitionShield=shields>0; t.corruptionTurns=0; t.nzothOwnerId=null; t.portalTileId=null; t.zeroCasterId=null; t.zeroUntilTurn=0;
     }
 
     /** 输入新主动牌，特殊攻击交回原响应计划器，其余仅在合法确认后消费。 */
@@ -138,15 +144,22 @@ public final class CrossoverService {
     public boolean plan(Room room,Player actor,Card card,Action action,List<GameEffect> parts) {
         switch(card.kind) {
             case "asunaFlash" -> {
-                require(action.point!=null && action.point>=1 && action.point<=3,"请选择突进1～3格");
-                for(int i=1;i<=action.point;i++) { Tile t=room.board.get((actor.position+i)%room.board.size()); if(!PropertyEffects.frozen(t)) part(parts,room,actor,player(room,t.ownerId),t,"cross_clear",1); }
+                require(action.point!=null && action.point>=1 && action.point<=6,"请选择突进1～6格");
+                List<Tile> path=new ArrayList<>();
+                for(int i=1;i<=action.point;i++) {
+                    Tile t=room.board.get((actor.position+i)%room.board.size());
+                    if(!PropertyEffects.frozen(t)) { path.add(t); part(parts,room,actor,player(room,t.ownerId),t,"cross_flash_clear",1); }
+                }
+                // 整条路径先清除附加效果（含全部敌方护盾），之后才逐地结算降级。
+                for(Tile t:path) if(enemy(room,actor,t)) part(parts,room,actor,player(room,t.ownerId),t,"lower",1);
                 part(parts,room,actor,actor,null,"cross_flash",action.point);
             }
             case "shadowBlade" -> {
-                require(action.tileIds!=null && action.tileIds.size()==2 && new HashSet<>(action.tileIds).size()==2,"请选择相邻的两处不同对手地产");
-                Tile first=tile(room,action.tileIds.getFirst()), second=tile(room,action.tileIds.getLast());
-                require(enemy(room,actor,first) && enemy(room,actor,second) && nearbyDistance(first.id,second.id,room.board.size())==1,"双龙目标必须紧邻且属于对手，并有建筑");
-                part(parts,room,actor,player(room,first.ownerId),first,"lower",1); part(parts,room,actor,player(room,second.ownerId),second,"lower",1);
+                require(action.tileIds!=null && action.tileIds.size()>=1 && action.tileIds.size()<=2 && new HashSet<>(action.tileIds).size()==action.tileIds.size(),"请选择1～2处不同的对手地产");
+                List<Tile> targets=action.tileIds.stream().map(id -> tile(room,id)).toList();
+                require(targets.stream().allMatch(t -> enemy(room,actor,t)),"请选择对手有建筑的未封印地产");
+                require(targets.size()==1 || nearbyDistance(targets.getFirst().id,targets.getLast().id,room.board.size())<=2,"两处目标沿棋盘最多相距2格");
+                for(Tile t:targets) part(parts,room,actor,player(room,t.ownerId),t,"lower",1);
             }
             case "revealingSwords","kingsPressure","blueSilverBind" -> {
                 Player target=player(room,action.playerId); require(target!=null && !target.bankrupt && target!=actor,"请选择未破产对手");
@@ -172,6 +185,10 @@ public final class CrossoverService {
         Player target=player(room,e.targetId);
         switch(e.selector) {
             case "cross_clear" -> clear(room,tile(room,e.tileId),true);
+            case "cross_flash_clear" -> {
+                Tile t=tile(room,e.tileId);
+                clear(room,t,false,Objects.equals(t.ownerId,e.playerId),true);
+            }
             case "cross_flash" -> { room.runtime.rollMode="FLASH"; room.runtime.movementSteps=(int)e.amount; room.dice=(int)e.amount; room.runtime.windowExit="replace_roll"; }
             case "cross_revealingSwords" -> add(room,target,"HAND_SEAL",3);
             case "cross_kingsPressure" -> add(room,target,"UR_ACTIVE_SEAL",3);
