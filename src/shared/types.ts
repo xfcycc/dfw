@@ -34,10 +34,25 @@ export interface ContentResult {
 }
 /** 私有手牌。 */
 export interface Card extends ContentResult { kind: ItemKind; projected?: boolean; expiresAtTurn?: number; remainingUses?: number; lastUsedTurn?: number; usesSpent?: number }
+/** 换地预览：cashDue 为正表示本人支付，负数表示收到补差。 */
+export interface LandSwapPair {
+  ownTileId: number;
+  ownValue: number;
+  cashDue: number;
+  receivedRent: number;
+  givenRent: number;
+  receivedConnected: number;
+  givenConnected: number;
+  previousReceivedConnected: number;
+  previousGivenConnected: number;
+}
+/** 一处对手地产的估值、禁用原因以及可选自家地。 */
+export interface LandSwapTarget { tileId: number; value: number; rent: number; reason: string; pairs: LandSwapPair[] }
 /** 只向实际选择者发送的内容窗口。 */
 export interface ContentChoice {
   id: string;
-  type: `cross_${string}` | `neta_${'bankai' | 'ignite' | 'research' | 'bid' | 'reward' | 'petals' | 'petal_defense'}` | `construction_${string}` | 'opening_land' | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'movement_release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  type: `cross_${string}` | `neta_${'bankai' | 'ignite' | 'research' | 'bid' | 'reward' | 'petals' | 'petal_defense'}` | `construction_${string}` | 'land_swap' | 'opening_land' | 'free_upgrade' | 'full_upgrade' | 'self_destroy' | 'opponent_destroy' | 'gamble' | 'release' | 'movement_release' | 'hand_limit' | 'recycle' | 'discover' | 'anime_projection' | 'anime_rewind' | 'anime_defense' | 'anime_vote';
+  landSwapTargets?: LandSwapTarget[] | null;
   numbers?: number[];
   cardOptions?: Record<string, Card[]>;
   materialIds?: string[];

@@ -1,5 +1,7 @@
 package com.dfw.domain.rules;
 
+import com.dfw.domain.LandSwap;
+
 import com.dfw.domain.*;
 import java.util.*;
 import java.util.function.ToLongFunction;
@@ -13,7 +15,7 @@ public final class ContentCatalog {
     private static final Map<String, Integer> CARD_RARITY = Map.of("R",57087,"SR",102383,"SSR",183480,"UR",18050);
     private static final Set<String> CASH = Set.of("amount","wager","prize","bonus","fallback");
     private static final Set<String> CARD = Set.of("xiaowuSacrifice","asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","namelessSword","kingsPressure","keqingRush","thunderLord","hollowfication","fireBurial","bankai","igniteSea","senbonzakura","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","fixed","remote","barrier","demolish","fullDemolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","fullUpgrade","halfPayment","release","steal","cash","gamble","shield","recycle","discover","sap","exchange","slow","swapAny","kamui","handDestruction","gravity","reaper","shadowstep","homeTeleport","blackhole","meteor","timeRewind","projection","starburst","imagineBreaker","timeRestore","vectorReflect","deathReturn","explosion","corruption","contract","commandSpell","sevenSwords","railgun","sealCard","swordRain","voidTears","absoluteZero");
-    private static final Set<String> EVENT = Set.of("districtRent","aquaPurify","worldSeed","darkGame","nzothWrath","endlessClouds","pinkMiracle","igniteSea","geniusClub","senbonzakura","allConstruction","erdtreeBlessing","income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition","stoneGuard","treasure","concert","shuffle","all_cards","classTrial");
+    private static final Set<String> EVENT = Set.of(LandSwap.TYPE,"districtRent","aquaPurify","worldSeed","darkGame","nzothWrath","endlessClouds","pinkMiracle","igniteSea","geniusClub","senbonzakura","allConstruction","erdtreeBlessing","income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition","stoneGuard","treasure","concert","shuffle","all_cards","classTrial");
     private final Map<String, ContentDefinition> pools;
     /** 启用道具效果以机制和参数档为键，供普通补给从快照中恢复剩余的票。 */
     private final Map<String,Candidate> ordinaryCardEffects = new LinkedHashMap<>();
@@ -222,6 +224,7 @@ public final class ContentCatalog {
             case "treasure" -> "随机标记1处地产。首位正常停留者免租，按到达时的无修正租金领现金，保底 ¥"+String.format(Locale.ROOT,"%,d",PropertyEffects.TREASURE_MIN_CASH)+"；无主按0级算。";
             case "concert" -> "随机5处不同地产各增加1层演唱会；下次正租金每层×1.2，触发时全部消耗，付款防御不返还层数。";
             case "districtRent" -> "随机选一个街区，该区所有地产的最终租金加成永久增加25个百分点，上限+100%，满了不重抽。加成不可清除；其他资产金额不变，停租和减免照常。";
+            case LandSwap.TYPE -> "自选自己与对手各1处地产，强制互换产权。差价不超过低价地产估值的10%，由拿到较贵地产的一方补足。";
             case "shuffle" -> "所有玩家随机交换位置，每人接手另一人的原位置；不结算落点或起点奖励，不消耗移动状态。";
             case "all_cards" -> "所有玩家各获得1张随机道具。";
             case "timeRewind" -> "普通骰点公开后、移动前重掷1次，必须接受新结果；不适用替代掷骰，不占主动次数。";

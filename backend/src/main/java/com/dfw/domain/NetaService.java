@@ -76,9 +76,15 @@ public final class NetaService {
     public static long petalRent(Room room,Tile tile,long amount) {
         clean(room);
         if(tile.petalCasterId==null || amount<=0) return amount;
+        long reduced=previewPetalRent(room,tile,amount);
+        clearPetal(tile); log(room,tile.name+" 消耗千本樱标记，本笔按 "+Math.max(0,tile.level-1)+" 级基础租金 ¥"+reduced+" 结算"); return reduced;
+    }
+    /** 输入当前地产和基础租金，返回有效千本樱标记修正后的金额，不消耗花瓣。 */
+    static long previewPetalRent(Room room,Tile tile,long amount) {
+        Player caster=player(room,tile.petalCasterId);
+        if(caster==null || caster.bankrupt || caster.personalTurns>=tile.petalUntilTurn || !Objects.equals(tile.ownerId,tile.petalOwnerId) || amount<=0) return amount;
         int level=Math.max(0,tile.level-1); EconomyRules economy=Rules.economy(room);
-        long reduced=economy.derived("rent."+tile.price+"."+level,Math.multiplyExact(tile.price,economy.rentBasePercent)/100*Rules.RENT_MULTIPLIERS[level]);
-        clearPetal(tile); log(room,tile.name+" 消耗千本樱标记，本笔按 "+level+" 级基础租金 ¥"+reduced+" 结算"); return reduced;
+        return economy.derived("rent."+tile.price+"."+level,Math.multiplyExact(tile.price,economy.rentBasePercent)/100*Rules.RENT_MULTIPLIERS[level]);
     }
     /** 输入房间、持有人、道具及参数，验证并执行献祭或持续增益；返回是否已接管此道具。 */
     public boolean use(Room room,Player owner,Card card,Action action) {

@@ -122,6 +122,7 @@ public final class BotPlanner {
         if(own.choice.type.startsWith("cross_")) return crossoverChoice(conservative);
         ContentChoiceVo c = own.choice; Action a = action("contentDecision"); a.decisionId = c.id; a.accept = true;
         switch (c.type) {
+            case LandSwap.TYPE -> chooseLandSwap(a,c,conservative);
             case "opening_land" -> a.accept = !conservative && c.tileIds.stream().map(state.board::get)
                     .anyMatch(t -> t.ownerId == null && !PropertyEffects.frozen(t) && me.cash >= t.price);
             case "hand_limit" -> a.keepCardIds = (conservative ? c.cards.stream() : c.cards.stream().sorted(Comparator.comparingDouble(this::keepValue).reversed())).limit(c.handLimit > 0 ? c.handLimit : 6).map(card -> card.id).toList();
@@ -1138,6 +1139,23 @@ public final class BotPlanner {
         double sum = 0;
         for (PublicPlayerVo p : state.players) if (!p.bankrupt && !p.id.equals(owner)) sum += visits.get(p.id)[t.id] + (horizon == 1 ? 1 : 3) / (double) state.board.size();
         PublicPlayerVo holder = person(owner); return holder.jailed ? sum * .6 : sum;
+    }
+    /** 输入换地选择和保守模式，选择预估收益为正且不挤占现金储备的配对。 */
+    private void chooseLandSwap(Action action, ContentChoiceVo choice, boolean conservative) {
+        action.accept=false;
+        if (conservative) return;
+        double best=0;
+        for (LandSwap.Target target : choice.landSwapTargets) {
+            Tile received=state.board.get(target.tileId());
+            PublicPlayerVo opponent=person(received.ownerId);
+            for (LandSwap.Pair pair : target.pairs()) {
+                if (pair.cashDue()>0 && me.cash-pair.cashDue()<reserve) continue;
+                Tile given=state.board.get(pair.ownTileId());
+                double gain=pair.receivedRent()*traffic(received,me.id)-rent(given,given.level)*traffic(given,me.id)
+                        +threat(opponent)*(target.rent()*traffic(received,opponent.id)-pair.givenRent()*traffic(given,opponent.id))-pair.cashDue()*.2;
+                if (gain>best) { best=gain; action.accept=true; action.tileIds=List.of(received.id,given.id); }
+            }
+        }
     }
     /** 输入地产与假设等级，返回无临时或永久修正的基础租金。 */
     private long baseRent(Tile t, int level) { return state.economy.derived("rent." + t.price + "." + level, t.price * state.economy.rentBasePercent / 100 * Rules.RENT_MULTIPLIERS[level]); }

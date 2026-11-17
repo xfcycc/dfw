@@ -65,7 +65,7 @@ def classify(pool, effect):
 
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
-    if kind == 'districtRent': return 'SSR'
+    if kind in {'districtRent', 'land_swap'}: return 'SSR'
     if kind == 'shield' and values.get('charges') == 3: return 'UR'
     if kind in NETA_RARITIES: return NETA_RARITIES[kind]
     if kind in CROSSOVER_RARITIES: return CROSSOVER_RARITIES[kind]
@@ -97,7 +97,8 @@ def assign_weights(pool, mechanisms):
         for _, parameter in candidates: parameter['weight'] = 1
         return
     rent_candidates = [(k,p) for k,p in candidates if k == 'districtRent']
-    candidates = [(k,p) for k,p in candidates if k != 'districtRent']
+    swap_candidates = [(k,p) for k,p in candidates if k == 'land_swap']
+    candidates = [(k,p) for k,p in candidates if k not in {'districtRent', 'land_swap'}]
     neta_candidates = [(k,p) for k,p in candidates if k in NETA_RARITIES]
     candidates = [(k,p) for k,p in candidates if k not in NETA_RARITIES]
     crossover_candidates = candidates
@@ -145,6 +146,13 @@ def assign_weights(pool, mechanisms):
         rent_probability = Fraction(8,100)
         probabilities = [p * (1 - rent_probability) for p in probabilities] + [rent_probability / len(rent_candidates)] * len(rent_candidates)
         candidates = list(candidates) + rent_candidates
+    if swap_candidates:
+        swap_probability = Fraction(1,100)
+        ordinary_income = [kind == 'income' and p['rarity'] != 'UR' for kind,p in candidates]
+        budget = sum(p for p, eligible in zip(probabilities, ordinary_income) if eligible)
+        probabilities = [p * (budget - swap_probability) / budget if eligible else p for p, eligible in zip(probabilities, ordinary_income)]
+        probabilities += [swap_probability / len(swap_candidates)] * len(swap_candidates)
+        candidates = list(candidates) + swap_candidates
     if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))
     weights = [int(p * denominator) for p in probabilities]
@@ -179,7 +187,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':105,'fortune':81}.get(pool)
+    expected = {'chance':106,'fortune':81}.get(pool)
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if expected is not None and count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))

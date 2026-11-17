@@ -3,6 +3,7 @@ import ThemedSelect from './ThemedSelect.vue';
 import MapTargetButton from './MapTargetButton.vue';
 import ConstructionChoice from './ConstructionChoice.vue';
 import CrossoverChoice from './CrossoverChoice.vue';
+import LandSwapChoice from './LandSwapChoice.vue';
 import { computed, ref, watch } from 'vue';
 import type { ContentChoice, GameAction } from '../../shared/types';
 import { useGameStore } from '../stores/game';
@@ -52,6 +53,7 @@ async function decide(accept: boolean): Promise<void> {
 <template>
   <CrossoverChoice v-if="choice.type.startsWith('cross_')" :choice="choice" @done="emit('done')" />
   <ConstructionChoice v-else-if="choice.type.startsWith('construction_')" :choice="choice" @done="emit('done')" />
+  <LandSwapChoice v-else-if="choice.type === 'land_swap'" :choice="choice" :players="game.room?.players ?? []" :board="game.room?.board ?? []" :enabled="enabled" :submit="game.act" @done="emit('done')" />
   <div v-else class="content-choice" :class="{ 'card-selection': choosingCards }">
     <ContentCard v-if="choice.content && !compact && !choosingCards" :content="choice.content" />
     <p v-if="choice.prompt" class="notice">{{ choice.prompt }}</p>

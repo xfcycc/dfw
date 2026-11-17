@@ -85,6 +85,7 @@ public final class ContentService {
         if(CrossoverService.fullyProtected(owner) && Set.of("back","skip","jail","self_destroy","rent_double").contains(r.mechanism)) { log(room,owner.name+" 的防御特化免疫「"+r.name+"」的负面事件效果"); return; }
         if(crossover.event(room,owner,r)) return;
         switch (r.mechanism) {
+            case LandSwap.TYPE -> landSwap(room,owner,r);
             case "allConstruction", "erdtreeBlessing" -> ConstructionService.event(this,room,owner,r,random);
             case "classTrial" -> anime.trial(room,owner,r);
             case "igniteSea","geniusClub","senbonzakura" -> neta.event(room,owner,r);
@@ -114,6 +115,12 @@ public final class ContentService {
             case "trap_immunity","next_waiver","rent_double" -> { GameEffect e=effects.effect("ADD_STATUS",owner); e.statusId=switch(r.mechanism){case "trap_immunity"->"TRAP_IMMUNITY";case "next_waiver"->"NEXT_PAYMENT_WAIVER";default->"NEXT_RENT_DOUBLE";}; e.amount=r.mechanism.equals("trap_immunity")?3:1; effects.submit(room,e); }
             default -> expansion.event(room, owner, r);
         }
+    }
+    /** 输入抽牌人及事件，有可换配对时开启私人选地；无配对直接结束。 */
+    private void landSwap(Room room, Player owner, ContentResult event) {
+        var targets=LandSwap.targets(room,owner).stream().filter(t -> !t.pairs().isEmpty()).map(LandSwap.Target::tileId).toList();
+        if (targets.isEmpty()) { log(room,owner.name+" 没有符合条件的地产可互换，「你的名字。」未生效"); return; }
+        ContentChoice choice=open(room,owner,LandSwap.TYPE); choice.tileIds.addAll(targets); choice.content=event;
     }
     /** 输入房间、触发者和已抽到的事件，随机为不重复的未封印地产各叠加一层护盾，并发布结算外观。 */
     private void grantShields(Room room, Player owner, ContentResult event) {
@@ -305,6 +312,7 @@ public final class ContentService {
         if(anime.decide(room,owner,choice,action)) return;
         if(Set.of("free_upgrade","full_upgrade","gamble","release").contains(choice.type)) require(action.accept!=null,"请选择确认或放弃");
         switch(choice.type) {
+            case LandSwap.TYPE -> LandSwap.decide(room,owner,choice,action);
             case "opening_land" -> {
                 require(action.accept != null, "请选择购买或放弃");
                 if (action.accept) {

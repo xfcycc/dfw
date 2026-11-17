@@ -19,6 +19,8 @@ public class ContentChoiceVo {
     public String prompt;
     /** 合法地产候选。 */
     public List<Integer> tileIds;
+    /** 仅换地事件的抽牌人可见的对手地产和可换配对。 */
+    public List<LandSwap.Target> landSwapTargets;
     /** 超限、制衡或发现时仅提供选择者本人的候选牌。 */
     public List<Card> cards;
     /** 多张材料各自固定的重塑候选，仅向本人发送。 */

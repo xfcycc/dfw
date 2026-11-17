@@ -67,6 +67,9 @@ public class ArchiveRules {
     private static final String DISTRICT_RENT_ODDS_RULES = "df4da3aba692f1745a66bcffc46f3088e68fa49edfe626682e48119e6d0e4e59";
     /** 地产护盾事件加入后的默认摘要，原护盾字段和已抽取事件可继续恢复。 */
     private static final String STONE_GUARD_RULES = "ee7c475296bab31fa0bab5d9dcfbe9f0dda968318ea0867ef83e37663b17e7a3";
+    /** 换地事件单独加入及与地产护盾事件一并加入时的默认摘要。 */
+    private static final String LAND_SWAP_RULES = "2c4ed8e968bb96e08c22af5d1d1977c97de112b136b2c4f3534e227da27a760a";
+    private static final String LAND_SWAP_AND_STONE_GUARD_RULES = "9e54eb732c14f85394bf8f648aa269fe136feb22366c3564c11fd7a80751dc59";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -85,12 +88,16 @@ public class ArchiveRules {
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
         boolean stoneGuardContent = STONE_GUARD_RULES.equals(digest);
-        boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest) || stoneGuardContent;
+        boolean combinedContent = LAND_SWAP_AND_STONE_GUARD_RULES.equals(digest);
+        boolean landSwapContent = LAND_SWAP_RULES.equals(digest) || combinedContent;
+        boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest) || stoneGuardContent || landSwapContent;
         boolean cardBuffContent = CARD_BUFF_RULES.equals(digest) || rentOddsContent;
         boolean districtContent = DISTRICT_RENT_RULES.equals(digest) || TORNADO_RULES.equals(digest) || cardBuffContent;
         boolean reviewedContent = CONTENT_REVIEW_RULES.equals(digest) || REMOTE_CONSTRUCTION_RULES.equals(digest) || districtContent;
         return digest.equals(savedDigest)
                 || stoneGuardContent && DISTRICT_RENT_ODDS_RULES.equals(savedDigest)
+                || landSwapContent && DISTRICT_RENT_ODDS_RULES.equals(savedDigest)
+                || combinedContent && (STONE_GUARD_RULES.equals(savedDigest) || LAND_SWAP_RULES.equals(savedDigest))
                 || rentOddsContent && CARD_BUFF_RULES.equals(savedDigest)
                 || cardBuffContent && TORNADO_RULES.equals(savedDigest)
                 || districtContent && (DISTRICT_RENT_RULES.equals(savedDigest) || REMOTE_CONSTRUCTION_RULES.equals(savedDigest))
