@@ -62,8 +62,8 @@ const rushRent = computed(() => {
   if (!tile) return tiles.value.length ? '' : '前方 1～6 格内没有可选的对手地产。';
   const jailed = game.room?.players.find(p => p.id === tile.ownerId)?.jailed;
   const multiplier = game.me?.nextRentDouble ? 2 : 1;
-  const hit = jailed || tile.treasure ? 0 : Math.floor(rentFor({ ...tile, level: Math.max(0, tile.level - 1) }, game.room?.economy, board.value, multiplier) / 2);
-  const blocked = jailed || tile.treasure ? 0 : Math.floor(rentFor(tile, game.room?.economy, board.value, multiplier) / 2);
+  const hit = jailed || tile.treasure ? 0 : Math.floor(rentFor({ ...tile, level: Math.max(0, tile.level - 1) }, game.room?.economy, board.value, multiplier, game.room?.cityRentPercent) / 2);
+  const blocked = jailed || tile.treasure ? 0 : Math.floor(rentFor(tile, game.room?.economy, board.value, multiplier, game.room?.cityRentPercent) / 2);
   return `命中预计付 ¥${hit.toLocaleString()}；被挡预计付 ¥${blocked.toLocaleString()}。两种情况都传送并按半租结算。${tile.demolitionShield ? '当前护盾可挡下这次降级。' : ''}以上未计本人付款防御。`;
 });
 const players = computed(() => game.room?.players.filter(p => !p.bankrupt && p.id !== game.me?.id && (props.card.kind !== 'swordRain' || Math.min(Math.abs(p.position - (game.me?.position ?? 0)), board.value.length - Math.abs(p.position - (game.me?.position ?? 0))) <= 6)) ?? []);

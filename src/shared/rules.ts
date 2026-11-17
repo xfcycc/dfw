@@ -201,10 +201,10 @@ export function connectedRentPercent(board: readonly Tile[], tile: Tile): number
   }
   return count === 3 ? 35 : count === 2 ? 20 : 0;
 }
-/** 输入地产、经济参数、棋盘及本次租金倍率，返回含永久和连片加成的租金预估；停租时为零。 */
-export function rentFor(tile: Tile, economy?: EconomySettings | null, board: readonly Tile[] = [], multiplier = 1): number {
+/** 输入地产、经济参数、棋盘、本次倍率和全城涨租百分点，返回含各项加成的租金预估；停租时为零。 */
+export function rentFor(tile: Tile, economy?: EconomySettings | null, board: readonly Tile[] = [], multiplier = 1, cityRentPercent = 0): number {
   const amount = tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile.petalCasterId && tile.petalOwnerId === tile.ownerId ? { ...tile, level: Math.max(0, tile.level - 1) } : tile,economy), tile.concertStacks ?? 0);
-  return Number(BigInt(amount) * BigInt(multiplier) * BigInt(100 + (tile.permanentRentPercent ?? 0) + connectedRentPercent(board, tile)) / 100n);
+  return Number(BigInt(amount) * BigInt(multiplier) * BigInt(100 + (tile.permanentRentPercent ?? 0) + connectedRentPercent(board, tile) + cityRentPercent) / 100n);
 }
 /** 输入地产，返回是否处于神威冻结中。 */
 export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }

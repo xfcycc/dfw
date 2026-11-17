@@ -248,6 +248,8 @@ export interface PublicRoomState {
   sourceSnapshotId?: string | null;
   /** 本局经济快照；旧对局缺省使用一倍基准。 */
   economy?: EconomySettings | null;
+  /** 当前全城涨租百分点。 */
+  cityRentPercent?: number;
   code: string;
   version: number;
   status: 'lobby' | 'playing' | 'finished';

@@ -1141,16 +1141,16 @@ public final class BotPlanner {
     }
     /** 输入地产与假设等级，返回无临时或永久修正的基础租金。 */
     private long baseRent(Tile t, int level) { return state.economy.derived("rent." + t.price + "." + level, t.price * state.economy.rentBasePercent / 100 * Rules.RENT_MULTIPLIERS[level]); }
-    /** 输入地产与假设等级，返回含永久和当前连片加成的长期租金。 */
-    private long rentWhenActive(Tile t, int level) { return PropertyEffects.boostedRent(baseRent(t,level), t, PropertyEffects.connectedRentPercent(state.board, t)); }
+    /** 输入地产与假设等级，返回含永久、连片和全城加成的长期租金。 */
+    private long rentWhenActive(Tile t, int level) { return PropertyEffects.boostedRent(baseRent(t,level), t, PropertyEffects.connectedRentPercent(state.board, t), state.cityRentPercent); }
     /** 输入地产与等级，返回未计付款人翻倍的租金预估。 */
     private long rent(Tile t, int level) { return rent(t, level, 1); }
     /** 输入地产、等级和倍率，按当前产权计算租金预估。 */
     private long rent(Tile t, int level, int multiplier) { return rent(t, level, multiplier, PropertyEffects.connectedRentPercent(state.board, t)); }
-    /** 输入地产、等级、付款人倍率和连片加成，在停租时返回零。 */
+    /** 输入地产、等级、付款人倍率和连片加成，返回含全城涨租的预估，停租时为零。 */
     private long rent(Tile t, int level, int multiplier, int connectedPercent) {
         return t.mortgaged || PropertyEffects.frozen(t) || AnimeService.iced(t) ? 0
-                : PropertyEffects.boostedRent(Math.multiplyExact(PropertyEffects.concertRent(baseRent(t, level), t.concertStacks), multiplier), t, connectedPercent);
+                : PropertyEffects.boostedRent(Math.multiplyExact(PropertyEffects.concertRent(baseRent(t, level), t.concertStacks), multiplier), t, connectedPercent, state.cityRentPercent);
     }
     /** 输入地产列表与持有人，返回合计主观价值。 */
     private double tileValues(List<Integer> ids, String owner) { return ids.stream().mapToDouble(id -> value(state.board.get(id), owner)).sum(); }

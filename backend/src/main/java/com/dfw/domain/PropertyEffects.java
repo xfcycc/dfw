@@ -45,9 +45,9 @@ public final class PropertyEffects {
         }
         return count == 3 ? 35 : count == 2 ? 20 : 0;
     }
-    /** 输入临时修正后的租金、地产和连片加成百分点，合计加成后向下取整。 */
-    public static long boostedRent(long amount, Tile tile, int connectedPercent) {
-        return Math.multiplyExact(amount, 100L + tile.permanentRentPercent + connectedPercent) / 100;
+    /** 输入临时修正后的租金、地产、连片和全城涨租百分点，合计加成后向下取整。 */
+    public static long boostedRent(long amount, Tile tile, int connectedPercent, long cityRentPercent) {
+        return Math.multiplyExact(amount, 100L + tile.permanentRentPercent + connectedPercent + cityRentPercent) / 100;
     }
     /** 输入地产，返回剩余护盾层数，兼容旧快照的一次护盾标记。 */
     public static int shieldCharges(Tile tile) { return Math.max(tile.demolitionShieldCharges, tile.demolitionShield ? 1 : 0); }

@@ -62,7 +62,7 @@ public class GameEngine {
         room.status = "playing"; refreshRuleDescriptions(room); room.gameId = random.id(); room.seed = random.id(); room.economy = economyRules.snapshot(); freezeMoney(room); room.board = maps.generate(room.players.size(), room.mapSize, room.seed, room.economy); activities.initialize(room);
         room.turnOrder = new ArrayList<>(room.players.stream().map(p -> p.id).toList());
         for (int i = room.turnOrder.size() - 1; i > 0; i--) Collections.swap(room.turnOrder, i, random.nextInt(i + 1));
-        room.turnIndex = 0; room.turnNumber = 1; room.phase = "pre_roll"; room.pending = null; room.trade = null;
+        room.turnIndex = 0; room.turnNumber = 1; room.startRewardCount = 0; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
         for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); StatusService.protectOpening(room, player); }
         // 首位亮相在 3900 毫秒完成，保留两秒后解除开场等待，机器人同样受此期限约束。
@@ -138,7 +138,7 @@ public class GameEngine {
             case "newGame" -> {
                 require(room.hostId.equals(player.id) && room.status.equals("finished"), "只有房主可在结束后再开一局");
                 room.status = "lobby"; room.economy = economyRules.snapshot(); room.chanceEventDescriptions.clear(); room.board.clear(); room.gameId = null; room.turnOrder.clear(); room.turnIndex = 0; room.turnNumber = 0;
-                room.openingEndsAt = 0;
+                room.openingEndsAt = 0; room.startRewardCount = 0;
                 room.phase = "pre_roll"; room.pending = null; room.trade = null; room.winnerId = null; room.dice = null; room.motion = null; room.logs.clear(); room.activityRotation = null; room.activity = null;
                 for (Player p : room.players) { reset(p); p.ready = p.botDifficulty != null; } return;
             }

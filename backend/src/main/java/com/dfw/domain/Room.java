@@ -25,6 +25,8 @@ public class Room {
     public List<SeatClaim> seatClaims = new ArrayList<>();
     /** 开局固定的经济参数；旧对局缺失时沿用一倍基准。 */
     public EconomyRules economy;
+    /** 本局累计发放起点奖励的次数；旧快照从零开始计数。 */
+    public long startRewardCount;
     /** 本局版本的公开追加机会玩法，旧快照缺失时为空。 */
     public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 通用结算运行时；旧快照缺失时继续使用原引擎。 */

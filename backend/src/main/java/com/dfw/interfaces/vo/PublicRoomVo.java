@@ -40,6 +40,8 @@ public class PublicRoomVo {
     public List<Integer> upgradedTiles;
     /** 本局公开经济参数，旧对局缺省按一倍基准。 */
     public EconomyRules economy;
+    /** 当前全城涨租百分点。 */
+    public long cityRentPercent;
     /** 本局新增机会结果的公开说明，空列表表示原事件池。 */
     public List<String> chanceEventDescriptions = new ArrayList<>();
     /** 六位房间号。 */

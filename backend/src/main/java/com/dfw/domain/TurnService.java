@@ -205,11 +205,14 @@ public class TurnService {
         log(room,"log",target.id,target.name+" 被直接送至监狱，不触发沿途奖励或重复落点结算");
         content.restrict(room,target,1,true,!effect.voluntaryRestriction);
     }
-    /** 输入房间、领奖玩家及触发动作，按本局配置发放起点现金与道具并记录日志，无返回值。 */
+    /** 输入房间、领奖玩家及触发动作，发放起点奖励并推进全城涨租，无返回值。 */
     private void rewardStart(Room room, Player player, String action) {
         long income = Rules.economy(room).money("startIncome", Rules.START_INCOME); int cards = Rules.startCards(room.players.size());
         player.cash += income; giveCards(room, player, cards);
         log(room, player.name + " " + action + "，获得 ¥" + income + " 和 " + cards + " 张道具补给");
+        if (++room.startRewardCount % room.turnOrder.size() == 0) {
+            log(room, "全城租金加成升至 +" + Rules.cityRentPercent(room) + "%");
+        }
     }
     /** 输入房间、落点玩家与是否半租，结算当前地块；事件移动不继承半租，无返回值。 */
     private void settle(Room room, Player player, boolean halfRent) {

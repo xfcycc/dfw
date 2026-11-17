@@ -46,7 +46,7 @@ public class EconomyService {
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
         charge(room, player, amount, creditorId, tileId, false);
     }
-    /** 输入强制费用及是否半租，先算租金修正和连片加成，再减半并进入付款防御。 */
+    /** 输入强制费用及是否半租，先计算临时修正与各项加成，再处理半租和付款防御，无返回值。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId, boolean halfRent) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
@@ -70,7 +70,7 @@ public class EconomyService {
         String type = tileId != null && creditorId != null ? "rent" : "debt";
         if (type.equals("rent")) {
             Tile property = tile(room, tileId);
-            amount = PropertyEffects.boostedRent(amount, property, PropertyEffects.connectedRentPercent(room.board, property));
+            amount = PropertyEffects.boostedRent(amount, property, PropertyEffects.connectedRentPercent(room.board, property), Rules.cityRentPercent(room));
         }
         if (halfRent && type.equals("rent")) {
             amount /= 2;

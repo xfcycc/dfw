@@ -23,6 +23,8 @@ public final class Rules {
     public static int initialCards(int count) { return count >= 3 ? 3 : INITIAL_CARDS; }
     /** 输入本局玩家人数（含已淘汰玩家），返回每次正向经过或最终停在起点时的道具补给数量。 */
     public static int startCards(int count) { return count >= 3 ? 2 : 1; }
+    /** 输入房间，按开局人数每凑满一档奖励次数增加10个百分点，返回本局全城涨租比例。 */
+    public static long cityRentPercent(Room room) { return room.turnOrder.isEmpty() ? 0 : room.startRewardCount / room.turnOrder.size() * 10; }
     /** 输入人数及房间大小，返回闭环地图总格数；缺失设置沿用大地图。 */
     public static int mapLength(int count, String size) {
         int factor = switch (size == null ? "large" : size) { case "small" -> 4; case "medium" -> 6; case "large" -> 8; default -> throw new GameError("地图大小不可用"); };
