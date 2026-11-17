@@ -1678,6 +1678,39 @@
             ]
           }
         ]
+      },
+      {
+        "id": "districtRent",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "SSR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "chance_landlady",
+                    "name": "包租婆，怎么没水了？",
+                    "rarity": "SSR",
+                    "quote": "水费不用花钱啊？",
+                    "description": "猪笼城寨突然断水，洗到一半的住户顶着满头泡沫，朝楼上喊起了包租婆。包租婆叼着烟出现在窗口，张口便是一顿训斥。楼下刚才还七嘴八舌，转眼只剩水龙头里滴不出来的水。"
+                  },
+                  {
+                    "id": "chance_dingxiu",
+                    "name": "得加钱",
+                    "rarity": "SSR",
+                    "quote": "很润～",
+                    "description": "听说这桩买卖要对自己的师弟下手，丁修先讲起了同门情分。多年相处，情同手足，话说得郑重，仿佛这事已经没有商量的余地。随后他话锋一转，道出了真正的条件。"
+                  }
+                ],
+                "weight": 467250000
+              }
+            ]
+          }
+        ]
       }
     ]
   }

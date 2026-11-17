@@ -787,6 +787,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
             <div><dt>当前路费</dt><dd>{{ selectedTileOwner?.jailed && selectedTileOwner.skipTurns > 0 ? '¥0 · 房东服刑中' : `¥${rentFor(liveSelectedTile, game.room?.economy).toLocaleString()}` }}</dd></div>
           </dl>
           <dl class="tile-detail-facts">
+            <div v-if="liveSelectedTile.permanentRentPercent"><dt>永久租金加成</dt><dd>+{{ liveSelectedTile.permanentRentPercent }}%</dd></div>
             <div><dt>抵押状态</dt><dd :class="{ 'tile-detail-mortgaged': liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? `已抵押 · 赎回 ¥${redeemCost(liveSelectedTile).toLocaleString()}` : '未抵押' }}</dd></div>
           </dl>
           <div v-if="!spectator && game.me && selectedTileOwner" class="tile-detail-actions">

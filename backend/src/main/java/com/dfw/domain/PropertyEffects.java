@@ -22,6 +22,10 @@ public final class PropertyEffects {
     public static long concertRent(long base, int stacks) {
         return BigInteger.valueOf(base).multiply(BigInteger.valueOf(6).pow(stacks)).divide(BigInteger.valueOf(5).pow(stacks)).longValueExact();
     }
+    /** 输入已完成临时修正的租金与地产，返回永久加成后的租金，向下取整。 */
+    public static long permanentRent(long amount, Tile tile) {
+        return Math.multiplyExact(amount, 100L + tile.permanentRentPercent) / 100;
+    }
     /** 输入地产，返回剩余护盾层数，兼容旧快照的一次护盾标记。 */
     public static int shieldCharges(Tile tile) { return Math.max(tile.demolitionShieldCharges, tile.demolitionShield ? 1 : 0); }
     /** 输入房间及将受损地产，返回是否挡住本次建筑损失；每次消耗一层，冻结不消费。 */

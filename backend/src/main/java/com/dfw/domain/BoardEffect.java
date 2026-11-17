@@ -60,6 +60,8 @@ public class BoardEffect {
         public boolean treasure;
         /** 演唱会层数。 */
         public int concertStacks;
+        /** 本局永久租金加成百分比。 */
+        public int permanentRentPercent;
         /** 陨星层数。 */
         public int meteorCharges;
         /** 神威施术者。 */
@@ -103,6 +105,7 @@ public class BoardEffect {
         TileState state = new TileState(); state.id = tile.id; state.ownerId = tile.ownerId; state.level = tile.level;
         state.barrier = tile.barrier; state.demolitionShield = tile.demolitionShield; state.demolitionShieldCharges = PropertyEffects.shieldCharges(tile); state.treasure = tile.treasure;
         state.concertStacks = tile.concertStacks; state.meteorCharges = tile.meteorCharges;
+        state.permanentRentPercent = tile.permanentRentPercent;
         state.kamuiCasterId = tile.kamuiCasterId; state.kamuiTurns = tile.kamuiTurns; state.kamuiAppliedTurn = tile.kamuiAppliedTurn;
         state.corruptionTurns=tile.corruptionTurns; state.nzothOwnerId=tile.nzothOwnerId; state.zeroCasterId=tile.zeroCasterId; state.zeroUntilTurn=tile.zeroUntilTurn; state.portalTileId=tile.portalTileId;
         state.petalCasterId=tile.petalCasterId; state.petalOwnerId=tile.petalOwnerId; state.petalUntilTurn=tile.petalUntilTurn;

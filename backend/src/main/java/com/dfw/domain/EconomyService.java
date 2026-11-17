@@ -68,6 +68,7 @@ public class EconomyService {
         }
         if (tileId != null && creditorId != null && StatusService.consume(room,player,"NEXT_RENT_DOUBLE","rentDouble")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
+        if (type.equals("rent")) amount = PropertyEffects.permanentRent(amount, tile(room, tileId));
         if (halfRent && type.equals("rent")) {
             amount /= 2;
             log(room,"log",player.id,player.name+" 本次落点租金减半至 ¥"+String.format("%,d",amount));

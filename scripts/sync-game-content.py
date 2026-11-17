@@ -65,6 +65,7 @@ def classify(pool, effect):
 
 def impact_rarity(pool, kind, values):
     """输入池、机制和基准参数，按收支幅度、落点连锁、资产及多人影响返回固定等级。"""
+    if kind == 'districtRent': return 'SSR'
     if kind == 'shield' and values.get('charges') == 3: return 'UR'
     if kind in NETA_RARITIES: return NETA_RARITIES[kind]
     if kind in CROSSOVER_RARITIES: return CROSSOVER_RARITIES[kind]
@@ -95,6 +96,8 @@ def assign_weights(pool, mechanisms):
         # 道具由ContentCatalog先按固定档位概率抽取，再均分该档全部完整效果。
         for _, parameter in candidates: parameter['weight'] = 1
         return
+    rent_candidates = [(k,p) for k,p in candidates if k == 'districtRent']
+    candidates = [(k,p) for k,p in candidates if k != 'districtRent']
     neta_candidates = [(k,p) for k,p in candidates if k in NETA_RARITIES]
     candidates = [(k,p) for k,p in candidates if k not in NETA_RARITIES]
     crossover_candidates = candidates
@@ -138,6 +141,9 @@ def assign_weights(pool, mechanisms):
     probabilities = [p * Fraction(100, denominator_factor) for p in probabilities] + [Fraction(1, denominator_factor)] * len(neta_candidates)
     candidates = list(candidates) + neta_candidates
     candidates, probabilities = assign_crossover(pool, list(crossover_candidates) + neta_candidates, candidates, probabilities)
+    if rent_candidates:
+        probabilities = [p * Fraction(96,100) for p in probabilities] + [Fraction(4,100) / len(rent_candidates)] * len(rent_candidates)
+        candidates = list(candidates) + rent_candidates
     if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))
     weights = [int(p * denominator) for p in probabilities]
@@ -172,7 +178,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':103,'fortune':80}.get(pool)
+    expected = {'chance':105,'fortune':80}.get(pool)
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if expected is not None and count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))

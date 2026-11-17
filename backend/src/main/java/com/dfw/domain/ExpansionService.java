@@ -35,6 +35,13 @@ public final class ExpansionService {
     /** 输入已抽取事件，立即记录标记或随机结果；全员补给统一完成后整理超限。 */
     public void event(Room room,Player actor,ContentResult result) {
         switch(result.mechanism) {
+            case "districtRent" -> {
+                List<Integer> districts=room.board.stream().filter(t -> t.type.equals("property")).map(t -> t.district).distinct().toList();
+                int district=districts.get(random.nextInt(districts.size()));
+                List<Tile> targets=room.board.stream().filter(t -> t.type.equals("property") && t.district==district).toList();
+                for(Tile target:targets) target.permanentRentPercent=Math.min(100,target.permanentRentPercent+25);
+                log(room,"「"+result.name+"」随机选中第 "+(district+1)+" 街区（"+targets.getFirst().regionName+"），全部地产永久租金加成增加25个百分点，最高+100%；仅影响最终租金，已达上限不再增加");
+            }
             case "treasure" -> {
                 List<Tile> candidates=properties(room).stream().filter(t -> !t.treasure).toList();
                 if(candidates.isEmpty()) { log(room,"当前没有可标记宝藏的地产，本次寻宝结束"); return; }

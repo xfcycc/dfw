@@ -41,6 +41,8 @@ public class Tile {
     public boolean treasure;
     /** 下一次正租金的演唱会层数，每层乘以 1.2。 */
     public int concertStacks;
+    /** 本局永久最终租金加成百分比，不参与资产估值或附加效果清除。 */
+    public int permanentRentPercent;
     /** 独立于普通路障的剩余陨星截停次数。 */
     public int meteorCharges;
     /** 猩红腐败剩余触发次数，随地产保存。 */

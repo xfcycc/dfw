@@ -188,9 +188,10 @@ export function ruleMoney(economy: EconomySettings | null | undefined, key: stri
 }
 /** 输入经济快照和已按实际地价计算的金额，返回固定覆盖，不重复乘倍率。 */
 function derivedMoney(economy: EconomySettings | null | undefined, key: string, actual: number): number { return economy?.fixedAmounts[key] ?? actual; }
-/** 输入地产及本局经济参数，返回按基础比例计算的租金；旧对局缺省 10%，抵押不收费。 */
+/** 输入地产及经济参数，返回含演唱会和永久加成的租金预估；停租时为零。 */
 export function rentFor(tile: Tile, economy?: EconomySettings | null): number {
-  return tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile.petalCasterId && tile.petalOwnerId === tile.ownerId ? { ...tile, level: Math.max(0, tile.level - 1) } : tile,economy), tile.concertStacks ?? 0);
+  const amount = tile.mortgaged || isKamui(tile) || !!tile.zeroCasterId ? 0 : concertRent(baseRentFor(tile.petalCasterId && tile.petalOwnerId === tile.ownerId ? { ...tile, level: Math.max(0, tile.level - 1) } : tile,economy), tile.concertStacks ?? 0);
+  return Number(BigInt(amount) * BigInt(100 + (tile.permanentRentPercent ?? 0)) / 100n);
 }
 /** 输入地产，返回是否处于神威冻结中。 */
 export function isKamui(tile: Tile): boolean { return !!tile.kamuiCasterId && (tile.kamuiTurns ?? 0) > 0; }

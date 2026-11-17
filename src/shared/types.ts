@@ -144,6 +144,8 @@ export interface Tile {
   demolitionShieldCharges?: number;
   treasure?: boolean;
   concertStacks?: number;
+  /** 本局永久最终租金加成百分比，不影响资产金额。 */
+  permanentRentPercent?: number;
   meteorCharges?: number;
   kamuiCasterId?: string | null;
   kamuiTurns?: number;
@@ -211,7 +213,7 @@ export interface BoardEffect {
   afterTiles: BoardEffectTile[];
 }
 /** 演出前后的地产公开外观，可包含实际产权变化，不覆盖抵押或资金。 */
-export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn' | 'corruptionTurns' | 'nzothOwnerId' | 'zeroCasterId' | 'zeroUntilTurn' | 'portalTileId' | 'petalCasterId' | 'petalOwnerId' | 'petalUntilTurn'> & { ownerId?: string | null };
+export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'permanentRentPercent' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn' | 'corruptionTurns' | 'nzothOwnerId' | 'zeroCasterId' | 'zeroUntilTurn' | 'portalTileId' | 'petalCasterId' | 'petalOwnerId' | 'petalUntilTurn'> & { ownerId?: string | null };
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   /** 已公开发动卡的皮肤；旧片段缺省时使用通用表现。 */
