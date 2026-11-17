@@ -35,7 +35,11 @@ const fallbackSources = {
 } as const;
 /** 输入卡面身份和等级，返回匹配插画；未知 UR 使用同类 UR 通用图，其他旧牌沿用原图集。 */
 const artwork = computed(() => {
-  const source = illustrations[props.content.skinId ?? ''] ?? illustrations[props.content.id];
+  const skinId = props.content.skinId ?? props.content.id;
+  const source = illustrations[skinId] ?? illustrations[props.content.id];
+  if (skinId === 'fortune_neta_stone_guard') {
+    return { source, viewBox: '0 0 1536 1024', width: 1536, height: 1024, sourceWidth: 1536, sourceHeight: 1024 };
+  }
   if (source || props.content.rarity === 'UR') return { source: source ?? illustrations[`ur_${pool.value}`], viewBox: '0 0 512 512', width: 512, height: 512, sourceWidth: 512, sourceHeight: 512 };
   const frame = frames[pool.value][props.content.rarity ?? 'R'];
   return { source: fallbackSources[pool.value], viewBox: frame.join(' '), width: frame[2], height: frame[3], sourceWidth: 1536, sourceHeight: 1024 };
