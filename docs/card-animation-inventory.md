@@ -245,7 +245,7 @@ A/B/C 按最终素材需求分级，已有样板仍记录其原素材等级。�
 | 137 | 所闻遍计 | SSR | `card_genshin_growth_link` | `growthLink` | C | T10+T04 | 四叶草式草元素印记；两端连线，一侧变化后另一侧长叶 | 待制作 |
 | 138 | 尘歌壶 | UR | `card_genshin_serenitea_pot` | `sereniteaPot` | C | T04+T06 | 尘歌壶、亭阁和洞天云雾；壶口开境、建筑按实际结果重排 | 待制作 |
 | 139 | 创 | SSR | `card_sakura_create_build` | `createBuild` | C | T04+T11 | 创牌轮廓与封印杖；纸上建筑线条立起成形 | 待制作 |
-| 140 | 基建轮班 | SR | `card_arknights_remote_construction` | `remoteConstruction` | B | T11+T04 | 排班表、通讯器和施工灯；轮班确认后工具重新启动 | 待制作 |
+| 140 | 基建轮班 | SSR | `card_arknights_remote_construction` | `remoteConstruction` | B | T11+T04 | 排班表、通讯器和施工灯；轮班确认后工具重新启动 | 待制作 |
 | 141 | 给我建座神社吧 | SR | `card_noragami_shrine_growth` | `shrineGrowth` | B | T04 | 小鸟居和迷你神社；零件拼起、双手形托盘接住，不画夜斗 | 待制作 |
 | 142 | 斩尽牛杂 | SSR | `card_neta_keqing_rush` | `keqingRush` | C | T06+T13 | 雷楔与紫色剑痕；多点短闪、收剑后停在实际位置 | 待制作 |
 | 143 | 煌煌威灵 | UR | `card_neta_thunder_lord` | `thunderLord` | C | T10+T13 | 神君半身巨影与兵刃；巨影成形、兵刃落击，人物本身是招式主体 | 待制作 |

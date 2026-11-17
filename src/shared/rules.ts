@@ -53,7 +53,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   growthLink: { name: "所闻遍计", icon: '✦', description: "连接2处自家地产，无回合期限；其中一处付费建造时，另一处免费升1级，最多触发2次；免费升级不触发。" },
   sereniteaPot: { name: "尘歌壶", icon: '✦', description: "重新分配2处自家地产的建筑等级，再选其中一处免费升1级；每处最高3级，均不占本回合升级次数。" },
   createBuild: { name: "创", icon: '✦', description: "弃置1～2张其他手牌，每张换1处不同自家地产免费升1级；弃牌不折现，确认后才消耗。" },
-  remoteConstruction: { name: "基建轮班", icon: '✦', description: "本回合及下个个人回合，在资产管理阶段各可远程建造1次，支付标准建造费的75%，向下取整。" },
+  remoteConstruction: { name: "基建轮班", icon: '✦', description: "本回合和下个个人回合移动结算后，各可选择1处自家地产升1级，支付标准建造费的75%（向下取整），也可跳过。" },
   shrineGrowth: { name: "给我建座神社吧", icon: '✦', description: "标记1处自家地产；其他玩家正常停留并结算后，该地产免费升1级，最多触发2次；暂不能升级时保留次数。" },
   timeRewind: { name: "时间溯行", icon: '✦', description: "普通骰点公开后、移动前重掷1次，必须接受新结果；不适用替代掷骰，不占主动次数。" },
   projection: { name: "投影魔术", icon: '✦', description: "复制上个已结束个人回合使用过的1张主动道具，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。" },

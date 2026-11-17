@@ -145,8 +145,6 @@ function resizeDesktopViewport(): void { desktopViewport.value = { width: window
 window.addEventListener('resize', resizeDesktopViewport);
 onBeforeUnmount(() => window.removeEventListener('resize', resizeDesktopViewport));
 const workbenchTab = ref<'cards' | 'ranking'>('cards');
-/** 无入参，打开本人本回合的七五折远程施工选择，失败保留资产窗口。 */
-async function openRemoteConstruction(): Promise<void> { if (await game.act({ type: 'constructionBuild' })) modal.value = 'choice'; }
 /** 输入手牌或排行区域，打开手机更多菜单对应的详情，无返回值。 */
 function openMobileWorkbench(section: 'cards' | 'ranking'): void { workbenchTab.value = section; modal.value = 'workbench'; }
 watch(detachedDashboard, mobile => { if (!mobile && (modal.value === 'workbench' || modal.value === 'more')) modal.value = null; });
@@ -185,6 +183,8 @@ const allReady = computed(() => !!game.room && game.room.players.length >= 2 && 
 const previewPlayers = computed(() => Math.max(2, game.room?.players.length ?? 2));
 const canPlay = computed(() => !props.spectator && !boardAnimating.value && (!game.room?.activity || game.room.activity.stage === 'payment') && game.canAct && game.canDecide && !game.room?.tradePending);
 const choice = computed(() => game.privateData?.choice?.id === game.room?.pending?.id ? game.privateData?.choice : null);
+const remoteConstructionChoice = computed(() => choice.value?.type === 'construction_remote');
+const choiceTitle = computed(() => remoteConstructionChoice.value ? '基建轮班 · 远程升级' : choice.value?.type === 'opening_roll' ? '开局自选骰点' : choice.value?.content?.name ?? '处理当前选择');
 watch([modal, () => choice.value?.id, () => selectedCard.value?.id], () => { fieldMapRequest.value = null; });
 const defenseCards = computed(() => game.privateData?.hand.filter(card => !game.privateData?.disabledCardIds?.includes(card.id) && (card.kind === 'halfPayment' || card.kind === 'immunity' && payment.value?.type === 'rent')) ?? []);
 const defenseOptions = computed(() => [{ value: '', label: '不使用道具' }, ...defenseCards.value.map(card => ({ value: card.id, label: card.name ?? ITEMS[card.kind].name }))]);
@@ -685,7 +685,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
     <Modal panel-class="modern-modal assets-modal" v-if="modal === 'assets' && game.me && !spectator" title="我的全部资产" wide @close="modal = null">
       <button v-if="game.isMyTurn && game.room?.phase === 'pre_roll' && !game.room?.pending && !game.room?.tradePending && game.privateData?.petalsAvailable" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'senbonzakuraStrike' })">释放千本樱 · 剩余{{ game.privateData.petalsRemaining }}片</button>
       <button v-if="game.isMyTurn && !game.room?.pending && !game.room?.tradePending && game.room?.board.some(t => t.nzothOwnerId === game.me?.id && t.ownerId === game.me?.id)" class="button secondary small" :disabled="!game.canAct" @click="game.act({ type: 'purifyPollution' })">弃牌净化污染</button>
-      <button v-if="game.privateData?.remoteBuildAvailable" class="button primary" :disabled="!game.canAct" @click="openRemoteConstruction">基建轮班：七五折远程施工</button><Assets />
+      <Assets />
       <template v-if="game.room?.status === 'playing' && !game.me.bankrupt" #footer><button type="button" class="button danger" :disabled="!canSurrender" @click="modal = 'surrender'">一键投降</button></template>
     </Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'surrender' && game.me && !spectator" title="确认投降？" :close-disabled="game.busy" @close="modal = 'assets'">
@@ -718,7 +718,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <CardAction :key="selectedCard.id" :card="selectedCard" :target="selectedTarget" :second-target="selectedSecondTarget" :target-label="targetLabel" :has-candidates="!!(eligibleTiles.length || eligiblePlayers.length)" :readonly="!drafting" compact dialog @submitting="submittingCard = $event" @done="cardUsed" @cancel="clearCard" />
       </template>
     </Modal>
-    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="modal === 'choice' && !fieldMapRequest && !game.opening && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choice.type === 'opening_roll' ? '开局自选骰点' : choice.content?.name ?? '处理当前选择'" :wide="!mapTargeting" @close="closeTargetPicker">
+    <Modal :panel-class="['modern-modal', 'choice-use-modal']" v-if="choice" :open="(modal === 'choice' || remoteConstructionChoice) && !fieldMapRequest && !game.opening && !game.settling && !game.cardReveals.length && (!mapTargeting || mapConfirmOpen)" :title="choiceTitle" :close-disabled="remoteConstructionChoice" :wide="!mapTargeting" @close="closeTargetPicker">
       <p v-if="mapChoice && !mapTargeting" class="map-target-instructions">{{ targetHint }}</p>
       <CardTargetPicker v-if="mapChoice" v-show="!mapTargeting" :key="choice.id" :options="dialogTargets" :selected="selectedTarget" :me-id="game.me?.id" :disabled="!game.canAct" @select="selectDialogTarget" @map="switchTargetMode(true)" />
       <p v-if="game.connection !== 'online'" class="notice warning">连接中断，恢复后继续本次选择。</p>

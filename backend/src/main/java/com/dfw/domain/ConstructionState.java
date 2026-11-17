@@ -11,7 +11,7 @@ public class ConstructionState {
     public Map<String,Integer> endedTurns = new HashMap<>();
     /** 玩家远程施工到期时的个人已结束回合数。 */
     public Map<String,Integer> remoteUntil = new HashMap<>();
-    /** 每名玩家最近一次远程施工的全局回合。 */
+    /** 每名玩家最近一次确认或跳过远程施工的全局回合。 */
     public Map<String,Integer> remoteUsedTurn = new HashMap<>();
     /** 具有两次成功额度的地产连接。 */
     public List<Link> links = new ArrayList<>();

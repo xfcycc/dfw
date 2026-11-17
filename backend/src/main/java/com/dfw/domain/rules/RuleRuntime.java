@@ -72,7 +72,8 @@ public final class RuleRuntime {
         if (room.activity != null) return activities.due(room);
         if (content.needsOverflow(room) || AnimeService.needsResume(room) || room.runtime.neta!=null && room.runtime.neta.research!=null && room.pending==null) return true;
         if (room.pending != null) return false;
-        return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null;
+        return !room.runtime.effects.isEmpty() || room.runtime.stageTurnNumber != room.turnNumber || !stage(room).handler().equals("ACTION_WINDOW") || room.runtime.windowExit != null
+                || ConstructionService.remoteAvailable(room,current(room));
     }
     /** 输入候选房间，逐阶段推进至等待或终局；普通骰点先开放开局自选，再处理重掷及移动修正。 */
     public void advanceUntilWait(Room room) {
@@ -102,6 +103,7 @@ public final class RuleRuntime {
                 case "ACTION_WINDOW" -> {
                     room.phase = stage.phase();
                     if(room.runtime.windowExit==null && stage.phase().equals("pre_roll") && content.crossover.offerCharge(room)) return;
+                    if(room.runtime.windowExit==null && stage.phase().equals("manage") && ConstructionService.offerRemote(content,room,current(room))) return;
                     if (room.runtime.windowExit == null) return;
                     require(stage.exitOn().contains(room.runtime.windowExit), "行动窗口退出结果不可用");
                     room.runtime.windowExit = null; room.runtime.stageIndex++;

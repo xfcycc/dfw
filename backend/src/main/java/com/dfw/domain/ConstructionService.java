@@ -1,5 +1,6 @@
 package com.dfw.domain;
 
+import com.dfw.domain.rules.ContentCatalog;
 import java.util.*;
 import static com.dfw.domain.GameError.require;
 import static com.dfw.domain.GameSupport.*;
@@ -44,7 +45,7 @@ public final class ConstructionService {
         if(card.kind.equals("sereniteaPot")) require(targets.stream().anyMatch(id -> tile(room,id).level<Rules.MAX_LEVEL),"两处地产均满级时不能新增建筑");
         if(card.kind.equals("createBuild")) require(owner.hand.size()>1,"需要至少一张其他手牌作为创造材料");
         ContentChoice choice=content.open(room,owner,"construction_"+card.kind); choice.cardId=card.id; choice.content=card; choice.tileIds.addAll(targets);
-        choice.prompt=card.effect;
+        choice.prompt=card.kind.equals("remoteConstruction") ? ContentCatalog.describe(card) : card.effect;
         if(card.kind.equals("createBuild")) choice.cards.addAll(owner.hand.stream().filter(c -> !c.id.equals(card.id)).toList());
     }
 
@@ -96,9 +97,12 @@ public final class ConstructionService {
             if(choice.type.equals("construction_event")) {
                 ConstructionState.BuildTask task=state(room).tasks.getFirst(); require(Objects.equals(task.playerId,owner.id) && taskTargets(room,task).contains(action.tileId),"建设目标已失效");
                 build(room,owner,tile(room,action.tileId)); state(room).eventBuiltTiles.add(action.tileId);
-            } else if(choice.type.equals("construction_remote")) remote(room,owner,action.tileId);
-            else execute(room,owner,ContentService.find(owner,choice.cardId),choice,action);
+            } else if(choice.type.equals("construction_remote")) {
+                require(choice.tileIds.contains(action.tileId),"请选择本次候选中的地产");
+                remote(room,owner,action.tileId);
+            } else execute(room,owner,ContentService.find(owner,choice.cardId),choice,action);
         }
+        if(choice.type.equals("construction_remote")) state(room).remoteUsedTurn.put(owner.id,room.turnNumber);
         room.pending=choice.returnPending; room.phase=choice.returnPhase; room.runtime.choice=null;
         if(choice.type.equals("construction_event")) { state(room).tasks.removeFirst(); resume(content,room); }
     }
@@ -141,29 +145,32 @@ public final class ConstructionService {
                 SettlementService.observe(room); owner.matchStats.builtLevels++; log(room,owner.name+" 调整尘歌壶布局，建筑总数新增一级，最终等级 "+firstLevel+"／"+secondLevel); presentation.finish(room);
             }
             case "createBuild" -> { owner.hand.removeAll(materials); targets.forEach(t -> build(room,owner,t)); }
-            case "remoteConstruction" -> { state(room).remoteUntil.put(owner.id,ended(room,owner.id)+2); log(room,owner.name+" 开启基建轮班，本回合及下一个人回合各可远程七五折建造一次"); }
+            case "remoteConstruction" -> { state(room).remoteUntil.put(owner.id,ended(room,owner.id)+2); log(room,owner.name+" 开启基建轮班，本回合及下个个人回合移动结算后各可远程七五折建造一次"); }
             case "shrineGrowth" -> { ConstructionState.Shrine shrine=new ConstructionState.Shrine(); shrine.ownerId=owner.id; state(room).shrines.put(ids.getFirst(),shrine); log(room,targets.getFirst().name+" 开始接受奉纳，其他玩家正常停留结算后最多生长两次"); }
             default -> throw new GameError("建设牌型不可用");
         }
     }
 
-    /** 输入本人回合房间与身份，返回尚未过期、未用且有足额现金的远程施工资格。 */
+    /** 输入房间与行动者，返回移动结算后是否还有本回合未处理的施工机会。 */
     public static boolean remoteAvailable(Room room,Player owner) {
         ConstructionState s=room.runtime==null ? null : room.runtime.construction;
         return s!=null && owner!=null && !owner.bankrupt && current(room)==owner && room.phase.equals("manage") && room.pending==null && room.trade==null
-                && s.remoteUntil.getOrDefault(owner.id,0)>s.endedTurns.getOrDefault(owner.id,0) && s.remoteUsedTurn.getOrDefault(owner.id,-1)!=room.turnNumber
-                && room.board.stream().anyMatch(t -> eligible(room,owner,t) && owner.cash>=remoteCost(room,t));
+                && !"STATIONARY".equals(room.runtime.rollMode) && !"JAIL".equals(room.runtime.rollMode)
+                && s.remoteUntil.getOrDefault(owner.id,0)>s.endedTurns.getOrDefault(owner.id,0) && s.remoteUsedTurn.getOrDefault(owner.id,-1)!=room.turnNumber;
     }
 
     /** 输入本局与目标地产，返回标准建造费七五折后向下取整的实际应付金额。 */
     public static long remoteCost(Room room,Tile target) { return Math.multiplyExact(Rules.buildCost(room,target),75)/100; }
 
-    /** 输入内容服务及本人身份，复用地产选择开启远程施工，不提前扣现金或次数。 */
-    public static void openRemote(ContentService content,Room room,Player owner) {
-        require(remoteAvailable(room,owner),"当前没有可用的远程施工机会或现金不足");
+    /** 输入内容服务、房间与行动者，有机会时打开私人选择并返回真，确认前不扣现金。 */
+    public static boolean offerRemote(ContentService content,Room room,Player owner) {
+        if(!remoteAvailable(room,owner)) return false;
         ContentChoice choice=content.open(room,owner,"construction_remote");
         choice.tileIds.addAll(room.board.stream().filter(t -> eligible(room,owner,t) && owner.cash>=remoteCost(room,t)).map(t -> t.id).toList());
-        choice.prompt="本次远程建造按标准费用75%支付，向下取整；无需停留，每回合一次，取消不消耗机会。";
+        choice.prompt=choice.tileIds.isEmpty() ? "本回合没有可升级的自家地产，或现金不足。"
+                : "选一处自家地产升 1 级，按标准建造费的 75% 支付（向下取整）。";
+        if(state(room).remoteUntil.get(owner.id)-ended(room,owner.id)>1) choice.prompt+=" 跳过本回合，下个个人回合移动结算后仍可升级。";
+        return true;
     }
 
     /** 输入确认地块，支付折后现金并计入正常付费建造，最多触发一次连接链。 */
@@ -172,7 +179,7 @@ public final class ConstructionService {
         ConstructionState s=state(room); Tile target=tile(room,id);
         require(s.remoteUntil.getOrDefault(owner.id,0)>ended(room,owner.id) && s.remoteUsedTurn.getOrDefault(owner.id,-1)!=room.turnNumber && eligible(room,owner,target),"远程施工资格或目标已变化");
         long cost=remoteCost(room,target); require(owner.cash>=cost,"远程建造仅使用已有现金");
-        owner.cash-=cost; build(room,owner,target); s.remoteUsedTurn.put(owner.id,room.turnNumber);
+        owner.cash-=cost; build(room,owner,target);
         log(room,owner.name+" 远程建造支付 ¥"+cost+"，现金余额 ¥"+owner.cash); paid(room,owner,target);
     }
 

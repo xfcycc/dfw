@@ -169,7 +169,7 @@ public class GameEngine {
         if (paymentPending(room)) require(Set.of("paymentDefense", "payDebt", "rentDecision", "sellBuilding", "mortgage", "sellLand", "tradeOffer", "declareBankruptcy").contains(action.type), "请先处理当前费用");
         if(action.type.equals("senbonzakuraStrike")) { content.neta.openPetals(room,player); return; }
         if(action.type.equals("purifyPollution")) { content.crossover.openPurify(room,player); return; }
-        if(action.type.equals("constructionBuild")) { ConstructionService.openRemote(content,room,player); return; }
+        if(action.type.equals("constructionBuild")) { require(ConstructionService.offerRemote(content,room,player),"当前没有可用的远程施工机会"); return; }
         ruleRuntime.validateAction(room, action.type);
         switch (action.type) {
             case "roll" -> {

@@ -51,7 +51,7 @@ export function cardSummary(card: ContentResult): string {
     growthLink: "连接2处自家地产，无回合期限，付费建造联动免费升级，最多2次",
     sereniteaPot: "重分2处自家建筑等级，再免费升1级，不占升级次数",
     createBuild: "弃1～2张其他牌，换不同自家地产各免费升1级",
-    remoteConstruction: "本回合及下回合各可远程建造1次，费用75%",
+    remoteConstruction: "本回合和下个个人回合移动结算后，各弹窗选地升1级（七五折），可跳过",
     shrineGrowth: "标记自家地产，其他玩家停留结算后免费升1级，最多2次",
     timeRewind: "普通骰点公开后重掷1次，必须接受新结果",
     projection: "复制上回合主动牌（含UR），本回合额外用1次，回合结束消失",

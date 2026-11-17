@@ -82,7 +82,7 @@ public final class BotPlanner {
                 .max(Comparator.comparingDouble(t -> upgradeValue(t,t.level+1))).orElse(null);
     }
 
-    /** 输入近期是否已主动报价，返回下一合法意图；远程施工与确认选择使用相同判断。 */
+    /** 输入近期是否已主动报价，返回下一合法意图。 */
     public Action next(boolean offered) {
         if (state.recoveryPending || state.pausedReason != null || !state.status.equals("playing") || me.bankrupt) return null;
         if (state.tradePending) {
@@ -103,7 +103,6 @@ public final class BotPlanner {
         }
         if (!conservative) {
             if(own.petalsAvailable && state.phase.equals("pre_roll") && state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0 && !PropertyEffects.frozen(t) && PropertyEffects.shieldCharges(t)==0)) return action("senbonzakuraStrike");
-            if (own.remoteBuildAvailable && state.phase.equals("manage") && remoteBuildTarget(state.board)!=null) return action("constructionBuild");
             if (state.phase.equals("pre_roll") && (!own.activeCardUsed || own.bankaiActive && own.bankaiRemaining>0 || own.hand.stream().anyMatch(c -> c.projected && c.expiresAtTurn==state.turnNumber))) { Action card = activeCard(); if (card != null) return card; }
             if (!offered) { Action trade = offer(); if (trade != null) return trade; }
             Tile redeem = state.board.stream().filter(t -> me.id.equals(t.ownerId) && !PropertyEffects.frozen(t) && t.mortgaged && me.cash - Rules.redeemCost(t) >= reserve)

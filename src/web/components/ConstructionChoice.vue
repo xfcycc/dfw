@@ -16,6 +16,7 @@ const materials = ref<string[]>([]);
 const firstLevel = ref(0);
 const bonus = ref<number | ''>('');
 const kind = computed(() => props.choice.type.slice('construction_'.length));
+const remote = computed(() => kind.value === 'remote');
 const two = computed(() => ['growthLink', 'sereniteaPot', 'createBuild'].includes(kind.value));
 const secondNeeded = computed(() => ['growthLink', 'sereniteaPot'].includes(kind.value) || kind.value === 'createBuild' && materials.value.length === 2);
 const tiles = computed(() => props.choice.tileIds.map(id => game.room?.board.find(t => t.id === id)).filter(t => !!t));
@@ -30,7 +31,7 @@ const valid = computed(() => kind.value === 'remoteConstruction' || first.value 
 /** 输入当前合法地产，生成沿用已有选择组件的名称与本次实际建造费。 */
 function options(excluded: number | ''): Array<{ value: number | ''; label: string; disabled?: boolean }> {
   return [{ value: '', label: '请选择地产', disabled: true }, ...tiles.value.map(tile => ({ value: tile.id, disabled: tile.id === excluded,
-    label: `${tile.id}号 ${tile.name} · ${tile.level}级${kind.value === 'remote' && game.room ? ` · ¥${Math.floor(buildCost(tile, game.room.economy) * .75)}` : ''}` }))];
+    label: `${tile.id}号 ${tile.name} · ${tile.level}级${remote.value ? ` → ${tile.level + 1}级 · ¥${Math.floor(buildCost(tile, game.room?.economy) * 75 / 100).toLocaleString()}` : ''}` }))];
 }
 watch(() => props.choice.id, () => { first.value = ''; second.value = ''; materials.value = []; bonus.value = ''; }, { immediate: true });
 watch([first, second], () => { firstLevel.value = Math.min(3, total.value); bonus.value = first.value; });
@@ -53,8 +54,8 @@ async function submit(accept: boolean): Promise<void> {
   <div class="content-choice">
     <ContentCard v-if="choice.content" :content="choice.content" />
     <p class="notice">{{ choice.prompt ?? choice.content?.effect }}</p>
-    <template v-if="kind !== 'remoteConstruction'">
-      <label class="field">{{ two ? '第一处地产' : '建设地产' }}<MapTileSelect v-model="first" label="第一处建设地产" :options="options(secondNeeded ? second : '')" /></label>
+    <template v-if="kind !== 'remoteConstruction' && (!remote || tiles.length)">
+      <label class="field">{{ remote ? '选择要升级的地产' : two ? '第一处地产' : '建设地产' }}<MapTileSelect v-model="first" :label="remote ? '选择要升级的地产' : '第一处建设地产'" :options="options(secondNeeded ? second : '')" /></label>
       <template v-if="kind === 'createBuild'">
         <p>选择一至两张其他手牌作为材料，每张建设一处不同地产，材料不折现。</p>
         <div class="choice-card-grid"><label v-for="card in choice.cards" :key="card.id" class="keep-card" :class="{ selected: materials.includes(card.id) }"><input v-model="materials" type="checkbox" :value="card.id" :disabled="!materials.includes(card.id) && materials.length >= 2" /><ContentCard :content="card" compact thumbnail /></label></div>
@@ -67,6 +68,6 @@ async function submit(accept: boolean): Promise<void> {
         <label class="field">新增一级的位置<MapTileSelect v-model="bonus" label="新增建筑所在地产" :options="[{ value: first, label: '第一处地产' }, { value: second, label: '第二处地产' }]" /></label>
       </template>
     </template>
-    <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="submit(false)">{{ choice.cardId ? '取消并保留卡' : '放弃本次建设' }}</button><button class="button primary" :disabled="!enabled || !valid" @click="submit(true)">{{ kind === 'remoteConstruction' ? '开启基建轮班' : kind === 'remote' ? '支付并远程建造' : '确认建设' }}</button></div>
+    <div class="button-row"><button class="button secondary" :disabled="!enabled" @click="submit(false)">{{ remote ? '跳过本回合' : choice.cardId ? '取消并保留卡' : '放弃本次建设' }}</button><button v-if="!remote || tiles.length" class="button primary" :disabled="!enabled || !valid" @click="submit(true)">{{ kind === 'remoteConstruction' ? '开启基建轮班' : remote ? '支付并升级' : '确认建设' }}</button></div>
   </div>
 </template>

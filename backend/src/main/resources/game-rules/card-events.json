@@ -2525,13 +2525,13 @@
             "parameters": [
               {
                 "id": "default",
-                "rarity": "SR",
+                "rarity": "SSR",
                 "values": {},
                 "skins": [
                   {
                     "id": "card_arknights_remote_construction",
                     "name": "基建轮班",
-                    "rarity": "SR",
+                    "rarity": "SSR",
                     "quote": "人可以没到，施工不能停。",
                     "description": "可露希尔把新的施工安排推到桌前，通讯器另一头接连传来确认。干员们换好班，尚未完工的设施重新亮起灯，工具声很快又响了起来。",
                     "cardType": "持续"
