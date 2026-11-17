@@ -206,8 +206,12 @@ public final class CrossoverService {
             }
             case "endlessClouds" -> { for(Player p:room.players) if(!p.bankrupt) p.cash=Math.addExact(p.cash,400); cleanse(room,owner); log(room,"白云无尽：全员获得 ¥400，"+owner.name+" 及其地产完成净化"); }
             case "pinkMiracle" -> {
-                if(owner.hand.isEmpty()) owner.cash=Math.addExact(owner.cash,800);
-                else { ContentChoice c=content.open(room,owner,"cross_pink_materials"); c.content=source; c.cards.addAll(owner.hand); c.prompt="选择最多三张任意手牌，按原稀有度重新搭配，不升级。"; }
+                for(String rarity:List.of("SR","SSR","UR")) {
+                    Card reward=ContentService.card(catalog.drawTier(room,rarity,null,Set.of(),random));
+                    owner.hand.add(reward); owner.contentNotice=reward;
+                }
+                owner.contentNoticeText="奇迹搭配：获得 SR、SSR、UR 道具各一张";
+                content.overflow(room);
             }
             case "darkGame" -> {
                 List<String> targets=room.players.stream().filter(p -> p!=owner && !p.bankrupt && p.hand.stream().anyMatch(c -> c.expiresAtTurn==0)).map(p -> p.id).toList();
@@ -357,6 +361,7 @@ public final class CrossoverService {
                 require(source.fusionResult!=null && source.fusionMaterials.equals(c.materialIds) && c.materialIds.size()==2 && !c.materialIds.contains(source.id),"融合材料或结果已失效");
                 List<Card> chosen=c.materialIds.stream().map(id -> ContentService.find(owner,id)).toList(); ContentService.consume(room,owner,source,true,action); owner.hand.removeAll(chosen); owner.hand.add(source.fusionResult); owner.contentNotice=source.fusionResult; owner.contentNoticeText="融合获得UR道具";
             }
+            // 兼容旧存档中已经打开的两步重塑选择。
             case "cross_pink_materials" -> {
                 List<Card> chosen=materials(owner,c,action.discardCardIds,1,3); c.materialIds=new ArrayList<>(action.discardCardIds);
                 for(Card source:chosen) { List<Card> options=new ArrayList<>(); Set<String> excluded=new HashSet<>(); for(int i=0;i<3;i++) { Card result=ContentService.card(catalog.drawTier(room,source.rarity==null?AnimeService.copy(source).rarity:source.rarity,null,excluded,random)); options.add(result); excluded.add(result.kind+":"+result.parameterId); } c.cardOptions.put(source.id,options); }
