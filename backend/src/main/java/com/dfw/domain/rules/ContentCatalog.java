@@ -5,7 +5,7 @@ import java.util.*;
 import java.util.function.ToLongFunction;
 import static com.dfw.domain.GameError.require;
 
-/** 启动校验内容层，道具按档位及完整效果均分，事件按权重抽取，结果进入房间快照。 */
+/** 启动校验内容层，道具分档抽取，事件按权重抽取，结果进入房间快照。 */
 public final class ContentCatalog {
     private static final List<String> RARITIES = List.of("R","SR","SSR","UR");
     private static final Map<String, Integer> RARITY = Map.of("R",40,"SR",30,"SSR",25,"UR",5);
@@ -15,19 +15,39 @@ public final class ContentCatalog {
     private static final Set<String> CARD = Set.of("xiaowuSacrifice","asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","namelessSword","kingsPressure","keqingRush","thunderLord","hollowfication","fireBurial","bankai","igniteSea","senbonzakura","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","fixed","remote","barrier","demolish","fullDemolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","fullUpgrade","halfPayment","release","steal","cash","gamble","shield","recycle","discover","sap","exchange","slow","swapAny","kamui","handDestruction","gravity","reaper","shadowstep","homeTeleport","blackhole","meteor","timeRewind","projection","starburst","imagineBreaker","timeRestore","vectorReflect","deathReturn","explosion","corruption","contract","commandSpell","sevenSwords","railgun","sealCard","swordRain","voidTears","absoluteZero");
     private static final Set<String> EVENT = Set.of("districtRent","aquaPurify","worldSeed","darkGame","nzothWrath","endlessClouds","pinkMiracle","igniteSea","geniusClub","senbonzakura","allConstruction","erdtreeBlessing","income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition","treasure","concert","shuffle","all_cards","classTrial");
     private final Map<String, ContentDefinition> pools;
+    /** 启用道具效果以机制和参数档为键，供普通补给从快照中恢复剩余的票。 */
+    private final Map<String,Candidate> ordinaryCardEffects = new LinkedHashMap<>();
     /** 一个去重后的机制与完整参数组合，名称和插画不增加其概率。 */
-    private record Candidate(String mechanism, ContentDefinition.Parameter parameter) {}
+    private record Candidate(String mechanism, ContentDefinition.Parameter parameter) {
+        /** 无输入，返回不含卡面信息的效果票标识。 */
+        private String key() { return mechanism+":"+parameter.id; }
+    }
     /** 输入三类文件内容，启动时核对概率、去重参数及皮肤身份，返回唯一内容目录。 */
     public ContentCatalog(ContentDefinition chance, ContentDefinition fortune, ContentDefinition cards) {
         require(chance!=null && fortune!=null && cards!=null,"三份事件文件均须提供 content 分层内容");
         pools = Map.of("chance",chance,"fortune",fortune,"card",cards);
         for (var entry : pools.entrySet()) validate(entry.getKey(), entry.getValue());
+        candidates(cards,null).forEach(c -> ordinaryCardEffects.put(c.key(),c));
     }
-    /** 输入池、可选机制与随机源，道具先抽档位再均分完整效果，事件按权重抽取，最后等概率选卡面。 */
+    /** 输入房间、领牌人与随机源，先独立抽档位，再从该玩家该档剩余的票中无放回取一张。 */
+    public ContentResult drawOrdinaryCard(Room room,Player owner,RandomSource random) {
+        String rarity=weighted(RARITIES,CARD_RARITY::get,random);
+        List<String> bag=owner.ordinaryCardBags.computeIfAbsent(rarity,key -> new ArrayList<>());
+        bag.removeIf(key -> {
+            Candidate effect=ordinaryCardEffects.get(key);
+            return effect==null || !rarity.equals(effect.parameter.rarity);
+        });
+        if(bag.isEmpty()) for(Candidate effect:ordinaryCardEffects.values()) if(rarity.equals(effect.parameter.rarity)) {
+            int copies=rarity.equals("SSR") && effect.mechanism.equals("shield") && effect.parameter.values.getOrDefault("charges",1L)==1 ? 3 : 1;
+            for(int i=0;i<copies;i++) bag.add(effect.key());
+        }
+        return materialize(room,"card",ordinaryCardEffects.get(bag.remove(random.nextInt(bag.size()))),random);
+    }
+    /** 输入池、可选机制与随机源，按原事件或定向抽取规则返回卡面，不消耗个人袋。 */
     public ContentResult draw(Room room, String pool, String fixedMechanism, RandomSource random) {
         return draw(room,pool,fixedMechanism,random,Set.of());
     }
-    /** 输入已排除的完整效果，按剩余可选档位或事件权重抽取，避免发现出现同效果不同卡面。 */
+    /** 输入池及排除项，按剩余可选档位或事件权重返回抽取结果。 */
     private ContentResult draw(Room room, String pool, String fixedMechanism, RandomSource random, Set<String> excluded) {
         var definition = pools.get(pool);
         var candidates = candidates(definition, fixedMechanism).stream().filter(c -> !excluded.contains(c.mechanism + ":" + c.parameter.id)).toList();

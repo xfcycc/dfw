@@ -4,7 +4,7 @@ import java.util.*;
 import lombok.Getter;
 import lombok.Setter;
 
-/** 内容文件；道具在稀有度内均分完整效果，事件独立配权，皮肤只改变表达。 */
+/** 内容文件；道具由运行时分档抽取，事件独立配权，皮肤只改变表达。 */
 @Getter
 @Setter
 public class ContentDefinition {
@@ -35,7 +35,7 @@ public class ContentDefinition {
         public String id;
         /** 实际效果的影响等级：R、SR、SSR 或 UR，同效果卡面必须一致。 */
         public String rarity;
-        /** 事件完整效果的抽取权重；道具统一为1，由执行器按档位及效果均分。 */
+        /** 事件完整效果的抽取权重；道具抽取由运行时决定，不读取此权重。 */
         public Long weight;
         /** 步数、金额、次数或概率；类型不混用。 */
         public Map<String, Long> values;

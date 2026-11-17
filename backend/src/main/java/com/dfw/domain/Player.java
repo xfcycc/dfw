@@ -52,6 +52,8 @@ public class Player {
     public List<PlayerStatus> statuses = new ArrayList<>();
     /** 私人手牌，仅在服务端及本人状态中使用。 */
     public List<Card> hand = new ArrayList<>();
+    /** 普通补给各稀有度剩余的效果票，仅保存到内部对局快照。 */
+    public Map<String,List<String>> ordinaryCardBags = new HashMap<>();
     /** 已开始的个人回合编号，包含被休息跳过的回合。 */
     public int personalTurns;
     /** 新局尚未购买地产或检查第三回合购地保底。 */

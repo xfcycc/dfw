@@ -36,10 +36,11 @@ public final class ContentService {
     }
     /** 输入新局房间，将全部内容现金常量冻结到其经济快照。 */
     public void freeze(Room room) { catalog.freeze(room); }
-    /** 输入补给参数，抽取完整卡面并加入手牌；只有持有人收到具体卡和数量。 */
+    /** 输入领牌人、张数和可选定向机制；普通补给消耗本人分档袋，定向补给独立抽取。 */
     public void giveCards(Room room, Player owner, int count, String kind) {
         for (int i = 0; i < count; i++) {
-            ContentResult result = catalog.draw(room,"card",kind,random); Card card = card(result); owner.hand.add(card);
+            ContentResult result = kind==null ? catalog.drawOrdinaryCard(room,owner,random) : catalog.draw(room,"card",kind,random);
+            Card card = card(result); owner.hand.add(card);
             owner.contentNotice = card; owner.contentNoticeText = "收到道具补给";
         }
     }
