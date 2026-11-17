@@ -6,6 +6,8 @@ import static com.dfw.domain.GameSupport.*;
 
 /** 地产附加效果、无修正租金与神威生命周期，沿房间快照原子保存。 */
 public final class PropertyEffects {
+    /** 首位领取宝藏时的最低实际现金奖励。 */
+    public static final long TREASURE_MIN_CASH = 2000;
     private PropertyEffects() {}
     /** 输入地产，返回是否处于有效神威冻结中。 */
     public static boolean frozen(Tile tile) { return tile != null && tile.kamuiCasterId != null && tile.kamuiTurns > 0; }
@@ -16,6 +18,8 @@ public final class PropertyEffects {
         EconomyRules economy = Rules.economy(room); int level = tile.ownerId == null ? 0 : tile.level;
         return economy.derived("rent." + tile.price + "." + level, Math.multiplyExact(tile.price, economy.rentBasePercent) / 100 * Rules.RENT_MULTIPLIERS[level]);
     }
+    /** 输入本局和宝藏地产，返回按领取时无修正租金计算且有现金保底的奖励。 */
+    public static long treasureReward(Room room, Tile tile) { return Math.max(TREASURE_MIN_CASH,baseRent(room,tile)); }
     /** 输入本局及地产，返回等价交换应付价格，最低为该地块的实际土地价格。 */
     public static long exchangePrice(Room room,Tile tile) { return Math.max(tile.price,baseRent(room,tile)); }
     /** 输入基础租金与叠加层数，以精确分数计算乘数并在最后向下取整。 */

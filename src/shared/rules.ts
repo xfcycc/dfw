@@ -202,6 +202,8 @@ export function baseRentFor(tile: Tile, economy?: EconomySettings | null): numbe
   const level = tile.ownerId ? tile.level : 0;
   return derivedMoney(economy, `rent.${tile.price}.${level}`, Math.floor(tile.price * (economy?.rentBasePercent ?? 10) / 100) * RULES.rentMultipliers[level]);
 }
+/** 输入宝藏地产及本局经济，返回按当前等级估算且保底 ¥2,000 的现金。 */
+export function treasureReward(tile: Tile, economy?: EconomySettings | null): number { return Math.max(2000, baseRentFor(tile, economy)); }
 /** 输入无修正租金和层数，用精确整数比计算演唱会租金，最后向下取整。 */
 export function concertRent(base: number, stacks: number): number { return Number(BigInt(base) * 6n ** BigInt(stacks) / (5n ** BigInt(stacks))); }
 /** 输入地产及本局经济参数，返回一级建设成本。 */

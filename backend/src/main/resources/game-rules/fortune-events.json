@@ -912,10 +912,10 @@
             "id": "default",
             "parameters": [
               {
-                "id": "compensationPercent-50",
+                "id": "compensationPercent-25",
                 "rarity": "UR",
                 "values": {
-                  "compensationPercent": 50
+                  "compensationPercent": 25
                 },
                 "skins": [
                   {

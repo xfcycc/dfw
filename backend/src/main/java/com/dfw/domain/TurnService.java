@@ -224,7 +224,7 @@ public class TurnService {
             case "property" -> {
                 if(PropertyEffects.frozen(tile)) { log(room,player.name+" 停在神威中的 "+tile.name+"，不结算地产效果"); break; }
                 boolean found=tile.treasure;
-                if(found) { long reward=PropertyEffects.baseRent(room,tile); tile.treasure=false; player.cash=Math.addExact(player.cash,reward); log(room,player.name+" 在 "+tile.name+" 领取宝藏 ¥"+reward+"，本次不收租且保留全部租金状态"); }
+                if(found) { long reward=PropertyEffects.treasureReward(room,tile); tile.treasure=false; player.cash=Math.addExact(player.cash,reward); log(room,player.name+" 在 "+tile.name+" 领取宝藏 ¥"+reward+"，本次不收租且保留全部租金状态"); }
                 if (tile.ownerId == null) { room.phase = "buy"; room.pending = pending("buy", player, tile.id, tile.price, null); }
                 else if (tile.ownerId.equals(player.id)) {
                     if (!tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }

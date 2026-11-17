@@ -217,7 +217,9 @@ public final class CrossoverService {
                 List<String> targets=room.players.stream().filter(p -> p!=owner && !p.bankrupt && p.hand.stream().anyMatch(c -> c.expiresAtTurn==0)).map(p -> p.id).toList();
                 if(owner.hand.stream().noneMatch(c -> c.expiresAtTurn==0) || targets.isEmpty()) return true;
                 CrossoverState.Duel duel=new CrossoverState.Duel(); duel.actorId=owner.id; duel.source=source; state(room).duel=duel;
-                ContentChoice c=content.open(room,owner,"cross_duel_target"); c.content=source; c.playerIds.addAll(targets); c.prompt="邀请一名对手进行自愿暗押手牌赌局，也可以放弃。";
+                ContentChoice c=content.open(room,owner,"cross_duel_target"); c.content=source; c.playerIds.addAll(targets);
+                c.cards.addAll(owner.hand.stream().filter(card -> card.expiresAtTurn==0).toList());
+                c.prompt="选择一名对手和一张非临时手牌。对手只会看到你的押牌档位，可用同档牌应战，也可拒绝。";
             }
             default -> { return false; }
         }
@@ -338,6 +340,17 @@ public final class CrossoverService {
         return ids.stream().map(id -> ContentService.find(owner,id)).toList();
     }
 
+    /** 输入发起人、对手和已核验的押牌，仅向对手发出档位和他自己的同档候选。 */
+    private void inviteDuel(Room room,Player owner,ContentChoice choice,Player target,Card stake) {
+        CrossoverState.Duel duel=state(room).duel; duel.targetId=target.id; duel.actorCardId=stake.id;
+        close(room,choice);
+        List<Card> replies=target.hand.stream().filter(card -> card.expiresAtTurn==0 && Objects.equals(card.rarity,stake.rarity)).toList();
+        if(replies.isEmpty()) { state(room).duel=null; log(room,"黑暗游戏未成局，未转移押牌"); return; }
+        ContentChoice reply=content.open(room,target,"cross_duel_stake"); reply.content=duel.source;
+        reply.cards.addAll(replies);
+        reply.prompt=owner.name+" 暗押了一张 "+stake.rarity+" 道具。可以押一张同档手牌应战，或直接拒绝。双方各掷一次骰，平局退回。";
+    }
+
     /** 输入素材选择，固定候选并原子替换；失败保留原牌、选择和主动次数。 */
     public boolean decide(Room room,Player owner,ContentChoice c,Action action) {
         if(!c.type.startsWith("cross_")) return false;
@@ -346,7 +359,10 @@ public final class CrossoverService {
             if(c.type.equals("cross_boost")) state(room).boosts=0;
             if(c.type.equals("cross_charge")) { state(room).chargeTurns.remove(owner.id); state(room).chargedCards.remove(owner.id); }
             if(c.type.equals("cross_bind_release")) bind(room,owner);
-            if(c.type.startsWith("cross_duel")) state(room).duel=null;
+            if(c.type.startsWith("cross_duel")) {
+                log(room,owner.name+(owner.id.equals(state(room).duel.actorId)?" 放弃黑暗游戏":" 拒绝了黑暗游戏邀约")+"，未转移押牌");
+                state(room).duel=null;
+            }
             close(room,c); return true;
         }
         switch(c.type) {
@@ -393,14 +409,26 @@ public final class CrossoverService {
                 Card charged=state(room).chargedCards.get(owner.id); close(room,c); content.anime.attack(room,owner,charged,action,false); state(room).chargeTurns.remove(owner.id); state(room).chargedCards.remove(owner.id); return true;
             }
             case "cross_duel_target" -> {
-                require(c.playerIds.contains(action.playerId) && player(room,action.playerId)!=null && !player(room,action.playerId).bankrupt,"请选择合法对手"); state(room).duel.targetId=action.playerId; c.type="cross_duel_stake"; c.cards=new ArrayList<>(owner.hand.stream().filter(x -> x.expiresAtTurn==0).toList()); c.prompt="选择一张非临时手牌暗押；对方同意前不公开。"; return true;
+                Player target=player(room,action.playerId);
+                require(c.playerIds.contains(action.playerId) && target!=null && !target.bankrupt,"请选择合法对手");
+                if(c.cards.isEmpty()) {
+                    // 已保存的旧邀约窗口只有对手候选，继续完成原来的选牌步骤。
+                    state(room).duel.targetId=target.id; c.type="cross_duel_stake";
+                    c.cards.addAll(owner.hand.stream().filter(x -> x.expiresAtTurn==0).toList());
+                    c.prompt="选择一张非临时手牌，对手只会看到押牌档位。";
+                } else {
+                    Card stake=ContentService.find(owner,action.cardId);
+                    require(stake.expiresAtTurn==0 && c.cards.stream().anyMatch(x -> x.id.equals(stake.id)),"请选择非临时手牌");
+                    inviteDuel(room,owner,c,target,stake);
+                }
+                return true;
             }
             case "cross_duel_stake" -> {
                 Card stake=ContentService.find(owner,action.cardId); require(stake.expiresAtTurn==0 && c.cards.stream().anyMatch(x -> x.id.equals(stake.id)),"请选择非临时手牌"); CrossoverState.Duel duel=state(room).duel;
                 if(owner.id.equals(duel.actorId)) {
-                    duel.actorCardId=stake.id; Player target=player(room,duel.targetId); close(room,c);
-                    if(target==null || target.bankrupt || target.hand.stream().noneMatch(x -> x.expiresAtTurn==0)) { state(room).duel=null; return true; }
-                    ContentChoice next=content.open(room,target,"cross_duel_stake"); next.content=duel.source; next.cards.addAll(target.hand.stream().filter(x -> x.expiresAtTurn==0).toList()); next.prompt=owner.name+" 邀请暗押一张手牌进行黑暗游戏；可以拒绝，双方各掷一次骰，平局退回。"; return true;
+                    Player target=player(room,duel.targetId);
+                    require(target!=null && !target.bankrupt,"对手已退出赌局");
+                    inviteDuel(room,owner,c,target,stake); return true;
                 }
                 Player actor=player(room,duel.actorId); require(actor!=null && !actor.bankrupt,"发起人已退出赌局"); Card first=ContentService.find(actor,duel.actorCardId);
                 duel.actorDie=random.nextInt(6)+1; duel.targetDie=random.nextInt(6)+1;

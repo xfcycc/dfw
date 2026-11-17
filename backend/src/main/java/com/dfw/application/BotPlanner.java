@@ -231,7 +231,7 @@ public final class BotPlanner {
             case "cross_purify" -> { a.tileId=c.tileIds.stream().findFirst().orElse(null); Card material=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).orElse(null); a.cardId=material==null?null:material.id; a.accept=a.tileId!=null && material!=null && (!safe || state.board.get(a.tileId).level>1); }
             case "cross_bind_release" -> { a.cardId=c.cards.stream().findFirst().map(x -> x.id).orElse(null); a.accept=a.cardId!=null; }
             case "cross_boost" -> { int next=(me.position+1)%state.board.size(); a.accept=!safe && !state.board.get(next).barrier && landingValue(me,next)>=landingValue(me,me.position); }
-            case "cross_duel_target" -> { a.playerId=c.playerIds.stream().findFirst().orElse(null); a.accept=!safe && a.playerId!=null; }
+            case "cross_duel_target" -> { a.playerId=c.playerIds.stream().findFirst().orElse(null); a.cardId=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).map(x -> x.id).orElse(null); a.accept=!safe && a.playerId!=null; }
             case "cross_duel_stake" -> { a.cardId=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).map(x -> x.id).orElse(null); a.accept=!safe && a.cardId!=null; }
             default -> throw new GameError("未知素材私人选择");
         }
@@ -746,7 +746,7 @@ public final class BotPlanner {
                             if(!self) continue; gain=-rollValue(me,me.position,0);
                             if(nightmare) gain+=.85*future(me)[t.id];
                             if(!t.mortgaged && t.level<Rules.MAX_LEVEL && !state.upgradedTiles.contains(t.id) && me.cash>=Rules.buildCost(economics,t)) gain+=Math.max(0,upgradeValue(t,t.level+1)-Rules.buildCost(economics,t));
-                            if(t.treasure) gain+=PropertyEffects.baseRent(economics,t);
+                            if(t.treasure) gain+=PropertyEffects.treasureReward(economics,t);
                         }
                         default -> throw new IllegalStateException("未处理的新增地产道具");
                     }
@@ -1021,7 +1021,7 @@ public final class BotPlanner {
         if (t.type.equals("jail")) return -startIncome() * .5;
         if (!t.type.equals("property")) return 0;
         if (PropertyEffects.frozen(t)) return 0;
-        if (t.treasure) return PropertyEffects.baseRent(economics,t);
+        if (t.treasure) return PropertyEffects.treasureReward(economics,t);
         if (t.ownerId == null) return cash - t.price >= (nightmare && !conservative ? reserves.get(p.id) : reserve) ? Math.max(0, value(t, p.id) - t.price) : 0;
         if (t.ownerId.equals(p.id) || person(t.ownerId).jailed) return 0;
         if (halfRent && AnimeService.iced(t)) return 0;

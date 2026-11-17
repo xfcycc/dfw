@@ -59,6 +59,8 @@ public class ArchiveRules {
     private static final String REMOTE_CONSTRUCTION_RULES = "1782583ff9e7385843e817939e6c4dba3a3c9d6eb57ad7f6cd4cfb9c2c6044b7";
     /** 永久街区租金事件加入后的默认摘要，旧地块缺省加成为零。 */
     private static final String DISTRICT_RENT_RULES = "227ba36236ff5ca369fce9cc89e5603d9792ca182af111580f918a6a2be78963";
+    /** 龙卷风补偿调整后的默认摘要，保留历史事件及已经排队的补偿。 */
+    private static final String TORNADO_RULES = "a1f20aa818c45ffaf9f9a20624d8c6c53920851708b8566dc97174849c4c46cc";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -76,9 +78,10 @@ public class ArchiveRules {
     }
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
-        boolean reviewedContent = CONTENT_REVIEW_RULES.equals(digest) || REMOTE_CONSTRUCTION_RULES.equals(digest) || DISTRICT_RENT_RULES.equals(digest);
+        boolean districtContent = DISTRICT_RENT_RULES.equals(digest) || TORNADO_RULES.equals(digest);
+        boolean reviewedContent = CONTENT_REVIEW_RULES.equals(digest) || REMOTE_CONSTRUCTION_RULES.equals(digest) || districtContent;
         return digest.equals(savedDigest)
-                || DISTRICT_RENT_RULES.equals(digest) && REMOTE_CONSTRUCTION_RULES.equals(savedDigest)
+                || districtContent && (DISTRICT_RENT_RULES.equals(savedDigest) || REMOTE_CONSTRUCTION_RULES.equals(savedDigest))
                 || reviewedContent && (CONTENT_REVIEW_RULES.equals(savedDigest) || PRE_CONTENT_REVIEW_RULES.equals(savedDigest) || XIAOWU_RULES.equals(savedDigest))
                 || (reviewedContent || FINAL_NETA_RULES.equals(digest) || ATTACK_PRESSURE_RULES.equals(digest) || XIAOWU_RULES.equals(digest)) && savedDigest!=null && Set.of(ATTACK_PRESSURE_RULES,FINAL_NETA_RULES,PREVIOUS_BARRIER_RULES,CURRENT_BARRIER_RULES,PRE_EXPANSION_RULES,EXPANSION_RULES,RENAMED_CONTENT_RULES,PRE_SKIN_EXPANSION_RULES,SKIN_EXPANSION_RULES,ANIME_CONTENT_RULES,PRE_RAILGUN_COPY_RULES,PRE_CARD_COPY_REVIEW_RULES,TRIPLE_SHIELD_RULES,UR_PROJECTION_RULES,EQUAL_UR_RULES,EQUAL_CARD_TIER_RULES,BALANCED_CARD_RULES,NETA_CONTENT_RULES,"aeda9c8378265ecb71cc6d53d985bd90e19dc28b418be61c0c2d44fb38365e46").contains(savedDigest)
                 || CROSSOVER_CONTENT_RULES.equals(digest) && savedDigest!=null && Set.of(PREVIOUS_BARRIER_RULES,CURRENT_BARRIER_RULES,PRE_EXPANSION_RULES,EXPANSION_RULES,RENAMED_CONTENT_RULES,PRE_SKIN_EXPANSION_RULES,SKIN_EXPANSION_RULES,ANIME_CONTENT_RULES,PRE_RAILGUN_COPY_RULES,PRE_CARD_COPY_REVIEW_RULES,TRIPLE_SHIELD_RULES,UR_PROJECTION_RULES,EQUAL_UR_RULES,EQUAL_CARD_TIER_RULES,BALANCED_CARD_RULES,NETA_CONTENT_RULES).contains(savedDigest)

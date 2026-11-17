@@ -46,7 +46,7 @@ public final class ExpansionService {
                 List<Tile> candidates=properties(room).stream().filter(t -> !t.treasure).toList();
                 if(candidates.isEmpty()) { log(room,"当前没有可标记宝藏的地产，本次寻宝结束"); return; }
                 Tile target=candidates.get(random.nextInt(candidates.size())); target.treasure=true;
-                log(room,"大海贼的宝藏出现在 "+target.name+"（"+target.id+"号），首位正常停留者可领取，按到达时无修正租金计算");
+                log(room,"大海贼的宝藏出现在 "+target.name+"（"+target.id+"号），当前预计 ¥"+PropertyEffects.treasureReward(room,target)+"；首位正常停留者可领取，以到达时为准");
             }
             case "concert" -> {
                 for(Tile target:shuffled(properties(room)).stream().limit(5).toList()) {
