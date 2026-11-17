@@ -27,6 +27,7 @@ function propertyResult(before: BoardEffectTile, after: BoardEffectTile): string
     case 'kamuiRelease': return '地产恢复';
     case 'blackhole': return '附加效果清除';
     case 'meteor': return '陨星 +1';
+    case 'stoneGuard': return `护盾 +1 · 现有 ${after.demolitionShieldCharges} 层`;
     case 'tornado': if (before.level === after.level) return '力场抵挡'; break;
   }
   return before.level !== after.level ? `${before.level}级 → ${after.level}级` : before.ownerId !== after.ownerId ? '产权已转移' : '效果生效';

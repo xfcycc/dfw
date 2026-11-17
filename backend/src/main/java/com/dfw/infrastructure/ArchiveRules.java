@@ -65,6 +65,8 @@ public class ArchiveRules {
     private static final String CARD_BUFF_RULES = "f7ea3a20ae02624714eec7f4a05b4c5151b9694bbf8e642b2acf860585e50e4f";
     /** 永久街区涨租概率调至8%后的默认摘要，历史抽取结果保留。 */
     private static final String DISTRICT_RENT_ODDS_RULES = "df4da3aba692f1745a66bcffc46f3088e68fa49edfe626682e48119e6d0e4e59";
+    /** 地产护盾事件加入后的默认摘要，原护盾字段和已抽取事件可继续恢复。 */
+    private static final String STONE_GUARD_RULES = "ee7c475296bab31fa0bab5d9dcfbe9f0dda968318ea0867ef83e37663b17e7a3";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -82,11 +84,13 @@ public class ArchiveRules {
     }
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
-        boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest);
+        boolean stoneGuardContent = STONE_GUARD_RULES.equals(digest);
+        boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest) || stoneGuardContent;
         boolean cardBuffContent = CARD_BUFF_RULES.equals(digest) || rentOddsContent;
         boolean districtContent = DISTRICT_RENT_RULES.equals(digest) || TORNADO_RULES.equals(digest) || cardBuffContent;
         boolean reviewedContent = CONTENT_REVIEW_RULES.equals(digest) || REMOTE_CONSTRUCTION_RULES.equals(digest) || districtContent;
         return digest.equals(savedDigest)
+                || stoneGuardContent && DISTRICT_RENT_ODDS_RULES.equals(savedDigest)
                 || rentOddsContent && CARD_BUFF_RULES.equals(savedDigest)
                 || cardBuffContent && TORNADO_RULES.equals(savedDigest)
                 || districtContent && (DISTRICT_RENT_RULES.equals(savedDigest) || REMOTE_CONSTRUCTION_RULES.equals(savedDigest))

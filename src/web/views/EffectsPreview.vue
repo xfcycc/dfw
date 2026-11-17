@@ -57,8 +57,8 @@ function sampleEffect(): BoardEffect {
   const destinations = kind === 'swap' ? [7, 1, 13, 19] : kind === 'swapAny' ? [1, 13, 7, 19] : kind === 'shuffle' ? [13, 19, 7, 1] : [1, 1, 1, 1];
   if (['swap', 'swapAny', 'shuffle', 'gravity'].includes(kind)) {
     effect.moves = room.value.players.flatMap((player, index) => positions[index] === destinations[index] ? [] : [{ playerId: player.id, from: player.position, to: destinations[index]! }]);
-  } else if (['kamui', 'kamuiRelease', 'blackhole', 'meteor', 'tornado', 'barrier', 'barrierHit', 'demolish', 'shield', 'shieldBlock', 'upgrade', 'exchange', 'talent', 'treasure', 'treasureClaim', 'concert', 'concertRent'].includes(kind)) {
-    const ids = kind === 'meteor' || kind === 'tornado' || kind === 'concert' ? [3, 9, 15] : [3];
+  } else if (['kamui', 'kamuiRelease', 'blackhole', 'meteor', 'tornado', 'barrier', 'barrierHit', 'demolish', 'shield', 'shieldBlock', 'stoneGuard', 'upgrade', 'exchange', 'talent', 'treasure', 'treasureClaim', 'concert', 'concertRent'].includes(kind)) {
+    const ids = ['meteor', 'tornado', 'concert', 'stoneGuard'].includes(kind) ? [3, 9, 15] : [3];
     effect.beforeTiles = ids.map(id => appearance(room.value.board[id]!));
     effect.afterTiles = effect.beforeTiles.map(tile => {
       switch (kind) {
@@ -71,6 +71,7 @@ function sampleEffect(): BoardEffect {
         case 'barrierHit': return { ...tile, barrier: false };
         case 'demolish': return { ...tile, level: 0 };
         case 'shield': return { ...tile, demolitionShield: true };
+        case 'stoneGuard': return { ...tile, demolitionShield: true, demolitionShieldCharges: (tile.demolitionShieldCharges ?? Number(tile.demolitionShield)) + 1 };
         case 'shieldBlock': return { ...tile, demolitionShield: false };
         case 'upgrade': return { ...tile, level: 3 };
         case 'exchange': case 'talent': return { ...tile, ownerId: 'preview-0' };

@@ -18,6 +18,7 @@ export const BOARD_EFFECTS = {
   trapImmune: { label: '陷阱免疫', duration: 1300, sprite: 'shield', description: '展示免疫状态或抵挡截停，原有路障保留。' },
   demolish: { label: '建筑拆除', duration: 1800, sprite: 'impact', description: '展示实际建筑损失，再衔接原规则的补偿结果。' },
   shield: { label: 'A.T.力场', duration: 1500, sprite: 'shield', description: '护盾附着地产，等待后续攻击触发。' },
+  stoneGuard: { label: '霍格沃茨防线', duration: 1500, sprite: 'shield', description: '随机选中的地产各叠加一层防拆护盾。' },
   shieldBlock: { label: '力场抵挡', duration: 1500, sprite: 'shield', description: '护盾消耗并挡住拆除，建筑等级保持不变。' },
   upgrade: { label: '建筑升级', duration: 1700, sprite: 'build', description: '选定地产完成免费升级，再开放下一步。' },
   exchange: { label: '等价交换', duration: 1800, sprite: 'build', description: '展示支付与产权转移，建筑和原有附加效果保留。' },

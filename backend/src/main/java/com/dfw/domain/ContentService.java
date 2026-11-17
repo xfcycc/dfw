@@ -110,9 +110,31 @@ public final class ContentService {
             }
             case "talent" -> { submit(room,"GRANT_RANDOM_LAND",owner,0); submit(room,"GRANT_MONEY",owner,p.get("amount")); submit(room,"DRAW_CARDS",owner,p.get("count")); }
             case "global_demolition" -> { GameEffect e=effects.effect("LOWER_ALL_BUILDINGS",owner); e.content=r; e.compensationPercent=p.get("compensationPercent").intValue(); effects.submit(room,e); }
+            case "stoneGuard" -> grantShields(room, owner, r);
             case "trap_immunity","next_waiver","rent_double" -> { GameEffect e=effects.effect("ADD_STATUS",owner); e.statusId=switch(r.mechanism){case "trap_immunity"->"TRAP_IMMUNITY";case "next_waiver"->"NEXT_PAYMENT_WAIVER";default->"NEXT_RENT_DOUBLE";}; e.amount=r.mechanism.equals("trap_immunity")?3:1; effects.submit(room,e); }
             default -> expansion.event(room, owner, r);
         }
+    }
+    /** 输入房间、触发者和已抽到的事件，随机为不重复的未封印地产各叠加一层护盾，并发布结算外观。 */
+    private void grantShields(Room room, Player owner, ContentResult event) {
+        var candidates = new ArrayList<>(room.board.stream()
+                .filter(tile -> tile.type.equals("property") && !PropertyEffects.frozen(tile)).toList());
+        if (candidates.isEmpty()) { log(room, event.name + "：当前没有可加护盾的地产"); return; }
+        int count = random.nextInt(Math.min(5, candidates.size())) + 1;
+        MotionSegment segment = BoardEffect.begin("stoneGuard", owner);
+        BoardEffect.source(segment, event);
+        segment.beforeEvent = event;
+        List<String> results = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            Tile target = candidates.remove(random.nextInt(candidates.size()));
+            segment.boardEffect.beforeTiles.add(BoardEffect.appearance(target));
+            target.demolitionShieldCharges = PropertyEffects.shieldCharges(target) + 1;
+            target.demolitionShield = true;
+            segment.boardEffect.afterTiles.add(BoardEffect.appearance(target));
+            results.add(target.name + "（" + target.id + "号，现有" + target.demolitionShieldCharges + "层）");
+        }
+        BoardEffect.publish(room, segment);
+        log(room, event.name + "：以下地产各获得一层护盾：" + String.join("、", results));
     }
     /** 输入类型、作用人和已换算数值，追加具体效果，无返回值。 */
     private void submit(Room room,String type,Player owner,long amount) { GameEffect e=effects.effect(type,owner); e.amount=amount; effects.submit(room,e); }

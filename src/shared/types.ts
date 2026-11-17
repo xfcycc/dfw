@@ -202,7 +202,7 @@ export interface BoardEffect {
   paymentBefore?: number | null;
   paymentAfter?: number | null;
   kind: 'spell' | 'swap' | 'swapAny' | 'shuffle' | 'gravity' | 'kamui' | 'kamuiRelease' | 'blackhole' | 'meteor' | 'tornado'
-    | 'barrier' | 'barrierHit' | 'trapImmune' | 'demolish' | 'shield' | 'shieldBlock' | 'upgrade' | 'exchange'
+    | 'barrier' | 'barrierHit' | 'trapImmune' | 'demolish' | 'shield' | 'shieldBlock' | 'stoneGuard' | 'upgrade' | 'exchange'
     | 'slow' | 'seal' | 'steal' | 'recycle' | 'discover' | 'handDestruction' | 'supply' | 'treasure' | 'treasureClaim'
     | 'concert' | 'concertRent' | 'morale' | 'waiver' | 'rentDouble' | 'immunity' | 'halfPayment' | 'income' | 'fee'
     | 'payment' | 'gambleWin' | 'gambleLose' | 'talent' | 'teleport' | 'movement' | 'moveBoost' | 'release' | 'rest' | 'jail' | 'statusExpired';
