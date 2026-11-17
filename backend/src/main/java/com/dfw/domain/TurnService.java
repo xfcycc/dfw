@@ -20,9 +20,9 @@ public class TurnService {
         effects.register("PORTAL_TRANSFER", this::portalTransfer);
         effects.register("RANDOM_TELEPORT", this::teleport);
         effects.register("SEND_TO_JAIL", this::sendToJail);
-        effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId)));
+        effects.register("SETTLE_TILE", (room, effect) -> settle(room, player(room, effect.playerId), effect.halfRent));
         effects.register("PAY_FEE", (room, effect) -> {
-            economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId);
+            economy.charge(room, player(room, effect.playerId), effect.amount, effect.targetId, effect.tileId, effect.halfRent);
             if (paymentPending(room) && room.pending.playerId.equals(effect.playerId) && effect.content != null) room.pending.sourceName = effect.content.name;
         });
         effects.register("SETTLE_PAYMENT", (room, effect) -> economy.pay(room, player(room, effect.playerId)));
@@ -70,9 +70,10 @@ public class TurnService {
         SettlementService.observe(room);
         HistoryTrace.event(room, "turn_start", current(room).id, "新行动开始", null);
     }
-    /** 输入费用参数，打开可管理资产和协商抵债的支付选择。 */
-    public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
+    /** 输入落点租金及是否减半，入队等待实际付款结算。 */
+    private void charge(Room room, Player player, long amount, String creditorId, Integer tileId, boolean halfRent) {
         GameEffect effect = effects.effect("PAY_FEE", player); effect.amount = amount; effect.targetId = creditorId; effect.tileId = tileId;
+        effect.halfRent = halfRent;
         effects.submit(room, effect);
     }
     /** 输入当前付款人，将确认支付插在父流程暂停的效果之前。 */
@@ -173,7 +174,7 @@ public class TurnService {
         actor.position=destination.id; motion.path.add(destination.id);
         MotionSegment segment=new MotionSegment(); segment.id=motion.id; segment.playerId=actor.id; segment.from=motion.from; segment.path=motion.path; segment.teleport=true;
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
-        room.runtime.rollMode="DIRECTED"; room.runtime.windowExit="replace_roll";
+        room.runtime.rollMode=effect.halfRent?"DIRECTED_HALF_RENT":"DIRECTED"; room.runtime.windowExit="replace_roll";
         log(room,actor.name+" 传送至 "+destination.name+"（"+destination.id+"号），替代本次掷骰并正常结算");
         if(destination.id==0) { rewardStart(room,actor,"传送到达起点"); BoardEffect.cue(room,"income",actor); BoardEffect.cue(room,"supply",actor); }
         content.overflow(room);
@@ -209,8 +210,8 @@ public class TurnService {
         player.cash += income; giveCards(room, player, cards);
         log(room, player.name + " " + action + "，获得 ¥" + income + " 和 " + cards + " 张道具补给");
     }
-    /** 输入房间和落点玩家，结算当前地块；事件移动再次落入事件格时继续抽取，无返回值。 */
-    public void settle(Room room, Player player) {
+    /** 输入房间、落点玩家与是否半租，结算当前地块；事件移动不继承半租，无返回值。 */
+    private void settle(Room room, Player player, boolean halfRent) {
         Tile tile = room.board.get(player.position); room.phase = "manage"; room.pending = null;
         switch (tile.type) {
             case "activity" -> activities.open(room, player, tile);
@@ -228,7 +229,7 @@ public class TurnService {
                 else if (tile.ownerId.equals(player.id)) {
                     if (!tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id)) { room.phase = "upgrade"; room.pending = pending("upgrade", player, tile.id, Rules.buildCost(room, tile), null); }
                 } else if (!found && !tile.mortgaged) {
-                    charge(room, player, Rules.rent(room, tile), tile.ownerId, tile.id);
+                    charge(room, player, Rules.rent(room, tile), tile.ownerId, tile.id, halfRent);
                 }
                 ConstructionService.landing(room,player,tile,effects);
             }

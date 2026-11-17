@@ -637,13 +637,19 @@ public final class BotPlanner {
             }
             case "senbonzakura" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && t.level>0) ? base*3 : best; }
             case "keqingRush","thunderLord","fireBurial","igniteSea" -> {
+                boolean rush=card.kind.equals("keqingRush");
                 Tile sacrifice=state.board.stream().filter(t -> me.id.equals(t.ownerId) && t.level>0 && !t.mortgaged && !PropertyEffects.frozen(t)).min(Comparator.comparingLong(t -> Rules.buildCost(economics,t))).orElse(null);
                 for(Tile t:state.board) if(t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt && t.level>0 && !PropertyEffects.frozen(t)) {
-                    if(card.kind.equals("keqingRush") && GameSupport.nearbyDistance(me.position,t.id,state.board.size())>6 || card.kind.equals("fireBurial") && sacrifice==null) continue;
-                    int hits=card.kind.equals("igniteSea")?Math.min(3,1+PropertyEffects.shieldCharges(t)):card.kind.equals("keqingRush")?1:card.kind.equals("fireBurial")?2:3;
+                    if(rush) {
+                        int distance=Math.floorMod(t.id-me.position,state.board.size());
+                        if(distance<1 || distance>6) continue;
+                    }
+                    if(card.kind.equals("fireBurial") && sacrifice==null) continue;
+                    int hits=card.kind.equals("igniteSea")?Math.min(3,1+PropertyEffects.shieldCharges(t)):rush?1:card.kind.equals("fireBurial")?2:3;
                     int lost=Math.min(t.level,Set.of("fireBurial","igniteSea").contains(card.kind)?hits:Math.max(0,hits-PropertyEffects.shieldCharges(t)));
+                    if(rush && person(t.ownerId).defenseSpecializationTurns>0) lost=0;
                     double gain=Rules.buildCost(economics,t)*lost*threat(person(t.ownerId));
-                    if(card.kind.equals("keqingRush")) gain+=landingValue(me,t.id)-rollValue(me,me.position,0);
+                    if(rush) gain+=landingValue(me,t,me.cash,t.level-lost,true)-rollValue(me,me.position,0);
                     if(card.kind.equals("fireBurial")) gain-=Rules.buildCost(economics,sacrifice);
                     if(card.kind.equals("thunderLord")) gain*=.65;
                     if(gain>best) { best=gain; action.tileId=t.id; if(card.kind.equals("fireBurial")) action.secondTileId=sacrifice.id; }
@@ -1007,13 +1013,21 @@ public final class BotPlanner {
     /** 输入玩家、落点和沿途收入结算后的现金，估计该次落点的买地机会或付款风险。 */
     private double landingValue(PublicPlayerVo p, int id, long cash) {
         Tile t = state.board.get(id);
+        return landingValue(p,t,cash,t.level,false);
+    }
+
+    /** 输入玩家、落点、现金与预测建筑等级，按本次移动是否半租估计落点收益。 */
+    private double landingValue(PublicPlayerVo p, Tile t, long cash, int level, boolean halfRent) {
         if (t.type.equals("jail")) return -startIncome() * .5;
         if (!t.type.equals("property")) return 0;
         if (PropertyEffects.frozen(t)) return 0;
         if (t.treasure) return PropertyEffects.baseRent(economics,t);
         if (t.ownerId == null) return cash - t.price >= (nightmare && !conservative ? reserves.get(p.id) : reserve) ? Math.max(0, value(t, p.id) - t.price) : 0;
         if (t.ownerId.equals(p.id) || person(t.ownerId).jailed) return 0;
-        double amount = rent(t, t.level) * (p.nextRentDouble ? 2 : 1);
+        if (halfRent && AnimeService.iced(t)) return 0;
+        if (halfRent && t.petalCasterId!=null && Objects.equals(t.petalOwnerId,t.ownerId)) level=Math.max(0,level-1);
+        long amount = rent(t, level) * (p.nextRentDouble ? 2 : 1);
+        if (halfRent) amount /= 2;
         if (p.nextPaymentWaiver) amount = 0;
         return -amount - (nightmare && !conservative ? rentRisk(p, amount, cash) : Math.max(0, amount - cash) * (horizon == 6 ? 2 : 1));
     }

@@ -35,6 +35,8 @@ public class GameEffect {
     public Integer tileId;
     /** 移动步数或金额。 */
     public long amount;
+    /** 本次指定传送落点的租金减半，随落点及缴费效果传递。 */
+    public boolean halfRent;
     /** 可选公开结果说明。 */
     public String message;
     /** 持续状态定义标识。 */

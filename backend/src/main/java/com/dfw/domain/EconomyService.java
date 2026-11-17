@@ -44,6 +44,10 @@ public class EconomyService {
     }
     /** 输入强制费用及付款人，防御特化免除费用，否则保存支付选择；零费用不消耗防御状态。 */
     public void charge(Room room, Player player, long amount, String creditorId, Integer tileId) {
+        charge(room, player, amount, creditorId, tileId, false);
+    }
+    /** 输入强制费用及是否半租，在租金修正后减半，再进入原有付款防御。 */
+    public void charge(Room room, Player player, long amount, String creditorId, Integer tileId, boolean halfRent) {
         require(amount >= 0 && room.pending == null, "费用结算上下文不可用");
         if (amount == 0) return;
         if (CrossoverService.fullyProtected(player)) { log(room,player.name+" 的防御特化免除本笔强制费用 ¥"+amount); return; }
@@ -64,6 +68,11 @@ public class EconomyService {
         }
         if (tileId != null && creditorId != null && StatusService.consume(room,player,"NEXT_RENT_DOUBLE","rentDouble")) { amount = Math.multiplyExact(amount,2); log(room,"log",player.id,player.name+" 本次正租金翻倍至 ¥"+String.format("%,d",amount)+"，状态已消耗"); }
         String type = tileId != null && creditorId != null ? "rent" : "debt";
+        if (halfRent && type.equals("rent")) {
+            amount /= 2;
+            log(room,"log",player.id,player.name+" 本次落点租金减半至 ¥"+String.format("%,d",amount));
+            if (amount == 0) return;
+        }
         PendingDecision payment = pending(type, player, tileId, amount, creditorId);
         if (StatusService.consume(room,player,"NEXT_PAYMENT_WAIVER","waiver")) { log(room,"log",player.id,player.name+" 自动免除 "+paymentDescription(room,payment)+" ¥"+String.format("%,d",amount)+"，剩余待支付 ¥0，状态已消耗"); return; }
         room.pending = payment; room.pending.id = random.id(); room.pending.originalAmount = amount; room.phase = type;

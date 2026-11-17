@@ -1,5 +1,6 @@
 package com.dfw.domain;
 
+import com.dfw.domain.rules.ContentCatalog;
 import java.util.*;
 import static com.dfw.domain.GameError.require;
 import static com.dfw.domain.GameSupport.*;
@@ -122,6 +123,7 @@ public final class AnimeService {
         if(card.kind.equals("swordRain")) {
             require(card.lastUsedTurn!=room.turnNumber,"剑雨本回合仍在冷却"); card.remainingUses=(card.remainingUses==0?2:card.remainingUses)-1; card.usesSpent++; card.lastUsedTurn=room.turnNumber;
         }
+        if(card.kind.equals("keqingRush")) card.effect=ContentCatalog.describe(card);
         if(consume) ContentService.consume(room,actor,card,true,action); if(card.kind.equals("swordRain") && card.remainingUses>0) actor.hand.add(card);
         frame.card=copy(card);
         Set<String> targets=new LinkedHashSet<>();
@@ -153,7 +155,10 @@ public final class AnimeService {
             }
             case "keqingRush","thunderLord","fireBurial" -> {
                 require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
-                if(kind.equals("keqingRush")) require(nearbyDistance(actor.position,target.id,room.board.size())<=6,"请选择前后六格内的对手地产");
+                if(kind.equals("keqingRush")) {
+                    int distance=Math.floorMod(target.id-actor.position,room.board.size());
+                    require(distance>=1 && distance<=6,"请选择前方 1～6 格内的对手地产");
+                }
                 part(parts,room,actor,player(room,target.ownerId),target,kind.equals("thunderLord")?"thunderMark":kind.equals("fireBurial")?"lowerPiercing":"lower",kind.equals("fireBurial")?2:1);
                 if(kind.equals("keqingRush")) part(parts,room,actor,actor,target,"rushTeleport",0);
             }
@@ -360,7 +365,7 @@ public final class AnimeService {
             }
             case "thunderMark" -> NetaService.mark(room,actor,tile,e.content);
             case "lowerPiercing" -> { if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0) { recordDamage(room,tile); tile.level=Math.max(0,tile.level-(int)e.amount); } }
-            case "rushTeleport" -> { GameEffect move=effects.effect("DIRECTED_TELEPORT",actor); move.tileId=tile.id; effects.submit(room,move); }
+            case "rushTeleport" -> { GameEffect move=effects.effect("DIRECTED_TELEPORT",actor); move.tileId=tile.id; move.halfRent=true; effects.submit(room,move); }
             case "lower" -> lower(room,tile,(int)e.amount);
             case "full","fullPiercing" -> { if(tile!=null && !PropertyEffects.frozen(tile) && tile.level>0 && (e.selector.equals("fullPiercing") || !PropertyEffects.preventDemolition(room,tile))) { recordDamage(room,tile); tile.level=0; log(room,tile.name+" 的建筑被全部摧毁"+(e.selector.equals("fullPiercing")?"，无视护盾":"")); } }
             case "corrupt" -> { if(tile!=null && !PropertyEffects.frozen(tile)) { tile.corruptionTurns=3; log(room,tile.name+" 受到猩红腐败，剩余三次侵蚀"); } }

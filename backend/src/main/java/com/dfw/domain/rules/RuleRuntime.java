@@ -87,7 +87,8 @@ public final class RuleRuntime {
             if (room.activity != null) return;
             if (!room.status.equals("playing") || room.pending != null || room.trade != null || room.pausedReason != null) return;
             alignTurn(room); var stage = stage(room);
-            if ("DIRECTED".equals(room.runtime.rollMode) && Set.of("ROLL","MOVEMENT").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
+            boolean directedHalfRent = "DIRECTED_HALF_RENT".equals(room.runtime.rollMode);
+            if (("DIRECTED".equals(room.runtime.rollMode) || directedHalfRent) && Set.of("ROLL","MOVEMENT").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             if (("JAIL".equals(room.runtime.rollMode) || "STATIONARY".equals(room.runtime.rollMode)) && Set.of("ROLL","MOVEMENT","LANDING").contains(stage.handler())) { room.runtime.stageIndex++; continue; }
             switch (stage.handler()) {
                 case "AUTO_HOOK" -> {
@@ -131,7 +132,10 @@ public final class RuleRuntime {
                     movement.sourceSkinId = room.runtime.movementSkinId;
                     room.runtime.stageIndex++; effects.submit(room, movement);
                 }
-                case "LANDING" -> { room.runtime.stageIndex++; effects.submit(room, effects.effect("SETTLE_TILE", current(room))); }
+                case "LANDING" -> {
+                    GameEffect landing = effects.effect("SETTLE_TILE", current(room)); landing.halfRent = directedHalfRent;
+                    room.runtime.stageIndex++; effects.submit(room, landing);
+                }
                 case "END_TURN" -> { if(content.crossover.beforeEnd(room,current(room))) return; turns.advance(room); }
                 default -> throw new IllegalStateException("未注册阶段：" + stage.handler());
             }

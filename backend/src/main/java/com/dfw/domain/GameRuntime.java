@@ -17,7 +17,7 @@ public class GameRuntime {
     public int stageIndex;
     /** 行动窗口已接受的退出结果。 */
     public String windowExit;
-    /** 当前移动来源，RANDOM、REPLACE 或直接入狱后跳过移动的 JAIL。 */
+    /** 当前移动来源，如 RANDOM、REPLACE、DIRECTED 或落点半租的 DIRECTED_HALF_RENT。 */
     public String rollMode;
     /** 替代移动的已公开皮肤，跨阶段保存，回合开始清空。 */
     public String movementSkinId;

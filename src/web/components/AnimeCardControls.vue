@@ -38,7 +38,10 @@ function sealOptions(index: number): { value: string; label: string }[] {
 }
 const tiles = computed(() => {
   if (['thunderLord', 'fireBurial', 'igniteSea'].includes(props.card.kind)) return enemies.value;
-  if (props.card.kind === 'keqingRush') return enemies.value.filter(t => { const distance = Math.abs(t.id - (game.me?.position ?? 0)); return Math.min(distance, board.value.length - distance) <= 6; });
+  if (props.card.kind === 'keqingRush') return enemies.value.filter(t => {
+    const distance = (t.id - (game.me?.position ?? 0) + board.value.length) % board.value.length;
+    return distance >= 1 && distance <= 6;
+  });
   if (['starburst', 'corruption', 'sevenSwords'].includes(props.card.kind)) return enemies.value;
   if (props.card.kind === 'timeRestore') return board.value.filter(t => t.type === 'property' && !isKamui(t) && t.ownerId === game.me?.id && t.damageOwnerId === game.me?.id && (t.damageLevel ?? 0) > t.level && (game.me?.personalTurns ?? 0) <= (t.damageUntilTurn ?? 0));
   if (props.card.kind === 'voidTears') return board.value.filter(t => t.type === 'property' && !isKamui(t));
@@ -51,12 +54,12 @@ const sacrifices = computed(() => board.value.filter(t => t.type === 'property' 
 const rushRent = computed(() => {
   if (props.card.kind !== 'keqingRush') return '';
   const tile = tiles.value.find(t => String(t.id) === first.value);
-  if (!tile) return '';
+  if (!tile) return tiles.value.length ? '' : '前方 1～6 格内没有可选的对手地产。';
   const jailed = game.room?.players.find(p => p.id === tile.ownerId)?.jailed;
   const multiplier = game.me?.nextRentDouble ? 2 : 1;
-  const hit = jailed ? 0 : rentFor({ ...tile, level: Math.max(0, tile.level - 1) }, game.room?.economy) * multiplier;
-  const blocked = jailed ? 0 : rentFor(tile, game.room?.economy) * multiplier;
-  return `降级成功预计租金 ¥${hit.toLocaleString()}；降级被抵挡预计 ¥${blocked.toLocaleString()}。${tile.demolitionShield ? '当前护盾可抵挡本次降级。' : ''}以上未计本人付款防御；传送始终执行。`;
+  const hit = jailed || tile.treasure ? 0 : Math.floor(rentFor({ ...tile, level: Math.max(0, tile.level - 1) }, game.room?.economy) * multiplier / 2);
+  const blocked = jailed || tile.treasure ? 0 : Math.floor(rentFor(tile, game.room?.economy) * multiplier / 2);
+  return `命中预计付 ¥${hit.toLocaleString()}；被挡预计付 ¥${blocked.toLocaleString()}。两种情况都传送并按半租结算。${tile.demolitionShield ? '当前护盾可挡下这次降级。' : ''}以上未计本人付款防御。`;
 });
 const players = computed(() => game.room?.players.filter(p => !p.bankrupt && p.id !== game.me?.id && (props.card.kind !== 'swordRain' || Math.min(Math.abs(p.position - (game.me?.position ?? 0)), board.value.length - Math.abs(p.position - (game.me?.position ?? 0))) <= 6)) ?? []);
 /** 输入公开地产，返回既有选择控件可读的标签。 */
