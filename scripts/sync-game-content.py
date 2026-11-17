@@ -142,7 +142,8 @@ def assign_weights(pool, mechanisms):
     candidates = list(candidates) + neta_candidates
     candidates, probabilities = assign_crossover(pool, list(crossover_candidates) + neta_candidates, candidates, probabilities)
     if rent_candidates:
-        probabilities = [p * Fraction(96,100) for p in probabilities] + [Fraction(4,100) / len(rent_candidates)] * len(rent_candidates)
+        rent_probability = Fraction(8,100)
+        probabilities = [p * (1 - rent_probability) for p in probabilities] + [rent_probability / len(rent_candidates)] * len(rent_candidates)
         candidates = list(candidates) + rent_candidates
     if sum(probabilities) != 1: raise ValueError(f'{pool} 新效果概率合计须为100%')
     denominator = lcm(*(p.denominator for p in probabilities))

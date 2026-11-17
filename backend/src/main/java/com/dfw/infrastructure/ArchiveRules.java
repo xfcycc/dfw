@@ -63,6 +63,8 @@ public class ArchiveRules {
     private static final String TORNADO_RULES = "a1f20aa818c45ffaf9f9a20624d8c6c53920851708b8566dc97174849c4c46cc";
     /** 亚丝娜、双龙和岩脊调整后的默认摘要，旧手牌和待结算分段可继续恢复。 */
     private static final String CARD_BUFF_RULES = "f7ea3a20ae02624714eec7f4a05b4c5151b9694bbf8e642b2acf860585e50e4f";
+    /** 永久街区涨租概率调至8%后的默认摘要，历史抽取结果保留。 */
+    private static final String DISTRICT_RENT_ODDS_RULES = "df4da3aba692f1745a66bcffc46f3088e68fa49edfe626682e48119e6d0e4e59";
     public final String digest;
     /** 输入四类规则配置，规范化 JSON 对象键后计算一次兼容性摘要。 */
     public ArchiveRules(JsonCodec json,
@@ -80,10 +82,12 @@ public class ArchiveRules {
     }
     /** 输入保存时的规则摘要，返回能否保留原进度继续；仅额外兼容明确登记的旧默认规则与扩展字段缺省，不放宽外部规则配置。 */
     public boolean compatible(String savedDigest) {
-        boolean cardBuffContent = CARD_BUFF_RULES.equals(digest);
+        boolean rentOddsContent = DISTRICT_RENT_ODDS_RULES.equals(digest);
+        boolean cardBuffContent = CARD_BUFF_RULES.equals(digest) || rentOddsContent;
         boolean districtContent = DISTRICT_RENT_RULES.equals(digest) || TORNADO_RULES.equals(digest) || cardBuffContent;
         boolean reviewedContent = CONTENT_REVIEW_RULES.equals(digest) || REMOTE_CONSTRUCTION_RULES.equals(digest) || districtContent;
         return digest.equals(savedDigest)
+                || rentOddsContent && CARD_BUFF_RULES.equals(savedDigest)
                 || cardBuffContent && TORNADO_RULES.equals(savedDigest)
                 || districtContent && (DISTRICT_RENT_RULES.equals(savedDigest) || REMOTE_CONSTRUCTION_RULES.equals(savedDigest))
                 || reviewedContent && (CONTENT_REVIEW_RULES.equals(savedDigest) || PRE_CONTENT_REVIEW_RULES.equals(savedDigest) || XIAOWU_RULES.equals(savedDigest))
