@@ -95,7 +95,7 @@ watch([autoKey, () => props.paused], ([key, paused]) => {
 </template>
 
 <style scoped>
-.settlement-entry { margin: 8px 0; }
+.settlement-entry { margin: 0 auto; white-space: nowrap; }
 .settlement-report { color: #70583e; }
 .settlement-hero { position: relative; padding: 16px 12px 22px; text-align: center; border-bottom: 2px dashed #d9bf95; }
 .settlement-stamp { display: block; font-size: 44px; line-height: 1.3; }

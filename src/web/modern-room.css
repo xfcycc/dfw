@@ -267,6 +267,7 @@
 .player-properties-modal .ranking-tile-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 104px), 1fr)); align-items: start; gap: 10px; margin-top: 10px; padding-bottom: 4px; }
 .modern-room .dashboard-workbench { display: flex; flex-direction: column; flex-shrink: 0; gap: 10px; overflow: visible; padding: 12px; }
 .modern-room .turn-wallet { display: flex; align-items: center; flex-wrap: wrap; gap: 12px 20px; min-width: 0; margin: 0 0 0 auto; padding-left: 16px; border-left: 1px solid #e9cfc1; font-variant-numeric: tabular-nums; }
+.modern-room .turn-display > .settlement-entry ~ .turn-wallet { margin-left: 0; }
 .modern-room .turn-wallet > div { min-width: 0; }
 .modern-room .turn-wallet dd { display: flex; align-items: center; gap: 4px; margin: 0; color: #4f7443; font-size: 22px; font-weight: 800; white-space: nowrap; }
 .modern-room .turn-wallet .cash-balance { gap: 4px; }

@@ -13,6 +13,7 @@
 .modern-room.game-session .mobile-turn .workbench-center .turn-display .turn-identity small { font-size: 10px; }
 .modern-room.game-session .mobile-turn .workbench-center .turn-display > .turn-action-status { grid-column: 1 / -1; grid-row: 2; padding: 4px 7px; border-radius: 7px; }
 .modern-room.game-session .mobile-turn .workbench-center .turn-display .turn-action-status strong { font-size: 13px; white-space: normal; }
+.modern-room .mobile-turn .turn-display > .settlement-entry { grid-column: 1 / -1; justify-self: center; }
 .modern-room .mobile-turn .turn-wallet { grid-row: 1; grid-column: 3; margin: 0; padding: 0; border: 0; }
 .modern-room .mobile-turn .turn-wallet dd { font-size: 15px; }
 .modern-room .mobile-turn .turn-wallet .asset-stat-icon { width: 18px; height: 18px; }

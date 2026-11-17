@@ -582,15 +582,15 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                 </ActivityDialog>
               </template>
               <template #summary>
+                <MatchSettlement v-if="game.room.status === 'finished' || game.me?.bankrupt" :key="`${game.room.gameId}:${spectator ? 'watch' : game.me?.id}`" :room="game.room" :me-id="spectator ? undefined : game.me?.id" :paused="boardAnimating || game.settling || !!game.cardReveals.length || !!game.room.activity || !!game.room.recoveryPending" :can-restart="game.isHost && !spectator" :busy="!game.canAct" @opened="modal = null; selectedTile = null" @restart="game.act({ type: 'newGame' })" />
                 <div v-if="showMyTurn" :key="turnIdentity" class="hub-turn-callout" role="status"><ChibiLettering kind="turn" /></div>
                 <dl v-if="game.me && !spectator" class="turn-wallet" aria-label="我的资产概况"><div v-if="game.me.assetRank" class="turn-wallet-rank" :title="`净资产排名：第${game.me.assetRank}名`"><dt class="sr-only">我的排名</dt><dd><ChibiLettering kind="rank" :rank="game.me.assetRank" /></dd></div><div><dt class="sr-only">我的现金</dt><dd><CashBalance :presentation-epoch="game.presentationEpoch" :room="game.room" :player-id="game.me.id" :live="game.connection === 'online' && !game.room.recoveryPending" /></dd></div><div class="turn-wallet-worth"><dt class="sr-only">我的净资产</dt><dd><AssetStatIcon kind="worth" /><span>{{ game.me.netWorth === undefined ? '—' : `¥${game.me.netWorth.toLocaleString()}` }}</span></dd></div></dl>
               </template>
               <template #controls>
                 <FitPanel :disabled="detachedDashboard || spectator || isSingleScreen && !classicLayout">
                 <div class="dashboard-scroll">
-                  <div v-if="game.room.status === 'finished' || game.me?.bankrupt" class="hub-finish">
-                    <p v-if="game.room.status === 'finished'">淘汰顺序：<PlayerText :text="elimination.map(player => player.name).join(' → ') || '—'" /></p>
-                    <MatchSettlement :key="`${game.room.gameId}:${spectator ? 'watch' : game.me?.id}`" :room="game.room" :me-id="spectator ? undefined : game.me?.id" :paused="boardAnimating || game.settling || !!game.cardReveals.length || !!game.room.activity || !!game.room.recoveryPending" :can-restart="game.isHost && !spectator" :busy="!game.canAct" @opened="modal = null; selectedTile = null" @restart="game.act({ type: 'newGame' })" />
+                  <div v-if="game.room.status === 'finished'" class="hub-finish">
+                    <p>淘汰顺序：<PlayerText :text="elimination.map(player => player.name).join(' → ') || '—'" /></p>
                   </div>
                   <div class="dashboard-grid">
                     <section class="dashboard-records workspace-panel">
