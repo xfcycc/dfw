@@ -104,7 +104,7 @@ public final class GameSupport {
         if (card.kind.equals("kamui")) {
             List<Integer> ids=action.tileIds!=null?action.tileIds:action.tileId==null?List.of():List.of(action.tileId);
             aim=String.join("、",ids.stream().map(id -> tile(room,id)).filter(Objects::nonNull).map(t -> t.name+"（"+t.id+"号）").toList());
-            effect="封印同一条边1～3处地产，无需连续，可混选自己、对手或无主地产；持续施术者三个后续个人回合，停止收租、经营及附加效果，保留建筑产权抵押，允许破产清算";
+            effect="封印同一条边任意1～3处地产，持续3个后续个人回合。期间暂停收租、经营和附加效果，免受其他地产效果，仍可破产清算。";
         }
         ContentResult played = new ContentResult(); played.id = card.id; played.pool = "card"; played.kind = card.kind;
         played.skinId = card.skinId;
