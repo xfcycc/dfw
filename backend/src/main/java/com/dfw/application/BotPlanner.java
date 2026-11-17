@@ -685,23 +685,34 @@ public final class BotPlanner {
                 return Math.min(exposure,cap)-lands.stream().mapToDouble(t -> value(t,me.id)).sum();
             }
             case "senbonzakura" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && t.level>0) ? base*3 : best; }
-            case "keqingRush","thunderLord","fireBurial","igniteSea" -> {
+            case "fireBurial" -> {
+                List<Tile> sacrifices=state.board.stream().filter(t -> me.id.equals(t.ownerId) && t.level>0 && !t.mortgaged && !PropertyEffects.frozen(t)).toList();
+                List<Tile> targets=state.board.stream().filter(this::enemyBuilding).filter(t -> person(t.ownerId).defenseSpecializationTurns==0).toList();
+                for(int levels:List.of(1,2)) {
+                    Tile sacrifice=sacrifices.stream().filter(t -> t.level>=levels).min(Comparator.comparingLong(t -> Rules.buildCost(economics,t))).orElse(null);
+                    if(sacrifice==null) continue;
+                    for(Tile target:targets) {
+                        if(levels==2 && target.level<3) continue;
+                        double gain=Rules.buildCost(economics,target)*Math.min(target.level,levels+1)*threat(person(target.ownerId))-levels*Rules.buildCost(economics,sacrifice);
+                        if(gain>best) { best=gain; action.tileId=target.id; action.secondTileId=sacrifice.id; action.selection=levels; }
+                    }
+                }
+                return best;
+            }
+            case "keqingRush","thunderLord","igniteSea" -> {
                 boolean rush=card.kind.equals("keqingRush");
-                Tile sacrifice=state.board.stream().filter(t -> me.id.equals(t.ownerId) && t.level>0 && !t.mortgaged && !PropertyEffects.frozen(t)).min(Comparator.comparingLong(t -> Rules.buildCost(economics,t))).orElse(null);
                 for(Tile t:state.board) if(t.ownerId!=null && !me.id.equals(t.ownerId) && !person(t.ownerId).bankrupt && t.level>0 && !PropertyEffects.frozen(t)) {
                     if(rush) {
                         int distance=Math.floorMod(t.id-me.position,state.board.size());
                         if(distance<1 || distance>6) continue;
                     }
-                    if(card.kind.equals("fireBurial") && sacrifice==null) continue;
-                    int hits=card.kind.equals("igniteSea")?Math.min(3,1+PropertyEffects.shieldCharges(t)):rush?1:card.kind.equals("fireBurial")?2:3;
-                    int lost=Math.min(t.level,Set.of("fireBurial","igniteSea").contains(card.kind)?hits:Math.max(0,hits-PropertyEffects.shieldCharges(t)));
+                    int hits=card.kind.equals("igniteSea")?Math.min(3,1+PropertyEffects.shieldCharges(t)):rush?1:3;
+                    int lost=Math.min(t.level,card.kind.equals("igniteSea")?hits:Math.max(0,hits-PropertyEffects.shieldCharges(t)));
                     if(rush && person(t.ownerId).defenseSpecializationTurns>0) lost=0;
                     double gain=Rules.buildCost(economics,t)*lost*threat(person(t.ownerId));
                     if(rush) gain+=landingValue(me,t,me.cash,t.level-lost,true)-rollValue(me,me.position,0);
-                    if(card.kind.equals("fireBurial")) gain-=Rules.buildCost(economics,sacrifice);
                     if(card.kind.equals("thunderLord")) gain*=.65;
-                    if(gain>best) { best=gain; action.tileId=t.id; if(card.kind.equals("fireBurial")) action.secondTileId=sacrifice.id; }
+                    if(gain>best) { best=gain; action.tileId=t.id; }
                 }
                 return best;
             }

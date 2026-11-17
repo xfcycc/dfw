@@ -336,7 +336,7 @@ export type GameAction =
   | { type: 'rentDecision'; useCard: boolean }
   | { type: 'paymentDefense'; decisionId?: string; cardId?: string; useSoulRing?: boolean }
   | { type: 'contentDecision'; decisionId: string; cardSelections?: Record<string, string>; point?: number; direction?: number; playerId?: string; accept?: boolean; tileId?: number; cardId?: string; keepCardIds?: string[]; discardCardIds?: string[]; tileIds?: number[]; selection?: number }
-  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string; secondTileId?: number; tileIds?: number[]; direction?: number }
+  | { type: 'card'; cardId: string; point?: number; tileId?: number; playerId?: string; secondPlayerId?: string; secondTileId?: number; tileIds?: number[]; direction?: number; selection?: number }
   | { type: 'sellBuilding' | 'mortgage' | 'redeem' | 'sellLand'; tileId: number }
   | { type: 'tradeOffer'; toId: string; giveCash: number; wantCash: number; giveTiles: number[]; wantTiles: number[]; debtCredit?: number }
   | { type: 'tradeRespond'; accept: boolean }

@@ -13,6 +13,7 @@ const second = ref('');
 const player = ref('');
 const point = ref(3);
 const direction = ref(1);
+const sacrificeLevels = ref(1);
 const swords = ref(['', '', '']);
 const sealSide = ref('');
 const seals = ref(['', '', '']);
@@ -50,6 +51,10 @@ const tiles = computed(() => {
 });
 const sacrificeLands = computed(() => board.value.filter(t => t.type === 'property' && t.ownerId === game.me?.id && !t.mortgaged && !isKamui(t)));
 const sacrifices = computed(() => board.value.filter(t => t.type === 'property' && t.ownerId === game.me?.id && t.level > 0 && !t.mortgaged && !isKamui(t)));
+const sacrificeTile = computed(() => sacrifices.value.find(t => String(t.id) === second.value));
+const fireTarget = computed(() => enemies.value.find(t => String(t.id) === first.value));
+/** 输入当前献祭地产的等级，换地后建筑不足时回到一档。 */
+watch(() => sacrificeTile.value?.level, level => { if ((level ?? 0) < 2) sacrificeLevels.value = 1; });
 /** 输入当前突入目标，分别显示降级成功和被防御时的租金，仍以服务端结算为准。 */
 const rushRent = computed(() => {
   if (props.card.kind !== 'keqingRush') return '';
@@ -76,7 +81,11 @@ watchEffect(() => {
   const p: Omit<Extract<GameAction, { type: 'card' }>, 'type' | 'cardId'> = {};
   let valid = true;
   if (['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(props.card.kind)) { valid = first.value !== '' && tiles.value.some(t => String(t.id) === first.value); if (valid) p.tileId = Number(first.value); }
-  if (props.card.kind === 'fireBurial') { p.secondTileId = Number(second.value); valid = valid && second.value !== '' && sacrifices.value.some(t => String(t.id) === second.value); }
+  if (props.card.kind === 'fireBurial') {
+    p.secondTileId = Number(second.value);
+    p.selection = sacrificeLevels.value;
+    valid = valid && (sacrificeTile.value?.level ?? 0) >= sacrificeLevels.value;
+  }
   if (props.card.kind === 'voidTears') { p.secondTileId = Number(second.value); valid = valid && second.value !== '' && second.value !== first.value && tiles.value.some(t => String(t.id) === second.value); }
   if (['commandSpell', 'swordRain'].includes(props.card.kind)) { p.playerId = player.value; valid = players.value.some(v => v.id === player.value); }
   if (props.card.kind === 'commandSpell') p.point = point.value;
@@ -95,7 +104,16 @@ watchEffect(() => {
 <template>
   <div class="anime-card-controls">
     <label v-if="['keqingRush', 'thunderLord', 'fireBurial', 'igniteSea', 'starburst', 'corruption', 'timeRestore', 'explosion', 'absoluteZero', 'voidTears'].includes(card.kind)" class="field">{{ card.kind === 'absoluteZero' ? '冰封区域' : card.kind === 'explosion' ? '连续三格的起点' : card.kind === 'voidTears' ? '第一处空间端点' : '目标地产' }}<MapTileSelect v-model="first" label="选择目标地产" :options="options" :tile-ids="card.kind === 'absoluteZero' ? edgeTiles : undefined" /></label>
-    <template v-if="card.kind === 'fireBurial'"><label class="field">献祭自家建筑<MapTileSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label><p class="notice warning">确认后先献祭一级建筑，无退款且四之弹不可恢复；攻击被防御也不返还。</p></template>
+    <template v-if="card.kind === 'fireBurial'">
+      <label class="field">献祭地产<MapTileSelect v-model="second" label="选择献祭地产" :options="[{ value: '', label: '请选择自家有建筑地产', disabled: true }, ...sacrifices.map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
+      <label class="field">献祭等级<ThemedSelect v-model="sacrificeLevels" label="献祭等级" :options="[{ value: 1, label: '献祭 1 级 · 最多砍 2 级' }, { value: 2, label: '献祭 2 级 · 最多砍 3 级', disabled: (sacrificeTile?.level ?? 0) < 2 }]" /></label>
+      <div v-if="sacrificeTile && fireTarget" class="notice" role="status">
+        <p>自家「{{ sacrificeTile.name }}」：{{ sacrificeTile.level }} → {{ sacrificeTile.level - sacrificeLevels }} 级</p>
+        <p>对手「{{ fireTarget.name }}」（命中时）：{{ fireTarget.level }} → {{ Math.max(0, fireTarget.level - sacrificeLevels - 1) }} 级</p>
+        <p v-if="sacrificeTile.level >= 2 && fireTarget.level <= 2" class="muted">该目标最多只能降 {{ fireTarget.level }} 级，多献祭不会多砍。</p>
+      </div>
+      <p class="notice warning">确认后先献祭，无退款且不可修复。斩击无视但不消耗护盾，被主动防御也不返还献祭。</p>
+    </template>
     <template v-if="card.kind === 'xiaowuSacrifice'">
       <label class="field">第一处献祭地产<MapTileSelect v-model="first" label="第一处献祭地产" :options="[{ value: '', label: '请选择自家未抵押地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== second).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>
       <label class="field">第二处献祭地产<MapTileSelect v-model="second" label="第二处献祭地产" :options="[{ value: '', label: '请选择另一处自家地产', disabled: true }, ...sacrificeLands.filter(t => String(t.id) !== first).map(t => ({ value: String(t.id), label: label(t) }))]" /></label>

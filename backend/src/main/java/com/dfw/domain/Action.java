@@ -30,7 +30,7 @@ public class Action {
     public String activityId;
     /** 本次活动输入轮次。 */
     public Integer activityRound;
-    /** 玩法选择或手势编码。 */
+    /** 玩法选择、手势编码或一刀火葬的献祭等级。 */
     public Integer selection;
     /** 房主选择的机器人难度，easy、normal、hard、nightmare。 */
     public String botDifficulty;

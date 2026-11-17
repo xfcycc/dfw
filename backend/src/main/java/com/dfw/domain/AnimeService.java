@@ -116,14 +116,17 @@ public final class AnimeService {
         require(!frame.parts.isEmpty(),"当前没有合法目标，此卡和主动次数保留");
         if(card.kind.equals("fireBurial")) {
             Tile sacrifice=tile(room,action.secondTileId);
-            require(sacrifice!=null && Objects.equals(sacrifice.ownerId,actor.id) && sacrifice.level>0 && !sacrifice.mortgaged && !PropertyEffects.frozen(sacrifice),"请选择自家未抵押、未封印且有建筑的献祭地产");
-            sacrifice.level--; sacrifice.damageOwnerId=null; sacrifice.damageLevel=0; CrossoverService.state(room).damage.remove(sacrifice.id);
-            log(room,actor.name+" 献祭 "+sacrifice.name+" 的一级建筑，无退款且不可用四之弹恢复");
+            int levels=fireBurialLevels(action);
+            require(sacrifice!=null && Objects.equals(sacrifice.ownerId,actor.id) && !sacrifice.mortgaged && !PropertyEffects.frozen(sacrifice),"请选择自家未抵押、未封印的献祭地产");
+            require(sacrifice.level>=levels,"同一处献祭地产的建筑等级不足");
+            int before=sacrifice.level;
+            sacrifice.level-=levels; sacrifice.damageOwnerId=null; sacrifice.damageLevel=0; CrossoverService.state(room).damage.remove(sacrifice.id);
+            log(room,actor.name+" 献祭 "+sacrifice.name+" 的 "+levels+" 级建筑（"+before+" → "+sacrifice.level+" 级），无退款且不可用四之弹恢复");
         }
         if(card.kind.equals("swordRain")) {
             require(card.lastUsedTurn!=room.turnNumber,"剑雨本回合仍在冷却"); card.remainingUses=(card.remainingUses==0?2:card.remainingUses)-1; card.usesSpent++; card.lastUsedTurn=room.turnNumber;
         }
-        if(Set.of("keqingRush","asunaFlash","shadowBlade").contains(card.kind)) card.effect=ContentCatalog.describe(card);
+        if(Set.of("keqingRush","asunaFlash","shadowBlade","fireBurial").contains(card.kind)) card.effect=ContentCatalog.describe(card);
         if(consume) ContentService.consume(room,actor,card,true,action); if(card.kind.equals("swordRain") && card.remainingUses>0) actor.hand.add(card);
         frame.card=copy(card);
         Set<String> targets=new LinkedHashSet<>();
@@ -140,6 +143,12 @@ public final class AnimeService {
     }
     /** 输入房间，返回是否有移出或恢复后需要继续的扩展响应。 */
     public static boolean needsResume(Room room) { AnimeState state=state(room); return room.pending==null && (state.attack!=null && !state.attack.queued || !state.voters.isEmpty()); }
+    /** 输入出牌命令，返回献祭档位；未传档位的旧命令仍献祭1级。 */
+    private static int fireBurialLevels(Action action) {
+        int levels=action.selection==null?1:action.selection;
+        require(levels>=1 && levels<=2,"请选择献祭1级或2级建筑");
+        return levels;
+    }
     /** 输入来源和已验证参数，固定所有目标、随机样本与分段，返回空。 */
     private void plan(Room room,Player actor,Card card,Action action,List<GameEffect> parts) {
         if(content.crossover.plan(room,actor,card,action,parts)) return;
@@ -153,13 +162,17 @@ public final class AnimeService {
                 require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
                 part(parts,room,actor,player(room,target.ownerId),target,"igniteSea",0);
             }
-            case "keqingRush","thunderLord","fireBurial" -> {
+            case "fireBurial" -> {
+                require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
+                part(parts,room,actor,player(room,target.ownerId),target,"lowerPiercing",fireBurialLevels(action)+1);
+            }
+            case "keqingRush","thunderLord" -> {
                 require(enemyBuilding(room,actor,target),"请选择对手有建筑的未封印地产");
                 if(kind.equals("keqingRush")) {
                     int distance=Math.floorMod(target.id-actor.position,room.board.size());
                     require(distance>=1 && distance<=6,"请选择前方 1～6 格内的对手地产");
                 }
-                part(parts,room,actor,player(room,target.ownerId),target,kind.equals("thunderLord")?"thunderMark":kind.equals("fireBurial")?"lowerPiercing":"lower",kind.equals("fireBurial")?2:1);
+                part(parts,room,actor,player(room,target.ownerId),target,kind.equals("thunderLord")?"thunderMark":"lower",1);
                 if(kind.equals("keqingRush")) part(parts,room,actor,actor,target,"rushTeleport",0);
             }
             case "demolish","fullDemolish","starburst","corruption" -> {

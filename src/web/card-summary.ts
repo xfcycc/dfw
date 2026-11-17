@@ -42,7 +42,7 @@ export function cardSummary(card: ContentResult): string {
     keqingRush: '突入前方1～6格对手地产，命中降1级，被挡也半租',
     thunderLord: '神君蓄势2～4击，下个本人回合开始追击指定地产',
     hollowfication: '抵消一次敌方主动牌对本人的位移、休息和监禁',
-    fireBurial: '献祭自家1级建筑，对手1处降2级，无视护盾',
+    fireBurial: '献祭同一处自家地1～2级建筑，砍敌方2～3级，穿盾',
     bankai: '本回合最多再出2张其他主动牌，含UR；禁止卍解和投影连锁',
     igniteSea: '移除对手地产全部护盾，再降1＋盾数级，最多3级',
     xiaowuSacrifice: '献祭2处自家地产，获得十万年魂环：含本回合8个本人回合内，自选免3笔租金',

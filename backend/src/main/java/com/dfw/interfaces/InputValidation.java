@@ -70,7 +70,9 @@ public final class InputValidation {
             case "tradeRespond" -> bool(action, "accept");
             case "removePlayer" -> uuid(action, "playerId");
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> number(action.get("tileId"), 0, Rules.MAX_TILES - 1);
-            case "card" -> { uuid(action, "cardId"); if(action.has("secondTileId")) number(action.get("secondTileId"),0,Rules.MAX_TILES-1); if(action.has("direction")) { number(action.get("direction"),-1,1); if(action.get("direction").asInt()==0) throw new GameError("方向必须为1或-1"); } if(action.has("tileIds")) { if(!action.get("tileIds").isArray() || action.get("tileIds").size()>3) throw new GameError("最多分配三道剑气"); for(var id:action.get("tileIds")) number(id,0,Rules.MAX_TILES-1); } if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, Rules.MAX_TILES - 1); if (action.has("playerId")) uuid(action, "playerId"); if (action.has("secondPlayerId")) uuid(action, "secondPlayerId"); }
+            case "card" -> { uuid(action, "cardId"); if(action.has("secondTileId")) number(action.get("secondTileId"),0,Rules.MAX_TILES-1); if(action.has("direction")) { number(action.get("direction"),-1,1); if(action.get("direction").asInt()==0) throw new GameError("方向必须为1或-1"); } if(action.has("tileIds")) { if(!action.get("tileIds").isArray() || action.get("tileIds").size()>3) throw new GameError("最多分配三道剑气"); for(var id:action.get("tileIds")) number(id,0,Rules.MAX_TILES-1); } if (action.has("point")) number(action.get("point"), 1, 6); if (action.has("tileId")) number(action.get("tileId"), 0, Rules.MAX_TILES - 1); if (action.has("playerId")) uuid(action, "playerId"); if (action.has("secondPlayerId")) uuid(action, "secondPlayerId");
+                if(action.has("selection")) number(action.get("selection"),1,2);
+            }
             case "tradeOffer" -> { uuid(action, "toId"); number(action.get("giveCash"), 0, 9007199254740991L); number(action.get("wantCash"), 0, 9007199254740991L); tiles(action.get("giveTiles")); tiles(action.get("wantTiles")); if (action.has("debtCredit")) number(action.get("debtCredit"), 0, 9007199254740991L); }
             default -> check(false);
         }
@@ -90,7 +92,7 @@ public final class InputValidation {
             case "tradeRespond" -> List.of("accept");
             case "removePlayer" -> List.of("playerId");
             case "sellBuilding", "mortgage", "redeem", "sellLand" -> List.of("tileId");
-            case "card" -> List.of("cardId", "point", "tileId", "playerId", "secondPlayerId", "secondTileId", "tileIds", "direction");
+            case "card" -> List.of("cardId", "point", "tileId", "playerId", "secondPlayerId", "secondTileId", "tileIds", "direction", "selection");
             case "tradeOffer" -> List.of("toId", "giveCash", "wantCash", "giveTiles", "wantTiles", "debtCredit");
             default -> List.of();
         };
