@@ -57,7 +57,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   remoteConstruction: { name: "基建轮班", icon: '✦', description: "本回合及下个个人回合，移动结算后各可选1处自家地产升1级。建造费七五折，向下取整，可跳过。" },
   shrineGrowth: { name: "给我建座神社吧", icon: '✦', description: "标记1处自家地产；其他玩家正常停留并结算后，该地产免费升1级，最多触发2次；暂不能升级时保留次数。" },
   timeRewind: { name: "时间溯行", icon: '✦', description: "普通骰点公开后、移动前重掷1次，必须接受新结果；不适用替代掷骰，不占主动次数。" },
-  projection: { name: "投影魔术", icon: '✦', description: "复制上个已结束个人回合使用过的1张主动道具，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。" },
+  projection: { name: "投影魔术", icon: '✦', description: "从自己上个回合或全场刚结束的回合中，复制1张用过的主动道具（含UR，投影魔术除外）。复制牌本回合可额外用1次，回合结束消失。" },
   starburst: { name: "星爆气流斩", icon: '✦', description: "对手1处有建筑地产连续降级2次，每次降1级；每层护盾抵挡1击，无退款。" },
   imagineBreaker: { name: "幻想杀手", icon: '✦', description: "抵消1张主动道具对自己及自家地产的全部效果，含UR；群体效果只抵消自己一方，对方仍消耗卡和次数。" },
   timeRestore: { name: "刻刻帝·四之弹", icon: '✦', description: "在自己的下个个人回合结束前，将1处自家地产恢复至最近一次敌方或事件破坏前的建筑等级；产权须未变化，不恢复主动卖房或其他状态。" },

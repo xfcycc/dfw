@@ -34,7 +34,7 @@ public class PrivatePlayerVo {
     public String archiveCode;
     /** 仅房主可见的待批准角色申请。 */
     public List<SeatClaimVo> seatClaims = new ArrayList<>();
-    /** 上一回合是否存在可投影的主动牌，含UR，不含投影魔术。 */
+    /** 本人上次回合或全场刚结束的回合是否有可投影的主动牌。 */
     public boolean projectionAvailable;
     /** 当前不能使用的本人手牌身份，防御与主动时机各按原规则判断。 */
     public List<String> disabledCardIds = new ArrayList<>();

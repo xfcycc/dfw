@@ -22,7 +22,7 @@ public final class AnimeService {
     }
     /** 输入房间，返回旧同格式存档也可使用的内部扩展状态。 */
     public static AnimeState state(Room room) { if(room.runtime.anime==null) room.runtime.anime=new AnimeState(); return room.runtime.anime; }
-    /** 输入已消费主动牌，保存完整公开记录供下一回合投影，返回空。 */
+    /** 输入已消费主动牌，保存完整记录供回合结束后投影，无返回值。 */
     public static void played(Room room,Card card) { Card record=copy(card); if(record.cardType==null) record.cardType="主动"; state(room).currentCards.add(record); }
     /** 输入完整手牌，复制效果及有期限的实例状态，不共享可变参数。 */
     public static Card copy(Card source) {
@@ -59,8 +59,20 @@ public final class AnimeService {
         NetaService.endTurn(room,owner);
         AnimeState state=state(room);
         for(Player p:room.players) p.hand.removeIf(c -> c.expiresAtTurn>0 && c.expiresAtTurn<=room.turnNumber);
-        state.previousCards=new ArrayList<>(state.currentCards); state.currentCards.clear();
+        state.previousCards=new ArrayList<>(state.currentCards);
+        state.lastTurnCardsByPlayer.put(owner.id,state.previousCards);
+        state.currentCards.clear();
         for(Tile tile:room.board) if(Objects.equals(tile.zeroCasterId,owner.id) && owner.personalTurns>=tile.zeroUntilTurn) { tile.zeroCasterId=null; tile.zeroUntilTurn=0; }
+    }
+    /** 输入已开局房间和施术者，合并全场刚结束回合与本人上次回合，返回可投影的主动牌。 */
+    public static List<Card> projectionCandidates(Room room,Player owner) {
+        AnimeState state=room.runtime.anime;
+        if(state==null) return List.of();
+        List<Card> candidates=new ArrayList<>(state.previousCards);
+        candidates.addAll(state.lastTurnCardsByPlayer.getOrDefault(owner.id,List.of()));
+        Set<String> seen=new HashSet<>();
+        candidates.removeIf(c -> c.kind.equals("projection") || !"主动".equals(c.cardType) || !seen.add(c.id));
+        return candidates;
     }
     /** 输入房间，产权改变后立即清除旧修复证据，不能转手再转回恢复旧记录。 */
     public static void observeOwnership(Room room) {
@@ -96,9 +108,9 @@ public final class AnimeService {
     /** 输入主动牌和参数，处理投影、契约、修复或完整攻击计划；无合法目标不消费。 */
     public boolean use(Room room,Player actor,Card card,Action action) {
         if(card.kind.equals("projection")) {
-            List<Card> candidates=state(room).previousCards.stream().filter(c -> !c.kind.equals("projection") && "主动".equals(c.cardType)).toList();
-            require(!candidates.isEmpty(),"上一回合没有可投影的主动道具");
-            ContentChoice choice=content.open(room,actor,"anime_projection"); choice.cardId=card.id; choice.content=card; choice.cards.addAll(candidates); choice.prompt="选择上一回合使用过的道具；投影牌本回合可额外使用一次，回合结束消失。"; return true;
+            List<Card> candidates=projectionCandidates(room,actor);
+            require(!candidates.isEmpty(),"没有可投影的主动道具");
+            ContentChoice choice=content.open(room,actor,"anime_projection"); choice.cardId=card.id; choice.content=card; choice.cards.addAll(candidates); choice.prompt="选择1张主动道具投影。复制牌本回合可额外用1次。"; return true;
         }
         if(card.kind.equals("contract")) {
             require(PropertyEffects.handLimit(actor)>1,"手牌上限已为一张，不能签订契约"); ContentService.consume(room,actor,card,true,action);
@@ -316,8 +328,10 @@ public final class AnimeService {
         if(!choice.type.startsWith("anime_")) return false;
         require(action.accept!=null,"请选择确认或放弃");
         if(choice.type.equals("anime_projection") && action.accept) {
-            Card selected=choice.cards.stream().filter(c -> Objects.equals(c.id,action.cardId)).findFirst().orElseThrow(() -> new GameError("请选择上一回合的合法道具"));
-            ContentService.consume(room,owner,ContentService.find(owner,choice.cardId),true,action); Card projected=copy(selected); projected.id=random.id(); projected.projected=true; projected.expiresAtTurn=room.turnNumber; projected.lastUsedTurn=0;
+            Card selected=choice.cards.stream().filter(c -> Objects.equals(c.id,action.cardId)).findFirst().orElseThrow(() -> new GameError("请选择本次可投影的主动道具"));
+            Card source=ContentService.find(owner,choice.cardId);
+            source.effect=ContentCatalog.describe(source);
+            ContentService.consume(room,owner,source,true,action); Card projected=copy(selected); projected.id=random.id(); projected.projected=true; projected.expiresAtTurn=room.turnNumber; projected.lastUsedTurn=0;
             owner.hand.add(projected); owner.contentNotice=projected; owner.contentNoticeText="投影牌本回合可额外使用一次，回合结束消失";
         } else if(choice.type.equals("anime_rewind") && action.accept) {
             Card card=ContentService.find(owner,action.cardId); require(card.kind.equals("timeRewind"),"请选择时间溯行"); ContentService.consume(room,owner,card,false,action);

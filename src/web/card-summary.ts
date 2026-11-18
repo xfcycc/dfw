@@ -55,7 +55,7 @@ export function cardSummary(card: ContentResult): string {
     remoteConstruction: "本回合和下个个人回合移动结算后，各弹窗选地升1级（七五折），可跳过",
     shrineGrowth: "标记自家地产，其他玩家停留结算后免费升1级，最多2次",
     timeRewind: "普通骰点公开后重掷1次，必须接受新结果",
-    projection: "复制上回合主动牌（含UR），本回合额外用1次，回合结束消失",
+    projection: "复制自己上回合或全场刚结束回合用过的1张主动道具，本回合额外用1次。",
     starburst: "对手1处地产连续降级2次，每层护盾抵挡1击",
     imagineBreaker: "抵消主动牌对自己及自家地产的效果，含UR",
     timeRestore: "下个个人回合结束前，恢复自家地产最近一次被破坏的建筑",

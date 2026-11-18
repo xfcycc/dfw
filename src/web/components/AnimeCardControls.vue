@@ -136,8 +136,8 @@ watchEffect(() => {
     </template>
     <p v-if="preview" class="notice">作用路径：{{ preview }}</p>
     <p v-if="card.kind === 'contract'" class="notice warning">获得现金 ¥5000，本局手牌上限永久减1，最低1张。</p>
-    <p v-if="card.kind === 'projection' && !game.privateData?.projectionAvailable" class="notice">上一回合没有可投影的主动道具，此卡保留。</p>
-    <p v-if="card.kind === 'projection'" class="muted">从上一回合使用过的主动道具中选择，含UR，不含投影魔术；复制牌本回合可额外使用1次，回合结束消失。</p>
+    <p v-if="card.kind === 'projection' && !game.privateData?.projectionAvailable" class="notice">当前没有可投影的主动道具，此卡保留。</p>
+    <p v-if="card.kind === 'projection'" class="muted">可选自己上个回合或全场刚结束的回合用过的主动道具。</p>
     <p v-if="card.kind === 'swordRain'" class="muted">剩余 {{ card.remainingUses || 2 }} 次；每个个人回合限用1次。</p>
   </div>
 </template>

@@ -17,8 +17,10 @@ public class AnimeState {
     public int rewindOfferedTurn;
     /** 当前回合实际使用的主动牌完整记录。 */
     public List<Card> currentCards = new ArrayList<>();
-    /** 上一个已结束回合的主动牌，投影只读该集合。 */
+    /** 全场刚结束的回合使用过的主动牌。 */
     public List<Card> previousCards = new ArrayList<>();
+    /** 按玩家保存最近一个已结束个人回合的出牌记录，旧存档缺省为空。 */
+    public Map<String,List<Card>> lastTurnCardsByPlayer = new HashMap<>();
     /** 已消费来源牌的攻击响应帧。 */
     public Attack attack;
     /** 学级裁判固定参与人。 */
