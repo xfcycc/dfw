@@ -301,15 +301,22 @@ public final class AnimeService {
         }
         finishDefense(room);
     }
-    /** 输入已完成响应的攻击，按本人部分取消或反射，固定后入队，不重新抽样。 */
+    /** 输入已完成响应的房间，记录防御特化挡下的目标，并按响应处理剩余分段，无返回值。 */
     private void finishDefense(Room room) {
         AnimeState.Attack frame=state(room).attack; frame.queued=true;
         boolean portalBlocked=frame.card.kind.equals("voidTears") && frame.defenses.values().stream().anyMatch(v -> !v.isEmpty());
         boolean swapBlocked=Set.of("swap","swapAny").contains(frame.card.kind) && frame.defenses.values().stream().anyMatch("hollowfication"::equals);
+        Set<String> immunityLogs=new LinkedHashSet<>();
         for(GameEffect e:frame.parts) {
             String defense=frame.defenses.getOrDefault(e.targetId,"");
             Player recipient=player(room,e.targetId);
-            if(recipient!=null && !recipient.id.equals(frame.actorId) && CrossoverService.turns(recipient,"DEFENSE_SPECIALIZATION")>0) continue;
+            if(recipient!=null && !recipient.id.equals(frame.actorId) && CrossoverService.turns(recipient,"DEFENSE_SPECIALIZATION")>0) {
+                Tile target=tile(room,e.tileId);
+                String protection=target==null?"":"保护 "+target.name+"（"+target.id+"号），";
+                String effect="「"+frame.card.name+"」"+("thunderMark".equals(e.selector)?"的神君标记":"的效果");
+                immunityLogs.add(recipient.name+"的防御特化"+protection+"免疫了"+effect);
+                continue;
+            }
             if(swapBlocked || defense.equals("hollowfication") && controlledPart(e)) continue;
             if(portalBlocked || defense.equals("imagineBreaker") || defense.equals("sealCard")) continue;
             if(defense.equals("vectorReflect") && !e.propertyTarget) {
@@ -318,6 +325,7 @@ public final class AnimeService {
             }
             e.content=frame.card; effects.submit(room,e);
         }
+        immunityLogs.forEach(message -> log(room,message));
         room.phase=frame.returnPhase;
         effects.submit(room,effects.effect("ANIME_FINISH",player(room,frame.actorId)));
     }

@@ -16,7 +16,13 @@ public final class NetaService {
         this.content=content; this.effects=effects; this.random=random; this.catalog=catalog;
         effects.beforeEffect(this::offerPetalDefense);
         effects.register("NETA_DAMAGE",(room,effect) -> {
-            Tile target=tile(room,effect.tileId); if(target==null || PropertyEffects.frozen(target) || CrossoverService.protectedProperty(room,target)) return;
+            Tile target=tile(room,effect.tileId); if(target==null || PropertyEffects.frozen(target)) return;
+            if(CrossoverService.protectedProperty(room,target)) {
+                String source="corruption".equals(effect.selector)?"猩红腐败的侵蚀"
+                        :effect.content==null?"本次建筑破坏":"「"+effect.content.name+"」的建筑破坏";
+                log(room,player(room,target.ownerId).name+"的防御特化保护 "+target.name+"（"+target.id+"号），免疫了"+source);
+                return;
+            }
             boolean recorded=false;
             for(int i=0;i<effect.amount && target.level>0;i++) if(!PropertyEffects.preventDemolition(room,target)) {
                 if(!recorded) { AnimeService.recordDamage(room,target); recorded=true; } target.level--;

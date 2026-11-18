@@ -328,7 +328,7 @@ public final class CrossoverService {
         ContentChoice c=content.open(room,owner,"cross_charge"); c.tileIds.addAll(targets); c.prompt="选择前后六格内一处对手地产释放三道剑气，不占本回合主动次数；放弃则蓄力消失。"; return true;
     }
 
-    /** 输入即将结束的回合，依次处理净化、侵蚀和结丹，返回是否仍在等待选择。 */
+    /** 输入房间和即将结束回合的玩家，处理净化、侵蚀免疫提示和结丹，返回是否仍在等待选择。 */
     public boolean beforeEnd(Room room,Player owner) {
         CrossoverState s=state(room);
         if(s.endPreparedTurn!=room.turnNumber) {
@@ -338,8 +338,12 @@ public final class CrossoverService {
         }
         if(s.endAppliedTurn!=room.turnNumber) {
             s.endAppliedTurn=room.turnNumber; s.damageBatch="nzoth:"+room.turnNumber; s.damageActorId=null;
-            for(Tile t:room.board) if(!fullyProtected(owner) && Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id) && !PropertyEffects.frozen(t)) {
+            for(Tile t:room.board) if(Objects.equals(t.nzothOwnerId,owner.id) && Objects.equals(t.ownerId,owner.id) && !PropertyEffects.frozen(t)) {
                 int shield=PropertyEffects.shieldCharges(t);
+                if(fullyProtected(owner)) {
+                    if(shield>0 || t.level>0) log(room,owner.name+"的防御特化保护 "+t.name+"（"+t.id+"号），免疫了恩佐斯污染的侵蚀");
+                    continue;
+                }
                 if(shield>0) { t.demolitionShieldCharges=shield-1; t.demolitionShield=shield>1; log(room,t.name+" 的污染腐蚀一层护盾"); }
                 else if(t.level>0) { AnimeService.recordDamage(room,t); t.level--; log(room,t.name+" 的污染使建筑降低一级"); }
                 if(t.level==0 && PropertyEffects.shieldCharges(t)==0) t.nzothOwnerId=null;
