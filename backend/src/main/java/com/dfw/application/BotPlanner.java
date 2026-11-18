@@ -226,7 +226,7 @@ public final class BotPlanner {
             case "cross_mend" -> a.tileIds=c.tileIds.stream().sorted(Comparator.comparingInt((Integer id) -> state.board.get(id).damageLevel-state.board.get(id).level).reversed()).limit(3).toList();
             case "cross_charge" -> { a.tileId=c.tileIds.stream().findFirst().orElse(null); a.accept=a.tileId!=null; }
             case "cross_purify" -> { a.tileId=c.tileIds.stream().findFirst().orElse(null); Card material=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).orElse(null); a.cardId=material==null?null:material.id; a.accept=a.tileId!=null && material!=null && (!safe || state.board.get(a.tileId).level>1); }
-            case "cross_bind_release" -> { a.cardId=c.cards.stream().findFirst().map(x -> x.id).orElse(null); a.accept=a.cardId!=null; }
+            case "cross_bind_release", "cross_rest_cleanse" -> { a.cardId=c.cards.stream().findFirst().map(x -> x.id).orElse(null); a.accept=a.cardId!=null; }
             case "cross_boost" -> { int next=(me.position+1)%state.board.size(); a.accept=!safe && !state.board.get(next).barrier && landingValue(me,next)>=landingValue(me,me.position); }
             case "cross_duel_target" -> { a.playerId=c.playerIds.stream().findFirst().orElse(null); a.cardId=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).map(x -> x.id).orElse(null); a.accept=!safe && a.playerId!=null; }
             case "cross_duel_stake" -> { a.cardId=c.cards.stream().min(Comparator.comparingDouble(this::keepValue)).map(x -> x.id).orElse(null); a.accept=!safe && a.cardId!=null; }
@@ -269,6 +269,10 @@ public final class BotPlanner {
             }
             case "fusion" -> { double cost=own.hand.stream().filter(c -> !c.id.equals(card.id)).sorted(Comparator.comparingDouble(this::keepValue)).limit(2).mapToDouble(this::keepValue).sum(); return own.hand.size()>=3?base*2-cost:Double.NEGATIVE_INFINITY; }
             case "nuwaMend" -> { return state.board.stream().anyMatch(t -> me.id.equals(t.ownerId) && me.id.equals(t.damageOwnerId) && t.damageLevel>t.level && !PropertyEffects.frozen(t) && me.personalTurns<=t.damageUntilTurn)?base:Double.NEGATIVE_INFINITY; }
+            case "endlessClouds" -> {
+                return me.blueBindTurns>0 || me.attackSealTurns>0 || state.board.stream().anyMatch(t -> me.id.equals(t.ownerId)
+                        && (t.corruptionTurns>0 || me.id.equals(t.nzothOwnerId) || t.kamuiCasterId!=null && !me.id.equals(t.kamuiCasterId))) ? base : Double.NEGATIVE_INFINITY;
+            }
             case "goldenCore" -> { return me.cultivated?Double.NEGATIVE_INFINITY:base; }
             case "namelessSword" -> { return state.board.stream().anyMatch(t -> t.ownerId!=null && !t.ownerId.equals(me.id) && t.level>0)?base*.5:Double.NEGATIVE_INFINITY; }
             case "defenseSpecialization" -> { return me.defenseSpecializationTurns==0 && state.board.stream().anyMatch(t -> me.id.equals(t.ownerId) && t.level>1)?base*.5:Double.NEGATIVE_INFINITY; }
@@ -587,7 +591,7 @@ public final class BotPlanner {
             if(AnimeService.DEFENSE.contains(c.kind) || c.kind.equals("swordRain") && c.lastUsedTurn==state.turnNumber) continue;
             Action candidate = action("card"); candidate.cardId = c.id; double score = Double.NEGATIVE_INFINITY;
             switch (c.kind) {
-                case "asunaFlash", "defenseSpecialization", "revealingSwords", "fusion", "shadowBlade", "doubleBoost", "blueSilverBind", "goldenCore", "nuwaMend", "namelessSword", "kingsPressure" -> score=crossoverCard(c,candidate);
+                case "asunaFlash", "defenseSpecialization", "revealingSwords", "fusion", "shadowBlade", "doubleBoost", "blueSilverBind", "goldenCore", "nuwaMend", "endlessClouds", "namelessSword", "kingsPressure" -> score=crossoverCard(c,candidate);
                 case "geoResonance", "growthLink", "sereniteaPot", "createBuild", "remoteConstruction", "shrineGrowth" -> {
                     List<Tile> targets=state.board.stream().filter(this::buildable).toList();
                     if(!targets.isEmpty() && (!Set.of("growthLink","sereniteaPot").contains(c.kind) || targets.size()>=2) && (!c.kind.equals("createBuild") || own.hand.size()>1)) {

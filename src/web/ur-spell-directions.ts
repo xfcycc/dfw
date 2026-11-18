@@ -46,7 +46,7 @@ export const UR_DIRECTIONS = {
   fortune_parking_tornado: { scene:'tornado', duration:3800, color:'#c6d8ed', beats:['停车标线短暂显形','漏斗风从窄到宽横移','实际建筑副本卷起，碎瓦顺风落下'] },
   fortune_wukong_heaven_riot: { scene:'heaven', duration:3700, color:'#ffd59a', beats:['金箍棒从细到长伸展','棒身横扫天宫檐线','瓦片扇形飞散，实际受损目标依次亮起'] },
   fortune_neta_genius_club: { scene:'genius', duration:3500, color:'#b8e5e8', beats:['三张方案卡围成推演台','齿轮相扣，连线依次推演','方案叠回结果位，不猜玩家尚未作出的选择'] },
-  fortune_crossover_endlessClouds: { scene:'lotus', duration:3900, color:'#f2c1d3', beats:['红莲由闭到开','折扇般的三层云弧向外舒展','莲心光波扫到目标，云片回收'] },
+  card_crossover_endlessClouds: { scene:'lotus', duration:3900, color:'#f2c1d3', beats:['红莲由闭到开','折扇般的三层云弧向外舒展','莲心光波扫到目标，云片回收'] },
   fortune_crossover_pinkMiracle: { scene:'wardrobe', duration:3800, color:'#ffc1e5', beats:['镜框和衣橱边缘亮起','三组饰物轮廓依次换位','粉色光点围成礼环后落向结果对象'] },
 } as const;
 export type UrScene = typeof UR_DIRECTIONS[keyof typeof UR_DIRECTIONS]['scene'];

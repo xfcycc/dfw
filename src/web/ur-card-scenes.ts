@@ -28,8 +28,11 @@ export const ORIGINAL_UR_SKINS = new Set([
   'card_anime_u13', 'card_anime_u14', 'card_anime_u15', 'card_anime_u18', 'card_anime_g08',
 ]);
 
+const lotusScene: UrCardScene = { skinId: 'card_crossover_endlessClouds', theme: 'lotus', label: '聚光 · 红莲展开 · 治疗光波 · 花瓣散去', placement: 'none' };
+
 export const UR_CARD_SCENES: Record<string, UrCardScene> = {
-  fortune_crossover_endlessClouds: { skinId: 'fortune_crossover_endlessClouds', theme: 'lotus', label: '聚光 · 红莲展开 · 治疗光波 · 花瓣散去', placement: 'none' },
+  card_crossover_endlessClouds: lotusScene,
+  fortune_crossover_endlessClouds: lotusScene,
   card_genshin_serenitea_pot: { skinId: 'card_genshin_serenitea_pot', theme: 'teapot', label: '亭阁漂移 · 仙力流转 · 洞天重构', placement: 'none', secondaryPath: 'M600 0H1000V390H600Z' },
   fortune_wukong_heaven_riot: { skinId: 'fortune_wukong_heaven_riot', theme: 'wukong', label: '悟空舞棒 · 天宫震颤 · 碎瓦飘落', placement: 'none' },
   fortune_three_visits: { skinId: 'fortune_three_visits', theme: 'visits', label: '登门作揖 · 礼物摇晃 · 晨光流动', placement: 'none' },

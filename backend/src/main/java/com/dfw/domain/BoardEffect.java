@@ -136,7 +136,7 @@ public class BoardEffect {
         ContentResult origin=null;
         if("contentDecision".equals(action.type) && Boolean.TRUE.equals(action.accept) && room.runtime.choice!=null) {
             // 只有响应使用的牌才是来源；暗押、燃料、净化与发现选择中的 cardId 都是私人材料或候选。
-            boolean response=Set.of("anime_defense","anime_rewind","release","movement_release","cross_bind_release").contains(room.runtime.choice.type);
+            boolean response=Set.of("anime_defense","anime_rewind","release","movement_release","cross_bind_release","cross_rest_cleanse").contains(room.runtime.choice.type);
             origin=response?actor.hand.stream().filter(card -> Objects.equals(card.id,action.cardId)).findFirst().orElse(null):room.runtime.choice.content;
         } else if(Set.of("card","paymentDefense").contains(action.type)) origin=actor.hand.stream().filter(card -> Objects.equals(card.id,action.cardId)).findFirst().orElse(null);
         if(origin==null || origin.privateSupply && !"card".equals(origin.pool)) return null;

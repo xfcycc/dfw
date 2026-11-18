@@ -19,6 +19,8 @@ public class CrossoverState {
     public int endAppliedTurn;
     /** 已扣除休息次数、尚在回合结束选择中等待的全局回合。 */
     public int skippedTurn;
+    /** 跳过行动前的白云无尽选择已开放的全局回合。 */
+    public int restCleanseOfferedTurn;
     /** 闭关或蓄力放弃主动移动的全局回合。 */
     public int stationaryTurn;
     /** 本局已经结丹的玩家，复制或交换不重置。 */

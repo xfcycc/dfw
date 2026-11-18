@@ -14,7 +14,7 @@ public final class ContentCatalog {
     /** 保留现有道具四档总出率，档内效果数量和卡面数量不改变档位概率。 */
     private static final Map<String, Integer> CARD_RARITY = Map.of("R",57087,"SR",102383,"SSR",183480,"UR",18050);
     private static final Set<String> CASH = Set.of("amount","wager","prize","bonus","fallback");
-    private static final Set<String> CARD = Set.of("xiaowuSacrifice","asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","namelessSword","kingsPressure","keqingRush","thunderLord","hollowfication","fireBurial","bankai","igniteSea","senbonzakura","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","fixed","remote","barrier","demolish","fullDemolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","fullUpgrade","halfPayment","release","steal","cash","gamble","shield","recycle","discover","sap","exchange","slow","swapAny","kamui","handDestruction","gravity","reaper","shadowstep","homeTeleport","blackhole","meteor","timeRewind","projection","starburst","imagineBreaker","timeRestore","vectorReflect","deathReturn","explosion","corruption","contract","commandSpell","sevenSwords","railgun","sealCard","swordRain","voidTears","absoluteZero");
+    private static final Set<String> CARD = Set.of("xiaowuSacrifice","asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","endlessClouds","namelessSword","kingsPressure","keqingRush","thunderLord","hollowfication","fireBurial","bankai","igniteSea","senbonzakura","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","fixed","remote","barrier","demolish","fullDemolish","swap","blast","jail","immunity","move","bonus","freeUpgrade","fullUpgrade","halfPayment","release","steal","cash","gamble","shield","recycle","discover","sap","exchange","slow","swapAny","kamui","handDestruction","gravity","reaper","shadowstep","homeTeleport","blackhole","meteor","timeRewind","projection","starburst","imagineBreaker","timeRestore","vectorReflect","deathReturn","explosion","corruption","contract","commandSpell","sevenSwords","railgun","sealCard","swordRain","voidTears","absoluteZero");
     private static final Set<String> EVENT = Set.of(LandSwap.TYPE,"districtRent","aquaPurify","worldSeed","darkGame","nzothWrath","endlessClouds","pinkMiracle","igniteSea","geniusClub","senbonzakura","allConstruction","erdtreeBlessing","income","fee","forward","back","skip","jail","cards","cards_one","cards_two","directed","all_income","all_fee","rich_fee","bottom_income","gamble","self_destroy","opponent_destroy","disaster","free_upgrade","full_upgrade","trap_immunity","next_waiver","rent_double","bottom_bonus","extra_action","all_morale","talent","global_demolition","stoneGuard","treasure","concert","shuffle","all_cards","classTrial");
     private final Map<String, ContentDefinition> pools;
     /** 启用道具效果以机制和参数档为键，供普通补给从快照中恢复剩余的票。 */
@@ -143,7 +143,9 @@ public final class ContentCatalog {
             case "blueSilverBind" -> "选前后6格内1名对手，使其下个个人回合无法掷骰或替代移动，原地不结算。其他行动照常；可解控，受连续控制保护。";
             case "goldenCore" -> "掷骰前闭关，本回合不主动移动，其他行动照常。回合结束时手牌上限永久+1，并获得1张随机UR卡。每人每局限结丹1次。";
             case "nuwaMend" -> "下个本人回合结束前，修复最近同一次敌方攻击或灾害损坏的最多3处自家地产，恢复损坏前等级；产权须未变，不恢复主动卖房，不回滚付款、抵押和其他状态。";
-            case "endlessClouds" -> "全体未破产玩家各获得实际现金400；仅踩格者清除本人及自家地产全部临时负面状态，包含敌方神威，不清债务、永久变化或自愿代价。";
+            case "endlessClouds" -> "card".equals(r.pool)
+                    ? "净化自己和自家地产的临时负面状态，未破产玩家各得 ¥400。掷骰前可用。被迫休息或服刑时，可在跳过回合前使用，免占主动次数。"
+                    : "全体未破产玩家各获得实际现金400；仅踩格者清除本人及自家地产全部临时负面状态，包含敌方神威，不清债务、永久变化或自愿代价。";
             case "namelessSword" -> "本回合蓄力，无法主动移动；下个本人回合掷骰前可对前后6格内1处对手地产连斩3次，各降1级、护盾逐击挡。释放不占主动次数，次回合正常移动；休息、监禁或放弃则失效。";
             case "pinkMiracle" -> "随机获得 SR、SSR、UR 道具各1张，直接加入手牌。";
             case "kingsPressure" -> p.getOrDefault("version",0L)>=2 ? "指定1名对手，接下来3个个人回合禁止发动所有等级的主动攻击；非攻击主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。" : "指定1名对手，接下来3个个人回合禁止使用UR主动牌；其他等级主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。";
@@ -236,7 +238,7 @@ public final class ContentCatalog {
             case "vectorReflect" -> "将1张主动道具对自己的效果反弹给施术者，含UR；不保护地产，群体只反弹自己部分，反弹不再触发反射。";
             case "deathReturn" -> "达到破产清算条件时，免除当前剩余强制债务，回到最近本人回合开始位置，获得现金 ¥3000并休息1个个人回合；不结算落点或起点奖励，不回滚已完成的付款、卖房或交易。";
             case "explosion" -> "拆除连续3格内的全部建筑，包含自家地产，无补偿；每处地产可消耗1层护盾抵挡全拆；自己随后休息1个个人回合。";
-            case "corruption" -> "对手1处有建筑地产，在接下来3次业主个人回合开始时各降1级；每层护盾抵挡1次，降至0级结束，重复施加刷新次数，可清除。";
+            case "corruption" -> "选1处有建筑的对手地产，使其受到猩红腐败。接下来每逢业主回合结束，建筑降1级，共3次。每层护盾抵挡1次，地产封印期间暂停。净化或建筑降至0级时结束，再次施加时刷新为3次。";
             case "contract" -> "获得现金 ¥5000，本局手牌上限永久减1，最低1张；上限为1时不可使用，超限时选择保留。";
             case "commandSpell" -> "指定另一名玩家立即移动1～6格，点数自选，正常结算沿途和落点；不占其正常行动，奖励、费用及落点选择归移动者。";
             case "sevenSwords" -> "将3道剑气分配给对手有建筑的地产，可集火或分散，每道降1级；每层护盾抵挡1道，未分配的剑气作废。";

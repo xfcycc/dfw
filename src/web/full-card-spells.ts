@@ -23,7 +23,7 @@ function spellArt(file: Parameters<typeof atlasCrop>[0], columns: number, rows: 
 /** 输入公开片段，返回稳定身份对应的逐卡配置；拦截和解除仍沿用原通用表现。 */
 export function fullCardSpellFor(segment: MotionSegment): FullCardSpell | undefined {
   if (!segment.sourceSkinId || !segment.boardEffect || ['shieldBlock','kamuiRelease','barrierHit','concertRent','treasureClaim','payment'].includes(segment.boardEffect.kind)) return undefined;
-  const card=bySkin.get(segment.sourceSkinId);
+  const card=bySkin.get(segment.sourceSkinId === 'fortune_crossover_endlessClouds' ? 'card_crossover_endlessClouds' : segment.sourceSkinId);
   return card && segment.boardEffect.triggered ? {...card,duration:650} : card;
 }
 /** 输入逐卡配置，返回透明主体图集坐标，不读取私人卡面。 */

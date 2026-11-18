@@ -3090,6 +3090,33 @@
             ]
           }
         ]
+      },
+      {
+        "id": "endlessClouds",
+        "enabled": true,
+        "groups": [
+          {
+            "id": "default",
+            "parameters": [
+              {
+                "id": "default",
+                "rarity": "UR",
+                "values": {},
+                "skins": [
+                  {
+                    "id": "card_crossover_endlessClouds",
+                    "name": "白云无尽",
+                    "rarity": "UR",
+                    "quote": "白云无尽，清风入怀。",
+                    "description": "折扇轻展，清润的气流掠过伤者与草木。远山藏在云雾中，近处衣袂随风而起；方才急促的呼吸渐渐平稳，混乱的战局里多出一片宁静。",
+                    "cardType": "主动"
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          }
+        ]
       }
     ]
   }

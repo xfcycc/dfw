@@ -38,14 +38,19 @@ public final class AnimeService {
     public static boolean usable(Room room,Card card) {
         return NetaService.allowed(room,current(room),card) && (!room.activeCardUsed || NetaService.bankaiActive(room,current(room)) && NetaService.state(room).bankaiRemaining>0 || card.projected && card.expiresAtTurn==room.turnNumber) && (!card.kind.equals("swordRain") || card.lastUsedTurn!=room.turnNumber && card.usesSpent<2);
     }
-    /** 输入新回合房间，保存回归点并依次处理业主的腐败，跳过回合也计数。 */
+    /** 输入新回合房间，保存回归点并标记猩红腐败将在回合末结算，无返回值。 */
     public void startTurn(Room room) {
         AnimeState state=state(room); if(state.startedTurn==room.turnNumber) return;
         state.startedTurn=room.turnNumber; Player owner=current(room); owner.personalTurns++; owner.turnStartPosition=owner.position;
+        state.corruptionDeferredTurn=room.turnNumber;
         observeOwnership(room);
         content.neta.startTurn(room,owner);
+    }
+    /** 输入结束行动的业主，为每处仍受猩红腐败的地产入队一次侵蚀，无返回值。 */
+    public void enqueueEndCorruption(Room room,Player owner) {
+        // 旧存档中已开始的回合曾在开头结算，等下一回合再按新时点处理。
+        if(state(room).corruptionDeferredTurn!=room.turnNumber) return;
         for(Tile tile:room.board) if(Objects.equals(tile.ownerId,owner.id) && tile.corruptionTurns>0 && !PropertyEffects.frozen(tile)) {
-            CrossoverService.state(room).damageBatch="corruption:"+tile.id+":"+room.turnNumber; CrossoverService.state(room).damageActorId=null;
             GameEffect damage=effects.effect("NETA_DAMAGE",owner); damage.tileId=tile.id; damage.amount=1; damage.selector="corruption"; effects.submit(room,damage);
         }
     }

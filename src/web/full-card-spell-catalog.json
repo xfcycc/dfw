@@ -3826,7 +3826,7 @@
   {
     "name": "白云无尽",
     "rarity": "UR",
-    "skinId": "fortune_crossover_endlessClouds",
+    "skinId": "card_crossover_endlessClouds",
     "mechanism": "endlessClouds",
     "material": "C",
     "actions": [

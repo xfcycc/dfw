@@ -9,6 +9,8 @@ import lombok.Setter;
 public class AnimeState {
     /** 已初始化个人回合的全局编号。 */
     public int startedTurn;
+    /** 已按回合末结算猩红腐败规则初始化的全局回合，旧快照默认为零。 */
+    public int corruptionDeferredTurn;
     /** 当前普通骰点已经抽样，重连不得重新掷骰。 */
     public boolean rollPrepared;
     /** 已开放时间溯行的全局回合。 */

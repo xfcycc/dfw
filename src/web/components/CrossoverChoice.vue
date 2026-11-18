@@ -29,7 +29,7 @@ const valid = computed(() => {
     case 'cross_mend': return tiles.value.length >= 1 && tiles.value.length <= 3;
     case 'cross_charge': return tile.value !== '';
     case 'cross_purify': return tile.value !== '' && !!card.value;
-    case 'cross_bind_release': case 'cross_duel_stake': return !!card.value;
+    case 'cross_bind_release': case 'cross_rest_cleanse': case 'cross_duel_stake': return !!card.value;
     case 'cross_duel_target': return !!player.value && (!props.choice.cards.length || !!card.value);
     default: return true;
   }
@@ -37,6 +37,7 @@ const valid = computed(() => {
 watch(() => `${props.choice.id}:${props.choice.type}`, () => {
   selected.value = []; first.value = ''; second.value = ''; card.value = ''; player.value = ''; tiles.value = []; replacements.value = {};
   tile.value = props.choice.tileIds.length === 1 ? String(props.choice.tileIds[0]) : '';
+  if (type.value === 'cross_rest_cleanse' && props.choice.cards.length === 1) card.value = props.choice.cards[0].id;
 }, { immediate: true });
 /** 输入确认或放弃，提交当前持久化选择，不在客户端生成随机候选。 */
 async function decide(accept: boolean): Promise<void> {
@@ -81,8 +82,12 @@ async function decide(accept: boolean): Promise<void> {
       <label class="field">邀请对手<ThemedSelect v-model="player" label="邀请对手" :options="[{ value: '', label: '请选择对手', disabled: true }, ...(choice.playerIds ?? []).map(id => ({ value: id, label: game.room?.players.find(p => p.id === id)?.name ?? id }))]" /></label>
       <label v-if="choice.cards.length" class="field">暗押手牌<ThemedSelect v-model="card" label="暗押手牌" :options="cardOptions" /></label>
     </template>
-    <template v-else-if="type === 'cross_duel_stake' || type === 'cross_bind_release'"><div class="choice-card-grid"><label v-for="c in choice.cards" :key="c.id" class="keep-card" :class="{ selected: card === c.id }"><input v-model="card" type="radio" :name="choice.id" :value="c.id" /><ContentCard :content="c" compact thumbnail /></label></div></template>
-    <div class="button-row choice-actions">
+    <template v-else-if="['cross_duel_stake', 'cross_bind_release', 'cross_rest_cleanse'].includes(type)"><div class="choice-card-grid"><label v-for="c in choice.cards" :key="c.id" class="keep-card" :class="{ selected: card === c.id }"><input v-model="card" type="radio" :name="choice.id" :value="c.id" /><ContentCard :content="c" compact thumbnail /></label></div></template>
+    <div v-if="type === 'cross_rest_cleanse'" class="button-row choice-actions">
+      <button class="button secondary" :disabled="!enabled" @click="decide(false)">保留手牌并跳过</button>
+      <button class="button primary" :disabled="!enabled || !valid" @click="decide(true)">使用白云无尽</button>
+    </div>
+    <div v-else class="button-row choice-actions">
       <button class="button secondary" :disabled="!enabled" @click="decide(false)">{{ type === 'cross_boost' ? '停止喷射并结算' : type === 'cross_purify' ? '暂不净化' : type.startsWith('cross_duel') ? '放弃赌局' : type === 'cross_charge' ? '放弃蓄力' : type === 'cross_bind_release' ? '接受缠绕' : type.startsWith('cross_fusion') || type === 'cross_mend' ? '取消并保留卡' : '放弃本次搭配' }}</button>
       <button class="button primary" :disabled="!enabled || !valid" @click="decide(true)">{{ type === 'cross_boost' ? '追加前进1格' : type === 'cross_purify' ? '弃牌净化' : type === 'cross_fusion_materials' ? '查看固定融合结果' : type === 'cross_pink_materials' ? '查看同档搭配' : type === 'cross_charge' ? '释放三道剑气' : '确认选择' }}</button>
     </div>

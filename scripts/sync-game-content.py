@@ -188,7 +188,7 @@ def generate(pool, filename):
         skin = dict(id=f'{pool}_{skin_id}', name=name, rarity=rarity, quote=quote, description=description)
         if pool == 'card': skin['cardType'] = cells[4]
         parameter['skins'].append(skin)
-    expected = {'chance':106,'fortune':81}.get(pool)
+    expected = {'chance':106,'fortune':80}.get(pool)
     count = sum(len(p['skins']) for m in mechanisms.values() for g in m['groups'] for p in g['parameters'])
     if expected is not None and count != expected: raise ValueError(f'{pool} 素材数 {count}，应为 {expected}')
     assign_weights(pool, list(mechanisms.values()))

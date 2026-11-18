@@ -15,7 +15,7 @@ const descriptions = computed(() => {
   if (t.concertStacks) result.push(`乌塔演唱会：${t.concertStacks} 层，下次正租金 ×${Number((1.2 ** t.concertStacks).toPrecision(8))}，触发时全部消耗${paused}。`);
   if (t.barrier) result.push(`普通路障：剩余一次截停，优先于陨星消耗${paused}。`);
   if (t.meteorCharges) result.push(`陨星：剩余 ${t.meteorCharges} 次截停，每次仅消耗一颗${paused}。`);
-  if (t.corruptionTurns) result.push(`猩红腐败：剩余 ${t.corruptionTurns} 次业主个人回合开始时降低一级建筑，护盾逐次处理${paused}。`);
+  if (t.corruptionTurns) result.push(`猩红腐败：剩余 ${t.corruptionTurns} 次侵蚀${paused}。业主回合结束时建筑降 1 级，护盾可挡。`);
   if (t.zeroCasterId) result.push(`绝对零域：暂时停止收租和升级，其他附加效果照常，持续至施术者下一个人回合结束${paused}。`);
   if (t.portalTileId != null) result.push(`虚空之泪：与 ${t.portalTileId} 号地产相连，首个正常步行进入者转移并继续剩余步数，两端随后消失${paused}。`);
   for (const label of game.room?.constructionEffects?.[t.id] ?? []) result.push(`${label}${paused}。`);

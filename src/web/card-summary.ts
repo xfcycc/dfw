@@ -36,6 +36,7 @@ export function cardSummary(card: ContentResult): string {
     blueSilverBind: "前后6格选1名对手，下个个人回合不能主动移动",
     goldenCore: "本回合闭关不移动，结丹后手牌上限+1并获1张随机UR卡",
     nuwaMend: "下个本人回合结束前，修复最近同一次敌方攻击或灾害损坏的最多3处自家地产，恢复损坏前等级；产权须未变，不恢复主动卖房，不回滚付款、抵押和其他状态。",
+    endlessClouds: "净化自己和自家地产。未破产玩家各得 ¥400。被迫跳过回合前可用。",
     namelessSword: "本回合蓄力，无法主动移动；下个本人回合掷骰前可对前后6格内1处对手地产连斩3次，各降1级、护盾逐击挡。释放不占主动次数，次回合正常移动；休息、监禁或放弃则失效。",
     kingsPressure: "指定1名对手，接下来3个个人回合禁止发动所有等级的主动攻击；非攻击主动牌及所有等级防御、解控、救援响应照常。重复刷新不叠加。",
 
@@ -61,7 +62,7 @@ export function cardSummary(card: ContentResult): string {
     vectorReflect: "反弹主动牌对自己的效果，含UR；不保护地产",
     deathReturn: "清算前免除当前1笔债务并回归，获¥3000，自己休息1回合",
     explosion: "连续3格建筑全拆，含自家；护盾可挡，自己休息1回合",
-    corruption: "对手地产在接下来3次业主回合开始各降1级，护盾可挡",
+    corruption: "侵蚀1处对手地产。业主每回合结束降1级，共3次，护盾可挡。",
     contract: "获得¥5000，本局手牌上限永久减1，最低1张",
     commandSpell: "指定另一玩家额外移动1～6格并结算，点数自选",
     sevenSwords: "分配3道剑气，每道降1级；每层护盾抵挡1道",

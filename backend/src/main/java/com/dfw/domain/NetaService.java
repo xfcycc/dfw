@@ -22,7 +22,7 @@ public final class NetaService {
                 if(!recorded) { AnimeService.recordDamage(room,target); recorded=true; } target.level--;
             }
             if("corruption".equals(effect.selector)) { target.corruptionTurns--; if(target.level==0) target.corruptionTurns=0; }
-            log(room,target.name+" 追击结算，剩余建筑 "+target.level+" 级");
+            log(room,target.name+("corruption".equals(effect.selector)?" 猩红腐败结算":" 追击结算")+"，剩余建筑 "+target.level+" 级");
         });
     }
     /** 输入房间，返回兼容旧快照的扩展状态；未开局大厅只返回空状态，不创建对局运行时。 */

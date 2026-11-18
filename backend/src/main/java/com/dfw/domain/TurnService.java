@@ -267,11 +267,12 @@ public class TurnService {
             room.trade.remainingMs = 0; room.trade.runningSince = null;
         }
     }
-    /** 输入配置对局，跳过在线玩家的一次休息行动并启动连控保护，服刑结束后恢复收租，实际跳过时返回真。 */
+    /** 输入配置对局，先开放休息净化，再处理跳过行动，返回是否仍在处理休息流程。 */
     public boolean skipCurrentTurn(Room room) {
         Player actor = current(room);
         if (actor == null || !actor.online || actor.skipTurns == 0 && CrossoverService.state(room).skippedTurn!=room.turnNumber || room.trade != null) return false;
         if(CrossoverService.state(room).skippedTurn==room.turnNumber) { if(!content.crossover.beforeEnd(room,actor)) advance(room); return true; }
+        if(actor.skipTurns>actor.voluntarySkipTurns && content.crossover.offerRestCleanse(room,actor)) return true;
         CrossoverService.state(room).skippedTurn=room.turnNumber;
         boolean jailed=actor.jailed; actor.skipTurns--; if(actor.voluntarySkipTurns>0) actor.voluntarySkipTurns--; if (actor.skipTurns==0) actor.jailed=false;
         StatusService.controlledSkip(room,actor);

@@ -7,11 +7,11 @@ import static com.dfw.domain.GameSupport.*;
 
 /** 十七项素材扩展，复用攻击分段、私人选择及原效果队列。 */
 public final class CrossoverService {
-    public static final Set<String> CARDS=Set.of("asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","namelessSword","kingsPressure");
+    public static final Set<String> CARDS=Set.of("asunaFlash","defenseSpecialization","revealingSwords","fusion","shadowBlade","doubleBoost","blueSilverBind","goldenCore","nuwaMend","endlessClouds","namelessSword","kingsPressure");
     public static final Set<String> ATTACKS=Set.of("asunaFlash","revealingSwords","shadowBlade","blueSilverBind","kingsPressure");
     private static final Set<String> MOVEMENT=Set.of("fixed","remote","move","stay","bonus","swap","blast","swapAny","gravity","shadowstep","homeTeleport","commandSpell","voidTears","timeRewind","asunaFlash","doubleBoost");
     private static final Set<String> BUILDING=Set.of("freeUpgrade","fullUpgrade","geoResonance","growthLink","sereniteaPot","createBuild","remoteConstruction","shrineGrowth","timeRestore","nuwaMend");
-    private static final Set<String> DEFENSE=Set.of("xiaowuSacrifice","immunity","halfPayment","release","shield","imagineBreaker","vectorReflect","deathReturn","sealCard","hollowfication","defenseSpecialization");
+    private static final Set<String> DEFENSE=Set.of("xiaowuSacrifice","immunity","halfPayment","release","shield","imagineBreaker","vectorReflect","deathReturn","sealCard","hollowfication","defenseSpecialization","endlessClouds");
     private static final Set<String> RESOURCE=Set.of("cash","gamble","recycle","discover","contract","projection","handDestruction","fusion","goldenCore");
     private static final Set<String> REPLACEMENTS=Set.of("fixed","remote","move","stay","homeTeleport","shadowstep","asunaFlash");
     private final ContentService content;
@@ -115,6 +115,7 @@ public final class CrossoverService {
         switch(card.kind) {
             case "defenseSpecialization" -> { ContentService.consume(room,owner,card,true,action); add(room,owner,"DEFENSE_SPECIALIZATION",3); }
             case "doubleBoost" -> { ContentService.consume(room,owner,card,true,action); state(room).boostTurn=room.turnNumber; state(room).boosts=2; state(room).boostBlocked=false; }
+            case "endlessClouds" -> { ContentService.consume(room,owner,card,true,action); endlessClouds(room,owner); }
             case "goldenCore" -> {
                 require(!state(room).cultivated.contains(owner.id),"本局已经成功结丹"); card.effect=ContentCatalog.describe(card);
                 ContentService.consume(room,owner,card,true,action); state(room).corePlayerId=owner.id; stationary(room);
@@ -222,7 +223,7 @@ public final class CrossoverService {
                 List<Player> owners=new ArrayList<>(room.players.stream().filter(p -> !p.bankrupt && !fullyProtected(p) && room.board.stream().anyMatch(t -> Objects.equals(t.ownerId,p.id) && !PropertyEffects.frozen(t) && t.level>0) && room.board.stream().noneMatch(t -> Objects.equals(t.nzothOwnerId,p.id))).toList());
                 for(int i=0;i<3 && !owners.isEmpty();i++) { Player p=owners.remove(random.nextInt(owners.size())); List<Tile> targets=room.board.stream().filter(t -> Objects.equals(t.ownerId,p.id) && t.level>0 && !PropertyEffects.frozen(t)).toList(); Tile t=targets.get(random.nextInt(targets.size())); t.nzothOwnerId=p.id; log(room,t.name+" 受到恩佐斯污染，业主可在本人回合弃牌净化"); }
             }
-            case "endlessClouds" -> { for(Player p:room.players) if(!p.bankrupt) p.cash=Math.addExact(p.cash,400); cleanse(room,owner); log(room,"白云无尽：全员获得 ¥400，"+owner.name+" 及其地产完成净化"); }
+            case "endlessClouds" -> endlessClouds(room,owner);
             case "pinkMiracle" -> {
                 for(String rarity:List.of("SR","SSR","UR")) {
                     Card reward=ContentService.card(catalog.drawTier(room,rarity,null,Set.of(),random));
@@ -244,7 +245,27 @@ public final class CrossoverService {
         return true;
     }
 
-    /** 输入踩格者，仅清除其临时负面状态，保留正面效果、永久变化和自愿代价。 */
+    /** 输入发动者，发放原定额现金并净化本人和自家地产，无返回值。 */
+    private static void endlessClouds(Room room,Player owner) {
+        for(Player p:room.players) if(!p.bankrupt) p.cash=Math.addExact(p.cash,400);
+        cleanse(room,owner);
+        log(room,"白云无尽：未破产玩家各获得 ¥400，"+owner.name+" 及其地产完成净化");
+    }
+
+    /** 输入即将因外部控制跳过行动的玩家，有可用白云无尽时开放一次私人净化选择。 */
+    public boolean offerRestCleanse(Room room,Player owner) {
+        CrossoverState s=state(room);
+        if(s.restCleanseOfferedTurn==room.turnNumber) return false;
+        List<Card> cards=owner.hand.stream().filter(c -> c.kind.equals("endlessClouds") && handAllowed(room,owner,c,false)).toList();
+        if(cards.isEmpty()) return false;
+        s.restCleanseOfferedTurn=room.turnNumber;
+        ContentChoice choice=content.open(room,owner,"cross_rest_cleanse");
+        choice.cards.addAll(cards);
+        choice.prompt="你即将因"+(owner.jailed?"监禁":"休息")+"跳过回合。可使用「白云无尽」解除外部控制并净化。";
+        return true;
+    }
+
+    /** 输入净化目标，仅清除其临时负面状态，保留正面效果、永久变化和自愿代价。 */
     private static void cleanse(Room room,Player owner) {
         boolean released=owner.skipTurns>owner.voluntarySkipTurns || turns(owner,"BLUE_BIND")>0;
         owner.skipTurns=owner.voluntarySkipTurns; if(owner.voluntarySkipTurns==0) owner.jailed=false;
@@ -307,7 +328,7 @@ public final class CrossoverService {
         ContentChoice c=content.open(room,owner,"cross_charge"); c.tileIds.addAll(targets); c.prompt="选择前后六格内一处对手地产释放三道剑气，不占本回合主动次数；放弃则蓄力消失。"; return true;
     }
 
-    /** 输入即将结束的回合，先净化选择，再一次性腐蚀和结丹，等待超限完成后才能换人。 */
+    /** 输入即将结束的回合，依次处理净化、侵蚀和结丹，返回是否仍在等待选择。 */
     public boolean beforeEnd(Room room,Player owner) {
         CrossoverState s=state(room);
         if(s.endPreparedTurn!=room.turnNumber) {
@@ -327,7 +348,10 @@ public final class CrossoverService {
                 s.corePlayerId=null; s.cultivated.add(owner.id); owner.handLimitReduction=5-PropertyEffects.handLimit(owner);
                 Card reward=ContentService.card(catalog.drawTier(room,"UR",null,Set.of(),random)); owner.hand.add(reward); owner.contentNotice=reward; owner.contentNoticeText="结丹成功，手牌上限增加一，获得1张随机UR卡"; log(room,owner.name+" 结丹成功，手牌上限增加一");
             }
+            content.anime.enqueueEndCorruption(room,owner);
             if(content.overflow(room)) return true;
+            effects.drain(room);
+            if(room.pending!=null) return true;
         }
         return false;
     }
@@ -418,6 +442,12 @@ public final class CrossoverService {
                 Card material=ContentService.find(owner,action.cardId); require(c.cards.stream().anyMatch(x -> x.id.equals(material.id)),"请选择原候选材料"); owner.hand.remove(material); t.nzothOwnerId=null; log(room,owner.name+" 弃置一张手牌净化 "+t.name);
             }
             case "cross_bind_release" -> { Card card=ContentService.find(owner,action.cardId); require(card.kind.equals("release"),"请选择解控牌"); ContentService.consume(room,owner,card,false,action); }
+            case "cross_rest_cleanse" -> {
+                Card card=ContentService.find(owner,action.cardId);
+                require(card.kind.equals("endlessClouds") && c.cards.stream().anyMatch(x -> x.id.equals(card.id)),"请选择本次可用的白云无尽");
+                ContentService.consume(room,owner,card,false,action);
+                endlessClouds(room,owner);
+            }
             case "cross_boost" -> {
                 require(state(room).boostTurn==room.turnNumber && state(room).boosts>0 && !state(room).boostBlocked,"喷射机会已经结束"); state(room).boosts--; close(room,c);
                 GameEffect move=effects.effect("MOVE",owner); move.amount=1; move.selector="BOOST"; move.resumesDecision=true; GameEffect next=effects.effect("CROSS_BOOST",owner); next.resumesDecision=true; effects.submitAll(room,List.of(move,next)); return true;
