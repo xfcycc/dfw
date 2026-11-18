@@ -77,7 +77,7 @@ export const ITEMS: Record<ItemKind, { name: string; icon: string; description: 
   recycle: { name: '制衡', icon: '✦', description: "选择至少1张其他手牌弃置，等量重抽；弃牌不折现，确认后才消耗。" },
   discover: { name: '发现', icon: '✦', description: "从3张不同效果的随机道具中选1张。确认才耗卡，取消不换候选。" },
   sap: { name: '闷棍', icon: '✦', description: "前后3格内1名对手休息1个个人回合（含同格），并随机偷取其1张手牌；解控不撤销偷牌。" },
-  exchange: { name: '等价交换', icon: '✦', description: "用现有现金向对手支付该地产的无修正租金，最低为地价，取得产权并承接建筑、抵押及附加效果。" },
+  exchange: { name: '等价交换', icon: '✦', description: "用现有现金取得对手地产，承接建筑、抵押和附加效果。交换价按基础租金计，只计永久加成，最低为地价。" },
   slow: { name: '迟缓光线', icon: '✦', description: "指定对手，下次掷骰或替代掷骰的基础步数减半，向下取整，再计算加码与塔塔开；不叠加。" },
   swapAny: { name: '斗转星移', icon: '✦', description: "交换任意2名玩家的位置，可含自己；不结算落点或起点奖励，不解除监禁或休息。" },
   kamui: { name: '神威', icon: '✦', description: "封印同一条边任意1～3处地产，持续3个后续个人回合。期间暂停收租、经营和附加效果，免受其他地产效果，仍可破产清算。" },

@@ -22,8 +22,8 @@ public final class PropertyEffects {
     }
     /** 输入本局和宝藏地产，返回按领取时无修正租金计算且有现金保底的奖励。 */
     public static long treasureReward(Room room, Tile tile) { return Math.max(TREASURE_MIN_CASH,baseRent(room,tile)); }
-    /** 输入本局及地产，返回等价交换应付价格，最低为该地块的实际土地价格。 */
-    public static long exchangePrice(Room room,Tile tile) { return Math.max(tile.price,baseRent(room,tile)); }
+    /** 输入本局及地产，返回仅计永久加成并以实际地价保底的交换价。 */
+    public static long exchangePrice(Room room,Tile tile) { return Math.max(tile.price,boostedRent(baseRent(room,tile),tile,0,0)); }
     /** 输入基础租金与叠加层数，以精确分数计算乘数并在最后向下取整。 */
     public static long concertRent(long base, int stacks) {
         return BigInteger.valueOf(base).multiply(BigInteger.valueOf(6).pow(stacks)).divide(BigInteger.valueOf(5).pow(stacks)).longValueExact();

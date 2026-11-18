@@ -293,7 +293,13 @@ function tileReason(tile: Tile): string {
     if (tile.type !== 'property') return '请选择普通地产。';
     if (kind === 'shield') return tile.ownerId !== game.me?.id ? '请选择自家地产。' : tile.demolitionShield ? '该地产已有护盾。' : '';
     if (kind === 'homeTeleport') return tile.ownerId === game.me?.id ? '' : '请选择自家地产。';
-    if (kind === 'exchange') return !tile.ownerId || tile.ownerId === game.me?.id ? '请选择对手地产。' : (game.me?.cash ?? 0) < Math.max(tile.price, baseRentFor(tile, game.room?.economy)) ? '现金不足以支付交换价（无修正租金，最低地价）。' : '';
+    if (kind === 'exchange') {
+      if (!tile.ownerId || tile.ownerId === game.me?.id) return '请选择对手地产。';
+      const rent = baseRentFor(tile, game.room?.economy);
+      const adjustedRent = Number(BigInt(rent) * BigInt(100 + (tile.permanentRentPercent ?? 0)) / 100n);
+      const price = Math.max(tile.price, adjustedRent);
+      return (game.me?.cash ?? 0) < price ? `现金不足，交换价为 ¥${price.toLocaleString('zh-CN')}。` : '';
+    }
     if (kind === 'blackhole') return hasPropertyEffects(tile, game.room?.constructionEffects) ? '' : '该地产没有附加效果。';
     return '';
   }
