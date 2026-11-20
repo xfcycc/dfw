@@ -383,6 +383,8 @@ export interface CornerActivity {
   cardRewards?: Record<string, number>;
   /** 红包领取者与已选序号，未领取红包不公开金额。 */
   packetSelections: Record<string, number>;
+  /** 本场可选盲盒数量，旧活动投影可能缺少此字段。 */
+  blindBoxCount?: number | null;
   /** 新玩法的公开进度及已揭晓安全方向，旧快照缺省。 */
   level?: number; safePaths?: number[];
   currentPlayerId: string | null; opponentId: string | null; lastShooterId: string | null;

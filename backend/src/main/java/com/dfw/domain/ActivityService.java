@@ -8,6 +8,7 @@ import static com.dfw.domain.GameSupport.*;
 public final class ActivityService {
     public static final List<String> KINDS = List.of("casino", "horse", "roulette", "packet", "rps", "treasure", "bridge", "minority", "blindbox");
     public static final Map<String, String> NAMES = Map.of("casino", "暖暖赌场", "horse", "小镇赛马", "roulette", "轮盘对决", "packet", "拼手气红包", "rps", "猜拳擂台", "treasure", "贪心宝箱", "bridge", "三关玻璃桥", "minority", "少数派夜市", "blindbox", "暖暖潮玩盲盒");
+    public static final String BLIND_BOX_COMPLETE = "暖暖潮玩盲盒领取完毕";
     private static final Map<String, Long> BASE = Map.ofEntries(Map.entry("casinoSmallStake",250L), Map.entry("casinoSmallPrize",500L), Map.entry("casinoPointStake",250L), Map.entry("casinoPointPrize",1500L), Map.entry("horseStake",250L), Map.entry("horsePrize",2500L), Map.entry("rouletteDebt",1000L), Map.entry("packetBase",500L), Map.entry("packetPerPlayer",500L), Map.entry("rpsPrize",1500L), Map.entry("treasureStake",250L), Map.entry("blindboxRegular",250L), Map.entry("blindboxHiddenBase",500L), Map.entry("blindboxHiddenPerPlayer",250L));
     private final RandomSource random;
     private final EconomyService economy;
@@ -64,7 +65,11 @@ public final class ActivityService {
         a.participants.addAll(room.players.stream().filter(p -> !p.bankrupt).map(p -> p.id).toList()); a.contenders.addAll(a.participants); a.startedAt = System.currentTimeMillis();
         if (a.kind.equals("casino") || a.kind.equals("treasure")) { a.participants.clear(); a.participants.add(trigger.id); a.contenders = new ArrayList<>(a.participants); }
         if (a.kind.equals("packet")) packets(room, a);
-        if (a.kind.equals("blindbox")) { a.hiddenBox = random.nextInt(20) + 1; a.limitedBox = random.nextInt(100) < 10; }
+        if (a.kind.equals("blindbox")) {
+            a.blindBoxCount = 8;
+            a.hiddenBox = random.nextInt(a.blindBoxCount) + 1;
+            a.limitedBox = random.nextInt(100) < 20;
+        }
         room.activity = a; log(room, trigger.name + " 开启「" + NAMES.get(a.kind) + "」");
     }
     /** 输入房间及红包活动，按固定底金加人数金额生成隐藏红包池；参与者顺序对应红包序号，旧快照缺失底金时按零计算。 */
@@ -154,7 +159,7 @@ public final class ActivityService {
     private void nextBridgeRound(CornerActivity a) { a.choices.clear(); a.stage = "bridge_select"; a.round++; a.endsAt = null; }
     /** 输入盲盒序号及领取人，独占领取一个盒子并立即到账；只有唯一隐藏款可能翻倍，无返回值。 */
     private void claimBlindBox(Room room, CornerActivity a, Player actor, int selection) {
-        require(selection >= 1 && selection <= 20, "请选择一至二十号盲盒");
+        require(selection >= 1 && selection <= a.blindBoxCount, "请选择 1 至 " + a.blindBoxCount + " 号盲盒");
         require(!a.packetSelections.containsValue(selection), "这个盲盒已被领取，请选择其他盲盒");
         boolean hidden = selection == a.hiddenBox;
         long base = hidden ? Math.addExact(money(room, "blindboxHiddenBase"), Math.multiplyExact(money(room, "blindboxHiddenPerPlayer"), a.participants.size())) : money(room, "blindboxRegular");
@@ -163,7 +168,7 @@ public final class ActivityService {
         a.revealed.put(actor.id, hidden ? bonus > 0 ? 2 : 1 : 0);
         grant(room, a, actor.id, Math.addExact(base, bonus));
         log(room, actor.name + " 打开 " + selection + " 号盲盒：" + (hidden ? bonus > 0 ? "限定款，隐藏奖励翻倍" : "隐藏款" : "普通款") + "，到账 ¥" + (base + bonus));
-        if (a.choices.size() == a.participants.size()) result(room, a, "暖暖潮玩盲盒已全部领取，未选中的盲盒不发放");
+        if (a.choices.size() == a.participants.size()) result(room, a, BLIND_BOX_COMPLETE);
     }
     /** 输入房间、活动、领取人和红包序号，独占领取后立即结算；全部领取后展示结果，等待手动关闭，无返回值。 */
     private void claimPacket(Room room, CornerActivity a, Player actor, int selection) {

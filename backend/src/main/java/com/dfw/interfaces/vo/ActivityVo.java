@@ -30,6 +30,8 @@ public class ActivityVo {
     public Map<String, Integer> bets = new LinkedHashMap<>();
     /** 红包领取者与已选序号，不包含未领取红包的金额。 */
     public Map<String, Integer> packetSelections = new LinkedHashMap<>();
+    /** 本场可选盲盒数量，仅盲盒活动提供。 */
+    public Integer blindBoxCount;
     /** 上一轮已揭晓手势。 */
     public Map<String, Integer> revealed = new LinkedHashMap<>();
     /** 下注本金。 */

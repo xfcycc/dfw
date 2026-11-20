@@ -9,8 +9,7 @@ import BlindBoxArt from './BlindBoxArt.vue';
 const props = defineProps<{ activity: CornerActivity; enabled: boolean }>();
 const emit = defineEmits<{ input: [value: ActivityInput]; revealing: [active: boolean] }>();
 const game = useGameStore();
-const money = computed(() => game.room?.activityRotation?.money ?? {});
-const hiddenPrize = computed(() => (money.value.blindboxHiddenBase ?? 0) + props.activity.participants.length * (money.value.blindboxHiddenPerPlayer ?? 0));
+const boxCount = computed(() => props.activity.blindBoxCount ?? 20);
 const owners = computed(() => Object.fromEntries(Object.entries(props.activity.packetSelections).map(([id, slot]) => [slot, id])));
 const players = computed(() => Object.fromEntries((game.room?.players ?? []).map(player => [player.id, player])));
 const flavors = ['午后奶茶', '薄荷花园', '香草烘焙', '晚安好梦', '蜜桃雨季', '海盐书屋'];
@@ -65,13 +64,11 @@ onBeforeUnmount(() => { clearInterval(clock); clearAnimation(); document.removeE
 </script>
 <template>
   <div class="blindbox-scene">
-    <p>20 个盲盒 · 19 个普通款 <strong>¥{{ money.blindboxRegular?.toLocaleString() }}</strong> · 唯一隐藏款 <strong>¥{{ hiddenPrize.toLocaleString() }}</strong></p>
-    <p class="activity-help">免费每人选一盒。隐藏款有 10% 概率升级限定款、奖励翻倍；选中即到账，拆盒后展示。</p>
     <div class="macaron-shop">
-      <div class="macaron-sign"><span class="toy-shop-seal" aria-hidden="true">N<span>✦</span></span><div><small>NUANNUAN · SWEET LITTLE MOMENTS</small><strong>暖暖潮玩盲盒</strong><span>把今天的小幸运，拆出来</span></div><span class="toy-stock">{{ 20 - Object.keys(owners).length }}<small>盒待拆</small></span></div>
+      <div class="macaron-sign"><span class="toy-shop-seal" aria-hidden="true">N<span>✦</span></span><div><small>NUANNUAN · SWEET LITTLE MOMENTS</small><strong>暖暖潮玩盲盒</strong><span>把今天的小幸运，拆出来</span></div><span class="toy-stock">{{ boxCount - Object.keys(owners).length }}<small>盒待拆</small></span></div>
       <div class="macaron-swatches" aria-label="六种日常普通款、蔷薇花园隐藏款和星月礼赞限定款"><span v-for="(flavor, index) in flavors" :key="flavor" :class="`flavor-${index}`" :title="flavor"></span><small>日常普通款 · 蔷薇隐藏款 · 星月限定款</small></div>
       <div class="toy-series-showcase" aria-label="公仔款式图鉴，不对应盒内位置"><div v-for="tier in tiers" :key="tier.index" :class="{ rare: tier.index === 6, exclusive: tier.index === 7 }"><BlindBoxArt :index="tier.index" /><strong>{{ tier.name }}</strong><small>{{ tier.detail }}</small></div></div>
-      <div class="blindbox-grid"><button v-for="slot in 20" :key="slot" class="blindbox-choice" :class="{ claimed: !!owners[slot], unboxing: elapsed(owners[slot]) < 1900, opened: owners[slot] && elapsed(owners[slot]) >= 1900, hidden: owners[slot] && (activity.revealed[owners[slot]!] ?? 0) > 0 && elapsed(owners[slot]) >= 1900, limited: owners[slot] && activity.revealed[owners[slot]!] === 2 && elapsed(owners[slot]) >= 2400, celebrating: elapsed(owners[slot]) >= 1900 && elapsed(owners[slot]) < 3300, own: owners[slot] === game.me?.id }" :disabled="!enabled || !!owners[slot]" :aria-label="`${slot}号盲盒${owners[slot] ? '，' + caption(slot) + '，已领取' : enabled ? '，点击拆开' : '，未领取'}`" @click="emit('input', { selection: slot })">
+      <div class="blindbox-grid"><button v-for="slot in boxCount" :key="slot" class="blindbox-choice" :class="{ claimed: !!owners[slot], unboxing: elapsed(owners[slot]) < 1900, opened: owners[slot] && elapsed(owners[slot]) >= 1900, hidden: owners[slot] && (activity.revealed[owners[slot]!] ?? 0) > 0 && elapsed(owners[slot]) >= 1900, limited: owners[slot] && activity.revealed[owners[slot]!] === 2 && elapsed(owners[slot]) >= 2400, celebrating: elapsed(owners[slot]) >= 1900 && elapsed(owners[slot]) < 3300, own: owners[slot] === game.me?.id }" :disabled="!enabled || !!owners[slot]" :aria-label="`${slot}号盲盒${owners[slot] ? '，' + caption(slot) + '，已领取' : enabled ? '，点击拆开' : '，未领取'}`" @click="emit('input', { selection: slot })">
         <span class="box-number">NO. {{ String(slot).padStart(2, '0') }}</span><span v-if="owners[slot] && elapsed(owners[slot]) >= 1900" class="toy-rarity">{{ figure(slot) === 7 ? '限定' : figure(slot) === 6 ? '隐藏' : '常规' }}</span>
         <span class="toy-stage" aria-hidden="true"><span class="toy-halo">✧ ✦ ✧</span><span class="toy-plinth"></span><span class="toy-reveal"><BlindBoxArt :index="owners[slot] ? figure(slot) : 0" /></span><span class="toy-wrapper"><i></i><i></i><b>?</b></span><span class="toy-carton"><BlindBoxArt kind="box" :index="owners[slot] && elapsed(owners[slot]) >= 450 ? 1 : 0" /></span><span class="toy-sparkles">✦ · ✧</span></span>
         <span v-if="elapsed(owners[slot]) >= 1900 && elapsed(owners[slot]) < 3300" class="toy-prize-burst" aria-hidden="true"><i v-for="n in 7" :key="n" :style="{ '--particle': n }">{{ n % 2 ? '✧' : '✿' }}</i></span>
@@ -80,6 +77,5 @@ onBeforeUnmount(() => { clearInterval(clock); clearAnimation(); document.removeE
         <small v-else>{{ activity.settled ? '本场未领取' : enabled ? '挑一盒，拆开小幸运' : '等待有缘人' }}</small>
       </button></div>
     </div>
-    <p class="activity-help">{{ activity.submitted.length }} / {{ activity.participants.length }} 人已领取 · {{ game.me && activity.submitted.includes(game.me.id) ? '你的公仔已领取，奖励已到账' : '每人限领一盒，未领取的盒子不发奖' }}</p>
   </div>
 </template>

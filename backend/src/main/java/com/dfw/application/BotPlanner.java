@@ -979,7 +979,7 @@ public final class BotPlanner {
         Action input = action("activityInput"); input.activityId = a.id; input.activityRound = a.round;
         switch (a.kind) {
             case "packet", "blindbox" -> {
-                int count = a.kind.equals("packet") ? a.participants.size() : 20;
+                int count = a.kind.equals("packet") ? a.participants.size() : a.blindBoxCount;
                 List<Integer> available = new ArrayList<>(); for (int i = 1; i <= count; i++) if (!a.packetSelections.containsValue(i)) available.add(i);
                 input.selection = available.get(ThreadLocalRandom.current().nextInt(available.size()));
             }

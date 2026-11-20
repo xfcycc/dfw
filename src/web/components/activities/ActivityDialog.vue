@@ -21,7 +21,7 @@ const game = useGameStore(); const open = ref(true);
 const blindboxRevealing = ref(false);
 const activity = computed(() => game.room?.activity);
 const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene, treasure: TreasureScene, bridge: BridgeScene, minority: MinorityScene, blindbox: BlindBoxScene };
-const cardRewardRules = { casino: '', horse: '赛马中奖者', roulette: '轮盘获胜者', packet: '全员领取后的手气最佳者', rps: '猜拳冠军', treasure: '三层全部通关者', bridge: '三关全部通关者', minority: '本场中奖者', blindbox: '隐藏款或限定款领取者' };
+const cardRewardRules = { casino: '', horse: '赛马中奖者', roulette: '轮盘获胜者', packet: '全员领取后的手气最佳者', rps: '猜拳冠军', treasure: '三层全部通关者', bridge: '三关全部通关者', minority: '本场中奖者', blindbox: '' };
 const ownSelection = computed(() => game.privateData?.activityId === activity.value?.id && game.privateData?.activityRound === activity.value?.round ? game.privateData?.activitySelection : null);
 const enabled = computed(() => {
   const a = activity.value, id = game.me?.id;
@@ -37,7 +37,7 @@ const progress = computed(() => {
   if (a.kind === 'roulette') return a.stage === 'select' ? '等待发起者选择对手' : a.stage === 'payment' ? '正在处理对决费用' : `已开枪 ${a.shots} / 6 次`;
   if (a.settled) return a.summary;
   if (a.kind === 'packet') return `${a.submitted.length} / ${a.participants.length} 人已拆红包 · 选中立即到账`;
-  if (a.kind === 'blindbox') return `${a.submitted.length} / ${a.participants.length} 人已领取 · 20 个盲盒每人选一个`;
+  if (a.kind === 'blindbox') return `${a.submitted.length} / ${a.participants.length} 人已领取`;
   if (a.kind === 'treasure') return a.endsAt ? '' : `已通过 ${a.level ?? 0} 层 · 等待落点玩家${a.stage === 'select' ? '选箱' : '收手或继续'}`;
   if (a.kind === 'bridge' && a.stage !== 'select') return a.endsAt ? '' : `第 ${a.level} 关 · ${a.submitted.length} / ${a.contenders.length} 人已选边`;
   if (a.endsAt) return '';

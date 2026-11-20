@@ -103,6 +103,8 @@ public final class StateViews {
             }
         }
         if(a.kind.equals("blindbox")) {
+            v.blindBoxCount=a.blindBoxCount;
+            if(a.settled) v.summary=ActivityService.BLIND_BOX_COMPLETE;
             v.packetSelections.putAll(a.packetSelections);
             for(String id:a.payouts.keySet()) { v.packets.put(id,a.packets.get(id)); v.bonuses.put(id,a.bonuses.get(id)); }
         }

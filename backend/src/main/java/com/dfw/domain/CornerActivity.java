@@ -48,7 +48,9 @@ public class CornerActivity {
     public int level;
     /** 已揭晓的逐层安全方向，未揭晓方向不公开。 */
     public List<Integer> safePaths = new ArrayList<>();
-    /** 二十个盲盒的隐藏款序号，仅服务端保存。 */
+    /** 本场盲盒数量，缺少该字段的旧活动沿用二十盒。 */
+    public int blindBoxCount = 20;
+    /** 本场盲盒的隐藏款序号，仅服务端保存。 */
     public int hiddenBox;
     /** 本场隐藏款是否升级限定款，仅领取隐藏款时揭晓。 */
     public boolean limitedBox;
