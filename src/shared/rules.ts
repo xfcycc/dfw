@@ -171,7 +171,54 @@ export function generateMap(count: number, seed: string, economy: EconomySetting
       Object.assign(tile, { name, regionId: source.id, regionName: source.name, price: prices[i] });
     });
   }
+  spreadPremiumLand(board, random);
   return board;
+}
+
+/** 输入已定价的棋盘与地图随机源，在各边内部按闭环步距调换 ¥3,200 地产的位置。 */
+function spreadPremiumLand(board: Tile[], random: () => number): void {
+  const spreadPrice = 3200, targetGap = 7;
+  const original = board.filter(tile => tile.type === 'property' && tile.price === spreadPrice);
+  if (original.length < 2) return;
+  let currentGap = board.length + original[0].id - original[original.length - 1].id;
+  for (let i = 1; i < original.length; i++) currentGap = Math.min(currentGap, original[i].id - original[i - 1].id);
+  const maxGap = Math.min(targetGap, Math.floor(board.length / original.length));
+  if (currentGap >= maxGap) return;
+
+  const bySide = Array.from({ length: 4 }, (_, side) => board.filter(t => t.type === 'property' && t.district === side));
+  const starts = shuffle(bySide[original[0].district], random);
+  for (let gap = maxGap; gap > currentGap; gap--) {
+    for (const start of starts) {
+      const selected = spacedPositions(board.length, bySide, original, start, gap, random);
+      if (!selected.length) continue;
+      // 两列均按格号排序，各边移出与移入的数量相等。
+      const outgoing = original.filter(tile => !selected.includes(tile));
+      const incoming = selected.filter(tile => tile.price !== spreadPrice);
+      outgoing.forEach((tile, i) => { tile.price = incoming[i].price; incoming[i].price = spreadPrice; });
+      return;
+    }
+  }
+}
+
+/** 输入圈长、各边地产、原价位分布、首格、步距和随机源，返回满足步距的同边位置序列，无解返回空数组。 */
+function spacedPositions(length: number, bySide: Tile[][], original: Tile[], start: Tile, gap: number, random: () => number): Tile[] {
+  const latest: number[] = [];
+  // 从首格绕一圈倒推最晚可选格，最后一块也须与首格隔开。
+  let limit = start.id + length - gap;
+  for (let i = original.length - 1; i > 0; i--) {
+    const last = bySide[original[i].district].findLast(tile => tile.id <= limit);
+    if (!last) return [];
+    latest[i] = last.id;
+    limit = last.id - gap;
+  }
+  if (start.id > limit) return [];
+  const selected = [start];
+  for (let i = 1; i < original.length; i++) {
+    const min = selected[i - 1].id + gap;
+    const choices = bySide[original[i].district].filter(tile => tile.id >= min && tile.id <= latest[i]);
+    selected.push(choices[Math.floor(random() * choices.length)]);
+  }
+  return selected;
 }
 
 /** 输入格子索引和总格数，返回矩形周边的整数 CSS 行列，顺时针排列。 */

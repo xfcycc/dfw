@@ -5,6 +5,7 @@ import static com.dfw.domain.GameError.require;
 
 /** 与原 TypeScript 种子算法一致的随机地图生成。 */
 public class MapService {
+    private static final int SPREAD_PRICE = 3200, TARGET_GAP = 7;
     private final MapRegions regions;
     /** 输入独立地区配置，地图内每个街区优先从分配地区取未使用的地名。 */
     public MapService(MapRegions regions) { this.regions = regions; }
@@ -45,7 +46,63 @@ public class MapService {
                 Tile tile = properties.get(i); tile.name = name; tile.regionId = source.id; tile.regionName = source.name; tile.price = prices.get(i);
             }
         }
+        spreadPremiumLand(board, random);
         return board;
+    }
+    /** 输入已定价的棋盘和地图随机源，按环形步距在各边内部原地调换 ¥3,200 地产的位置。 */
+    private void spreadPremiumLand(List<Tile> board, SeededRandom random) {
+        List<Tile> original = board.stream().filter(t -> t.type.equals("property") && t.price == SPREAD_PRICE).toList();
+        if (original.size() < 2) return;
+        int currentGap = board.size() + original.getFirst().id - original.getLast().id;
+        for (int i = 1; i < original.size(); i++)
+            currentGap = Math.min(currentGap, original.get(i).id - original.get(i - 1).id);
+        int targetGap = Math.min(TARGET_GAP, board.size() / original.size());
+        if (currentGap >= targetGap) return;
+
+        Map<Integer, List<Tile>> bySide = board.stream().filter(t -> t.type.equals("property"))
+                .collect(java.util.stream.Collectors.groupingBy(t -> t.district));
+        List<Tile> starts = new ArrayList<>(bySide.get(original.getFirst().district));
+        shuffle(starts, random);
+        for (int gap = targetGap; gap > currentGap; gap--) {
+            for (Tile start : starts) {
+                List<Tile> selected = spacedPositions(board.size(), bySide, original, start, gap, random);
+                if (selected.isEmpty()) continue;
+                // 两列都按格号排序；去掉重合位置后，各边移出与移入的数量仍然相等。
+                List<Tile> outgoing = original.stream().filter(t -> !selected.contains(t)).toList();
+                List<Tile> incoming = selected.stream().filter(t -> t.price != SPREAD_PRICE).toList();
+                for (int i = 0; i < outgoing.size(); i++) {
+                    outgoing.get(i).price = incoming.get(i).price;
+                    incoming.get(i).price = SPREAD_PRICE;
+                }
+                return;
+            }
+        }
+    }
+    /** 输入圈长、各边地产、原价位分布、首格、步距和随机源，返回满足步距的同边位置序列，无解返回空列表。 */
+    private List<Tile> spacedPositions(int length, Map<Integer, List<Tile>> bySide, List<Tile> original,
+                                       Tile start, int gap, SeededRandom random) {
+        int[] latest = new int[original.size()];
+        // 从首格绕一圈倒推最晚可选格，最后一块也须与首格隔开。
+        int limit = start.id + length - gap;
+        for (int i = original.size() - 1; i > 0; i--) {
+            List<Tile> side = bySide.get(original.get(i).district);
+            int j = side.size() - 1;
+            while (j >= 0 && side.get(j).id > limit) j--;
+            if (j < 0) return List.of();
+            latest[i] = side.get(j).id;
+            limit = latest[i] - gap;
+        }
+        if (start.id > limit) return List.of();
+
+        List<Tile> selected = new ArrayList<>();
+        selected.add(start);
+        for (int i = 1; i < original.size(); i++) {
+            int min = selected.getLast().id + gap, max = latest[i];
+            List<Tile> choices = bySide.get(original.get(i).district).stream()
+                    .filter(t -> t.id >= min && t.id <= max).toList();
+            selected.add(choices.get((int) (random.next() * choices.size())));
+        }
+        return selected;
     }
     /** 输入棋盘、特殊格类型及随机源，从剩余地产中取一格，与已有特殊格保留至少一格间隔。 */
     private void addSpecial(List<Tile> board, String type, String name, SeededRandom random) {
