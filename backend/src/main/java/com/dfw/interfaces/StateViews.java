@@ -23,7 +23,7 @@ public final class StateViews {
         var assets = new java.util.HashMap<String, Long>();
         for (Player player : room.players) assets.put(player.id, Rules.netWorth(room, player));
         for (Player player : room.players) {
-            PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position;
+            PublicPlayerVo p = new PublicPlayerVo(); p.id = player.id; p.name = player.name; p.color = player.color; p.avatarId = player.avatarId == null ? PlayerAvatars.DEFAULT : player.avatarId; p.cash = player.cash; p.position = player.position; p.startPosition = player.startPosition;
             p.crossoverEffects=new java.util.ArrayList<>(CrossoverService.labels(room,player)); p.crossoverEffects.addAll(NetaService.playerLabels(room,player)); p.handSealTurns=CrossoverService.turns(player,"HAND_SEAL"); p.urSealTurns=CrossoverService.turns(player,"UR_ACTIVE_SEAL"); p.attackSealTurns=CrossoverService.turns(player,"ACTIVE_ATTACK_SEAL"); p.defenseSpecializationTurns=CrossoverService.turns(player,"DEFENSE_SPECIALIZATION"); p.blueBindTurns=CrossoverService.turns(player,"BLUE_BIND"); p.cultivated=CrossoverService.state(room).cultivated.contains(player.id);
             p.controlProtectionTurns=StatusService.controlProtectionTurns(player);
             p.cardCount = player.hand.size(); p.handLimit=PropertyEffects.handLimit(player);
@@ -66,7 +66,7 @@ public final class StateViews {
                 if (choice.type.equals("anime_rewind")) v.rollBonus = room.runtime.rollBonus;
                 if (choice.type.equals("movement_release")) for (GameEffect effect : room.runtime.effects) {
                     if ("PORTAL_TRANSFER".equals(effect.type) && choice.effectIds.contains(effect.id)) {
-                        v.portalMove = new ContentChoiceVo.PortalMove(effect.destination, (int) effect.amount, "BOOST".equals(effect.selector));
+                        v.portalMove = new ContentChoiceVo.PortalMove(effect.destination, (int) effect.amount, "BOOST".equals(effect.selector), "BACKWARD".equals(effect.statusId));
                         break;
                     }
                 }

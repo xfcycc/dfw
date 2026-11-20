@@ -219,6 +219,8 @@ const visibleHand = computed(() => pagedHand.value ? game.privateData?.hand.slic
 watch(handPages, pages => { handPage.value = Math.min(handPage.value, pages - 1); });
 
 const liveSelectedTile = computed(() => selectedTile.value ? game.room?.board[selectedTile.value.id] : null);
+const selectedFlagOwner = computed(() => game.room?.board[0]?.type === 'supply' && liveSelectedTile.value
+  ? game.room.players.find(p => !p.bankrupt && p.startPosition === liveSelectedTile.value!.id) : undefined);
 const selectedTileOwner = computed(() => game.room?.players.find(player => player.id === liveSelectedTile.value?.ownerId));
 /** 根据详情地产及当前付款状态，返回本人是否可抵押或赎回；沿用资产页的归属、时机和现金限制。 */
 const canManageSelectedProperty = computed(() => {
@@ -746,7 +748,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
         <button class="game-tool mint" @click="modal = null; game.copy(`${origin}/watch/${code}`)"><span class="game-tool-icon" aria-hidden="true">🔗</span><span>复制观战链接</span></button>
       </div>
     </Modal>
-    <Modal panel-class="modern-modal" v-if="modal === 'rules'" title="大富翁玩法说明" wide @close="modal = null"><Rules :economy="game.room?.economy" :player-count="game.room?.players.length ?? 2" :map-size="isLobby ? game.room?.mapSize ?? 'large' : undefined" :spectator="spectator" :chance-events="game.room?.chanceEventDescriptions" :activity-money="game.room?.activityRotation?.money" /></Modal>
+    <Modal panel-class="modern-modal" v-if="modal === 'rules'" title="大富翁玩法说明" wide @close="modal = null"><Rules :legacy-start="game.room?.board[0]?.type === 'start'" :economy="game.room?.economy" :player-count="game.room?.players.length ?? 2" :map-size="isLobby ? game.room?.mapSize ?? 'large' : undefined" :spectator="spectator" :chance-events="game.room?.chanceEventDescriptions" :activity-money="game.room?.activityRotation?.money" /></Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'save' && game.me && !spectator" title="标记当前存档" @close="modal = null"><SaveArchive /></Modal>
 
 
@@ -779,6 +781,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
           <div class="tile-detail-intro">
             <p>{{ liveSelectedTile.name }}{{ hasPropertyEffects(liveSelectedTile, game.room?.constructionEffects) ? ' ✦' : '' }}</p>
             <span class="tile-detail-location">{{ liveSelectedTile.id }} 号地块</span>
+            <span v-if="selectedFlagOwner" class="tile-detail-location">{{ selectedFlagOwner.id === game.me?.id && !spectator ? '我的' : selectedFlagOwner.name + '的' }}起点 · 顺向经过领补给</span>
             <span v-if="liveSelectedTile.type === 'property'" class="tile-detail-status" :class="{ mortgaged: liveSelectedTile.mortgaged }">{{ liveSelectedTile.mortgaged ? '已抵押' : liveSelectedTile.ownerId ? '已购入' : '待购入' }}</span>
           </div>
         </div>
@@ -803,6 +806,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
           </div>
         </template>
         <p v-else-if="liveSelectedTile.type === 'activity' && liveSelectedTile.activityKind" class="tile-detail-description">{{ ACTIVITY_HINTS[liveSelectedTile.activityKind] }}。停在这里触发活动，经过不触发。</p>
+        <p v-else-if="liveSelectedTile.type === 'supply'" class="tile-detail-description">停在补给站，抽 1 张道具。</p>
         <p v-else-if="liveSelectedTile.type === 'start' || liveSelectedTile.type === 'jail'" class="tile-detail-description">{{ liveSelectedTile.type === 'start' ? `正向经过或最终停在起点，获得 ¥${ruleMoney(game.room?.economy, 'startIncome', 1000).toLocaleString()} 和 ${startCards(game.room?.players.length ?? 2)} 张道具补给；后退经过起点不领奖，后退停在起点可领奖一次。` : '停在此处，跳过下一次个人行动；服刑期间不收租，其他小游戏正常参与，可当场用解控卡解除限制。' }}</p>
         <PropertyEffects :tile="liveSelectedTile" :economy="game.room?.economy" />
       </div>

@@ -3,7 +3,7 @@ import { computed, ref } from 'vue';
 import { buildCost, initialCards, initialCash, rentFor, RULES, ruleMoney, startCards } from '../../shared/rules';
 import type { EconomySettings, MapSize, Tile } from '../../shared/types';
 
-const props = defineProps<{ spectator?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null; playerCount: number; mapSize?: MapSize; activityMoney?: Record<string, number> | null }>();
+const props = defineProps<{ spectator?: boolean; legacyStart?: boolean; chanceEvents?: string[]; economy?: EconomySettings | null; playerCount: number; mapSize?: MapSize; activityMoney?: Record<string, number> | null }>();
 const version = ref<'brief' | 'detailed'>('brief');
 /** 输入本局经济配置，返回五档地价的单级建造费及 0～3 级基础租金，包含固定金额覆盖。 */
 const propertyPrices = computed(() => RULES.prices.map((base, index) => {
@@ -29,8 +29,8 @@ const propertyPrices = computed(() => RULES.prices.map((base, index) => {
         <li><strong>卡牌要在掷骰前使用</strong><p>轮到自己时，通常每回合最多使用 1 张主动卡牌，掷骰后不能补用。防御和响应类卡牌按弹窗时机使用，不占普通主动次数；特殊效果按当前提示处理。</p></li>
         <li><strong>踩空地买地，再踩自家地升级</strong><p>停在无主地产可买下；以后停在自己的未抵押地产，可付费升 1 级，最高 3 级。刚买下本次不能升级，普通升级需要踩到地块；每块地产通常每回合最多升级一次。</p></li>
         <li><strong>踩到别人的地要付租金</strong><p>空地买下后即有 0 级租金，房屋升级后按对应等级收费，五档金额见下表。抵押地产暂停收租，房东服刑期间也不收租；临时状态可能改变最终金额。</p></li>
-        <li><strong>前三回合有一次自选骰点</strong><p>前三个个人回合内，普通掷骰后可把骰点改为 1～6 任意一点，每人每局仅 1 次，不耗手牌或主动次数；保留原点数不消耗机会，到期失效。</p></li>
-        <li><strong>起点拿补给，特殊格看提示</strong><p>正向经过或最终停在起点可领取现金和卡牌。机会 / 财富格触发事件，活动角停下才参加。入狱跳过下次个人行动且服刑期间不收租，普通休息仍可收租。</p></li>
+        <li><strong>开局防控制，没买到地有保底</strong><p>自己的前三个回合可挡住外来的强制休息、入狱和蓝银缠绕。自己的第 3 回合结束时，如果从未买地且名下无地，系统会从符合条件的空地中随机抽一块，地价最高 ¥1,600。你可以原价购买，也可以放弃。</p></li>
+        <li><strong>{{ legacyStart ? '回起点领奖' : '回自己的旗子领奖，停补给站抽道具' }}</strong><p>{{ legacyStart ? '正向经过或最终停在起点可领取现金和卡牌。' : '正向经过或最终停在自己的旗子可领现金和卡牌。停在补给站另抽一张道具，经过或开局出生在这里都不抽。' }}机会 / 财富格触发事件，活动角停下才参加。入狱跳过下次个人行动且服刑期间不收租，普通休息仍可收租。</p></li>
         <li><strong>钱不够先筹钱，再确认付款</strong><p>先完成防御选择，再抵押、卖房或卖地筹款，最后手动确认支付。玩家间可协商现金和地产交易，也可用少量现金、地产或0元协商结清欠款，债权人接受才生效。银行费用仍需正常偿付，现金不足不会立即破产。</p></li>
       </ol>
     </div>
@@ -41,7 +41,7 @@ const propertyPrices = computed(() => RULES.prices.map((base, index) => {
         <ul class="rules-list">
           <li>轮到自己后，先决定是否使用主动卡牌，再掷骰移动。完成落点事件、购买或升级选择后，可以管理资产、发起交易，最后结束回合。当前待办未处理完时，先按提示完成选择。</li>
           <li>通常顺时针移动，普通移动只结算最终落点；路径上的障碍可能提前截停。特殊移动是否替代掷骰、是否结算沿途与落点，以当前提示为准。</li>
-          <li>正向经过或最终停在起点，领取 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} 和 {{ startCards(playerCount) }} 张卡牌。后退途中经过起点不领奖，后退最终停在起点可领奖一次；特殊传送和换位按各自提示处理。</li>
+          <li>正向经过或最终停在{{ legacyStart ? '起点' : '自己的旗子' }}，领取 ¥{{ ruleMoney(economy, 'startIncome', 1000).toLocaleString() }} 和 {{ startCards(playerCount) }} 张卡牌。后退时，只有最终停在{{ legacyStart ? '起点' : '自己的旗子' }}才领一次奖励。特殊传送和换位按各自提示处理。</li>
           <li>玩法选择、偿债和交易报价不限时。获得补给超过手牌上限时，先整理手牌，再继续结算。</li>
         </ul>
       </section>
@@ -115,7 +115,7 @@ const propertyPrices = computed(() => RULES.prices.map((base, index) => {
       <section>
         <h3>8. 轮换活动与小游戏</h3>
         <p>活动角需要停下才触发，经过不参加；九种游戏随机排队，每批各安排一次，每期两个，相邻两期不重复。按排上棋盘计数，没踩到也会正常轮换；参与范围、下注和奖励以当场提示为准。</p>
-        <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角</strong></summary><p>起点、监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，银行基础奖池为¥{{ activityMoney.packetBase ?? 0 }}＋参与人数×¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；每人自选一个未领取红包，点击立即开包到账，基础份额1%～90%，每人独立10%幸运翻倍并额外庆祝。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
+        <details v-if="activityMoney" class="rules-reminder"><summary><strong>轮换活动角</strong></summary><p>{{ legacyStart ? '起点' : '补给站' }}和监狱固定；另外两个角每隔开局人数×5个已结束回合一起轮换，最后3回合预告，只在回合结束后换场。经过不触发，停下才参加。</p><ul class="rules-list"><li>赌场：本金¥{{ activityMoney.casinoSmallStake }}猜大小，猜中总到账¥{{ activityMoney.casinoSmallPrize }}；本金¥{{ activityMoney.casinoPointStake }}猜一个点数，猜中总到账¥{{ activityMoney.casinoPointPrize }}。可放弃。</li><li>赛马：八匹马等胜率，每人自愿下注¥{{ activityMoney.horseStake }}，可押同一匹，中奖各总到账¥{{ activityMoney.horsePrize }}。</li><li>轮盘：可放弃发起，指定对手后必须应战。一次装填六弹巢一颗子弹、随机先手，败者产生¥{{ activityMoney.rouletteDebt }}玩家费用，沿用防御与偿债。</li><li>红包：所有未破产玩家领取，银行基础奖池为¥{{ activityMoney.packetBase ?? 0 }}＋参与人数×¥{{ activityMoney.packetPerPlayer }}，不扣玩家的钱；每人自选一个未领取红包，点击立即开包到账，基础份额1%～90%，每人独立10%幸运翻倍并额外庆祝。</li><li>猜拳：全场秘密出拳，两种手势淘汰败方，一种或三种则重来，最后一人独得¥{{ activityMoney.rpsPrize }}。</li></ul></details>
         <details v-if="activityMoney?.treasureStake !== undefined" class="rules-reminder">
           <summary><strong>更多活动玩法</strong></summary>
           <ul class="rules-list">

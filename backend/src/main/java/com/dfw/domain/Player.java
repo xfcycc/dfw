@@ -34,6 +34,8 @@ public class Player {
     public long cash;
     /** 棋盘位置。 */
     public int position;
+    /** 本局个人起点格号；旧存档缺省为原起点 0。 */
+    public int startPosition;
     /** 大厅准备状态。 */
     public boolean ready;
     /** 当前连接状态。 */

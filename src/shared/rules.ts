@@ -140,7 +140,7 @@ export function generateMap(count: number, seed: string, economy: EconomySetting
     id, type: 'property', name: '', district: id < corners[1] ? 0 : id < corners[2] ? 1 : id < corners[3] ? 2 : 3,
     price: 0, ownerId: null, level: 0, mortgaged: false, barrier: false,
   }));
-  const fixed = [['start', '起点'], ['chance', '机会'], ['fortune', '财富'], ['jail', '监狱']] as const;
+  const fixed = [['supply', '补给站'], ['chance', '机会'], ['fortune', '财富'], ['jail', '监狱']] as const;
   fixed.forEach(([type, name], index) => Object.assign(board[corners[index]], { type, name }));
   const specialCount = count <= 3 ? 2 : 3;
   for (let i = 1; i < specialCount; i++) {

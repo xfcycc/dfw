@@ -35,3 +35,4 @@ backend/target/
 
 # 默认首页背景随前端分发。
 !/src/web/assets/home-riverside-market.webp
+!/src/web/assets/supply-station.webp

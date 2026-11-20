@@ -61,6 +61,9 @@ let lastViewportHeight = 0;
 let followFrame = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
+const flagOwners = computed(() => props.room.board[0]?.type === 'supply'
+  ? props.room.players.filter((player): player is PublicPlayer & { startPosition: number } => !player.bankrupt && player.startPosition !== undefined)
+  : []);
 const connectedRents = computed(() => props.room.board.map(tile => connectedRentPercent(props.room.board, tile)));
 const desktopSingleScreen = computed(() => !!props.stretch && !props.classicLayout && !props.spectator && !props.dashboardTarget);
 /** 输入地图格数和可用宽高，桌面按长方形排布闭环，返回行列数；不改变格号顺序。 */
@@ -178,7 +181,7 @@ const centerStyle = computed(() => {
     height: `${((dimensions.value.rows - 2) * cellHeight - gap) * zoom.value}px`,
   };
 });
-const icons = { activity: '✦', start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⛺' };
+const icons = { activity: '✦', supply: '▣', start: '➜', chance: '?', fortune: '✦', jail: 'Ⅱ', property: '⛺' };
 /** 输入地块，返回其所有者的显示颜色。 */
 function ownerColor(tile: Tile): string | undefined { return tileOwner(tile)?.color; }
 /** 输入地块，按拥有者底色的相对亮度返回对比度更高的名牌文字颜色。 */
@@ -207,6 +210,20 @@ function pawnStyle(player: PublicPlayer) {
   return { left: `${(inset + (cell.column - 0.5) * (size.value - inset * 2 + gap) / dimensions.value.columns) * zoom.value + offset * (overview ? Math.min(1, zoom.value) : 1)}px`, top: `${(inset + (cell.row - 0.5) * (height.value - inset * 2 + gap) / dimensions.value.rows) * zoom.value}px`, '--pawn-color': player.color,
     '--pawn-size': overview ? `${Math.max(12, Math.min(42, spellTileSize.value * .72))}px` : undefined,
     '--pawn-arrow-size': overview ? `${Math.max(8, Math.min(22, spellTileSize.value * .42))}px` : props.dashboardTarget || props.spectator ? '28px' : undefined };
+}
+/** 输入起点格号，返回靠棋盘内沿的位置和缩放后仍可识别的旗面尺寸。 */
+function flagStyle(id: number) {
+  const { row, column } = tileCoordinates(id, props.room.board.length);
+  const { rows, columns } = dimensions.value;
+  const center = effectPoint(id);
+  const inset = props.compact ? 10 : 9, gap = props.compact ? 4 : 3;
+  const width = (size.value - inset * 2 + gap) / columns * zoom.value;
+  const cellHeight = (height.value - inset * 2 + gap) / rows * zoom.value;
+  // 旗杆贴着内沿，沿边错开半个旗面，给居中的路障图标留出位置。
+  const dx = column === 1 ? .48 : column === columns ? -.48 : -.25;
+  const dy = row === 1 ? .48 : row === rows ? -.48 : -.25;
+  return { left: `${center.x + dx * width}px`, top: `${center.y + dy * cellHeight}px`,
+    width: `${Math.max(12, Math.min(21, Math.min(width, cellHeight) * .33))}px` };
 }
 /** 输入报价地产编号，返回内圈侧的箭头坐标、朝向及文字偏移，箭头向外指向对应地块。 */
 function tradeMarkerStyle(id: number) {
@@ -378,9 +395,9 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span v-if="compact && tile.type === 'property'" class="property-tile-art" aria-hidden="true"></span>
             <span v-if="tile.ownerId" class="owner-strip"></span><span v-if="!stretch && tile.type === 'property' && tile.ownerId" class="tile-grade">{{ tile.level }}级</span>
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
-            <img v-if="tile.type !== 'property' && compact" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
+            <img v-if="tile.type !== 'property' && (compact || tile.type === 'supply')" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact && tile.type !== 'supply'" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong><span class="tile-name" :title="tile.name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile, room.constructionEffects) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && !desktopSingleScreen && tile.type === 'property'" :level="tile.level" /></strong><small>{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}${connectedRents[tile.id] === 35 ? ' ★★' : connectedRents[tile.id] === 20 ? ' ★' : ''}`) : ({ start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
+            <strong><span class="tile-name" :title="tile.name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile, room.constructionEffects) }">{{ tile.name }}</span><PropertyGrade v-if="stretch && !desktopSingleScreen && tile.type === 'property'" :level="tile.level" /></strong><small v-if="tile.type !== 'supply'">{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}${connectedRents[tile.id] === 35 ? ' ★★' : connectedRents[tile.id] === 20 ? ' ★' : ''}`) : ({ supply: '', start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :style="{ '--owner-ink': tile.ownerId ? ownerTextColor(tile) : undefined }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
               <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
               <PropertyGrade v-if="desktopSingleScreen && tile.ownerId" :level="tile.level" />
@@ -393,6 +410,12 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span class="tile-number">{{ tile.id }}</span>
           </button>
           <div v-for="(change, index) in money" :key="change.key" class="money-float" :class="{ expense: change.amount < 0 }" :style="{ gridRow: tileCoordinates(change.tileId, room.board.length).row, gridColumn: tileCoordinates(change.tileId, room.board.length).column, '--float-offset': `${index % 3 * 14}px` }" aria-hidden="true"><small><PlayerText :text="change.name" :players="room.players" /></small>{{ change.amount > 0 ? '+' : '−' }}¥{{ Math.abs(change.amount).toLocaleString() }}</div>
+        </div>
+        <div v-for="player in flagOwners" :key="'flag-' + player.id" class="start-flag" :class="{ mine: !spectator && player.id === meId }" :style="{ ...flagStyle(player.startPosition), color: player.color }" role="img" :aria-label="`${player.name}的起点，${player.startPosition}号格`">
+          <svg viewBox="0 0 20 22" aria-hidden="true">
+            <path d="M4 20V3m0 1c4-4 8 3 13 0l-2 4 2 4c-5 3-9-4-13 0" />
+          </svg>
+          <small v-if="!spectator && player.id === meId && player.position === player.startPosition && ((player.personalTurns ?? 0) === 0 || (player.personalTurns === 1 && current?.id === meId && room.phase === 'pre_roll' && !room.motion))">我的起点</small>
         </div>
         <div v-if="trapTiles.length" class="trap-map-layer" aria-hidden="true">
           <TileTrapMarker v-for="tile in trapTiles" :key="tile.id" class="trap-map-marker" :style="trapMarkerStyle(tile)" :barrier="tile.barrier" :meteor-charges="tile.meteorCharges ?? 0" :paused="!!tile.kamuiCasterId && !!tile.kamuiTurns" />
@@ -484,6 +507,11 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 @keyframes property-storm { 0%,25%,80%,100% { translate:0; } 35%,55%,75% { translate:-3px; } 45%,65% { translate:3px; } }
 
 .trade-map-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
+.start-flag { position: absolute; z-index: 7; transform: translate(-50%, -50%); pointer-events: none; }
+.start-flag svg { display: block; width: 100%; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 1px 1px #fff) drop-shadow(0 0 1px #443426); }
+.start-flag.mine svg { fill: currentColor; }
+.start-flag small { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding: 1px 4px; border-radius: 4px; background: #fff9e9; color: #55432d; font-size: 10px; white-space: nowrap; }
+.tile.supply > .special-tile-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; pointer-events: none; }
 .trade-map-marker { position: absolute; filter: drop-shadow(0 2px 3px #49311d55); }
 .trade-map-marker.is-gaining { color: #248547; }
 .trade-map-marker.is-losing { color: #ce3e39; }

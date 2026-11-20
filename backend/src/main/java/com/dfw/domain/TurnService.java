@@ -108,11 +108,13 @@ public class TurnService {
         MotionSegment segment = new MotionSegment(); segment.id = motion.id; segment.playerId = player.id; segment.from = player.position; segment.path = motion.path;
         segment.dice = !boost && room.runtime.dicePresentedTurn != room.turnNumber && room.movementSequence.stream().noneMatch(value -> value.boardEffect == null) && room.phase.equals("pre_roll") ? room.dice : null;
         boolean rewarded = false, immune = false, portalPaused = false;
+        int lastWalkedPosition = player.position;
         BoardEffect.Observation trap = null;
-        if (!continuing && steps == 0 && player.position == 0) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
+        if (!continuing && steps == 0 && player.position == player.startPosition) { rewardStart(room, player, "在起点原地停留"); rewarded = true; }
         for (int i = 0; i < Math.abs(steps); i++) {
             player.position = Math.floorMod(player.position + Integer.signum(steps), room.board.size()); motion.path.add(player.position);
-            if (player.position == 0 && steps > 0) { rewardStart(room, player, "向前经过起点"); rewarded = true; }
+            lastWalkedPosition = player.position;
+            if (player.position == player.startPosition && steps > 0) { rewardStart(room, player, "向前经过起点"); rewarded = true; }
             Tile tile = room.board.get(player.position);
             if(flash) continue;
             if(!PropertyEffects.frozen(tile) && tile.portalTileId!=null) {
@@ -135,7 +137,10 @@ public class TurnService {
                 log(room, player.name + " 在 " + tile.name + " 被路障或陨星拦下，每次仅消耗一层"); break;
             }
         }
-        if (!portalPaused && steps < 0 && player.position == 0) { rewardStart(room, player, "后退停在起点"); rewarded = true; }
+        // 顺向走入旗子时已经发奖；若最后一步经裂隙抵达旗子，则在这里补发。
+        if (!portalPaused && player.position == player.startPosition && (steps < 0 || lastWalkedPosition != player.position)) {
+            rewardStart(room, player, "停在自己的起点"); rewarded = true;
+        }
         room.movementSequence.add(segment); motion.segments = new ArrayList<>(room.movementSequence); room.motion = motion;
         if (rewarded) { BoardEffect.cue(room,"income",player); BoardEffect.cue(room,"supply",player); }
         if (immune) BoardEffect.cue(room,"trapImmune",player);
@@ -163,7 +168,9 @@ public class TurnService {
         }
         if(!blocked && effect.amount!=0) move(room,owner,(int)effect.amount,effect.selector,true);
         else {
-            if(owner.position==0 && "BACKWARD".equals(effect.statusId)) { rewardStart(room,owner,"后退停在起点"); BoardEffect.cue(room,"income",owner); BoardEffect.cue(room,"supply",owner); }
+            if(owner.position==owner.startPosition && ("BACKWARD".equals(effect.statusId) || owner.position!=effect.tileId)) {
+                rewardStart(room,owner,"停在自己的起点"); BoardEffect.cue(room,"income",owner); BoardEffect.cue(room,"supply",owner);
+            }
             content.overflow(room);
         }
     }
@@ -177,7 +184,7 @@ public class TurnService {
         room.movementSequence.add(segment); motion.segments=new ArrayList<>(room.movementSequence); room.motion=motion;
         room.runtime.rollMode=effect.halfRent?"DIRECTED_HALF_RENT":"DIRECTED"; room.runtime.windowExit="replace_roll";
         log(room,actor.name+" 传送至 "+destination.name+"（"+destination.id+"号），替代本次掷骰并正常结算");
-        if(destination.id==0) { rewardStart(room,actor,"传送到达起点"); BoardEffect.cue(room,"income",actor); BoardEffect.cue(room,"supply",actor); }
+        if(destination.id==actor.startPosition) { rewardStart(room,actor,"传送到达起点"); BoardEffect.cue(room,"income",actor); BoardEffect.cue(room,"supply",actor); }
         content.overflow(room);
     }
     /** 输入已校验的传送目标玩家，随机直达任意地块并保存动画；不走路径、不结算落点或消费振奋。 */
@@ -218,6 +225,12 @@ public class TurnService {
     private void settle(Room room, Player player, boolean halfRent) {
         Tile tile = room.board.get(player.position); room.phase = "manage"; room.pending = null;
         switch (tile.type) {
+            case "supply" -> {
+                giveCards(room, player, 1);
+                log(room, player.name + " 停在补给站，抽取 1 张道具");
+                BoardEffect.cue(room, "supply", player);
+                content.overflow(room);
+            }
             case "activity" -> activities.open(room, player, tile);
             case "jail" -> content.restrictLandingJail(room, player);
             case "chance", "fortune" -> {

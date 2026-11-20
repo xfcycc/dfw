@@ -46,6 +46,6 @@ public class ContentChoiceVo {
     /** 位移抵消窗口中已确定的裂隙续走信息，仅向实际移动者发送。 */
     public PortalMove portalMove;
 
-    /** 本次裂隙的出口、实际剩余步数与是否忽略陨星。 */
-    public record PortalMove(int exit, int steps, boolean ignoreMeteors) {}
+    /** 本次裂隙的出口、实际剩余步数、是否忽略陨星及进入方向；剩余零步也保留方向。 */
+    public record PortalMove(int exit, int steps, boolean ignoreMeteors, boolean backward) {}
 }

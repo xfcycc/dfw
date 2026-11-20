@@ -110,6 +110,8 @@ export interface PublicPlayer {
   netWorth?: number;
   assetRank?: number | null;
   position: number;
+  /** 个人起点，旧版公开快照可缺省。 */
+  startPosition?: number;
   ready: boolean;
   online: boolean;
   bankrupt: boolean;
@@ -139,7 +141,7 @@ export interface Tile {
   petalOwnerId?: string | null;
   petalUntilTurn?: number;
   id: number;
-  type: 'start' | 'chance' | 'fortune' | 'jail' | 'property' | 'activity';
+  type: 'start' | 'supply' | 'chance' | 'fortune' | 'jail' | 'property' | 'activity';
   /** 活动角当前玩法，旧地图缺省。 */
   activityKind?: ActivityKind | null;
   name: string;

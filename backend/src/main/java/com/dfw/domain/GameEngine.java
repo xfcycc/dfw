@@ -65,6 +65,14 @@ public class GameEngine {
         room.turnIndex = 0; room.turnNumber = 1; room.startRewardCount = 0; room.phase = "pre_roll"; room.pending = null; room.trade = null;
         room.dice = null; room.motion = null; room.activeCardUsed = false; room.eventDrawn = false; room.upgradedTiles.clear();
         for (Player player : room.players) { reset(player); player.cash = room.economy.money("initialCash", Rules.initialCashBase(room.players.size())); player.matchStats = new MatchStats(); player.matchStats.complete = true; player.matchStats.initialWorth = player.cash; turns.giveCards(room, player, Rules.initialCards(room.players.size())); StatusService.protectOpening(room, player); }
+        // 等距取位后随机分配给玩家，开局放置棋子不触发移动或落点效果。
+        int offset = random.nextInt(room.board.size());
+        List<Integer> starts = new ArrayList<>();
+        for (int i = 0; i < room.players.size(); i++) starts.add((offset + i * room.board.size() / room.players.size()) % room.board.size());
+        for (Player player : room.players) {
+            player.startPosition = starts.remove(random.nextInt(starts.size()));
+            player.position = player.turnStartPosition = player.startPosition;
+        }
         // 首位亮相在 3900 毫秒完成，保留两秒后解除开场等待，机器人同样受此期限约束。
         room.openingEndsAt = System.currentTimeMillis() + 5900;
         log(room, "新地图已生成，" + room.players.size() + " 人的财富旅程开始！");
@@ -90,7 +98,7 @@ public class GameEngine {
         }
     }
     /** 输入玩家，重置对局资产与淘汰状态，保留身份与连接。 */
-    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.ordinaryCardBags.clear(); player.handLimitReduction=0; player.personalTurns=0; player.openingLandAvailable=true; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
+    private void reset(Player player) { player.matchStats = null; player.cash = 0; player.position = player.startPosition = 0; player.bankrupt = false; player.skipTurns = 0; player.voluntarySkipTurns=0; player.jailed = false; player.eliminationOrder = null; player.hand.clear(); player.ordinaryCardBags.clear(); player.handLimitReduction=0; player.personalTurns=0; player.openingLandAvailable=true; player.turnStartPosition=0; player.statuses.clear(); player.contentNotice=null; player.contentNoticeText=null; player.tradeRejection=null; player.botTradeTurn=-1; player.botTradeQuotes.clear(); }
     /** 输入房间、本人身份和操作，统一校验大厅机器人管理及真人和机器人的对局规则。 */
     public void apply(Room room, String playerId, Action action) {
         Player player = player(room, playerId); require(player != null, "你的席位已经失效");

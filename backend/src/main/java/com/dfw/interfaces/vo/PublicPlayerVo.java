@@ -53,6 +53,8 @@ public class PublicPlayerVo {
     public Integer assetRank;
     /** 棋盘位置。 */
     public int position;
+    /** 本局个人起点格号。 */
+    public int startPosition;
     /** 大厅准备状态。 */
     public boolean ready;
     /** 当前连接状态。 */

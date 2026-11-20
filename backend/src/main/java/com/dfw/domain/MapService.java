@@ -17,7 +17,7 @@ public class MapService {
         int[] corners = {0, horizontal, horizontal + vertical, horizontal * 2 + vertical};
         List<Tile> board = new ArrayList<>();
         for (int i = 0; i < length; i++) { Tile tile = new Tile(); tile.id = i; tile.district = i < corners[1] ? 0 : i < corners[2] ? 1 : i < corners[3] ? 2 : 3; board.add(tile); }
-        String[] types = {"start", "activity", "activity", "jail"}, names = {"起点", "活动角", "活动角", "监狱"};
+        String[] types = {"supply", "activity", "activity", "jail"}, names = {"补给站", "活动角", "活动角", "监狱"};
         for (int i = 0; i < 4; i++) { board.get(corners[i]).type = types[i]; board.get(corners[i]).name = names[i]; }
         int specialCount = count <= 3 ? 2 : 3;
         for (int i = 0; i < specialCount; i++) { addSpecial(board, "chance", "机会", random); addSpecial(board, "fortune", "财富", random); }
