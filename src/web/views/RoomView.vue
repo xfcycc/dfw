@@ -275,6 +275,8 @@ const tradeReminder = computed(() => {
   const other = game.room?.players.find(player => player.id === (trade.fromId === game.me?.id ? trade.toId : trade.fromId));
   return trade.toId === game.me?.id ? `收到 ${other?.name ?? '玩家'} 的报价` : `等待 ${other?.name ?? '玩家'} 回应`;
 });
+/** 根据私人快照返回发起人最近的交易结果，有待回应报价时隐藏。 */
+const tradeFeedback = computed(() => game.privateData?.trade ? null : game.privateData?.tradeRejection || game.privateData?.tradeAcceptance);
 const showMyTurn = computed(() => !game.opening && !props.spectator && game.connection === 'online' && game.room?.status === 'playing' && !game.room.recoveryPending && !game.room.pausedReason && game.isMyTurn);
 useTurnSound(() => showMyTurn.value ? turnIdentity.value : null);
 let privateAudioBaseline = false;
@@ -754,7 +756,12 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 
 
 
-    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null; tradeEditorVersion++"><TradeEditor ref="tradeEditor" :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; if ($event) tradeEditorVersion++" /></Modal>
+    <Modal panel-class="modern-modal" v-if="game.me && !spectator" :open="modal === 'trade'" title="交易报价与成交后结果" wide @close="modal = null; tradeEditorVersion++">
+      <TradeEditor ref="tradeEditor" :key="`${game.room?.roomId}:${game.room?.gameId}:${game.me.id}:${tradeEditorVersion}`" :offer-disabled="drafting" @done="modal = null; if ($event) tradeEditorVersion++" />
+      <template v-if="tradeFeedback" #footer>
+        <p class="notice trade-feedback" :class="{ warning: game.privateData?.tradeRejection }" role="status"><PlayerText :text="tradeFeedback" /></p>
+      </template>
+    </Modal>
     <Modal panel-class="modern-modal" v-if="modal === 'avatar' && game.me && !spectator" title="选择角色形象" @close="modal = null"><AvatarPicker /></Modal>
     <Modal panel-class="modern-modal nickname-modal" v-if="modal === 'rename' && game.me && !spectator" title="修改昵称" :close-disabled="game.busy" @close="modal = null">
       <form class="nickname-form" @submit.prevent="saveNickname">
@@ -820,6 +827,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
 .field-map-toolbar { position: fixed; z-index: 100; top: max(12px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; width: max-content; max-width: calc(100vw - 24px); padding: 12px 16px; border: 2px solid #e6be80; border-radius: 16px; background: #fff8e8; box-shadow: 0 6px 24px #65441c33; }
 .field-map-toolbar > span { min-width: 0; }
 .field-map-toolbar > button { flex-shrink: 0; }
+.trade-feedback { margin: 0; }
 .tile-detail-actions { margin-top: 12px; }
 .tile-detail-actions > .button { width: 100%; }
 </style>

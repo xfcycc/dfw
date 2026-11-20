@@ -22,6 +22,8 @@ public class Player {
     public String contentNoticeText;
     /** 本人发起的最近报价被拒绝时的说明，新报价成功发出后清除。 */
     public String tradeRejection;
+    /** 本人发起的最近报价成交时的说明，新报价成功发出后清除。 */
+    public String tradeAcceptance;
     /** 玩家唯一标识。 */
     public String id;
     /** 公开昵称。 */

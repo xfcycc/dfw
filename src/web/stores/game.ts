@@ -224,6 +224,7 @@ export const useGameStore = defineStore('game', () => {
     if (!privateBaseline && previous?.playerId === state.playerId && !room.value?.recoveryPending) {
       const actor = me.value?.name ?? '你';
       if (state.tradeRejection && state.tradeRejection !== previous.tradeRejection) notify(state.tradeRejection);
+      if (state.tradeAcceptance && state.tradeAcceptance !== previous.tradeAcceptance) notify(state.tradeAcceptance);
       if (state.event && state.event.id !== previous.event?.id) enqueueCardReveal(state.event, 'draw', actor);
       for (const card of state.hand) if (!previous.hand.some(before => before.id === card.id)) enqueueCardReveal(card, 'draw', actor);
       if (state.notice && state.notice.id !== previous.notice?.id) enqueueCardReveal(state.notice, 'draw', actor);

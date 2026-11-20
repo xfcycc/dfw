@@ -54,6 +54,8 @@ public class PrivatePlayerVo {
     public Trade trade;
     /** 本人发起的最近报价被拒绝时的说明，仅发起人可见。 */
     public String tradeRejection;
+    /** 本人发起的最近报价成交时的说明，仅发起人可见。 */
+    public String tradeAcceptance;
     /** 本人是否已主动使用道具。 */
     public boolean activeCardUsed;
 }

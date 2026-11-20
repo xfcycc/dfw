@@ -102,10 +102,9 @@ async function submit(): Promise<void> {
   </div>
   <form @submit.prevent="submit">
     <template v-if="trade">
-      <p class="notice"><PlayerText :text="`${name(trade.fromId)} 发起报价，${name(trade.toId)} 确认后成交。`" />建筑及固定赎回费用随地产转移。{{ game.room?.pausedReason ? '相关玩家离线，重连后继续处理。' : '' }}</p>
+      <p class="notice" role="status"><PlayerText :text="trade.fromId === game.me?.id ? `报价已发送，等待 ${name(trade.toId)} 回应。` : `${name(trade.fromId)} 向你发起了交易报价。`" />建筑及固定赎回费用随地产转移。{{ game.room?.pausedReason ? '相关玩家离线，重连后继续处理。' : '' }}</p>
     </template>
     <template v-else>
-      <p v-if="game.privateData?.tradeRejection" class="notice warning" role="status"><PlayerText :text="game.privateData.tradeRejection" /></p>
       <p v-if="payment?.creditorId" class="notice"><PlayerText :text="`${name(payment.playerId)} 向 ${name(payment.creditorId)} 尚需支付 ¥${payment.amount.toLocaleString()}。`" />可向债权人提出协商结清，提供少量现金、地产或均不提供，债权人接受后才抵扣欠款；也可向其他玩家出售资产筹款。</p>
       <label class="field">交易对象<ThemedSelect v-model="toId" label="交易对象" :options="partners.map(player => ({ value: player.id, label: player.name + (player.id === payment?.creditorId ? '（债权人）' : '') + (player.online ? '' : '（离线）') }))" /></label>
       <div class="trade-columns">

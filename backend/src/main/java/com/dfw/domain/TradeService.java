@@ -15,8 +15,10 @@ public class TradeService {
         this.economy = economy; this.random = random; this.effects = effects;
         effects.register("OPEN_TRADE", (room, effect) -> {
             validate(room, effect.trade); room.trade = effect.trade;
-            player(room, effect.trade.fromId).tradeRejection = null;
-            log(room, "log", effect.playerId, player(room, effect.trade.fromId).name + " 向 " + player(room, effect.trade.toId).name + " 发起交易报价，等待回应；" + summary(room, effect.trade));
+            Player from = player(room, effect.trade.fromId);
+            from.tradeRejection = null;
+            from.tradeAcceptance = null;
+            log(room, "log", effect.playerId, from.name + " 向 " + player(room, effect.trade.toId).name + " 发起交易报价，等待回应；" + summary(room, effect.trade));
         });
         effects.register("ACCEPT_TRADE", (room, effect) -> { exchange(room, effect.trade); room.trade = null; });
         effects.register("CLOSE_TRADE", (room, effect) -> {
@@ -80,6 +82,7 @@ public class TradeService {
             log(room, "log", from.id, from.name + " 经债权人同意，协商抵扣 " + debt + " ¥" + String.format("%,d", trade.debtCredit) + "，剩余待支付 ¥" + String.format("%,d", room.pending.amount) + (room.pending.amount == 0 ? "，本笔欠款已结清" : "，仍需另行确认支付"));
             if (room.pending.amount == 0) { room.pending = null; room.phase = "manage"; }
         }
+        from.tradeAcceptance = to.name + " 接受了你的交易报价，交易已成交。";
     }
     /** 输入房间和报价，返回双方资产方向与关联欠款的公开明细，不改变状态。 */
     private String summary(Room room, Trade trade) {

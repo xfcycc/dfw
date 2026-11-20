@@ -318,6 +318,8 @@ export interface PrivatePlayerState {
   playerId: string; hand: Card[]; trade: Trade | null; activeCardUsed: boolean;
   /** 本人最近报价的拒绝说明，旧快照可缺省。 */
   tradeRejection?: string | null;
+  /** 本人最近报价的成交说明，旧快照可缺省。 */
+  tradeAcceptance?: string | null;
   projectionAvailable?: boolean;
   disabledCardIds?: string[];
   choice?: ContentChoice | null;

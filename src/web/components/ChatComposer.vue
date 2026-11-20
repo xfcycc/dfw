@@ -54,11 +54,11 @@ const suggestions = computed(() => {
     ...props.room.board.map(tile => ({ key: `tile-${tile.id}`, label: `@${tile.name}（${tile.id}号）`, detail: `地块 · ${tile.id}号`, color: '#9a692b', playerId: undefined as string | undefined, tileId: tile.id, search: `${tile.name} ${tile.id} 地块` })),
   ].filter(option => option.search.toLocaleLowerCase().includes(query.value!.text));
 });
-/** 输入可选的滚动或缩放事件，更新联想菜单位置，外部滚动时收起表情浮层，无返回值。 */
+/** 输入可选的滚动或缩放事件，仅在输入区受影响时更新联想位置并收起表情，无返回值。 */
 function positionMenu(event?: Event): void {
-  if (event?.target instanceof Node && emojiMenu.value?.contains(event.target)) return;
-  if (emojiOpen.value) emojiMenu.value?.hidePopover();
   if (!input.value) return;
+  if (event?.type === 'scroll' && event.target instanceof Element && !event.target.contains(input.value)) return;
+  if (emojiOpen.value) emojiMenu.value?.hidePopover();
   const bounds = input.value.closest('.chat-composer')!.getBoundingClientRect();
   menuStyle.value = { left: `${bounds.left}px`, bottom: `${window.innerHeight - bounds.top + 6}px`, width: `${bounds.width}px`, maxHeight: `${Math.max(60, Math.min(240, bounds.top - 12))}px` };
 }

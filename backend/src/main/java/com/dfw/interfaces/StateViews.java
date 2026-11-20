@@ -55,6 +55,7 @@ public final class StateViews {
         if (id.equals(room.hostId)) for (SeatClaim claim : room.seatClaims) { SeatClaimVo v = new SeatClaimVo(); v.id = claim.id; v.playerId = claim.playerId; v.name = claim.name; v.at = claim.at; value.seatClaims.add(v); }
         if (room.activity != null) { value.activityId=room.activity.id; value.activityRound=room.activity.round; value.activitySelection=room.activity.choices.get(id); }
         Player owner=player(room,id); value.disabledCardIds=owner.hand.stream().filter(c -> !(AnimeService.DEFENSE.contains(c.kind) || java.util.Set.of("immunity","halfPayment","release").contains(c.kind) ? CrossoverService.handAllowed(room,owner,c,false) : CrossoverService.activeAllowed(room,owner,c)) || c.kind.equals("swordRain") && c.usesSpent>=2).map(c -> c.id).toList(); value.notice=owner.contentNotice; value.noticeText=owner.contentNoticeText; value.tradeRejection=owner.tradeRejection;
+        value.tradeAcceptance = owner.tradeAcceptance;
         if(room.runtime!=null) {
             value.projectionAvailable=!AnimeService.projectionCandidates(room,owner).isEmpty();
             if(room.runtime.lastContent!=null && room.runtime.lastContent.privateSupply && id.equals(room.runtime.contentPlayerId)) value.event=room.runtime.lastContent;
