@@ -6,20 +6,24 @@ import CharacterPawn from './CharacterPawn.vue';
 import Modal from './Modal.vue';
 
 const props = defineProps<{ players: PublicPlayer[]; turnOrder: string[]; ownId?: string; elapsed: number; animated: boolean }>();
+// 模板只读取离散的演出状态，避免计时刷新打断 TransitionGroup 的归位动画。
+const dealing = computed(() => props.animated && props.elapsed < 650);
+const shuffling = computed(() => props.animated && props.elapsed >= 650 && props.elapsed < 1550);
 const settled = computed(() => !props.animated || props.elapsed >= 3100);
 const departing = computed(() => !props.animated || props.elapsed >= 3900);
+const revealedCount = computed(() => props.animated
+  ? Math.min(props.players.length, Math.max(0, 1 + Math.floor((props.elapsed - 1600) / 110)))
+  : props.players.length);
 const seats = computed(() => settled.value ? props.turnOrder.flatMap(id => props.players.filter(player => player.id === id)) : props.players);
 const first = computed(() => props.players.find(player => player.id === props.turnOrder[0]));
 const title = computed(() => departing.value ? '好运就位，准备出发！' : settled.value ? '行动顺序已揭晓' : props.elapsed < 1600 ? '谁先出发？' : '你的号码是…');
 /** 输入玩家标识，返回后端抽签确定的行动位次，从一开始计数。 */
 function rank(id: string): number { return props.turnOrder.indexOf(id) + 1; }
-/** 输入当前卡片位置，返回是否到达该张的翻牌时间；静态展示直接揭晓。 */
-function revealed(index: number): boolean { return !props.animated || props.elapsed >= 1600 + index * 110; }
 /** 输入当前演出阶段，仅在洗牌、翻牌、入位和首位亮相的边界播放已有短音效。 */
 watch(() => {
   if (!props.animated || props.elapsed < 650) return '';
   if (props.elapsed < 1600) return 'shuffle';
-  if (props.elapsed < 3100) return `reveal:${Math.min(props.players.length, 1 + Math.floor((props.elapsed - 1600) / 110))}`;
+  if (props.elapsed < 3100) return `reveal:${revealedCount.value}`;
   return props.elapsed < 3900 ? 'sort' : 'first';
 }, cue => {
   if (!cue || document.hidden) return;
@@ -29,7 +33,7 @@ watch(() => {
 
 <template>
   <Modal title="开场抽签 · 行动顺序" hide-heading close-disabled wide panel-class="opening-order-modal">
-    <div class="opening-order" :class="{ 'is-dealing': animated && elapsed < 650, 'is-shuffling': animated && elapsed >= 650 && elapsed < 1550, 'is-settled': settled, 'is-departing': departing }">
+    <div class="opening-order" :class="{ 'is-dealing': dealing, 'is-shuffling': shuffling, 'is-settled': settled, 'is-departing': departing }">
       <header class="opening-heading">
         <span class="opening-eyebrow">奇迹大陆 · 开场抽签</span>
         <h2>{{ title }}</h2>
@@ -38,7 +42,7 @@ watch(() => {
       <TransitionGroup name="opening-seats" tag="ol" class="opening-seats" :class="{ many: players.length > 3 }" :style="{ '--seats': players.length }" aria-label="行动顺序">
         <li v-for="(player, index) in seats" :key="player.id" class="opening-seat" :class="{ 'is-first': departing && rank(player.id) === 1, 'is-own': player.id === ownId }" :style="{ '--seat-color': player.color, '--seat-index': index }">
           <div class="opening-ticket-wrap" aria-hidden="true">
-            <div class="opening-ticket" :class="{ 'is-revealed': revealed(index) }">
+            <div class="opening-ticket" :class="{ 'is-revealed': index < revealedCount }">
               <div class="ticket-back"><span>好运签</span><b>✦</b><small>奇迹大陆</small></div>
               <div class="ticket-front"><span>行动号码</span><b>{{ rank(player.id) }}</b><small>{{ rank(player.id) === 1 ? '率先出发' : `第 ${rank(player.id)} 位` }}</small></div>
             </div>
@@ -46,7 +50,7 @@ watch(() => {
           <div class="opening-player">
             <CharacterPawn :avatar-id="player.avatarId" :color="player.color" />
             <strong>{{ player.name }}</strong>
-            <span class="opening-seat-label">{{ player.id === ownId ? '你' : player.botDifficulty ? '机器人' : '玩家' }}<template v-if="revealed(index)"> · 第 {{ rank(player.id) }} 位</template></span>
+            <span class="opening-seat-label">{{ player.id === ownId ? '你' : player.botDifficulty ? '机器人' : '玩家' }}<template v-if="index < revealedCount"> · 第 {{ rank(player.id) }} 位</template></span>
           </div>
         </li>
       </TransitionGroup>
