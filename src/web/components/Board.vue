@@ -404,7 +404,12 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span class="trade-map-arrow" aria-hidden="true"></span>
           </div>
         </div>
-        <div class="pawn-layer" aria-label="玩家位置"><div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`"><CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" /></div></div>
+        <div class="pawn-layer" aria-label="玩家位置">
+          <div v-for="player in room.players.filter(p => !p.bankrupt)" :key="player.id" :data-player-id="player.id" class="map-character" :class="{ mine: player.id === meId, acting: player.id === current?.id, 'effect-pawn-hidden': effectPlayers.has(player.id), 'is-moving': moving && animatedPosition?.id === player.id, 'is-landing': landing && animatedPosition?.id === player.id }" :style="{ ...pawnStyle(player), '--step-duration': `${moveStepMs}ms` }" :title="`${player.name}${player.id === meId ? '（我）' : ''}`">
+            <CharacterPawn variant="pawn" :avatar-id="player.avatarId" :color="player.color" :moving="moving && animatedPosition?.id === player.id" :landing="landing && animatedPosition?.id === player.id" />
+            <span v-if="(player.defenseSpecializationTurns ?? 0) > 0" class="pawn-defense-shield" role="img" :aria-label="`${player.name}的防御特化剩余${player.defenseSpecializationTurns}回合`">🛡️</span>
+          </div>
+        </div>
         <div v-if="boardEffect" class="board-spell-stage" :style="{left:`${localEffectCamera ? effectCamera.left : 0}px`,top:`${localEffectCamera ? effectCamera.top : 0}px`,width:`${spellWidth}px`,height:`${spellHeight}px`}">
         <LiveCardSpellLayer v-if="cardSpellFor(boardEffect)" :key="boardEffectKey" :segment="boardEffect" :players="room.players" :board="room.board" :point="spellPoint" :player-point="spellPlayerPoint" :tile-size="spellTileSize" :width="spellWidth" :height="spellHeight" @done="finishBoardEffect" />
         <FullCardSpellLayer v-else-if="fullCardSpellFor(boardEffect)" :key="boardEffectKey" :segment="boardEffect" :players="room.players" :point="spellPoint" :player-point="spellPlayerPoint" :tile-size="spellTileSize" :width="spellWidth" :height="spellHeight" @done="finishBoardEffect" />
@@ -468,6 +473,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 .board-local-feedback .dice-overlay .die { width:92px; height:92px; padding:16px; gap:7px; }
 .board-local-feedback .board-motion-feedback { position:absolute; bottom:10px; max-width:calc(100% - 20px); gap:10px; padding:8px 12px; }
 .effect-pawn-hidden { visibility:hidden; }
+.pawn-defense-shield { position:absolute; top:0; left:80%; transform:translate(-50%,-32%); font-size:clamp(10px,calc(var(--pawn-size) * .38),20px); line-height:1; filter:drop-shadow(0 1px 1px #243d34aa); }
 .tile.kamui-frozen .property-tile-art,.tile.kamui-frozen .tile-icon,.tile.kamui-frozen .building-decor { opacity:.25; filter:grayscale(.7); }
 .tile.effect-target-kamui .property-tile-art,.tile.effect-target-kamui .tile-icon,.tile.effect-target-kamui .building-decor { transform-origin:center; animation:property-swallowed 1800ms ease-in-out both; }
 .tile.effect-target-kamuiRelease .property-tile-art,.tile.effect-target-kamuiRelease .tile-icon,.tile.effect-target-kamuiRelease .building-decor { transform-origin:center; animation:property-restored 1800ms ease-in-out both; }
