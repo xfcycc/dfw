@@ -4,6 +4,7 @@ import type { CornerActivity } from '../../../shared/types';
 import type { ActivityInput } from '../../activity-art';
 import { useGameStore } from '../../stores/game';
 import DiceFace from '../DiceFace.vue';
+import CharacterPawn from '../CharacterPawn.vue';
 import ActivityArtwork from './ActivityArtwork.vue';
 const props = defineProps<{ activity: CornerActivity; enabled: boolean }>();
 const emit = defineEmits<{ input: [value: ActivityInput] }>();
@@ -12,6 +13,8 @@ const mode = ref(1); const guess = ref(1); const face = ref(1);
 const amounts = computed(() => game.room?.activityRotation?.money ?? {});
 const stake = computed(() => amounts.value[mode.value === 1 ? 'casinoSmallStake' : 'casinoPointStake'] ?? 0);
 const prize = computed(() => amounts.value[mode.value === 1 ? 'casinoSmallPrize' : 'casinoPointPrize'] ?? 0);
+const winner = computed(() => props.activity.payouts[props.activity.triggerId] !== undefined
+  ? game.room?.players.find(player => player.id === props.activity.triggerId) : undefined);
 let timer: ReturnType<typeof setInterval> | undefined;
 watch(() => props.activity.stage, stage => { clearInterval(timer); if (stage === 'rolling') timer = setInterval(() => { face.value = face.value % 6 + 1; }, 90); }, { immediate: true });
 onBeforeUnmount(() => { clearInterval(timer); });
@@ -24,6 +27,10 @@ function chooseMode(value: number): void { mode.value = value; guess.value = 1; 
     <div class="classic-stage-sign"><small>NUANNUAN · LUCKY DICE</small><strong>暖暖的好运骰桌</strong><span>挑好答案，等骰子落定</span></div>
     <div class="activity-dice-table"><span v-if="activity.stage === 'result' && activity.result" class="dice-result-ring" aria-hidden="true"></span><ActivityArtwork class="casino-table-art" name="casino-table" /><div class="casino-live-die"><DiceFace :value="activity.stage === 'rolling' ? face : activity.result || null" :rolling="activity.stage === 'rolling'" :settled="activity.stage === 'result'" /></div></div>
     <div v-if="activity.stage === 'result' && activity.result" class="dice-result-label"><strong>{{ activity.result }} 点</strong><span>{{ activity.result <= 3 ? '小 · 1～3 点' : '大 · 4～6 点' }}</span></div>
+    <div v-if="activity.stage === 'result' && winner" class="casino-coin-receipt" aria-hidden="true">
+      <i v-for="coin in 3" :key="coin" :style="{ '--coin': coin }">¥</i>
+      <CharacterPawn :avatar-id="winner.avatarId" :color="winner.color" />
+    </div>
     <div v-if="activity.stage === 'select'" class="casino-controls">
       <div class="activity-options mode-options"><button v-for="n in [1, 2]" :key="n" class="activity-option" :class="{ selected: mode === n }" :aria-pressed="mode === n" :disabled="!enabled" @click="chooseMode(n)">{{ n === 1 ? '猜大小 · 二选一' : '猜点数 · 六选一' }}</button></div>
       <p>本金 <strong>¥{{ stake.toLocaleString() }}</strong> · 猜中总到账 <strong>¥{{ prize.toLocaleString() }}</strong>（含本金）</p>

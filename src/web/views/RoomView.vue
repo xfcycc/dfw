@@ -169,6 +169,42 @@ async function sendChat(message: string, references: ChatReference[]): Promise<b
 /** 输入被引用的地块编号，电脑强调地块，手机将地图视野定位到该处，无返回值。 */
 function locateChatTile(id: number): void { board.value?.referenceTile(id, mobileViewport.value); }
 const boardAnimating = ref(false);
+const activityPresenting = ref(false);
+const rouletteRevealing = ref(false);
+const activityPaused = computed(() => boardAnimating.value || game.settling);
+const reducedActivityMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let rouletteTimer: ReturnType<typeof setTimeout> | undefined;
+/** 无入参，结束轮盘判负演出并让待办弹窗接管。 */
+function stopRouletteReveal(): void {
+  clearTimeout(rouletteTimer);
+  rouletteRevealing.value = false;
+}
+/** 无入参，切到后台或减少动态效果时直接交回结算。 */
+function suspendRouletteReveal(): void {
+  if (document.hidden || reducedActivityMotion.matches) stopRouletteReveal();
+}
+watch(() => ({
+  activity: game.room?.activity,
+  epoch: game.presentationEpoch,
+  live: game.connection === 'online' && !game.room?.recoveryPending && !activityPaused.value,
+}), (current, previous) => {
+  const a = current.activity, before = previous.activity;
+  if (!a || a.id !== before?.id || current.epoch !== previous.epoch || !current.live) {
+    stopRouletteReveal();
+    return;
+  }
+  if (!previous.live || a.kind !== 'roulette' || before.stage !== 'shot' || !a.lastShooterId || !a.settled ||
+      !['payment', 'result'].includes(a.stage) || document.hidden || reducedActivityMotion.matches) return;
+  rouletteRevealing.value = true;
+  rouletteTimer = setTimeout(stopRouletteReveal, 800);
+});
+document.addEventListener('visibilitychange', suspendRouletteReveal);
+reducedActivityMotion.addEventListener('change', suspendRouletteReveal);
+onBeforeUnmount(() => {
+  stopRouletteReveal();
+  document.removeEventListener('visibilitychange', suspendRouletteReveal);
+  reducedActivityMotion.removeEventListener('change', suspendRouletteReveal);
+});
 const awaitingJoin = ref(false);
 const joining = ref(false);
 const entryName = ref(localStorage.getItem('dfw:nickname') || '');
@@ -209,7 +245,7 @@ watch(desktopScale, scale => document.body.style.setProperty('--room-scale', Str
 onBeforeUnmount(() => document.body.style.removeProperty('--room-scale'));
 const hasCentralDecision = computed(() => !game.opening && !game.settling && game.canDecide && !game.room?.tradePending && !!game.room?.pending);
 const decisionTitle = computed(() => payment.value ? '选择支付方式' : choice.value ? choice.value.content?.name ?? '处理当前选择' : game.room?.pending?.type === 'choice' ? '处理当前选择' : game.room?.phase === 'buy' ? '购买地产' : '升级建筑');
-const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
+const decisionKey = computed(() => hasCentralDecision.value && !game.cardReveals.length && !rouletteRevealing.value ? `${game.room?.roomId}:${game.room?.gameId}:${game.room?.pending?.id ?? game.room?.turnNumber}:${game.room?.pending?.type}:${game.room?.pending?.tileId}` : '');
 const handCount = computed(() => game.privateData?.hand.length ?? 0);
 /** 根据桌面布局与手牌数量返回当前页，每页三张；移动端保留完整手牌。 */
 const pagedHand = computed(() => !classicLayout.value && isSingleScreen.value && !props.spectator && !detachedDashboard.value);
@@ -386,7 +422,12 @@ watch([decisionKey, () => choice.value?.id], ([key], [previousKey]) => {
   else if (modal.value === 'decision' && choice.value) modal.value = 'choice';
 });
 /** 无入参，打开当前本人待办并返回列表选择，已同步的私人选择复用原弹窗，无返回值。 */
-function openDecision(): void { if (!hasCentralDecision.value || game.cardReveals.length) return; void switchTargetMode(false); modal.value = choice.value ? 'choice' : payment.value && !payment.value.defenseResolved ? 'defense' : 'decision'; }
+function openDecision(): void {
+  if (!hasCentralDecision.value || game.cardReveals.length) return;
+  stopRouletteReveal();
+  void switchTargetMode(false);
+  modal.value = choice.value ? 'choice' : payment.value && !payment.value.defenseResolved ? 'defense' : 'decision';
+}
 /** 输入本人收到的报价 ID，新报价打开交易弹窗，同一报价同步不重复打开；结束后收起窗口。 */
 watch(() => !props.spectator && game.privateData?.trade?.toId === game.me?.id ? game.privateData?.trade?.id : null, (id, previousId) => {
   if (id && id !== previousId) { selectedTile.value = null; modal.value = 'trade'; }
@@ -583,7 +624,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
           <section class="map-panel"><div ref="mapView" class="board-view">
             <Board ref="board" :paused="!!game.cardReveals.length" :classic-layout="classicLayout" :desktop-dice="!mobileViewport" :status-target="detachedDashboard ? '#mobile-turn-status' : undefined" :dashboard-target="detachedDashboard ? '#room-dashboard' : undefined" :presentation-epoch="game.presentationEpoch" :live="game.connection === 'online' && !game.room.recoveryPending" :room="game.room" :spectator="spectator" :spectator-follow="spectatorFollowing" compact :bounded="false" :stretch="isSingleScreen" :me-id="game.me?.id" :incoming-trade="game.privateData?.trade" :decision="hasCentralDecision || drafting" :targeting="!!fieldMapRequest || mapTargeting" :target-hint="fieldMapRequest?.label ?? targetHint" :eligible-tiles="fieldMapRequest ? fieldMapOptions.map(option => option.id) : eligibleTiles" :selected-target="targetTileId" :selected-targets="fieldMapRequest ? fieldMapSelected : undefined" @view="switchSpectatorView" @select="selectTile" @animating="boardAnimating = $event" @settled="game.finishMovement">
               <template #action-status>
-                <ActivityDialog :paused="boardAnimating || game.settling || !!game.cardReveals.length" :spectator="spectator">
+                <ActivityDialog :paused="activityPaused" :card-pending="!!game.cardReveals.length" :roulette-revealing="rouletteRevealing" :spectator="spectator" @presenting="activityPresenting = $event">
                 <template v-if="game.me && !spectator && !game.settling && !boardAnimating">
                   <button v-if="drafting" type="button" class="turn-action-status turn-action-link" aria-haspopup="dialog" :aria-expanded="modal === 'card' && (!mapTargeting || mapConfirmOpen)" @click="switchTargetMode(false); modal = 'card'"><strong>继续使用：{{ selectedCard?.name ?? '道具' }}</strong><span aria-hidden="true">↗</span></button>
                   <button v-else-if="tradeReminder" type="button" class="turn-action-status turn-action-link needs-confirmation" aria-haspopup="dialog" :aria-expanded="modal === 'trade'" title="点击查看报价" @click="modal = 'trade'"><strong>当前行动：<PlayerText :text="tradeReminder" /></strong><span aria-hidden="true">↗</span></button>
@@ -608,7 +649,7 @@ async function changeMapSize(mapSize: MapSize): Promise<void> { await game.act({
                       <div class="city-feed-panel">
                       <PanelFrame />
                       <div class="workspace-heading"><h2><span class="news-indicator" aria-hidden="true"></span>城市新鲜事</h2><div v-if="!spectator" class="record-switch" role="group" aria-label="记录范围"><button :aria-pressed="recordMode === 'live'" :class="{ active: recordMode === 'live' }" @click="recordMode = 'live'">实时</button><button :aria-pressed="recordMode === 'history'" :class="{ active: recordMode === 'history' }" @click="recordMode = 'history'">历史</button></div></div>
-                      <Teleport :to="classicLayout && detachedDashboard && !spectator ? '#mobile-card-reveal' : 'body'" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :spectator="spectator" :embedded="classicLayout" :paused="game.opening || boardAnimating || game.settling && !game.settlementRevealing" /></div></Teleport>
+                      <Teleport :to="classicLayout && detachedDashboard && !spectator ? '#mobile-card-reveal' : 'body'" :disabled="!classicLayout || !detachedDashboard || spectator" defer><div class="mobile-city-reveal"><CardReveal :spectator="spectator" :embedded="classicLayout" :paused="game.opening || boardAnimating || game.settling && !game.settlementRevealing || activityPresenting || rouletteRevealing" /></div></Teleport>
                       <div class="records-scroll"><LiveRecords @tile="locateChatTile" compact journal :active="spectator || recordMode === 'live'" v-show="spectator || recordMode === 'live'" :key="`${game.room.roomId ?? code}-${game.room.gameId}`" :room="game.room" :token="game.session?.token" /><template v-if="recordMode === 'history' && !spectator"><RoomHistory @tile="locateChatTile" v-if="archiveCode && !spectator" compact :archive-code="archiveCode" :game-id="game.room.gameId ?? null" /><p v-else class="muted">历史回顾需要玩家的固定存档码；本局完整公开记录可在“实时”中查阅。</p></template></div>
                       </div>
                       <Teleport :to="pagedHand ? '#desktop-hand-chat' : 'body'" :disabled="!pagedHand" defer>

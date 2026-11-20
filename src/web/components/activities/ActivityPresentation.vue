@@ -3,7 +3,8 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import type { CornerActivity } from '../../../shared/types';
 import { useGameStore } from '../../stores/game';
 import ActivityRewards from './ActivityRewards.vue';
-const props = defineProps<{ activity: CornerActivity; revealing?: boolean }>();
+const props = defineProps<{ activity: CornerActivity; inactive?: boolean; revealing?: boolean }>();
+const emit = defineEmits<{ revealing: [active: boolean] }>();
 const game = useGameStore();
 const playing = ref(false);
 const ready = ref(true);
@@ -15,18 +16,21 @@ const revealStages = ['rolling', 'racing', 'loading', 'shot', 'revealing', 'trea
 const delay = computed(() => {
   const a = props.activity;
   if (['casino', 'horse'].includes(a.kind) && !a.result || ['bridge', 'treasure'].includes(a.kind) && !a.safePaths?.length) return 0;
-  return ({ casino: 500, horse: 1100, rps: 550, bridge: 1350, treasure: 650, minority: 1000, roulette: 0, packet: 0, blindbox: 0 })[a.kind];
+  return ({ casino: 900, horse: 2500, rps: 1200, bridge: 1600, treasure: 1000, minority: 1550, roulette: 0, packet: 0, blindbox: 0 })[a.kind];
 });
-const rewarding = computed(() => Object.values(props.activity.payouts).some(amount => amount > 0) || Object.values(props.activity.cardRewards ?? {}).some(count => count > 0));
+const rewarding = computed(() => Object.keys(props.activity.payouts).length > 0 || Object.values(props.activity.cardRewards ?? {}).some(count => count > 0));
 const showRewards = computed(() => props.activity.stage === 'result' && props.activity.kind !== 'packet' && ready.value && !props.revealing);
 /** 无入参，停止当前庆祝并展示静态结果；刷新、后台和重连不补播动画。 */
 function stop(): void { clearTimeout(finish); clearTimeout(reveal); playing.value = false; ready.value = true; }
+watch(ready, value => emit('revealing', !value));
+watch(() => props.inactive, inactive => { if (inactive) stop(); });
 watch(() => ({ id: props.activity.id, round: props.activity.round, stage: props.activity.stage, payouts: Object.keys(props.activity.payouts).join(','), epoch: game.presentationEpoch }), (current, previous) => {
   stop();
-  if (current.id !== previous.id || current.epoch !== previous.epoch || game.connection !== 'online' || game.room?.recoveryPending || document.hidden || reduced.matches) return;
+  if (props.inactive || current.id !== previous.id || current.epoch !== previous.epoch || game.connection !== 'online' || game.room?.recoveryPending || document.hidden || reduced.matches) return;
+  if (current.stage === 'result' && props.activity.kind === 'roulette') return;
   if (!revealStages.includes(current.stage) && !['result', 'round_result', 'bridge_round', 'treasure_choice', 'duel'].includes(current.stage) && current.payouts === previous.payouts) return;
   playing.value = true; sequence.value++;
-  if (current.stage === 'result' && !['packet', 'blindbox'].includes(props.activity.kind)) {
+  if (current.stage === 'result' && delay.value) {
     ready.value = false;
     reveal = setTimeout(() => { ready.value = true; }, delay.value);
   }
@@ -37,7 +41,7 @@ watch(() => game.connection, state => { if (state !== 'online') stop(); });
 function suspend(): void { if (document.hidden || reduced.matches) stop(); }
 document.addEventListener('visibilitychange', suspend);
 reduced.addEventListener('change', suspend);
-onBeforeUnmount(() => { stop(); document.removeEventListener('visibilitychange', suspend); reduced.removeEventListener('change', suspend); });
+onBeforeUnmount(() => { stop(); emit('revealing', false); document.removeEventListener('visibilitychange', suspend); reduced.removeEventListener('change', suspend); });
 </script>
 <template>
   <div class="activity-presentation" :class="[`presentation-${activity.kind}`, `stage-${activity.stage}`, { 'moment-playing': playing, 'moment-win': rewarding, 'moment-reveal': revealStages.includes(activity.stage) }]">

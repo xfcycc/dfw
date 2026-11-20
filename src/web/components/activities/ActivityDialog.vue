@@ -10,16 +10,30 @@ import HorseScene from './HorseScene.vue';
 import RouletteScene from './RouletteScene.vue';
 import PacketScene from './PacketScene.vue';
 import RpsScene from './RpsScene.vue';
+import RouletteOutcome from './RouletteOutcome.vue';
 import TreasureScene from './TreasureScene.vue';
 import BridgeScene from './BridgeScene.vue';
 import MinorityScene from './MinorityScene.vue';
 import BlindBoxScene from './BlindBoxScene.vue';
 import ActivityPresentation from './ActivityPresentation.vue';
 import '../../activities.css';
-const props = defineProps<{ paused?: boolean; spectator?: boolean }>();
+const props = defineProps<{ paused?: boolean; cardPending?: boolean; rouletteRevealing?: boolean; spectator?: boolean }>();
+const emit = defineEmits<{ presenting: [active: boolean] }>();
 const game = useGameStore(); const open = ref(true);
-const blindboxRevealing = ref(false);
+const claimRevealing = ref(false);
+const resultRevealing = ref(false);
+const cardCovering = ref(false);
 const activity = computed(() => game.room?.activity);
+const inactive = computed(() => !open.value || props.paused || cardCovering.value || !!game.room?.recoveryPending);
+const presenting = computed(() => !inactive.value && !!activity.value && (claimRevealing.value || resultRevealing.value));
+const modalOpen = computed(() => !inactive.value && !props.rouletteRevealing && (!props.cardPending || presenting.value));
+const resultRevealingNow = computed(() => activity.value?.stage === 'result' && presenting.value);
+watch(presenting, active => emit('presenting', active));
+// 同次更新的道具卡等场内演出，已经打开的卡面继续展示到玩家收起。
+watch(() => !!props.cardPending && !presenting.value && !props.rouletteRevealing, covering => {
+  cardCovering.value = covering;
+}, { immediate: true, flush: 'post' });
+watch(() => props.rouletteRevealing, revealing => { if (revealing) playSound('roulette_hit'); });
 const scenes = { casino: CasinoScene, horse: HorseScene, roulette: RouletteScene, packet: PacketScene, rps: RpsScene, treasure: TreasureScene, bridge: BridgeScene, minority: MinorityScene, blindbox: BlindBoxScene };
 const cardRewardRules = { casino: '', horse: '赛马中奖者', roulette: '轮盘获胜者', packet: '全员领取后的手气最佳者', rps: '猜拳冠军', treasure: '三层全部通关者', bridge: '三关全部通关者', minority: '本场中奖者', blindbox: '' };
 const ownSelection = computed(() => game.privateData?.activityId === activity.value?.id && game.privateData?.activityRound === activity.value?.round ? game.privateData?.activitySelection : null);
@@ -34,6 +48,7 @@ const enabled = computed(() => {
 const progress = computed(() => {
   const a = activity.value; if (!a) return '';
   if (game.room?.pausedReason) return game.room.pausedReason;
+  if (resultRevealingNow.value) return '';
   if (a.kind === 'roulette') return a.stage === 'select' ? '等待发起者选择对手' : a.stage === 'payment' ? '正在处理对决费用' : `已开枪 ${a.shots} / 6 次`;
   if (a.settled) return a.summary;
   if (a.kind === 'packet') return `${a.submitted.length} / ${a.participants.length} 人已拆红包 · 选中立即到账`;
@@ -51,13 +66,14 @@ async function submit(input: ActivityInput): Promise<void> {
 /** 无入参，最终结果由参与者关闭时结束活动，其他阶段及观赛仅收起窗口，无返回值。 */
 async function close(): Promise<void> {
   const a = activity.value;
+  if (resultRevealingNow.value) return;
   if (a?.stage === 'result' && !props.spectator && game.me && !game.me.bankrupt && a.participants.includes(game.me.id)) {
     if (!game.canAct) return;
     if (!await game.act({ type: 'activityInput', activityId: a.id, activityRound: a.round })) return;
   }
   open.value = false;
 }
-watch(() => activity.value?.id, () => { open.value = true; });
+watch(() => activity.value?.id, () => { open.value = true; claimRevealing.value = false; resultRevealing.value = false; });
 let hoof: ReturnType<typeof setInterval> | undefined;
 let baseline = true;
 watch(() => game.connection, state => { if (state !== 'online') { baseline = true; clearInterval(hoof); } });
@@ -70,7 +86,6 @@ watch(() => `${activity.value?.id}:${activity.value?.round}:${activity.value?.st
   else if (a.stage === 'racing') { sound = 'horse_start'; hoof = setInterval(() => { playSound('horse_run'); }, 500); }
   else if (a.stage === 'loading') sound = 'roulette_spin';
   else if (a.kind === 'roulette' && a.stage === 'duel' && a.shots) sound = 'roulette_click';
-  else if (a.stage === 'payment') sound = 'roulette_hit';
   else if (a.stage === 'opening') sound = 'packet_open';
   else if (a.stage === 'revealing') sound = 'rps_count';
   else if (a.stage === 'round_result') sound = 'rps_reveal';
@@ -86,19 +101,25 @@ watch(() => `${activity.value?.id}:${activity.value?.round}:${activity.value?.st
   }
   if (sound) playSound(sound);
 }, { immediate: true });
-onBeforeUnmount(() => { clearInterval(hoof); });
+onBeforeUnmount(() => { clearInterval(hoof); emit('presenting', false); });
 </script>
 <template>
-  <button v-if="activity && activity.stage !== 'payment'" type="button" class="turn-action-status turn-action-link activity-action" :disabled="paused" aria-haspopup="dialog" :aria-expanded="open && !paused && !game.room?.recoveryPending" :title="progress || '点击进入活动'" @click="open = true"><span class="activity-action-copy"><strong>当前行动：{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></span><span class="activity-action-enter">进入活动 <span aria-hidden="true">↗</span></span></button>
+  <button v-if="activity && activity.stage !== 'payment'" type="button" class="turn-action-status turn-action-link activity-action" :disabled="paused" aria-haspopup="dialog" :aria-expanded="modalOpen" :title="progress || '点击进入活动'" @click="open = true"><span class="activity-action-copy"><strong>当前行动：{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></span><span class="activity-action-enter">进入活动 <span aria-hidden="true">↗</span></span></button>
   <slot v-else />
-  <Modal v-if="activity && activity.stage !== 'payment'" :open="open && !paused && !game.room?.recoveryPending" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="close">
+  <Teleport to="body">
+    <RouletteOutcome v-if="activity && rouletteRevealing" :activity="activity" animated />
+  </Teleport>
+  <Modal v-if="activity && activity.stage !== 'payment'" :open="modalOpen" :close-disabled="resultRevealingNow" :title="ACTIVITY_NAMES[activity.kind]" wide panel-class="activity-modal" @close="close">
     <div class="activity-scene activity-variant" :class="[`activity-${activity.kind}`, { 'has-result': activity.settled }]" style="--activity-background:none">
       <div class="activity-host-caption"><span>苏暖暖的游园会</span><strong>{{ ACTIVITY_NAMES[activity.kind] }}</strong><small v-if="progress">{{ progress }}</small></div>
-      <div class="activity-content"><ActivityPresentation :activity="activity" :revealing="blindboxRevealing"><component :is="scenes[activity.kind]" :key="activity.id" :activity="activity" :enabled="enabled" @input="submit" @revealing="blindboxRevealing = $event" /></ActivityPresentation>
+      <div class="activity-content">
+        <ActivityPresentation :key="activity.id" :activity="activity" :inactive="inactive" :revealing="claimRevealing" @revealing="resultRevealing = $event">
+          <component :is="scenes[activity.kind]" :activity="activity" :enabled="enabled" :inactive="inactive" @input="submit" @revealing="claimRevealing = $event" />
+        </ActivityPresentation>
         <p v-if="cardRewardRules[activity.kind]" class="activity-help">{{ cardRewardRules[activity.kind] }}额外获得 1 张随机道具。</p>
         <p v-if="spectator || game.me?.bankrupt" class="activity-help">观赛席 · 为朋友们助威吧</p><p v-else-if="!enabled && !activity.endsAt && activity.stage === 'select' && !['packet', 'blindbox'].includes(activity.kind)" class="activity-help">{{ ownSelection != null ? '你的选择已提交，等待其他玩家。' : '等待本轮参与者操作。' }}</p>
       </div>
     </div>
-    <template v-if="activity.stage === 'result'" #footer><button type="button" class="button primary full" :disabled="!spectator && !game.canAct" @click="close">{{ !spectator && game.me && !game.me.bankrupt && activity.participants.includes(game.me.id) ? '关闭结果，继续游戏' : '关闭结果' }}</button></template>
+    <template v-if="activity.stage === 'result' && !resultRevealingNow" #footer><button type="button" class="button primary full" :disabled="!spectator && !game.canAct" @click="close">{{ !spectator && game.me && !game.me.bankrupt && activity.participants.includes(game.me.id) ? '关闭结果，继续游戏' : '关闭结果' }}</button></template>
   </Modal>
 </template>
