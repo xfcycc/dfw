@@ -1,0 +1,139 @@
+{
+  "date": "2026-11-20",
+  "provider": "image_gen",
+  "style": "手绘赛璐璐，透明底 Q 版动物大头头像",
+  "compression": {
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  },
+  "entries": [
+    {
+      "id": "british_shorthair",
+      "name": "阿灰",
+      "description": "蓝灰英短，圆脸、琥珀眼和淡定的表情",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-8ae5e467-283d-4fd0-bfc7-f60660843824.png",
+      "sourceSha256": "7080e9755de3c58f5c03ed66d1f6bf033a26ce343a2d614496a939c68c4c0461",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 102226,
+      "webpSha256": "5ede9c33259999af02b67fdc38a3453d699a216a5f29bb70ca19431143921678",
+      "url": "https://pic.caiguoyu.cn/typora/20261120133546902.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 102226,
+        "contentMd5": "XwuxkXj+kkghDlMg2U84hA==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "frog",
+      "name": "呱呱",
+      "description": "苹果绿青蛙，托下巴、挑眉偷笑",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-f17218b5-dc70-44d6-ab72-8c0bf7683319.png",
+      "sourceSha256": "615a3335d8f5d8d65507682d9ac777f7f7bbf48898d5c4b4311a9817c2ed5744",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 133862,
+      "webpSha256": "5e37a047b92d1a3e368b2e66de3ab92c1feee6ee07d83b0e0647dcb57a5c8488",
+      "url": "https://pic.caiguoyu.cn/typora/20261120133548241.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 133862,
+        "contentMd5": "B1w+fDBArSTzPgKatnOEGw==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "beagle",
+      "name": "饼干",
+      "description": "三色比格犬，长垂耳、靛色领巾和开口笑",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-ec1217f1-877a-4033-8ca7-2e2504231eb9.png",
+      "sourceSha256": "085a8ee503316ded6b7e55f63001bb13ac31756b09704198371544e3c5cfacf3",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 140788,
+      "webpSha256": "530f07c77e2e02308a9c441aaa75f30dcb5d24c6813019778db727f9ba48bd8d",
+      "url": "https://pic.caiguoyu.cn/typora/20261120133549513.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 140788,
+        "contentMd5": "nusgkMf1q2GEFVEl9k665g==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "giant_panda",
+      "name": "竹糖",
+      "description": "黑白大熊猫，歪头抱着一小段竹子",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-34a02133-a574-4cdb-93fa-50ab0f3ec10c.png",
+      "sourceSha256": "53bc4f4fd9abcc5e23e027655904f50d93d261069935fce7d9a0ef0e9c572698",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 133190,
+      "webpSha256": "cdd55b35eda310b2ac57662b6e3b60198b4172ee1a52251e9839918eaad2903d",
+      "url": "https://pic.caiguoyu.cn/typora/20261120133551264.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 133190,
+        "contentMd5": "ch7VbeFxDdK86Q4X4s23/g==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "red_fox",
+      "name": "阿栗",
+      "description": "赤狐，高尖耳、金眼和狡黠的侧脸笑",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-332be3d5-10ac-4fba-bf89-0843406dd48b.png",
+      "sourceSha256": "3af5b031828c5bec6053150b69e2ddff09097d935d35a04385d91a814ca859fa",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 148264,
+      "webpSha256": "a410f2451e4d2aed7c679538e49481d77a9a0b5a1482bf1ab8f88fe2ca9e9145",
+      "url": "https://pic.caiguoyu.cn/typora/20261120133553014.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 148264,
+        "contentMd5": "2Cg9yEW5PoYTfvmdQlYMtQ==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    }
+  ]
+}

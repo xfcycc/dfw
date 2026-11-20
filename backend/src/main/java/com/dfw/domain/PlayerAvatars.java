@@ -11,6 +11,8 @@ public final class PlayerAvatars {
         Map.entry("pirate", "杰克"), Map.entry("astronaut", "星野"), Map.entry("cat", "糯米"),
         Map.entry("orange_tabby", "橘宝"), Map.entry("cow_cat", "奥利奥"), Map.entry("penguin", "啵啵"),
         Map.entry("shiba", "豆柴"), Map.entry("owl", "咕咕"), Map.entry("otter", "獭獭"),
+        Map.entry("british_shorthair", "阿灰"), Map.entry("frog", "呱呱"),
+        Map.entry("beagle", "饼干"), Map.entry("giant_panda", "竹糖"), Map.entry("red_fox", "阿栗"),
         Map.entry("swordsman", "云舟"), Map.entry("cyberpunk", "霓娜"), Map.entry("elf", "艾琳"),
         Map.entry("panda", "团团"), Map.entry("chef", "小满"), Map.entry("rockstar", "洛琪"),
         Map.entry("mermaid", "海莉"), Map.entry("dragon", "龙焱"), Map.entry("detective", "沈墨"),
