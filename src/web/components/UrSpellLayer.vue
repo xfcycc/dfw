@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted } from 'vue';
+import type { BuildingSeries } from '../../shared/types';
 import CharacterPawn from './CharacterPawn.vue';
+import PropertyArt from './PropertyArt.vue';
 import { UR_SPELL_ATLAS, type UrSpellSample } from '../ur-spell-preview';
 
 const props = defineProps<{
   sample: UrSpellSample;
   actor: { x: number; y: number };
   target: { x: number; y: number };
-  targetAppearance: { name: string; level?: number; avatarId?: string; color?: string };
+  targetAppearance: { name: string; level?: number; series?: BuildingSeries | null; avatarId?: string; color?: string };
   width: number;
   height: number;
   tileSize: number;
@@ -60,7 +62,7 @@ onBeforeUnmount(() => { clearTimeout(timer); });
     <div class="target-copy-anchor" :style="at(target)">
       <div class="target-copy">
         <CharacterPawn v-if="targetAppearance.avatarId" variant="pawn" :avatar-id="targetAppearance.avatarId" :color="targetAppearance.color" />
-        <template v-else><span class="copy-building" :style="{ backgroundPosition: `${(targetAppearance.level ?? 0) % 2 * 100}% ${Math.floor((targetAppearance.level ?? 0) / 2) * 100}%` }"></span><b>{{ targetAppearance.level }}级</b></template>
+        <template v-else><PropertyArt class="copy-building" :level="targetAppearance.level ?? 0" :series="targetAppearance.series" /><b>{{ targetAppearance.level }}级</b></template>
       </div>
     </div>
     <div class="target-label" :style="{ left: `${Math.max(tileSize, Math.min(width - tileSize, target.x))}px`, top: `${target.y > height / 2 ? target.y - tileSize * .8 : target.y + tileSize * .65}px` }">{{ targetAppearance.name }}</div>
@@ -98,7 +100,7 @@ onBeforeUnmount(() => { clearTimeout(timer); });
 .atlas-art { display:block; width:100%; height:100%; background-image:var(--atlas); background-size:200% 200%; background-repeat:no-repeat; }
 .art-kamui { background-position:0 0; }.art-punch { background-position:100% 0; }.art-sakura { background-position:0 100%; }.art-reaper { background-position:100% 100%; }
 .target-copy { position:absolute; width:var(--tile); height:var(--tile); left:calc(var(--tile) / -2); top:calc(var(--tile) / -2); display:flex; align-items:center; justify-content:center; flex-direction:column; border:2px solid #ead6b5; border-radius:12px; background:#f3e3c5; color:#775841; box-shadow:0 0 28px #f6d99666; }
-.target-copy b { position:absolute; bottom:2px; font-size:10px; }.copy-building { width:90%; height:90%; background:var(--property-levels) 100% 100% / 200% 200% no-repeat; }.target-copy :deep(.character-pawn) { width:70%; height:70%; }
+.target-copy b { position:absolute; bottom:2px; font-size:10px; }.target-copy .copy-building { width:90%; height:90%; }.target-copy :deep(.character-pawn) { width:70%; height:70%; }
 .target-label { position:absolute; transform:translateX(-50%); white-space:nowrap; color:#fff2df; text-shadow:0 2px 5px #000; font-size:clamp(10px,calc(var(--unit) * 1.8),14px); }
 .spell-title { position:absolute; top:13%; left:12%; right:12%; text-align:center; color:#fff0d7; text-shadow:0 2px 12px #000; animation:title var(--duration) both; }
 .spell-title small { display:block; font-size:10px; letter-spacing:4px; }.spell-title strong { display:block; margin-top:7px; font-size:clamp(20px,calc(var(--unit) * 4.5),38px); letter-spacing:6px; }

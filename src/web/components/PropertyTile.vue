@@ -10,7 +10,7 @@ const emit = defineEmits<{ select: [tile: Tile] }>();
 </script>
 <template>
   <button type="button" class="property-tile-card" :aria-label="`${tile.name}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}${tile.barrier ? '，有路障' : ''}，查看地产详情`" @click="emit('select', tile)">
-    <PropertyArt :level="tile.level" :mortgaged="tile.mortgaged" />
+    <PropertyArt :level="tile.level" :series="tile.buildingSeries" :mortgaged="tile.mortgaged" />
     <strong :title="tile.name">{{ tile.name }}{{ hasPropertyEffects(tile, game.room?.constructionEffects) ? ' ✦' : '' }}</strong>
     <PropertyGrade :level="tile.level" />
     <span v-if="tile.mortgaged || tile.barrier" class="property-tile-status">{{ tile.mortgaged ? '已抵押' : '' }}{{ tile.mortgaged && tile.barrier ? ' · ' : '' }}{{ tile.barrier ? '路障' : '' }}</span>

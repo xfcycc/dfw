@@ -90,6 +90,7 @@
 .modern-room.desktop-single-screen .game-board .tile > strong { gap: 1px; height: 16px; line-height: 16px; padding-top: 0; padding-bottom: 0; background: #fff8e9e8; }
 .modern-room.desktop-single-screen .tile .property-grade { font-size: 10px; padding: 0 2px; line-height: 14px; min-height: 0; }
 .modern-room.desktop-single-screen .immersive-board .tile.property > small { bottom: 17px; font-size: 12px; padding: 0 3px; line-height: 12px; }
+.modern-room.desktop-single-screen .immersive-board .tile.property .property-tile-art.variant { top: 17px; bottom: 32px; }
 .modern-room.desktop-single-screen .tile-number { display: none; }
 .modern-room.desktop-single-screen .ranking-header { flex-wrap: nowrap; }
 .modern-room.desktop-single-screen .ranking-stats { flex: 0 0 auto; grid-template-columns: repeat(4, max-content); }

@@ -6,6 +6,7 @@ import { urDirection } from '../ur-spell-directions';
 import { urChoreography, UR_PART_CELLS, type UrPoint, type UrTrack } from '../ur-choreography';
 import FullSpellProp from './FullSpellProp.vue';
 import CharacterPawn from './CharacterPawn.vue';
+import PropertyArt from './PropertyArt.vue';
 
 const props=defineProps<{card:FullCardSpell;actor:UrPoint;targets:UrPoint[];width:number;height:number;tileSize:number;effect?:BoardEffect;targetPlayers?:PublicPlayer[];compact?:boolean;reduced?:boolean}>();
 const direction=computed(()=>urDirection(props.card.skinId)!);
@@ -57,7 +58,7 @@ onBeforeUnmount(()=>{media.removeEventListener('change',preference);document.rem
             <span v-else-if="track.shape in UR_PART_CELLS" class="ur-part" :style="partStyle(track.shape)"/>
             <span v-else-if="['wing','jet','slash'].includes(track.shape)" class="firefly-part" :class="track.shape"/>
             <template v-else-if="track.shape==='copy'||track.shape==='result'">
-              <span v-if="appearance(track)" class="ur-building" :style="{backgroundPosition:`${(appearance(track)!.level%2)*100}% ${Math.floor(appearance(track)!.level/2)*100}%`}"/>
+              <PropertyArt v-if="appearance(track)" class="ur-building" :level="appearance(track)!.level" :series="appearance(track)!.buildingSeries" />
               <CharacterPawn v-else-if="targetPlayers?.[track.target]" variant="pawn" :avatar-id="targetPlayers[track.target]!.avatarId" :color="targetPlayers[track.target]!.color"/>
             </template>
             <svg v-else viewBox="0 0 100 100" focusable="false">
@@ -79,6 +80,6 @@ onBeforeUnmount(()=>{media.removeEventListener('change',preference);document.rem
 </template>
 <style scoped>
 .ur-track{transform-origin:0 0}
-.unique-ur{position:absolute;inset:0;pointer-events:none;overflow:hidden;isolation:isolate;border-radius:12px;z-index:21}.ur-shade{position:absolute;inset:0;background:radial-gradient(ellipse,#20203677,#151426c9);animation:ur-shade var(--duration) both}.ur-targets{position:absolute;inset:0;width:100%;height:100%;fill:#fff2c40a;stroke:var(--ink);stroke-width:2;stroke-dasharray:5 4}.track-anchor{position:absolute;width:0;height:0}.ur-track{position:absolute;opacity:0;will-change:transform,opacity}.track-content{position:absolute;inset:0;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 2px #28203955)}.track-content>svg{width:100%;height:100%;overflow:visible;fill:none;stroke:currentColor;stroke-width:2}.shape-ray{height:4px!important;transform-origin:0 50%;border-radius:100%;background:currentColor;box-shadow:0 0 8px currentColor}.shape-ray .track-content{display:none}.shape-copy,.shape-result{z-index:3}.ur-building{display:block;width:100%;height:100%;background:var(--property-levels) no-repeat;background-size:200% 200%}.track-content :deep(.character-pawn){width:100%;height:100%}.firefly-part,.ur-part{display:block;width:100%;height:100%;background-repeat:no-repeat}.firefly-part{background-image:var(--firefly-atlas);background-size:200% 200%}.ur-part{background-image:var(--ur-parts-atlas);background-size:400% 400%}.wing{background-position:100% 0}.jet{background-position:0 100%}.slash{background-position:100% 100%}.static-ur{position:absolute;transform:translate(-50%,-50%)}.reduced .ur-shade{display:none}.compact .ur-track{filter:none}
+.unique-ur{position:absolute;inset:0;pointer-events:none;overflow:hidden;isolation:isolate;border-radius:12px;z-index:21}.ur-shade{position:absolute;inset:0;background:radial-gradient(ellipse,#20203677,#151426c9);animation:ur-shade var(--duration) both}.ur-targets{position:absolute;inset:0;width:100%;height:100%;fill:#fff2c40a;stroke:var(--ink);stroke-width:2;stroke-dasharray:5 4}.track-anchor{position:absolute;width:0;height:0}.ur-track{position:absolute;opacity:0;will-change:transform,opacity}.track-content{position:absolute;inset:0;transform:translate(-50%,-50%);filter:drop-shadow(0 2px 2px #28203955)}.track-content>svg{width:100%;height:100%;overflow:visible;fill:none;stroke:currentColor;stroke-width:2}.shape-ray{height:4px!important;transform-origin:0 50%;border-radius:100%;background:currentColor;box-shadow:0 0 8px currentColor}.shape-ray .track-content{display:none}.shape-copy,.shape-result{z-index:3}.track-content .ur-building{width:100%;height:100%}.track-content :deep(.character-pawn){width:100%;height:100%}.firefly-part,.ur-part{display:block;width:100%;height:100%;background-repeat:no-repeat}.firefly-part{background-image:var(--firefly-atlas);background-size:200% 200%}.ur-part{background-image:var(--ur-parts-atlas);background-size:400% 400%}.wing{background-position:100% 0}.jet{background-position:0 100%}.slash{background-position:100% 100%}.static-ur{position:absolute;transform:translate(-50%,-50%)}.reduced .ur-shade{display:none}.compact .ur-track{filter:none}
 @keyframes ur-shade{0%,100%{opacity:0}12%,85%{opacity:1}}
 </style>

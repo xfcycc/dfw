@@ -30,7 +30,7 @@ onBeforeUnmount(() => clearTimeout(timer));
 <template>
   <div class="live-card-spell" :style="{ '--duration': `${sample.duration}ms`, '--u': `${tileSize}px` }" role="status" :aria-label="sample.name">
     <template v-if="sample.theme === 'kamui' && !('rarity' in sample)">
-      <UrSpellLayer v-for="(t,i) in targets" :key="t.before.id" :sample="sample" :actor="origin" :target="t.point" :target-appearance="{ name:t.tile.name, level:t.before.level }" :width="width" :height="height" :tile-size="tileSize" :reduced="false" :show-name="false" :hide-backdrop="i>0" />
+      <UrSpellLayer v-for="(t,i) in targets" :key="t.before.id" :sample="sample" :actor="origin" :target="t.point" :target-appearance="{ name:t.tile.name, level:t.before.level, series:t.before.buildingSeries }" :width="width" :height="height" :tile-size="tileSize" :reduced="false" :show-name="false" :hide-backdrop="i>0" />
     </template>
     <template v-else-if="sample.theme === 'thunder'">
       <div v-for="move in moving" :key="move.playerId" class="jump-origin" :style="{ left:`${move.start.x}px`,top:`${move.start.y}px`,'--dx':`${move.end.x-move.start.x}px`,'--dy':`${move.end.y-move.start.y}px` }">

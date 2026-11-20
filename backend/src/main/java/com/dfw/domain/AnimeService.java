@@ -87,6 +87,7 @@ public final class AnimeService {
     /** 输入受损地产，记录实际损坏前等级和业主的下一个个人回合期限。 */
     public static void recordDamage(Room room,Tile tile) {
         Player owner=player(room,tile.ownerId); if(owner==null || owner.bankrupt || tile.level<=0) return;
+        if(tile.buildingSeries==null) tile.buildingSeries="classic";
         CrossoverService.recordDamage(room,tile);
         tile.damageOwnerId=owner.id; tile.damageLevel=tile.level; tile.damageUntilTurn=owner.personalTurns+1; tile.observedOwnerId=owner.id;
     }
@@ -137,7 +138,7 @@ public final class AnimeService {
             require(sacrifice!=null && Objects.equals(sacrifice.ownerId,actor.id) && !sacrifice.mortgaged && !PropertyEffects.frozen(sacrifice),"请选择自家未抵押、未封印的献祭地产");
             require(sacrifice.level>=levels,"同一处献祭地产的建筑等级不足");
             int before=sacrifice.level;
-            sacrifice.level-=levels; sacrifice.damageOwnerId=null; sacrifice.damageLevel=0; CrossoverService.state(room).damage.remove(sacrifice.id);
+            sacrifice.updateBuildingLevel(sacrifice.level-levels); sacrifice.damageOwnerId=null; sacrifice.damageLevel=0; CrossoverService.state(room).damage.remove(sacrifice.id);
             log(room,actor.name+" 献祭 "+sacrifice.name+" 的 "+levels+" 级建筑（"+before+" → "+sacrifice.level+" 级），无退款且不可用四之弹恢复");
         }
         if(card.kind.equals("swordRain")) {

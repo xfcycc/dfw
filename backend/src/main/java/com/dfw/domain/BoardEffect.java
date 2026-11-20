@@ -50,6 +50,8 @@ public class BoardEffect {
         public String ownerId;
         /** 建筑等级。 */
         public int level;
+        /** 建筑外观系列，旧快照可为空。 */
+        public String buildingSeries;
         /** 普通路障。 */
         public boolean barrier;
         /** 拆除护盾。 */
@@ -102,7 +104,7 @@ public class BoardEffect {
     }
     /** 输入目标地产，返回独立的公开外观快照，后续业务写入不会改动该快照。 */
     public static TileState appearance(Tile tile) {
-        TileState state = new TileState(); state.id = tile.id; state.ownerId = tile.ownerId; state.level = tile.level;
+        TileState state = new TileState(); state.id = tile.id; state.ownerId = tile.ownerId; state.level = tile.level; state.buildingSeries = tile.buildingSeries;
         state.barrier = tile.barrier; state.demolitionShield = tile.demolitionShield; state.demolitionShieldCharges = PropertyEffects.shieldCharges(tile); state.treasure = tile.treasure;
         state.concertStacks = tile.concertStacks; state.meteorCharges = tile.meteorCharges;
         state.permanentRentPercent = tile.permanentRentPercent;

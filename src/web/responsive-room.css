@@ -112,6 +112,7 @@
 .modern-room.spectator-page .map-character { --pawn-size: 42px; }
 .modern-room.spectator-page .game-board .tile > strong { padding: 3px; font-size: 12px; }
 .modern-room.spectator-page .immersive-board .tile.property > small { bottom: 25px; padding: 1px 4px; font-size: 11px; }
+.modern-room.spectator-page .immersive-board .tile.property .property-tile-art.variant { top: 24px; bottom: 43px; }
 .modern-room.spectator-page .tile-owner-label { bottom: 2px; height: 21px; font-size: 10px; }
 .modern-room.spectator-page .tile-owner-label .character-pawn { width: 16px; height: 16px; }
 .modern-room.spectator-page .tile-owner-label.is-unowned { font-size: 10px; }
@@ -197,6 +198,8 @@
   .modern-room.spectator-landscape .game-board .tile > strong { font-size: 9px; padding: 0 2px; }
   .modern-room.spectator-landscape .game-board .tile :is(.property-grade, small, .tile-owner-label .character-pawn) { display: none; }
   .modern-room.spectator-landscape .tile-owner-label { height: 10px; bottom: 0; font-size: 8px; }
+  .modern-room.spectator-landscape .immersive-board .tile.property .property-tile-art.variant { inset: 2px auto 2px 5%; width: 27%; }
+  .modern-room.spectator-landscape .game-board .tile:has(> .property-tile-art.variant) > :is(strong, .tile-owner-label) { left: 35%; }
 }
 
 /* 手机及缩放后的窄窗口使用可用高度分配空间，避免固定最小高度撑出屏幕。 */
@@ -236,6 +239,12 @@
 .modern-room.game-session .mobile-turn .workbench-center .turn-display > :is(.hub-turn-callout, .die) { display: none; }
 /* 移动端单屏固定完整地图，经典模式继续提供局部跟随与定位操作。 */
 .modern-room.detached-dashboard:not(.classic-layout):not(.spectator-page) .board-controls { display: none; }
+/* 手机全图缩小字框的上下留白，为地产插画留出空间。 */
+.modern-room.detached-dashboard:not(.spectator-page) .immersive-board .tile.property > strong { padding-block: 2px; }
+.modern-room.detached-dashboard:not(.spectator-page) .immersive-board .tile.property > small { bottom: 29px; }
+.modern-room.detached-dashboard:not(.spectator-page) .immersive-board .tile-owner-label { height: 22px; }
+.modern-room.detached-dashboard:not(.spectator-page) .immersive-board .tile-owner-label .character-pawn { width: 16px; height: 16px; }
+.modern-room.detached-dashboard:not(.spectator-page) .immersive-board .tile.property .property-tile-art.variant { top: 27px; bottom: 49px; }
 /* 竖屏观战仍完整展示地图，工具栏换行，内圈公开信息上下排列。 */
 @media (max-width: 600px) {
   .modern-room.game-session.spectator-page .room-header { flex-wrap: wrap; }

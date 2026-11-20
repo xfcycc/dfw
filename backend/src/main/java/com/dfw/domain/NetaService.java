@@ -103,7 +103,7 @@ public final class NetaService {
             ContentService.consume(room,owner,card,true,action);
             for(Tile t:targets) {
                 // 自愿献祭不经过建筑破坏或售地流程，既不退款，也不留下可修复的损坏记录。
-                t.ownerId=null; t.level=0; t.mortgaged=false; t.mortgageBase=null;
+                t.ownerId=null; t.updateBuildingLevel(0); t.mortgaged=false; t.mortgageBase=null;
                 t.damageOwnerId=null; t.damageLevel=0; t.damageUntilTurn=0;
                 CrossoverService.state(room).damage.remove(t.id);
             }

@@ -340,7 +340,7 @@ public final class ContentService {
                     Tile target=tile(room,action.tileId);
                     BoardEffect.Observation presentation=BoardEffect.watch(room,"upgrade",owner);
                     if(choice.cardId!=null) consume(room,owner,find(owner,choice.cardId),true,action);
-                    int previousLevel=target.level; target.level=choice.type.equals("full_upgrade") ? Rules.MAX_LEVEL : target.level+1;
+                    int previousLevel=target.level; target.updateBuildingLevel(choice.type.equals("full_upgrade") ? Rules.MAX_LEVEL : previousLevel+1);
                     SettlementService.observe(room); owner.matchStats.builtLevels += target.level - previousLevel;
                     room.upgradedTiles.add(target.id); log(room,"log",owner.id,owner.name+" 免费升级 "+target.name+"（"+target.id+"号），建筑从 "+previousLevel+" 级升至 "+target.level+" 级，费用 ¥0，现金余额 ¥"+String.format("%,d",owner.cash));
                     presentation.finish(room);

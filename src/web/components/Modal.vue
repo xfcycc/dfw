@@ -97,10 +97,7 @@ onBeforeUnmount(() => { document.removeEventListener('keydown', keydown); if (pr
 .chibi-modal :deep(.error-text) { color: #ad6655; }
 /* 购买与升级复用地图房屋插画，金额和结果分别放进票券与信息卡。 */
 .chibi-modal :deep(.landing-info) { gap: 16px; padding: 12px; border: 2px solid #e3d3b3; border-radius: 22px; background: #fffdf3; }
-.chibi-modal :deep(.landing-info > .decision-property-art) { display: block; flex-shrink: 0; width: 82px; height: 82px; padding: 0; border-radius: 18px; background-color: #f5edda; background-position: 0 0; background-size: 200% 200%; background-repeat: no-repeat; }
-.chibi-modal :deep(.decision-property-art.level-1) { background-position: 100% 0; }
-.chibi-modal :deep(.decision-property-art.level-2) { background-position: 0 100%; }
-.chibi-modal :deep(.decision-property-art.level-3) { background-position: 100% 100%; }
+.chibi-modal :deep(.landing-info > .decision-property-art) { width: 82px; height: 82px; padding: 0; border-radius: 18px; background-color: #f5edda; }
 .chibi-modal :deep(.landing-info strong) { color: #775a3c; font-size: 18px; }
 .chibi-modal :deep(.landing-info small) { margin-top: 6px; color: #998365; font-size: 12px; }
 .chibi-modal :deep(.decision-price) { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 18px 0; padding: 16px; border: 2px dashed #e2c385; border-radius: 18px; background: #fff0c9; color: #9b7132; font-size: 34px; font-weight: 800; font-variant-numeric: tabular-nums; }

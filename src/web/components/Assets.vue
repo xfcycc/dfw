@@ -16,7 +16,7 @@ const payment = computed(() => game.room?.pending?.type === 'rent' || game.room?
   <div v-if="!owned.length" class="asset-empty">暂无地产，停在无主地块时可购买。</div>
   <div class="asset-portfolio">
     <article v-for="tile in owned" :key="tile.id" class="portfolio-card">
-      <div class="portfolio-heading"><PropertyArt :level="tile.level" :mortgaged="tile.mortgaged" /><div><strong>{{ tile.name }}{{ hasPropertyEffects(tile) ? ' ✦' : '' }}</strong><PropertyGrade :level="tile.level" /><small>{{ tile.id }} 号地块</small></div><span class="portfolio-status" :class="{ mortgaged: tile.mortgaged }">{{ tile.mortgaged ? '已抵押' : '持有中' }}</span></div>
+      <div class="portfolio-heading"><PropertyArt :level="tile.level" :series="tile.buildingSeries" :mortgaged="tile.mortgaged" /><div><strong>{{ tile.name }}{{ hasPropertyEffects(tile) ? ' ✦' : '' }}</strong><PropertyGrade :level="tile.level" /><small>{{ tile.id }} 号地块</small></div><span class="portfolio-status" :class="{ mortgaged: tile.mortgaged }">{{ tile.mortgaged ? '已抵押' : '持有中' }}</span></div>
       <dl class="portfolio-metrics"><div><dt>地价</dt><dd>¥{{ tile.price.toLocaleString() }}</dd></div><div><dt>{{ tile.mortgaged ? '赎回费用' : '当前租金' }}</dt><dd>¥{{ (tile.mortgaged ? redeemCost(tile) : game.me?.jailed && game.me.skipTurns > 0 ? 0 : rentFor(tile, game.room?.economy, game.room?.board, 1, game.room?.cityRentPercent)).toLocaleString() }}</dd></div></dl>
       <PropertyEffects :tile="tile" :economy="game.room?.economy" />
       <div class="portfolio-actions">

@@ -135,6 +135,8 @@ export interface PublicPlayer {
   /** 塔塔开：下次移动翻倍；旧快照缺省为无。 */
   nextMoveDouble?: boolean;
 }
+/** 地产从一级到三级沿用的建筑外观。 */
+export type BuildingSeries = 'classic' | 'windmill' | 'greenhouse' | 'orchard';
 /** 棋盘格公开状态。 */
 export interface Tile {
   petalCasterId?: string | null;
@@ -152,6 +154,8 @@ export interface Tile {
   price: number;
   ownerId: string | null;
   level: number;
+  /** 首建抽取，旧快照缺省时展示原系列。 */
+  buildingSeries?: BuildingSeries | null;
   mortgaged: boolean;
   /** 抵押时的土地加建筑估值，旧土地抵押缺省按地价计算。 */
   mortgageBase?: number | null;
@@ -230,7 +234,7 @@ export interface BoardEffect {
   afterTiles: BoardEffectTile[];
 }
 /** 演出前后的地产公开外观，可包含实际产权变化，不覆盖抵押或资金。 */
-export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'permanentRentPercent' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn' | 'corruptionTurns' | 'nzothOwnerId' | 'zeroCasterId' | 'zeroUntilTurn' | 'portalTileId' | 'petalCasterId' | 'petalOwnerId' | 'petalUntilTurn'> & { ownerId?: string | null };
+export type BoardEffectTile = Pick<Tile, 'id' | 'level' | 'buildingSeries' | 'barrier' | 'demolitionShield' | 'demolitionShieldCharges' | 'treasure' | 'concertStacks' | 'permanentRentPercent' | 'meteorCharges' | 'kamuiCasterId' | 'kamuiTurns' | 'kamuiAppliedTurn' | 'corruptionTurns' | 'nzothOwnerId' | 'zeroCasterId' | 'zeroUntilTurn' | 'portalTileId' | 'petalCasterId' | 'petalOwnerId' | 'petalUntilTurn'> & { ownerId?: string | null };
 /** 移动路径用于客户端动画，结算结果始终以服务器快照为准。 */
 export interface MotionSegment {
   /** 已公开发动卡的皮肤；旧片段缺省时使用通用表现。 */

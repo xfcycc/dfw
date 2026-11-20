@@ -25,7 +25,7 @@ public class EconomyService {
             creditor.cash += paid; SettlementService.payment(room, player, payment, paid);
         }
         SettlementService.eliminate(room, player, payment, removed);
-        for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id)) { tile.ownerId = null; tile.level = 0; tile.mortgaged = false; tile.mortgageBase = null; }
+        for (Tile tile : room.board) if (Objects.equals(tile.ownerId, player.id)) { tile.ownerId = null; tile.updateBuildingLevel(0); tile.mortgaged = false; tile.mortgageBase = null; }
         player.cash = 0; player.contentNotice=null; player.contentNoticeText=null; player.hand.clear(); player.statuses.clear(); player.bankrupt = true; if(room.runtime!=null) NetaService.state(room).soulRings.remove(player.id); player.skipTurns = 0; player.jailed = false;
         PropertyEffects.eliminateCaster(room, player.id);
         player.eliminationOrder = (int) room.players.stream().filter(p -> p.bankrupt).count();
@@ -114,7 +114,7 @@ public class EconomyService {
         String land = tile.name + "（" + tile.id + "号）";
         switch (action) {
             case "sellBuilding" -> {
-                require(tile.level > 0 && !tile.mortgaged, "地产没有可出售建筑，或建筑已随地产抵押"); tile.level--;
+                require(tile.level > 0 && !tile.mortgaged, "地产没有可出售建筑，或建筑已随地产抵押"); tile.updateBuildingLevel(tile.level - 1);
                 tile.damageOwnerId=null; tile.damageLevel=0; tile.damageUntilTurn=0;
                 long cash = Rules.sellBuildingValue(room, tile); player.cash += cash;
                 log(room, "log", player.id, player.name + " 出售 " + land + " 的一级建筑，建筑从 " + (tile.level + 1) + " 级降至 " + tile.level + " 级，银行返款 ¥" + String.format("%,d", cash) + "，现金余额 ¥" + String.format("%,d", player.cash));
@@ -133,7 +133,7 @@ public class EconomyService {
                 long cost = tile.mortgaged ? Rules.redeemCost(tile) : 0, cash = Rules.landValue(room, tile);
                 require(cash >= 0 || player.cash >= -cash, "回收款不足结清固定赎回费用，现金不足补差价");
                 int level = tile.level; player.cash += cash;
-                tile.ownerId = null; tile.level = 0; tile.mortgaged = false; tile.mortgageBase = null;
+                tile.ownerId = null; tile.updateBuildingLevel(0); tile.mortgaged = false; tile.mortgageBase = null;
                 log(room, "log", player.id, player.name + " 整套出售 " + land + "（含 " + level + " 级建筑），银行回收款 ¥" + String.format("%,d", cash + cost) + (cost > 0 ? "，扣除固定赎回费用 ¥" + String.format("%,d", cost) : "") + (cash >= 0 ? "，实际到账 ¥" + String.format("%,d", cash) : "，补付差价 ¥" + String.format("%,d", -cash)) + "，建筑清除，地产恢复为待购入，现金余额 ¥" + String.format("%,d", player.cash));
             }
             default -> throw new GameError("当前操作不可用");

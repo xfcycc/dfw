@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
-import type { MotionSegment, PublicPlayer } from '../../shared/types';
+import type { BuildingSeries, MotionSegment, PublicPlayer } from '../../shared/types';
 import { fullCardSpellFor } from '../full-card-spells';
 import FullSpellProp from './FullSpellProp.vue';
 import CharacterPawn from './CharacterPawn.vue';
@@ -32,8 +32,8 @@ const secondaryAction=computed(()=>card.value.rarity!=='UR'&&!effect.value.trigg
 const phase=computed(()=>effect.value.triggered||(card.value.rarity==='UR'?['answer','bill','inheritance','crash'].includes(urDirection(card.value.skinId)?.scene??''):card.value.actions.includes('T11'))?'light':card.value.rarity==='UR'?'ultimate':'local');
 /** 输入真实目标点，主体向棋盘内侧展开；作用圈仍保持真实命中位置。 */
 function subjectPosition(p:Point):{left:string;top:string}{const margin=props.tileSize*1.3;const radius=props.tileSize*(phase.value==='light'?.5:.9);return {left:`${Math.max(margin,Math.min(props.width-margin,p.x))-p.x-radius}px`,top:`${Math.max(margin,Math.min(props.height-margin,p.y))-p.y-radius}px`};}
-/** 输入目标序号，地产使用实际原等级，人物使用公开头像和颜色。 */
-function targetAppearance(index:number):{name:string;level?:number;avatarId?:string;color?:string}{const tile=effect.value.beforeTiles[index];if(tile)return{name:`${tile.id}号地产`,level:tile.level};const player=targetPlayers.value[index]??targetPlayers.value[0]!;return{name:player.name,avatarId:player.avatarId??'explorer',color:player.color};}
+/** 输入目标序号，返回地产原外观或玩家公开头像与颜色。 */
+function targetAppearance(index:number):{name:string;level?:number;series?:BuildingSeries|null;avatarId?:string;color?:string}{const tile=effect.value.beforeTiles[index];if(tile)return{name:`${tile.id}号地产`,level:tile.level,series:tile.buildingSeries};const player=targetPlayers.value[index]??targetPlayers.value[0]!;return{name:player.name,avatarId:player.avatarId??'explorer',color:player.color};}
 let timer:ReturnType<typeof setTimeout>|undefined;
 const travelers=ref<HTMLElement[]>([]);let flights:Animation[]=[];
 // 输入实际逐格路径与棋盘尺寸，沿原路径更新副本，缩放时保留进度。

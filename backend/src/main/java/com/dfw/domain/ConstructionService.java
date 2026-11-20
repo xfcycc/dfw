@@ -30,7 +30,7 @@ public final class ConstructionService {
 
     /** 输入房间、业主及合法地产，免费增一级并登记实际新建数量，无递归联动。 */
     public static void build(Room room,Player owner,Tile target) {
-        int before=target.level; target.level++;
+        int before=target.level; target.updateBuildingLevel(before+1);
         if(!room.upgradedTiles.contains(target.id)) room.upgradedTiles.add(target.id);
         SettlementService.observe(room); owner.matchStats.builtLevels++;
         log(room,"log",owner.id,owner.name+" 建筑升级 "+target.name+"（"+target.id+"号），建筑 "+before+" → "+target.level+" 级");
@@ -155,7 +155,7 @@ public final class ConstructionService {
                 BoardEffect.Observation presentation=BoardEffect.watch(room,"upgrade",owner);
                 int[] levels={firstLevel,secondLevel};
                 // 重新分配和额外新增一级均不占本回合升级次数，落地后仍按正常规则付费建造。
-                for(int i=0;i<targets.size();i++) { Tile target=targets.get(i); if(target.level>levels[i]) { target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; } target.level=levels[i]; target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; }
+                for(int i=0;i<targets.size();i++) { Tile target=targets.get(i); target.updateBuildingLevel(levels[i]); target.damageOwnerId=null; target.damageLevel=0; target.damageUntilTurn=0; }
                 SettlementService.observe(room); owner.matchStats.builtLevels++; log(room,owner.name+" 调整尘歌壶布局，建筑总数新增一级，最终等级 "+firstLevel+"／"+secondLevel); presentation.finish(room);
             }
             case "createBuild" -> { owner.hand.removeAll(materials); targets.forEach(t -> build(room,owner,t)); }

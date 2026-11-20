@@ -193,7 +193,7 @@ public class GameEngine {
                 require(player.cash >= cost, "现金不足，可先管理资产或放弃");
                 String result;
                 if (action.type.equals("buy")) { require(tile.ownerId == null, "地产已被购买"); tile.ownerId = player.id; player.openingLandAvailable = false; result = " 买下 " + tile.name + "（" + tile.id + "号）"; }
-                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.level++; player.matchStats.builtLevels++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
+                else { require(Objects.equals(tile.ownerId, player.id) && !tile.mortgaged && !AnimeService.iced(tile) && tile.level < Rules.MAX_LEVEL && !room.upgradedTiles.contains(tile.id), "这块地产当前不可升级"); tile.updateBuildingLevel(tile.level + 1); player.matchStats.builtLevels++; room.upgradedTiles.add(tile.id); result = " 升级 " + tile.name + "（" + tile.id + "号），建筑从 " + (tile.level - 1) + " 级升至 " + tile.level + " 级"; }
                 player.cash -= cost;
                 if(action.type.equals("upgrade")) ConstructionService.paid(room,player,tile);
                 log(room, "log", player.id, player.name + result + "，支付银行 ¥" + String.format("%,d", cost) + "，现金余额 ¥" + String.format("%,d", player.cash));

@@ -24,10 +24,7 @@
 .modern-room .game-board .tile.property { background: #fff; color: #33415b; }
 /* 通用底图只承载装饰，文字、产权和操作状态独立显示。 */
 .game-board .tile-ground { position: absolute; inset: 0; border-radius: inherit; background: var(--tile-background) center / cover #fffdf5; pointer-events: none; }
-.game-board .property-tile-art { position: absolute; width: 78%; aspect-ratio: 1; left: 50%; top: 51%; transform: translate(-50%, -50%); background: var(--property-levels) 0 0 / 200% 200% no-repeat; pointer-events: none; }
-.game-board .tile.level-1 .property-tile-art { background-position: 100% 0; }
-.game-board .tile.level-2 .property-tile-art { background-position: 0 100%; }
-.game-board .tile.level-3 .property-tile-art { background-position: 100% 100%; }
+.game-board .tile .property-tile-art { position: absolute; width: 78%; left: 50%; top: 51%; transform: translate(-50%, -50%); pointer-events: none; }
 .game-board .tile.mortgaged .tile-ground { opacity: .4; }
 .game-board .tile.mortgaged .property-tile-art { opacity: .55; filter: grayscale(.65); }
 .game-board .tile.target-selected .tile-ground { opacity: .55; }
@@ -55,6 +52,10 @@
 .modern-room .tile-owner-label.is-unowned .tile-owner-name { flex: 0 1 auto; text-align: center; }
 .modern-room .immersive-board .tile.owned .tile-ground { background-image: linear-gradient(color-mix(in srgb, var(--owner) 14%, transparent), color-mix(in srgb, var(--owner) 14%, transparent)), var(--tile-background); }
 .modern-room .immersive-board .tile.property .property-tile-art { width: 68%; top: 42%; }
+/* 建筑插画留在地名和价格之间，产权条在价格下方。 */
+.game-board .tile .property-tile-art.variant,
+.modern-room .immersive-board .tile.property .property-tile-art.variant { inset: 33px 8px 25px; width: auto; aspect-ratio: auto; transform: none; }
+.modern-room .immersive-board .tile.property .property-tile-art.variant { bottom: 56px; }
 .modern-room .immersive-board .tile.property > small { bottom: 37px; padding: 1px 6px; font-size: 12px; }
 .modern-room .immersive-board .tile:has(.tile-effect.bought) .tile-owner-label { animation: tile-owner-arrive .5s ease-out both; }
 .modern-room .immersive-board .tile .tile-number { bottom: 40px; left: 3px; right: auto; }
@@ -135,12 +136,7 @@
 .tile-detail-modal .icon-button { background: #f2f5fa; color: #758094; border-radius: 50%; }
 .tile-detail-card { text-align: left; }
 .tile-detail-hero { display: flex; align-items: center; gap: 20px; padding: 16px; border: 1px solid #ffffff80; border-radius: 16px; }
-.tile-detail-art { width: 112px; aspect-ratio: 1; flex-shrink: 0; }
-.tile-detail-art.property { background: var(--detail-property-art) 0 0 / 200% 200% no-repeat; }
-.tile-detail-art.level-1 { background-position: 100% 0; }
-.tile-detail-art.level-2 { background-position: 0 100%; }
-.tile-detail-art.level-3 { background-position: 100% 100%; }
-.tile-detail-art.mortgaged { opacity: .6; filter: grayscale(.65); }
+.tile-detail-hero .tile-detail-art { width: 112px; aspect-ratio: 1; flex-shrink: 0; }
 .tile-detail-art img { display: block; width: 100%; height: 100%; object-fit: contain; mix-blend-mode: multiply; }
 .tile-detail-intro { min-width: 0; }
 .tile-detail-intro p { margin: 0 0 4px; font-size: 16px; font-weight: 700; color: #46546e; overflow-wrap: anywhere; }
@@ -193,7 +189,7 @@
 @media (max-width: 480px) {
   .modal.tile-detail-modal { padding: 18px; }
   .tile-detail-hero { gap: 12px; padding: 12px; }
-  .tile-detail-art { width: 88px; }
+  .tile-detail-hero .tile-detail-art { width: 88px; }
   .tile-detail-card .tile-detail-metrics > div { padding: 12px; }
   .tile-detail-card .tile-detail-metrics dd { font-size: 20px; }
   .tile-detail-title-deed { flex-wrap: wrap; padding: 12px; }

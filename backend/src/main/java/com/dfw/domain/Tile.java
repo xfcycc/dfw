@@ -3,10 +3,16 @@ package com.dfw.domain;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+
 /** 棋盘地块。 */
 @Getter
 @Setter
 public class Tile {
+    /** 首建时等概率抽取的建筑系列。 */
+    private static final List<String> BUILDING_SERIES = List.of("classic", "windmill", "greenhouse", "orchard");
+
     /** 格子索引。 */
     public int id;
     /** 地块类型。 */
@@ -27,6 +33,8 @@ public class Tile {
     public String ownerId;
     /** 建筑等级。 */
     public int level;
+    /** 当前地产的建筑外观系列，未建造和旧快照可为空。 */
+    public String buildingSeries;
     /** 是否抵押。 */
     public boolean mortgaged;
     /** 抵押时土地加建筑估值；旧土地抵押缺省按地价计算。 */
@@ -75,4 +83,13 @@ public class Tile {
     public String petalOwnerId;
     /** 标记在触发者该个人回合开始前有效。 */
     public int petalUntilTurn;
+
+    /** 输入建造或降级后的等级，首建抽取外观，已有建筑的旧快照沿用原系列。 */
+    void updateBuildingLevel(int newLevel) {
+        if (buildingSeries == null) {
+            if (level > 0 || damageLevel > 0) buildingSeries = "classic";
+            else if (newLevel > 0) buildingSeries = BUILDING_SERIES.get(ThreadLocalRandom.current().nextInt(BUILDING_SERIES.size()));
+        }
+        level = newLevel;
+    }
 }
