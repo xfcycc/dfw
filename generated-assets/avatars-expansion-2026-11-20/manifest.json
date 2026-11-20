@@ -1,0 +1,163 @@
+{
+  "date": "2026-11-20",
+  "provider": "image_gen",
+  "compression": {
+    "quality": 90,
+    "method": 6,
+    "resize": false,
+    "crop": false,
+    "preserveAlpha": true
+  },
+  "entries": [
+    {
+      "id": "orange_tabby",
+      "name": "橘宝",
+      "description": "暖色水粉绘本，橘猫用前爪托腮打盹",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-1f442b83-409d-4fa0-8953-283cf1a8be27.png",
+      "sourceSha256": "6202fd1a7743aba032a3b009d5a7083b339e90a2d62bb2dbeded2eba7f4e308f",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 321568,
+      "webpSha256": "41bf69c2b1d4ab0bde3676fc84801059409b5947f3c1c4491726b401360dd2d1",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114203327.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 321568,
+        "contentMd5": "tPcehdrsNNkVgTJXvdBzdQ==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "cow_cat",
+      "name": "奥利奥",
+      "description": "黑白漫画，奶牛猫斜眼露出一颗小尖牙，系莓红领巾",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-89590fa7-98e3-40d1-a27d-33df06d5606f.png",
+      "sourceSha256": "e021ee14a2475a9f49c121e1d2335871ada019bdeb5bc6a3dab6c837b42d22bf",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 136720,
+      "webpSha256": "521dd9bda8c6874083825a1432c8a8ac03b396cf98940d7640a5a872bcfc653c",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114205106.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 136720,
+        "contentMd5": "LmgyBaUspZ6BVcIcVQ/V0Q==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "penguin",
+      "name": "啵啵",
+      "description": "软陶公仔，企鹅裹着芥末黄围巾仰头",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-4e26a798-2a73-496e-86f1-e67336b3d33b.png",
+      "sourceSha256": "a7545fb21ff5faa53bfba7ef85feb78031c11f9bd6d2e823c24fd8c3e59dbea0",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 172310,
+      "webpSha256": "e90f4afa7f0498038360b4c5d8ef1b67d10e95c6fac2b8c7cbdaf5cfda7fb335",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114206229.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 172310,
+        "contentMd5": "wmk5Vcte83mwQX+Xh3UsJg==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "shiba",
+      "name": "豆柴",
+      "description": "彩纸拼贴，柴犬戴钴蓝领巾仰头大笑",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-a498b60d-6335-428a-a52b-eff989a83888.png",
+      "sourceSha256": "dd73e688115e2ffbd659f8513c82e630bc655fe3815482db07d0d215dfd8f121",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 246894,
+      "webpSha256": "1181bcc6a6607ca5a6f6fc07db662c9d0e16c58abd887256cc7c60705658f098",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114207630.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 246894,
+        "contentMd5": "6rwUC4jMIjXTgOOvpvWjUQ==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "owl",
+      "name": "咕咕",
+      "description": "几何插画，深紫猫头鹰挑眉半眯眼",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-a7a87497-155d-4e63-8e8c-1b7215d3c3d6.png",
+      "sourceSha256": "a6aad4f34d3b21169272c307ea9b89a8cd232436801613f675d153f629370fe2",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 123542,
+      "webpSha256": "1f5df04fcf1b16343dbdbc1069616a5b86c4fb4a08ba20501da9bcc89ff30522",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114208547.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 123542,
+        "contentMd5": "AjajNd3LleXiNMb4YwpenA==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    },
+    {
+      "id": "otter",
+      "name": "獭獭",
+      "description": "墨线淡彩，水獭双爪捧脸好奇地看向一旁",
+      "source": "/Users/caiguoyu/.codex/generated_images/01a1f6fd-0cbe-7991-8cec-f7c644188fb5/exec-72d686ef-4d81-4af7-9e5b-ed0e22596538.png",
+      "sourceSha256": "64d9aa5a16fc024489f5ab4c9625ed364b704b096d78ca5ca73c72411801accd",
+      "width": 1254,
+      "height": 1254,
+      "alpha": [
+        0,
+        255
+      ],
+      "webpBytes": 528870,
+      "webpSha256": "a0fd3cf3ab42fffd70d992b130cbba971b8b65353fc906418bb3a169ee10dffd",
+      "url": "https://pic.caiguoyu.cn/typora/20261120114209324.webp",
+      "verification": {
+        "status": 200,
+        "contentType": "image/webp",
+        "contentLength": 528870,
+        "contentMd5": "I36uKGTbDp4dJ0sl9lcICg==",
+        "sha256Matches": true,
+        "dimensionsPreserved": true,
+        "alphaPreserved": true
+      }
+    }
+  ]
+}
