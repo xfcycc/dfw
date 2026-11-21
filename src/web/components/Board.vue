@@ -62,7 +62,7 @@ let lastViewportHeight = 0;
 let followFrame = 0;
 const districts = computed(() => DISTRICTS.map((fallback, side) => { const tile = props.room.board.find(tile => tile.district === side); return tile ? districtName(tile) : fallback; }));
 const startIncome = computed(() => ruleMoney(props.room.economy, 'startIncome', 1000));
-const flagOwners = computed(() => {
+const startOwners = computed(() => {
   const owners: Partial<Record<number, PublicPlayer>> = {};
   if (props.room.board[0]?.type === 'supply') {
     for (const player of props.room.players) {
@@ -100,7 +100,7 @@ const tradeMarkers = computed(() => {
 });
 const height = computed(() => { if (desktopSingleScreen.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 2); if (props.spectator && props.compact && !following.value && !localEffectCamera.value && availableViewportHeight.value) return Math.max(1, availableViewportHeight.value - 10); const inset = props.compact ? 10 : 9; const gap = props.compact ? 4 : 3; return (size.value - inset * 2 + gap) / dimensions.value.columns * dimensions.value.rows + inset * 2 - gap; });
 const current = computed(() => props.room.players.find(player => player.id === (props.room.status === 'finished' ? props.room.winnerId : props.room.turnOrder[props.room.turnIndex])));
-const openingFlagTile = computed(() => {
+const openingStartTile = computed(() => {
   const me = props.room.players.find(player => player.id === props.meId);
   if (props.spectator || !me || me.position !== me.startPosition) return;
   if ((me.personalTurns ?? 0) === 0 || (me.personalTurns === 1 && current.value?.id === me.id && props.room.phase === 'pre_roll' && !props.room.motion)) return me.startPosition;
@@ -387,7 +387,7 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
     <div ref="viewport" class="board-viewport">
       <div class="board-sizer" :style="{ width: `${size * zoom}px`, height: `${height * zoom}px` }">
         <div class="board" :style="{ width: `${size}px`, height: `${height}px`, transform: `scale(${zoom})`, gridTemplateColumns: `repeat(${dimensions.columns}, 1fr)`, gridTemplateRows: `repeat(${dimensions.rows}, 1fr)` }">
-          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, effectTiles.has(tile.id) ? `effect-target-${boardEffect?.boardEffect?.kind}` : '', { 'kamui-frozen': !!tile.kamuiCasterId && !!tile.kamuiTurns, 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && (selectedTargets ? selectedTargets.includes(tile.id) : selectedTarget === tile.id), 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-description="flagOwners[tile.id] ? `${flagOwners[tile.id]?.name}的起点` : undefined" :aria-pressed="targeting ? (selectedTargets ? selectedTargets.includes(tile.id) : selectedTarget === tile.id) : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy, room.board, 1, room.cityRentPercent)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${trapLabel(tile)}`" @click="emit('select', tile)">
+          <button v-for="tile in room.board" :key="tile.id" :data-cash-tile="tile.id" class="tile" :class="[tile.type, `district-${tile.district}`, effectTiles.has(tile.id) ? `effect-target-${boardEffect?.boardEffect?.kind}` : '', { 'kamui-frozen': !!tile.kamuiCasterId && !!tile.kamuiTurns, 'is-rotating': tile.type === 'activity' && rotating, owned: tile.ownerId, mortgaged: tile.mortgaged, [`level-${tile.level}`]: true, 'my-position': tile.id === (animatedPosition && animatedPosition.id === meId ? animatedPosition.position : room.players.find(p => p.id === meId)?.position), 'motion-trail': visitedTiles.has(tile.id), 'motion-landing': landing && animatedPosition?.position === tile.id, 'current-position': compact && (animatedPosition?.id === current?.id ? animatedPosition?.position : current?.position) === tile.id, 'chat-referenced': referencedTile === tile.id, 'target-eligible': targeting && eligibleTiles?.includes(tile.id), 'target-selected': targeting && (selectedTargets ? selectedTargets.includes(tile.id) : selectedTarget === tile.id), 'target-unavailable': targeting && !eligibleTiles?.includes(tile.id) }]" :aria-description="startOwners[tile.id] ? `${startOwners[tile.id]?.name}的起点` : undefined" :aria-pressed="targeting ? (selectedTargets ? selectedTargets.includes(tile.id) : selectedTarget === tile.id) : undefined" :style="{ gridRow: tileCoordinates(tile.id, room.board.length).row, gridColumn: tileCoordinates(tile.id, room.board.length).column, '--owner': ownerColor(tile) }" :aria-label="`${tile.id}号 ${tile.name}${tile.type === 'property' ? `，价格${tile.price}，租金${rentFor(tile, room.economy, room.board, 1, room.cityRentPercent)}，${room.players.find(player => player.id === tile.ownerId)?.name ?? '待购入'}，${tile.level}级${tile.mortgaged ? '，已抵押' : ''}` : ''}${trapLabel(tile)}`" @click="emit('select', tile)">
             <svg v-if="referencedTile === tile.id" class="chat-reference-glow" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="7" pathLength="100" /></svg>
             <span v-if="compact" class="tile-ground" aria-hidden="true"></span>
             <PropertyArt v-if="compact && tile.type === 'property'" class="property-tile-art" :level="tile.level" :series="tile.buildingSeries" />
@@ -395,14 +395,19 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
             <span v-if="!compact && tile.type === 'property' && tile.level" class="building-decor" aria-hidden="true"><i v-for="building in tile.level" :key="building"></i><b v-if="tile.level === 3">★</b></span>
             <img v-if="tile.type !== 'property' && (compact || tile.type === 'supply')" class="special-tile-art"  :src="tile.type === 'activity' && tile.activityKind ? activityArt(`${displayedActivityKinds[tile.id] ?? tile.activityKind}-tile`) : imageUrl(`/images/tiles/${tile.type}.png`)" alt="" draggable="false" /><span v-if="!compact && tile.type !== 'supply'" class="tile-icon" :class="{ built: tile.level > 0 }" :key="`${tile.level}-${tile.ownerId}`">{{ tile.type === 'property' && tile.level > 0 ? '▥' : icons[tile.type] }}</span>
             <span v-for="effect in tileEffects.filter(effect => effect.tileId === tile.id)" :key="effect.key" class="tile-effect" :class="effect.kind" aria-hidden="true">{{ effect.kind === 'built' ? '✦' : effect.kind === 'bought' ? '⌂' : '✧' }}</span>
-            <strong :class="{ 'has-start-flag': flagOwners[tile.id] }">
+            <strong>
               <span class="tile-name" :title="tile.name" :class="{ 'has-property-effects': tile.type === 'property' && hasPropertyEffects(tile, room.constructionEffects) }">{{ tile.name }}</span>
-              <svg v-if="flagOwners[tile.id]" class="start-flag" :class="{ mine: !spectator && flagOwners[tile.id]?.id === meId }" :style="{ color: flagOwners[tile.id]?.color }" viewBox="0 0 20 22" aria-hidden="true">
-                <path d="M4 20V3m0 1c4-4 8 3 13 0l-2 4 2 4c-5 3-9-4-13 0" />
-              </svg>
               <PropertyGrade v-if="stretch && !desktopSingleScreen && tile.type === 'property'" :level="tile.level" />
-              <span v-if="flagOwners[tile.id] && tile.id === openingFlagTile" class="start-flag-hint">我的起点</span>
+              <span v-if="startOwners[tile.id] && tile.id === openingStartTile" class="start-avatar-hint">我的起点</span>
             </strong>
+            <CharacterPawn
+              v-if="startOwners[tile.id]"
+              class="start-avatar"
+              :class="{ mine: !spectator && startOwners[tile.id]?.id === meId }"
+              :avatar-id="startOwners[tile.id]?.avatarId"
+              :color="startOwners[tile.id]?.color"
+              :title="`${startOwners[tile.id]?.id === meId && !spectator ? '我' : startOwners[tile.id]?.name}的起点`"
+            />
             <small v-if="tile.type !== 'supply'">{{ tile.type === 'property' ? (tile.mortgaged ? '已抵押' : `¥${tile.price.toLocaleString()}${connectedRents[tile.id] === 35 ? ' ★★' : connectedRents[tile.id] === 20 ? ' ★' : ''}`) : ({ supply: '', start: `+${startIncome.toLocaleString()}`, chance: '好运降临', fortune: '惊喜奖励', jail: '休息一轮', activity: '游园活动' }[tile.type]) }}</small>
             <span v-if="stretch && tile.type === 'property'" class="tile-owner-label" :class="{ 'is-unowned': !tile.ownerId }" :style="{ '--owner-ink': tile.ownerId ? ownerTextColor(tile) : undefined }" :title="tile.ownerId ? `属于 ${tileOwner(tile)?.name ?? '玩家'}${tile.ownerId === meId && !spectator ? '（我）' : ''}${tile.mortgaged ? ' · 已抵押' : ''}` : '待购入'">
               <CharacterPawn v-if="tile.ownerId" :avatar-id="tileOwner(tile)?.avatarId" :color="ownerColor(tile)" />
@@ -507,11 +512,13 @@ onBeforeUnmount(() => { cancelAnimationFrame(followFrame); observer?.disconnect(
 @keyframes property-storm { 0%,25%,80%,100% { translate:0; } 35%,55%,75% { translate:-3px; } 45%,65% { translate:3px; } }
 
 .trade-map-layer { position: absolute; inset: 0; z-index: 7; pointer-events: none; }
-.tile > .has-start-flag { position: relative; display: flex; align-items: center; justify-content: center; max-width: 100%; }
-.has-start-flag .tile-name { min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.start-flag { width: 1em; height: 1.1em; flex: none; pointer-events: none; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 .5px #503c2b); }
-.start-flag.mine { fill: currentColor; }
-.start-flag-hint { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding: 1px 4px; border-radius: 4px; background: #fff9e9; color: #55432d; font-size: 10px; line-height: 1.2; white-space: nowrap; pointer-events: none; }
+.tile > .start-avatar { position: absolute; top: 3px; right: 3px; z-index: 3; width: min(34px, 36%); height: auto; aspect-ratio: 1; border: 1px solid #fff9ed; border-radius: 50%; box-shadow: 0 0 0 1px #6b4d3666; }
+.game-board .tile > .start-avatar { top: 38px; }
+.game-board .tile.property > .start-avatar { top: 34px; }
+.desktop-single-screen .game-board .tile > .start-avatar { top: 18px; }
+.tile > .start-avatar.mine { box-shadow: 0 0 0 1px #6b4d36; }
+.board-container:not(.game-board) .tile > strong:has(> .start-avatar-hint) { position: relative; }
+.start-avatar-hint { position: absolute; top: 100%; left: 50%; transform: translateX(-50%); padding: 1px 4px; border-radius: 4px; background: #fff9e9; color: #55432d; font-size: 10px; line-height: 1.2; white-space: nowrap; pointer-events: none; }
 .tile.supply > .special-tile-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; pointer-events: none; }
 .trade-map-marker { position: absolute; filter: drop-shadow(0 2px 3px #49311d55); }
 .trade-map-marker.is-gaining { color: #248547; }
